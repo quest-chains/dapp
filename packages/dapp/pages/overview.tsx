@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { reviews } from '@/utils/mockData';
 import { status } from '@/utils/status';
 
-const Home: React.FC = () => {
+const Overview: React.FC = () => {
   const [tab, setTab] = useState('reviews');
 
   return (
@@ -75,4 +75,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default Overview;

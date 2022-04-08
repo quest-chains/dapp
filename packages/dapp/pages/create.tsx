@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { Field, FieldArray, Form, Formik } from 'formik';
 
-const Home: React.FC = () => {
+const Create: React.FC = () => {
   // function validateDAOName(value: string) {
   //   let error;
   //   if (!value) {
@@ -207,4 +207,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default Create;
