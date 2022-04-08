@@ -25,7 +25,7 @@ const Home: React.FC = () => {
     <VStack>
       <Formik
         initialValues={{
-          daoName: 'Sasuke',
+          daoName: '',
           coreMemberAddresses: [],
           quests: [],
         }}
@@ -51,7 +51,7 @@ const Home: React.FC = () => {
             </Field> */}
             <Flex minW="27rem">
               {/* Left Column: DAO Name, Quest Chain title, Core Member Addresses */}
-              <Flex flexDir="column" mr={10}>
+              <Flex flexDir="column">
                 <HStack mb={4}>
                   <Field name="daoName">
                     {({ field, form }: { field: any; form: any }) => (
@@ -123,6 +123,8 @@ const Home: React.FC = () => {
                 />
               </Flex>
 
+              <Flex borderLeft="1px solid rgba(255, 255, 255, 0.15)" mx={6} />
+
               {/* Right Column, Quest Creator */}
               <VStack minW="27rem">
                 <FieldArray
@@ -134,7 +136,7 @@ const Home: React.FC = () => {
                         <Flex
                           key={index}
                           mb={4}
-                          bgColor="rgba(255, 255, 255, 0.02);"
+                          bgColor="rgba(255, 255, 255, 0.02)"
                           p={4}
                           borderRadius={8}
                         >

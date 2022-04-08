@@ -1,27 +1,9 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-console */
 import { Box, Input, VStack } from '@chakra-ui/react';
 import { SetStateAction, useEffect, useState } from 'react';
 
-const dummyDAOs = [
-  {
-    name: 'MetaGame',
-  },
-  {
-    name: 'MetaCartel',
-  },
-  {
-    name: 'KlimaDAO',
-  },
-  {
-    name: 'OlympusDAO',
-  },
-  {
-    name: '1Hive',
-  },
-  {
-    name: 'Giveth',
-  },
-];
+import { daos } from '@/utils/mockData';
 
 interface DAOsData {
   name: string;
@@ -37,7 +19,9 @@ const Search: React.FC = () => {
   useEffect(() => {
     console.log('new value of input: ', value);
 
-    const filteredDAOs = dummyDAOs.filter(DAO => DAO.name.includes(value));
+    const filteredDAOs = daos.filter(DAO =>
+      DAO.name.toLowerCase().includes(value.toLowerCase()),
+    );
 
     setResults(filteredDAOs);
   }, [value]);
