@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Box, Heading, Input, VStack } from '@chakra-ui/react';
+import { Box, Input, VStack } from '@chakra-ui/react';
 import { SetStateAction, useEffect, useState } from 'react';
 
 const dummyDAOs = [
@@ -44,7 +44,6 @@ const Search: React.FC = () => {
 
   return (
     <VStack>
-      <Heading>Search for DAO</Heading>
       <Input
         placeholder="Search for DAO"
         value={value}
