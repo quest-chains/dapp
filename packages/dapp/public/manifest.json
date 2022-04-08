@@ -1,0 +1,17 @@
+{
+  "short_name": "DAO Quest",
+  "name": "DAO Quest Chains",
+  "description": "DAO Quest Chains Application",
+  "iconPath": "logo.png",
+  "icons": [
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

@@ -1,0 +1,41 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+
+# production
+build
+dist
+.next
+
+# misc
+.DS_Store
+.env*
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# contracts
+packages/contracts/cache
+packages/contracts/types
+packages/contracts/artifacts
+packages/contracts/coverage*
+
+# subgraph
+packages/subgraph/build/
+packages/subgraph/src/types/
+
+# vim
+*.sw[a-z]
+
+# yarn
+.yarn
+.pnp.*
+package-lock.json

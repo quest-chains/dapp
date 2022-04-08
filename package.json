@@ -1,0 +1,40 @@
+{
+  "name": "dao-quest",
+  "version": "1.0.0",
+  "keywords": ["ethereum", "react", "workspaces", "yarn"],
+  "private": true,
+  "scripts": {
+    "lint": "concurrently \"yarn workspace @dao-quest/dapp lint\" \"yarn workspace @dao-quest/contracts lint\"",
+    "typecheck": "concurrently \"yarn workspace @dao-quest/dapp typecheck\" \"yarn workspace @dao-quest/contracts typecheck\"",
+    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md,css}\"",
+    "prepare": "husky install",
+    "subgraph:auth": "yarn workspace @dao-quest/subgraph auth",
+    "subgraph:codegen": "yarn workspace @dao-quest/subgraph codegen",
+    "subgraph:build": "yarn workspace @dao-quest/subgraph build",
+    "subgraph:deploy": "yarn workspace @dao-quest/subgraph deploy",
+    "dapp:dev": "yarn workspace @dao-quest/dapp dev",
+    "dapp:build": "yarn workspace @dao-quest/dapp build",
+    "dapp:start": "yarn workspace @dao-quest/dapp start"
+  },
+  "workspaces": {
+    "packages": ["packages/*"]
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^12.1.0",
+    "@types/node": "^17.0.21",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.14",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "concurrently": "^7.1.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.5",
+    "prettier": "^2.5.1"
+  }
+}
