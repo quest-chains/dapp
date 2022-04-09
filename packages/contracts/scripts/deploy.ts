@@ -1,41 +1,15 @@
 import fs from 'fs';
 import { ethers, network, run } from 'hardhat';
 
-const networkName: Record<number, string> = {
-  1: 'Ethereum Mainnet',
-  4: 'Rinkeby Testnet',
-  137: 'Polygon Mainnet',
-  80001: 'Mumbai Testnet',
-  31337: 'Hardhat Chain',
-};
-
-const networkCurrency: Record<number, string> = {
-  1: 'ETH',
-  4: 'ETH',
-  137: 'MATIC',
-  80001: 'MATIC',
-  31337: 'ETH',
-};
+import { networkName, validateSetup } from './utils';
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-  const address = await deployer.getAddress();
+  const [chainId, deployer] = await validateSetup();
   if (!deployer.provider) {
-    console.error('Provider not found for network');
-    return;
+    throw new Error('Provider not found for network');
   }
-  const { chainId } = await deployer.provider.getNetwork();
-  if (!Object.keys(networkName).includes(chainId.toString())) {
-    console.error('Unsupported network');
-    return;
-  }
+
   console.log('Deploying QuestChainFactory:', networkName[chainId]);
-  console.log('Account address:', address);
-  console.log(
-    'Account balance:',
-    ethers.utils.formatEther(await deployer.provider.getBalance(address)),
-    networkCurrency[chainId],
-  );
 
   const QuestChain = await ethers.getContractFactory('QuestChain', {});
   const questChain = await QuestChain.deploy();
