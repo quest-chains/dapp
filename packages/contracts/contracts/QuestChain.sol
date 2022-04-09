@@ -93,13 +93,13 @@ contract QuestChain is
         Status status = completions[msg.sender][_questId];
         require(
             status == Status.init || status == Status.fail,
-            "QuestChain: quest in review or passed"
+            "QuestChain: in review or passed"
         );
         if (_questId > 0) {
             Status prevStatus = completions[msg.sender][_questId - 1];
             require(
                 prevStatus == Status.pass,
-                "QuestChain: must pass previous quests"
+                "QuestChain: not passed"
             );
         }
 
