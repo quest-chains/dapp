@@ -24,9 +24,10 @@ contract QuestChain is
 
     mapping(address => mapping(uint256 => Status)) public completions;
 
-    event QuestChainCreated(address indexed _admin, string details);
+    event QuestChainCreated(address indexed creator, string details);
+    event QuestChainEdited(address indexed editor, string details);
     event QuestCreated(
-        address indexed editor,
+        address indexed creator,
         uint256 indexed questId,
         string details
     );
@@ -64,6 +65,14 @@ contract QuestChain is
         _setupRole(REVIEWER_ROLE, _admin);
 
         emit QuestChainCreated(_admin, _details);
+    }
+
+    function edit(string calldata _details)
+        external
+        override
+        onlyRole(ADMIN_ROLE)
+    {
+        emit QuestChainEdited(msg.sender, _details);
     }
 
     function createQuest(string calldata _details)

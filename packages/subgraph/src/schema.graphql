@@ -1,0 +1,91 @@
+type QuestChainEdit @entity {
+  id: ID!
+  questChain: QuestChain!
+  editor: User!
+  timestamp: BigInt!
+  details: String
+  name: String
+  description: String
+  imageUrl: String
+  externalUrl: String
+}
+
+type QuestChain @entity {
+  id: ID!
+  network: String!
+  address: Bytes!
+  factoryAddress: Bytes!
+  admins: [User!]!
+  reviewers: [User!]!
+  editors: [User!]!
+  quests: [Quest!]!
+  createdBy: User!
+  createdAt: BigInt!
+  editedBy: User
+  editedAt: BigInt
+  creationTxHash: Bytes!
+  details: String
+  name: String
+  description: String
+  imageUrl: String
+  externalUrl: String
+  edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
+}
+
+type QuestEdit @entity {
+  id: ID!
+  quest: Quest!
+  editor: User!
+  timestamp: BigInt!
+  details: String
+  name: String
+  description: String
+  imageUrl: String
+  externalUrl: String
+}
+
+type Quest @entity {
+  id: ID!
+  questChain: QuestChain!
+  questId: BigInt!
+  details: String!
+  name: String
+  description: String
+  imageUrl: String
+  externalUrl: String
+  createdBy: User!
+  createdAt: BigInt!
+  editedBy: User
+  editedAt: BigInt
+  usersPassed: [QuestStatus!]!
+  usersFailed: [QuestStatus!]!
+  usersInReview: [QuestStatus!]!
+  status: [QuestStatus!]! @derivedFrom(field: "quest")
+  edits: [QuestEdit!]! @derivedFrom(field: "quest")
+}
+
+type User @entity {
+  id: ID!
+  adminOf: [QuestChain!]! @derivedFrom(field: "admins")
+  editorOf: [QuestChain!]! @derivedFrom(field: "editors")
+  reviewerOf: [QuestChain!]! @derivedFrom(field: "reviewers")
+  status: [QuestStatus!]! @derivedFrom(field: "user")
+  questsPassed: [QuestStatus!]!
+  questsFailed: [QuestStatus!]!
+  questsInReview: [QuestStatus!]!
+  questEdits: [QuestEdit!]! @derivedFrom(field: "editor")
+}
+
+enum Status {
+  init
+  review
+  pass
+  fail
+}
+
+type QuestStatus @entity {
+  id: ID!
+  quest: Quest!
+  user: User!
+  status: Status!
+}

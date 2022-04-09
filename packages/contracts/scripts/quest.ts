@@ -55,7 +55,7 @@ async function main() {
   const hash = await uploadMetadata(metadata, token);
   const details = `ipfs://${hash}`;
 
-  const tx = await factory.create(deployer.address, details);
+  const tx = await factory.create(details);
   const receipt = await tx.wait();
 
   const address = await awaitQuestChainAddress(receipt);
