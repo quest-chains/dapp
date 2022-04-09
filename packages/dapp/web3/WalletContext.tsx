@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+// eslint-disable-next-line import/no-unresolved
 import { WEB3_MODAL_OPTIONS } from 'web3/options';
 import Web3Modal from 'web3modal';
 

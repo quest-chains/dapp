@@ -1,11 +1,17 @@
+/* eslint-disable import/no-unresolved */
 import { Button, HStack, Text } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
+import { FunctionComponent } from 'react';
 
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { formatAddress, useENS, useWallet } from '@/web3';
 
-export const ConnectWallet: React.FC = () => {
+type BoxProps = {
+  isHeader?: boolean;
+};
+
+export const ConnectWallet: FunctionComponent<BoxProps> = ({ isHeader }) => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =
     useWallet();
   const { ens } = useENS(address ?? ZERO_ADDRESS);
@@ -14,9 +20,19 @@ export const ConnectWallet: React.FC = () => {
       role="group"
       isLoading={isConnecting}
       onClick={isConnected ? disconnect : connectWallet}
+      px={isHeader ? 4 : 20}
+      background="rgba(255, 255, 255, 0.05)"
+      fontWeight="400"
+      backdropFilter="blur(40px)"
+      borderRadius="full"
+      boxShadow="inset 0px 0px 0px 1px #AD90FF"
+      color="main"
+      letterSpacing={4}
+      fontSize={isHeader ? 12 : 30}
+      height={isHeader ? 8 : 16}
     >
       {!isConnected || !address ? (
-        'Connect Wallet'
+        'connect'
       ) : (
         <HStack spacing={2} position="relative">
           <Davatar

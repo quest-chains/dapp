@@ -1,17 +1,15 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Link as ChakraLink,
-  VStack,
-} from '@chakra-ui/react';
+/* eslint-disable import/no-unresolved */
+import { Button, Flex, Heading, VStack } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useState } from 'react';
 
+import { ConnectWallet } from '@/components/ConnectWallet';
+import { useWallet } from '@/web3';
+
 const Home: React.FC = () => {
-  const [isConnected, setIsConnected] = useState(false);
   const [isEntered, setIsEntered] = useState(false);
+
+  const { isConnected } = useWallet();
 
   return (
     <Flex
@@ -24,41 +22,28 @@ const Home: React.FC = () => {
         DAOQuest
       </Heading>
 
-      {!isConnected && (
-        <Button
-          px={20}
-          background="rgba(255, 255, 255, 0.05)"
-          fontWeight="400"
-          backdropFilter="blur(40px)"
-          borderRadius="full"
-          boxShadow="inset 0px 0px 0px 1px #AD90FF"
-          onClick={() => setIsConnected(true)}
-          color="main"
-          letterSpacing={4}
-          fontSize={30}
-          height={16}
-        >
-          connect
-        </Button>
-      )}
+      <Flex>
+        {!isConnected && <ConnectWallet />}
 
-      {!isEntered && isConnected && (
-        <Button
-          px={20}
-          background="rgba(255, 255, 255, 0.05)"
-          fontWeight="400"
-          backdropFilter="blur(40px)"
-          borderRadius="full"
-          boxShadow="inset 0px 0px 0px 1px #AD90FF"
-          onClick={() => setIsEntered(true)}
-          color="main"
-          letterSpacing={4}
-          fontSize={30}
-          height={16}
-        >
-          enter
-        </Button>
-      )}
+        {!isEntered && isConnected && (
+          <Button
+            ml={6}
+            px={20}
+            background="rgba(255, 255, 255, 0.05)"
+            fontWeight="400"
+            backdropFilter="blur(40px)"
+            borderRadius="full"
+            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            onClick={() => setIsEntered(true)}
+            color="main"
+            letterSpacing={4}
+            fontSize={30}
+            height={16}
+          >
+            enter
+          </Button>
+        )}
+      </Flex>
 
       {isEntered && (
         <VStack spacing={6}>

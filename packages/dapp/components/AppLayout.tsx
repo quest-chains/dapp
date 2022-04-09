@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import {
   Box,
   HStack,
@@ -8,17 +9,15 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 
 import LogoImage from '@/assets/logo.png';
 import { ConnectWallet } from '@/components/ConnectWallet';
-import { NavToggle } from '@/components/NavToggle';
+import { useWallet } from '@/web3';
 
 export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
-  const [isOpen, setOpen] = useState(false);
-  const toggleOpen = () => setOpen(o => !o);
+  const { isConnected } = useWallet();
 
   const router = useRouter();
 
@@ -68,8 +67,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             </>
           )}
 
-          <ConnectWallet />
-          <NavToggle isOpen={isOpen} onClick={toggleOpen} />
+          {isConnected && <ConnectWallet isHeader />}
+          {/* <NavToggle isOpen={isOpen} onClick={toggleOpen} /> */}
         </HStack>
       </VStack>
       <Box
