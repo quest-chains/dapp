@@ -72,7 +72,7 @@ async function main() {
   );
 
   try {
-    questChainFactory.deployTransaction.wait(10);
+    await questChainFactory.deployTransaction.wait(5);
     console.log('Verifying Contracts...');
     const TASK_VERIFY = 'verify:verify';
 
