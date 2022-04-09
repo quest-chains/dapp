@@ -17,7 +17,11 @@ class TSDocument extends Document {
 
   render(): JSX.Element {
     return (
-      <Html>
+      <Html
+        style={{
+          height: '100%',
+        }}
+      >
         <Head>
           <link
             rel="shortcut icon"
@@ -27,7 +31,11 @@ class TSDocument extends Document {
           />
           <link rel="manifest" href="/manifest.json" />
         </Head>
-        <body>
+        <body
+          style={{
+            height: '100%',
+          }}
+        >
           <Main />
           <NextScript />
         </body>

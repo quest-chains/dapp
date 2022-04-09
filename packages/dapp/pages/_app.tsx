@@ -4,7 +4,7 @@ import '@/assets/bg.scss';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
-import type { AppProps } from 'next/app';
+import { AppProps } from 'next/app';
 
 import { AppLayout } from '@/components/AppLayout';
 import { globalStyles, theme } from '@/utils/theme';
@@ -12,7 +12,7 @@ import { globalStyles, theme } from '@/utils/theme';
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
     <ChakraProvider resetCSS theme={theme}>
-      <div className="background">
+      {/* <div className="background">
         <span></span>
         <span></span>
         <span></span>
@@ -20,7 +20,7 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
         <span></span>
         <span></span>
         <span></span>
-      </div>
+      </div> */}
       <Global styles={globalStyles} />
       <AppLayout>
         <Component {...pageProps} />
