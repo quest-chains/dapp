@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react';
 import { providers } from 'ethers';
 import {
   createContext,
@@ -7,12 +6,14 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { toast } from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
 import { CHAIN_ID } from '@/utils/constants';
 
 import { isSupportedNetwork } from './helpers';
 import { switchChainOnMetaMask } from './metamask';
+import { NETWORK_INFO } from './networks';
 import { WEB3_MODAL_OPTIONS } from './options';
 
 export type WalletContextType = {
@@ -53,8 +54,6 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   const [walletState, setWalletState] = useState<WalletStateType>({});
 
   const { provider, chainId, address, isMetaMask } = walletState;
-
-  const toast = useToast();
 
   const [isConnecting, setConnecting] = useState<boolean>(true);
 
@@ -118,21 +117,17 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
               setConnecting(false);
             }
             if (!success) {
-              toast({
-                status: 'error',
-                description:
-                  'Network not supported, please switch to one of the supported networks',
-              });
+              toast.error(
+                `Network not supported, please switch to ${NETWORK_INFO[CHAIN_ID].name}`,
+              );
               disconnect();
             }
           }
         });
       } else {
-        toast({
-          status: 'error',
-          description:
-            'Network not supported, please switch to one of the supported networks',
-        });
+        toast.error(
+          `Network not supported, please switch to ${NETWORK_INFO[CHAIN_ID].name}`,
+        );
         disconnect();
       }
     } catch (web3Error) {
@@ -142,7 +137,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
     } finally {
       setConnecting(false);
     }
-  }, [setWalletProvider, disconnect, toast]);
+  }, [setWalletProvider, disconnect]);
 
   useEffect(() => {
     if (web3Modal?.cachedProvider) {

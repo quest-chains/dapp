@@ -6,6 +6,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
 import { withUrqlClient } from 'next-urql';
+import { Toaster } from 'react-hot-toast';
 
 import { AppLayout } from '@/components/AppLayout';
 import { GRAPH_URL } from '@/utils/constants';
@@ -14,8 +15,9 @@ import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
-    <ChakraProvider resetCSS theme={theme}>
-      {/* <div className="background">
+    <>
+      <ChakraProvider resetCSS theme={theme}>
+        {/* <div className="background">
         <span></span>
         <span></span>
         <span></span>
@@ -24,13 +26,15 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
         <span></span>
         <span></span>
       </div> */}
-      <Global styles={globalStyles} />
-      <WalletProvider>
-        <AppLayout>
-          <Component {...pageProps} />
-        </AppLayout>
-      </WalletProvider>
-    </ChakraProvider>
+        <Global styles={globalStyles} />
+        <WalletProvider>
+          <AppLayout>
+            <Component {...pageProps} />
+          </AppLayout>
+        </WalletProvider>
+      </ChakraProvider>
+      <Toaster position="bottom-center" />
+    </>
   );
 };
 
