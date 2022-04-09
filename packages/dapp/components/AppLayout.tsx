@@ -91,6 +91,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         p={{ base: 6, md: 8, lg: 12 }}
         maxW="8xl"
         mx="auto"
+        overflow="scroll"
       >
         {children}
       </Box>

@@ -175,20 +175,26 @@ export const reviews = [
 export const daos = [
   {
     name: 'MetaGame',
+    questChainName: 'Initiation Quests',
   },
   {
     name: 'MetaCartel',
+    questChainName: 'Initiation Quests',
   },
   {
     name: 'KlimaDAO',
+    questChainName: 'Initiation Quests',
   },
   {
     name: 'OlympusDAO',
+    questChainName: 'Initiation Quests',
   },
   {
     name: '1Hive',
+    questChainName: 'Initiation Quests',
   },
   {
     name: 'Giveth',
+    questChainName: 'Initiation Quests',
   },
 ];
