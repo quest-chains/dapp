@@ -1,0 +1,12 @@
+overwrite: true
+schema: 'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-mumbai'
+generates:
+  ./graphql/types.ts:
+    documents:
+      - ./graphql/**/(!(*.d)).ts
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+      - add:
+          content: '/* eslint-disable */'

@@ -5,8 +5,10 @@ import '@/assets/bg.scss';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
+import { withUrqlClient } from 'next-urql';
 
 import { AppLayout } from '@/components/AppLayout';
+import { GRAPH_URL } from '@/utils/constants';
 import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 
@@ -32,4 +34,7 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   );
 };
 
-export default App;
+export default withUrqlClient(() => ({ url: GRAPH_URL }), {
+  ssr: true,
+  staleWhileRevalidate: true,
+})(App);

@@ -7,14 +7,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-// eslint-disable-next-line import/no-unresolved
-import { WEB3_MODAL_OPTIONS } from 'web3/options';
 import Web3Modal from 'web3modal';
 
 import { CHAIN_ID } from '@/utils/constants';
 
 import { isSupportedNetwork } from './helpers';
 import { switchChainOnMetaMask } from './metamask';
+import { WEB3_MODAL_OPTIONS } from './options';
 
 export type WalletContextType = {
   provider: providers.Web3Provider | null | undefined;

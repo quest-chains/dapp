@@ -1,18 +1,12 @@
 {
   "name": "dao-quest",
   "version": "1.0.0",
-  "keywords": [
-    "ethereum",
-    "react",
-    "workspaces",
-    "yarn"
-  ],
+  "keywords": ["ethereum", "react", "workspaces", "yarn"],
   "private": true,
   "scripts": {
     "lint": "concurrently \"yarn workspace @dao-quest/dapp lint\" \"yarn workspace @dao-quest/contracts lint\"",
     "typecheck": "concurrently \"yarn workspace @dao-quest/dapp typecheck\" \"yarn workspace @dao-quest/contracts typecheck\"",
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md,css,scss,sol}\"",
-    "prepare": "husky install",
     "subgraph:auth": "yarn workspace @dao-quest/subgraph auth",
     "subgraph:codegen": "yarn workspace @dao-quest/subgraph codegen",
     "subgraph:build": "yarn workspace @dao-quest/subgraph build",
@@ -20,12 +14,11 @@
     "dapp:dev": "yarn workspace @dao-quest/dapp dev",
     "dapp:build": "yarn workspace @dao-quest/dapp build",
     "dapp:start": "yarn workspace @dao-quest/dapp start",
-    "postinstall": "yarn workspace @dao-quest/utils build && yarn workspace @dao-quest/contracts build"
+    "root:prepare": "concurrently \"yarn workspace @dao-quest/utils build\" \"yarn workspace @dao-quest/contracts build\" \"yarn workspace @dao-quest/dapp generate\" && husky install",
+    "prepare": "yarn root:prepare"
   },
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
+    "packages": ["packages/*"]
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.1.0",
