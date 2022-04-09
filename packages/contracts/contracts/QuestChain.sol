@@ -81,6 +81,8 @@ contract QuestChain is
         override
         onlyRole(EDITOR_ROLE)
     {
+        require(_questId < questCount, "QuestChain: quest not created");
+
         emit QuestEdited(msg.sender, _questId, _details);
     }
 
@@ -100,6 +102,7 @@ contract QuestChain is
                 "QuestChain: must pass previous quests"
             );
         }
+
         completions[msg.sender][_questId] = Status.review;
 
         emit QuestProofSubmitted(msg.sender, _questId, _proof);

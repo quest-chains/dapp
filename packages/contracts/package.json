@@ -5,6 +5,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "coverage": "hardhat coverage",
     "typecheck": "tsc",
     "deploy-rinkeby": "hardhat run scripts/deploy.ts --network rinkeby",
     "lint": "eslint --ignore-path .gitignore \"./**/*.{ts,js}\"",
