@@ -17,7 +17,13 @@ import {
   QuestProofSubmitted as QuestProofSubmittedEvent,
   QuestProofReviewed as QuestProofReviewedEvent,
 } from '../types/templates/QuestChain/QuestChain';
-import { fetchMetadata, getRoles, getUser, removeFromArray } from './helpers';
+import {
+  createSearchString,
+  fetchMetadata,
+  getRoles,
+  getUser,
+  removeFromArray,
+} from './helpers';
 
 export function handleChainCreated(event: QuestChainCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
@@ -31,6 +37,9 @@ export function handleChainCreated(event: QuestChainCreatedEvent): void {
     questChain.description = metadata.description;
     questChain.imageUrl = metadata.imageUrl;
     questChain.externalUrl = metadata.externalUrl;
+
+    let search = createSearchString(metadata.name, metadata.description);
+    questChain.search = search;
 
     questChain.save();
   }
@@ -68,6 +77,9 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
     questChain.description = metadata.description;
     questChain.imageUrl = metadata.imageUrl;
     questChain.externalUrl = metadata.externalUrl;
+
+    let search = createSearchString(metadata.name, metadata.description);
+    questChain.search = search;
 
     questChain.save();
   }
@@ -144,6 +156,9 @@ export function handleCreated(event: QuestCreatedEvent): void {
     quest.imageUrl = metadata.imageUrl;
     quest.externalUrl = metadata.externalUrl;
 
+    let search = createSearchString(metadata.name, metadata.description);
+    quest.search = search;
+
     let user = getUser(event.params.creator);
     quest.createdAt = event.block.timestamp;
     quest.createdBy = user.id;
@@ -192,6 +207,9 @@ export function handleEdited(event: QuestEditedEvent): void {
       quest.description = metadata.description;
       quest.imageUrl = metadata.imageUrl;
       quest.externalUrl = metadata.externalUrl;
+
+      let search = createSearchString(metadata.name, metadata.description);
+      quest.search = search;
 
       quest.editedAt = event.block.timestamp;
       quest.editedBy = user.id;
@@ -254,6 +272,9 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
       questStatus.description = metadata.description;
       questStatus.imageUrl = metadata.imageUrl;
       questStatus.externalUrl = metadata.externalUrl;
+
+      let search = createSearchString(metadata.name, metadata.description);
+      questStatus.search = search;
 
       questStatus.save();
       user.save();

@@ -27,6 +27,7 @@ type QuestChain @entity {
   details: String
   name: String
   description: String
+  search: String
   imageUrl: String
   externalUrl: String
   edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
@@ -55,6 +56,7 @@ type Quest @entity {
   details: String!
   name: String
   description: String
+  search: String
   imageUrl: String
   externalUrl: String
   createdBy: User!
@@ -96,6 +98,7 @@ type QuestStatus @entity {
   details: String!
   name: String
   description: String
+  search: String
   imageUrl: String
   externalUrl: String
 }

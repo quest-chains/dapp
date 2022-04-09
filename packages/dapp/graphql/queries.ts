@@ -25,7 +25,7 @@ gql`
   query QuestChainSearch($search: String, $first: Int) {
     questChains(
       first: $first
-      where: { name_contains: $search }
+      where: { search_contains: $search }
       orderBy: createdAt
       orderDirection: desc
     ) {

@@ -81,3 +81,23 @@ export function removeFromArray(arr: string[], item: string): string[] {
   }
   return newArr;
 }
+
+export function createSearchString(
+  name: string | null,
+  description: string | null,
+): string | null {
+  if (name == null && description == null) return null;
+
+  if (description == null) {
+    return (name as String).toLowerCase();
+  }
+
+  if (name == null) {
+    return (description as String).toLowerCase();
+  }
+
+  return (name as String)
+    .toLowerCase()
+    .concat(' ')
+    .concat((description as String).toLowerCase());
+}
