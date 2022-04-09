@@ -23,6 +23,10 @@ export function handleNewQuestChain(event: NewQuestChainEvent): void {
   questChain.editors = new Array<string>();
   questChain.reviewers = new Array<string>();
 
+  questChain.questsPassed = new Array<string>();
+  questChain.questsFailed = new Array<string>();
+  questChain.questsInReview = new Array<string>();
+
   QuestChainTemplate.create(event.params.questChain);
 
   user.save();

@@ -30,6 +30,10 @@ type QuestChain @entity {
   imageUrl: String
   externalUrl: String
   edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
+  status: [QuestStatus!]! @derivedFrom(field: "questChain")
+  questsPassed: [QuestStatus!]!
+  questsFailed: [QuestStatus!]!
+  questsInReview: [QuestStatus!]!
 }
 
 type QuestEdit @entity {
@@ -86,6 +90,12 @@ enum Status {
 type QuestStatus @entity {
   id: ID!
   quest: Quest!
+  questChain: QuestChain!
   user: User!
   status: Status!
+  details: String!
+  name: String
+  description: String
+  imageUrl: String
+  externalUrl: String
 }

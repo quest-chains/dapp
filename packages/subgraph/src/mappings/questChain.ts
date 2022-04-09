@@ -217,11 +217,16 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
       let questStatus = QuestStatus.load(questStatusId);
       if (questStatus == null) {
         questStatus = new QuestStatus(questStatusId);
+        questStatus.questChain = questChain.id;
         questStatus.quest = quest.id;
         questStatus.user = user.id;
       } else {
-        let questsFailed = user.questsFailed;
+        let questsFailed = questChain.questsFailed;
         let newArray = removeFromArray(questsFailed, questStatusId);
+        questChain.questsFailed = newArray;
+
+        questsFailed = user.questsFailed;
+        newArray = removeFromArray(questsFailed, questStatusId);
         user.questsFailed = newArray;
 
         let usersFailed = quest.usersFailed;
@@ -237,10 +242,23 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
       questsInReview.push(questStatus.id);
       user.questsInReview = questsInReview;
 
+      questsInReview = questChain.questsInReview;
+      questsInReview.push(questStatus.id);
+      user.questsInReview = questsInReview;
+
       questStatus.status = 'review';
+      let details = event.params.proof;
+      let metadata = fetchMetadata(details);
+      questStatus.details = details;
+      questStatus.name = metadata.name;
+      questStatus.description = metadata.description;
+      questStatus.imageUrl = metadata.imageUrl;
+      questStatus.externalUrl = metadata.externalUrl;
+
       questStatus.save();
       user.save();
       quest.save();
+      questChain.save();
     }
   }
 }
@@ -260,6 +278,7 @@ export function handleProofReviewed(event: QuestProofReviewedEvent): void {
       let questStatus = QuestStatus.load(questStatusId);
       if (questStatus == null) {
         questStatus = new QuestStatus(questStatusId);
+        questStatus.questChain = questChain.id;
         questStatus.quest = quest.id;
         questStatus.user = user.id;
       }
@@ -272,9 +291,18 @@ export function handleProofReviewed(event: QuestProofReviewedEvent): void {
       newArray = removeFromArray(questsInReview, questStatusId);
       user.questsInReview = newArray;
 
+      questsInReview = questChain.questsInReview;
+      newArray = removeFromArray(questsInReview, questStatusId);
+      questChain.questsInReview = newArray;
+
       if (event.params.success) {
         questStatus.status = 'pass';
-        let questsPassed = user.questsPassed;
+
+        let questsPassed = questChain.questsPassed;
+        questsPassed.push(questStatusId);
+        questChain.questsPassed = questsPassed;
+
+        questsPassed = user.questsPassed;
         questsPassed.push(questStatusId);
         user.questsPassed = questsPassed;
 
@@ -283,7 +311,12 @@ export function handleProofReviewed(event: QuestProofReviewedEvent): void {
         quest.usersPassed = usersPassed;
       } else {
         questStatus.status = 'fail';
-        let questsFailed = user.questsFailed;
+
+        let questsFailed = questChain.questsFailed;
+        questsFailed.push(questStatusId);
+        questChain.questsFailed = questsFailed;
+
+        questsFailed = user.questsFailed;
         questsFailed.push(questStatusId);
         user.questsFailed = questsFailed;
 
@@ -295,6 +328,7 @@ export function handleProofReviewed(event: QuestProofReviewedEvent): void {
       questStatus.save();
       user.save();
       quest.save();
+      questChain.save();
     }
   }
 }
