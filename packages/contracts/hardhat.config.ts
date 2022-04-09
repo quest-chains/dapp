@@ -4,7 +4,7 @@ import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import { HardhatUserConfig, task } from 'hardhat/config';
 
 dotenv.config();
@@ -30,13 +30,27 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    polygon: {
+      url: 'https://rpc-mainnet.maticvigil.com',
+      accounts: [],
+    },
+    polygonMumbai: {
+      url: 'https://rpc-mumbai.maticvigil.com',
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: 'USD',
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
+      rinkeby: process.env.ETHERSCAN_API_KEY,
+      polygon: process.env.POLYGONSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+    },
   },
   typechain: {
     outDir: 'types',
