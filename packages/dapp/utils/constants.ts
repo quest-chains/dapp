@@ -12,3 +12,9 @@ export const SUBGRAPH_NAME =
 export const GRAPH_URL = `https://api.thegraph.com/subgraphs/name/${SUBGRAPH_NAME}`;
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+export const FACTORY_CONTRACT =
+  process.env.NEXT_PUBLIC_FACTORY_CONTRACT ??
+  '0x5977840c83B4f2Ba952D8001a647516c979915E4';
+
+export const WEB3_STORAGE_TOKEN = process.env.NEXT_WEB3_STORAGE_TOKEN;

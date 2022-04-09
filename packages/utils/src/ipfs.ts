@@ -6,7 +6,6 @@ import { mkdtemp, rmdir, unlink, writeFile } from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import Ajv from 'ajv';
-import CID from 'cids';
 
 const ajv = new Ajv();
 const validate = ajv.compile(schema);
@@ -61,13 +60,10 @@ export const uploadMetadata = async (
     web3Storage.put([tmpFile], { wrapWithDirectory: false }),
   ]);
 
-  const cid = new CID(hashWeb3Storage);
-  const hash = cid.toBaseEncodedString('base64');
-
-  await ipfsTheGraph.pin.add(hash);
+  await ipfsTheGraph.pin.add(hashWeb3Storage);
 
   await unlink(name);
   await rmdir(path.dirname(name));
 
-  return hash;
+  return hashWeb3Storage;
 };

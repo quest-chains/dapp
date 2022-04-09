@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
 import { CHAIN_ID } from '@/utils/constants';

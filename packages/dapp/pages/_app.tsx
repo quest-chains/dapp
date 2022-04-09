@@ -15,9 +15,8 @@ import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
-    <>
-      <ChakraProvider resetCSS theme={theme}>
-        {/* <div className="background">
+    <ChakraProvider resetCSS theme={theme}>
+      {/* <div className="background">
         <span></span>
         <span></span>
         <span></span>
@@ -26,15 +25,23 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
         <span></span>
         <span></span>
       </div> */}
-        <Global styles={globalStyles} />
-        <WalletProvider>
-          <AppLayout>
-            <Component {...pageProps} />
-          </AppLayout>
-        </WalletProvider>
-      </ChakraProvider>
-      <Toaster position="bottom-center" />
-    </>
+      <Global styles={globalStyles} />
+      <WalletProvider>
+        <AppLayout>
+          <Component {...pageProps} />
+        </AppLayout>
+      </WalletProvider>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            borderRadius: '1rem',
+            maxWidth: '40rem',
+            marginBottom: '2rem',
+          },
+        }}
+      />
+    </ChakraProvider>
   );
 };
 

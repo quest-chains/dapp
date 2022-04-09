@@ -34,7 +34,7 @@ export const getQuestChainInfo = async (
     .query<QuestChainInfoQuery, QuestChainInfoQueryVariables>(
       QuestChainInfoDocument,
       {
-        address,
+        address: address.toLowerCase(),
       },
     )
     .toPromise();

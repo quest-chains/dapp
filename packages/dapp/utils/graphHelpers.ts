@@ -5,7 +5,7 @@ import { sleep } from '@/utils/helpers';
 
 const UPDATE_INTERVAL = 10000;
 
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 6;
 
 export const waitUntilBlock = async (block = 0): Promise<boolean> => {
   let latestBlock = getGraphLatestBlock();

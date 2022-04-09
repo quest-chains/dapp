@@ -31,8 +31,6 @@ const Search: React.FC = () => {
     pause: value.length < 3,
   });
 
-  console.log({ fetching, value });
-
   const results: QuestChainInfoFragment[] = data?.questChains ?? [];
 
   return (
@@ -68,8 +66,8 @@ const Search: React.FC = () => {
           results.length > 0 &&
           results.map(({ address, name, description }) => (
             <NextLink
-              href={`/quest-chain/${address}`}
-              as={`/quest-chain/[address]`}
+              as={`/quest-chain/${address}`}
+              href={`/quest-chain/[address]`}
               passHref
               key={address}
             >
