@@ -7,6 +7,7 @@ import {
   FormLabel,
   HStack,
   Input,
+  Text,
   Textarea,
   VStack,
 } from '@chakra-ui/react';
@@ -49,9 +50,12 @@ const Create: React.FC = () => {
                 </FormControl>
               )}
             </Field> */}
-            <Flex minW="27rem">
+            <HStack minW="27rem" gap={20}>
               {/* Left Column: DAO Name, Quest Chain title, Core Member Addresses */}
               <Flex flexDir="column">
+                <Text mb={6} color="main" fontSize={20}>
+                  CREATE QUEST CHAIN
+                </Text>
                 <HStack mb={4}>
                   <Field name="daoName">
                     {({ field, form }: { field: any; form: any }) => (
@@ -123,10 +127,11 @@ const Create: React.FC = () => {
                 />
               </Flex>
 
-              <Flex borderLeft="1px solid rgba(255, 255, 255, 0.15)" mx={6} />
-
               {/* Right Column, Quest Creator */}
-              <VStack minW="27rem">
+              <Flex flexDir="column" minW="27rem">
+                <Text mb={6} color="main" fontSize={20}>
+                  ADD QUEST
+                </Text>
                 <FieldArray
                   name="quests"
                   render={arrayHelpers => (
@@ -188,8 +193,8 @@ const Create: React.FC = () => {
                     </Box>
                   )}
                 />
-              </VStack>
-            </Flex>
+              </Flex>
+            </HStack>
 
             <Button
               mt={4}
