@@ -36,11 +36,11 @@ export function fetchMetadata(details: string): Metadata {
       if (description != null && !description.isNull()) {
         metadata.description = description.toString();
       }
-      let imageUrl = data.get('imageUrl');
+      let imageUrl = data.get('image_url');
       if (imageUrl != null && !imageUrl.isNull()) {
         metadata.imageUrl = imageUrl.toString();
       }
-      let externalUrl = data.get('externalUrl');
+      let externalUrl = data.get('external_url');
       if (externalUrl != null && !externalUrl.isNull()) {
         metadata.externalUrl = externalUrl.toString();
       }

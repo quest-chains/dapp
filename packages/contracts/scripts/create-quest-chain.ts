@@ -31,36 +31,56 @@ async function main() {
     deployer,
   );
 
-  console.log(
-    'Please provide the following information for creating your Quest Chain:',
-  );
-  let metadata: Metadata;
-
-  let name = prompt('name: ');
-  while (!name) {
-    name = prompt('name: ');
+  let hasMetadata = prompt('Do you already have a metadata URL? [y/N]: ');
+  while (!['', 'y', 'Y', 'n', 'N'].includes(hasMetadata)) {
+    hasMetadata = prompt('Do you already have a metadata URL? [y/N]: ');
   }
 
-  let description = prompt('description: ');
-  while (!description) {
-    description = prompt('description: ');
+  if (!hasMetadata) {
+    hasMetadata = 'n';
+  }
+  hasMetadata = hasMetadata.toLowerCase();
+
+  let details;
+  if (hasMetadata === 'n') {
+    console.log(
+      'Please provide the following information for creating your Quest Chain:',
+    );
+    let metadata: Metadata;
+
+    let name = prompt('name: ');
+    while (!name) {
+      name = prompt('name: ');
+    }
+
+    let description = prompt('description: ');
+    while (!description) {
+      description = prompt('description: ');
+    }
+
+    metadata = { name, description };
+    const image_url = prompt('image_url [optional]: ');
+    if (image_url) metadata.image_url = image_url;
+    const external_url = prompt('external_url [optional]: ');
+    if (external_url) metadata.external_url = external_url;
+
+    console.log('Metadata:', JSON.stringify(metadata, undefined, 2));
+
+    const hash = await uploadMetadata(metadata, token);
+    details = `ipfs://${hash}`;
+  } else {
+    details = prompt('Please provide metadata URL: ');
   }
 
-  metadata = { name, description };
-  const image_url = prompt('image_url [optional]: ');
-  if (image_url) metadata.image_url = image_url;
-  const external_url = prompt('external_url [optional]: ');
-  if (external_url) metadata.external_url = external_url;
-
-  const hash = await uploadMetadata(metadata, token);
-  const details = `ipfs://${hash}`;
+  console.log('The Metadata URL is:', details);
+  console.log('Ready to create your Quest Chain!');
+  prompt('Press any key to continue...');
 
   const tx = await factory.create(details);
   const receipt = await tx.wait();
 
   const address = await awaitQuestChainAddress(receipt);
   console.log('Successfully deployed a new Quest Chain:', address);
-  console.log('Metadata:', JSON.stringify(metadata, undefined, 2));
 }
 
 main()

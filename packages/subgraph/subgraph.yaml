@@ -3,6 +3,7 @@ description: QuestChain
 schema:
   file: ./src/schema.graphql
 dataSources:
+  # prettier-ignore
   - kind: ethereum/contract
     name: QuestChainFactoryVersion00
     # prettier-ignore
@@ -31,6 +32,7 @@ dataSources:
           handler: handleNewQuestChain
 
       file: ./src/mappings/factory.ts
+  # prettier-ignore
 templates:
   - kind: ethereum/contract
     name: QuestChain
