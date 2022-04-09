@@ -95,10 +95,6 @@ contract QuestChain is
             status == Status.init || status == Status.fail,
             "QuestChain: in review or passed"
         );
-        if (_questId > 0) {
-            Status prevStatus = completions[msg.sender][_questId - 1];
-            require(prevStatus == Status.pass, "QuestChain: not passed");
-        }
 
         completions[msg.sender][_questId] = Status.review;
 
@@ -126,14 +122,5 @@ contract QuestChain is
         returns (Status status)
     {
         status = completions[_quester][_questId];
-    }
-
-    function getCompletion(address _quester)
-        external
-        view
-        override
-        returns (bool)
-    {
-        return completions[_quester][questCount - 1] == Status.pass;
     }
 }

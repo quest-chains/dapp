@@ -28,6 +28,4 @@ interface IQuestChain {
         external
         view
         returns (Status);
-
-    function getCompletion(address _quester) external view returns (bool);
 }
