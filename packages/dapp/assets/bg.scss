@@ -4,6 +4,7 @@ body > div:first-child,
 div#__next,
 div#__next > div {
   height: 100%;
+  font-family : Baumans-Regular;
 }
 
 @font-face {
@@ -11,11 +12,6 @@ div#__next > div {
   src: url('../public/fonts/Baumans-Regular.ttf') format('truetype');;
   font-style: normal;
 }
-
-button {
-  font-family : Baumans-Regular !important;
-}
-
 
 body {
   margin: 0;

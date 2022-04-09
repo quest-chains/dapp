@@ -1,5 +1,10 @@
-import { extendTheme } from '@chakra-ui/react';
+import { type ThemeConfig, extendTheme } from '@chakra-ui/react';
 import { css } from '@emotion/react';
+
+// 2. Add your color mode config
+const config: ThemeConfig = {
+  initialColorMode: 'dark',
+};
 
 export const theme = extendTheme({
   breakpoints: {
@@ -17,6 +22,7 @@ export const theme = extendTheme({
   colors: {
     main: '#2DF8C7',
   },
+  config,
 });
 
 export const globalStyles = css`

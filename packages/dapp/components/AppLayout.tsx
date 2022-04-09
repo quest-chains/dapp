@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unresolved */
 import {
   Box,
+  Heading,
   HStack,
-  Image,
   Link as ChakraLink,
   Stack,
   VStack,
@@ -10,7 +10,6 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import LogoImage from '@/assets/logo.png';
 import { ConnectWallet } from '@/components/ConnectWallet';
 import { useWallet } from '@/web3';
 
@@ -34,17 +33,11 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         <HStack w="100%" justify="space-between" pos="relative">
           <NextLink href="/" passHref>
             <ChakraLink display="block" _hover={{}}>
-              <HStack align="center" role="group" h={12}>
-                <Image
-                  src={LogoImage.src}
-                  h={16}
-                  alt="logo"
-                  _groupHover={{
-                    transition: 'transform 1.5s',
-                    transform: 'scale(1.25)',
-                  }}
-                />
-              </HStack>
+              {router.pathname !== '/' && (
+                <Heading color="main" fontSize={30} fontWeight="bold">
+                  DAOQuest
+                </Heading>
+              )}
             </ChakraLink>
           </NextLink>
           {router.pathname !== '/' && (
