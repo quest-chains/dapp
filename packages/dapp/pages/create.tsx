@@ -43,6 +43,8 @@ const Create: React.FC = () => {
       initialValues={initialValues}
       onSubmit={(values, actions) => {
         setTimeout(() => {
+          // if deleting/re adding quests, some values become empty. we need to filter out these quests when
+          // we decide to send the data! (const quests = values.quests.filter(quest => quest.name))
           alert(JSON.stringify(values, null, 2));
           actions.setSubmitting(false);
         }, 1000);
@@ -205,9 +207,9 @@ const Create: React.FC = () => {
                         </Flex>
                       </Flex>
 
-                      {props.values.quests.map(
+                      {props.values.quests.slice(0, -1).map(
                         (quest, index) =>
-                          quest.name && (
+                          quest?.name && (
                             <Flex
                               key={index}
                               mb={4}
