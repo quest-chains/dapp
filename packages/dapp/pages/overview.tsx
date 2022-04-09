@@ -14,10 +14,11 @@ const Overview: React.FC = () => {
           MY PROGRESS
         </Text>
         {progress.map(dao => (
-          <NextLink href={`/dao/${dao.name}`} passHref key={dao.name}>
+          <NextLink href={`/quest-chain/${dao.name}`} passHref key={dao.name}>
             <ChakraLink display="block" _hover={{}}>
               <Flex
                 mb={2}
+                flexGrow={1}
                 boxShadow="inset 0px 0px 0px 1px #AD90FF"
                 p={8}
                 borderRadius={20}

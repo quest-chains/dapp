@@ -61,7 +61,7 @@ const Home: React.FC = () => {
               fontSize={30}
               height={16}
             >
-              search For DAO
+              search for Quest Chain
             </Button>
           </NextLink>
           <NextLink href="/create" passHref>
