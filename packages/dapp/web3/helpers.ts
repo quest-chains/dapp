@@ -17,8 +17,10 @@ export const formatAddress = (
   } else return '';
 };
 
+// export const isSupportedNetwork = (chainId: string): boolean =>
+//   Object.keys(NETWORK_INFO).includes(chainId);
 export const isSupportedNetwork = (chainId: string): boolean =>
-  Object.keys(NETWORK_INFO).includes(chainId);
+  chainId === CHAIN_ID;
 
 export const getTxUrl = (
   txHash: string,

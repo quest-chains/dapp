@@ -11,7 +11,10 @@ import {
 import { WEB3_MODAL_OPTIONS } from 'web3/options';
 import Web3Modal from 'web3modal';
 
+import { CHAIN_ID } from '@/utils/constants';
+
 import { isSupportedNetwork } from './helpers';
+import { switchChainOnMetaMask } from './metamask';
 
 export type WalletContextType = {
   provider: providers.Web3Provider | null | undefined;
@@ -21,7 +24,7 @@ export type WalletContextType = {
   disconnect: () => void;
   isConnecting: boolean;
   isConnected: boolean;
-  isMetamask: boolean;
+  isMetaMask: boolean | undefined;
 };
 
 export const WalletContext = createContext<WalletContextType>({
@@ -32,18 +35,15 @@ export const WalletContext = createContext<WalletContextType>({
   disconnect: () => undefined,
   isConnecting: true,
   isConnected: false,
-  isMetamask: false,
+  isMetaMask: false,
 });
 
 type WalletStateType = {
   provider?: providers.Web3Provider | null;
   chainId?: string | null;
   address?: string | null;
+  isMetaMask?: boolean;
 };
-
-const isMetamaskProvider = (
-  provider: providers.Web3Provider | null | undefined,
-): boolean => provider?.connection?.url === 'metamask';
 
 const web3Modal =
   typeof window !== 'undefined' ? new Web3Modal(WEB3_MODAL_OPTIONS) : null;
@@ -51,18 +51,18 @@ const web3Modal =
 export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
-  const [{ provider, chainId, address }, setWalletState] =
-    useState<WalletStateType>({});
+  const [walletState, setWalletState] = useState<WalletStateType>({});
 
-  const isConnected: boolean = useMemo(
-    () => !!provider && !!address && !!chainId,
-    [provider, address, chainId],
-  );
+  const { provider, chainId, address, isMetaMask } = walletState;
 
   const toast = useToast();
 
   const [isConnecting, setConnecting] = useState<boolean>(true);
-  const isMetamask = useMemo(() => isMetamaskProvider(provider), [provider]);
+
+  const isConnected: boolean = useMemo(
+    () => !!provider && !!address && !!chainId && !isConnecting,
+    [provider, address, chainId, isConnecting],
+  );
 
   const disconnect = useCallback(async () => {
     web3Modal?.clearCachedProvider();
@@ -80,6 +80,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         provider: ethersProvider,
         chainId: chain,
         address: signerAddress.toLowerCase(),
+        isMetaMask: prov.isMetaMask,
       });
     },
     [],
@@ -91,23 +92,40 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       setConnecting(true);
 
       const modalProvider = await web3Modal.connect();
-      const chainId = modalProvider.chainId;
+      let chainId = modalProvider.chainId;
+      const isMetaMask = modalProvider.isMetaMask;
+
+      if (isMetaMask && !isSupportedNetwork(chainId)) {
+        const success = await switchChainOnMetaMask(CHAIN_ID);
+        if (success) {
+          chainId = CHAIN_ID;
+        }
+      }
+
       if (isSupportedNetwork(chainId)) {
         await setWalletProvider(modalProvider);
 
         modalProvider.on('accountsChanged', () => {
           setWalletProvider(modalProvider);
         });
-        modalProvider.on('chainChanged', (chainId: string) => {
+        modalProvider.on('chainChanged', async (chainId: string) => {
           if (isSupportedNetwork(chainId)) {
             setWalletProvider(modalProvider);
           } else {
-            toast({
-              status: 'error',
-              description:
-                'Network not supported, please switch to one of the supported networks',
-            });
-            disconnect();
+            let success = false;
+            if (isMetaMask) {
+              setConnecting(true);
+              success = await switchChainOnMetaMask(CHAIN_ID);
+              setConnecting(false);
+            }
+            if (!success) {
+              toast({
+                status: 'error',
+                description:
+                  'Network not supported, please switch to one of the supported networks',
+              });
+              disconnect();
+            }
           }
         });
       } else {
@@ -145,7 +163,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         isConnected,
         isConnecting,
         disconnect,
-        isMetamask,
+        isMetaMask,
       }}
     >
       {children}
