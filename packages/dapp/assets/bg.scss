@@ -6,6 +6,17 @@ div#__next > div {
   height: 100%;
 }
 
+@font-face {
+  font-family: 'Baumans-Regular';
+  src: url('../public/fonts/Baumans-Regular.ttf') format('truetype');;
+  font-style: normal;
+}
+
+button {
+  font-family : Baumans-Regular !important;
+}
+
+
 body {
   margin: 0;
   overflow: hidden;
