@@ -198,3 +198,42 @@ export const daos = [
     questChainName: 'Initiation Quests',
   },
 ];
+
+export const progress = [
+  {
+    name: 'MetaGame',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+  {
+    name: 'MetaCartel',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+  {
+    name: 'KlimaDAO',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+  {
+    name: 'OlympusDAO',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+  {
+    name: '1Hive',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+  {
+    name: 'Giveth',
+    questChainName: 'Initiation Quests',
+    completed: 1,
+    total: 10,
+  },
+];

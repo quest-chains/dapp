@@ -138,7 +138,7 @@ const Create: React.FC = () => {
               </Flex>
             </Flex>
 
-            {/* Right Column, Quest Creator */}
+            {/* Right Column, Quests Creator */}
             <Flex flexGrow={1} flexDirection="column">
               <Text mb={6} color="main" fontSize={20}>
                 QUESTS
