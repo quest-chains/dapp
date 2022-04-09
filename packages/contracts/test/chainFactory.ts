@@ -3,8 +3,7 @@ import { expect } from 'chai';
 import { ContractFactory } from 'ethers';
 import { ethers } from 'hardhat';
 
-import { QuestChain } from '../types/QuestChain';
-import { QuestChainFactory } from '../types/QuestChainFactory';
+import { QuestChain, QuestChainFactory } from '../types';
 import { awaitQuestChainAddress, deploy, getContractAt } from './utils/helpers';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
