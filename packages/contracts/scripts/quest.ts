@@ -3,6 +3,7 @@ import fs from 'fs';
 import { network } from 'hardhat';
 import Prompt from 'prompt-sync';
 
+import { awaitQuestChainAddress } from '../test/utils/helpers';
 import { QuestChainFactory, QuestChainFactory__factory } from '../types';
 import { DeploymentInfo, networkName, validateSetup } from './utils';
 
@@ -54,11 +55,12 @@ async function main() {
   const hash = await uploadMetadata(metadata, token);
   const details = `ipfs://${hash}`;
 
-  console.log({ hash, details });
+  const tx = await factory.create(deployer.address, details);
+  const receipt = await tx.wait();
 
-  // const tx = await factory.create(deployer.address, detailsString);
-
-  console.log(factory);
+  const address = await awaitQuestChainAddress(receipt);
+  console.log('Successfully deployed a new Quest Chain:', address);
+  console.log('Metadata:', JSON.stringify(metadata, undefined, 2));
 }
 
 main()

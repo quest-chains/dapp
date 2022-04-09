@@ -6,6 +6,7 @@ import { mkdtemp, rmdir, unlink, writeFile } from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import Ajv from 'ajv';
+import CID from 'cids';
 
 const ajv = new Ajv();
 const validate = ajv.compile(schema);
@@ -25,10 +26,7 @@ export type Metadata = {
 };
 
 const uploadToIPFSTheGraph = async (jsonString: string) => {
-  const node = await ipfsTheGraph.add(Buffer.from(jsonString), {
-    wrapWithDirectory: false,
-  });
-  console.log(node);
+  const node = await ipfsTheGraph.add(Buffer.from(jsonString));
   const { hash } = node[0];
   await ipfsTheGraph.pin.add(hash);
   return hash;
@@ -58,18 +56,18 @@ export const uploadMetadata = async (
     stream: () => readable,
   };
 
-  const [hash1, hash2] = await Promise.all([
+  const [_hashGraph, hashWeb3Storage] = await Promise.all([
     uploadToIPFSTheGraph(jsonString),
     web3Storage.put([tmpFile], { wrapWithDirectory: false }),
   ]);
 
-  console.log({ hash1, hash2 });
+  const cid = new CID(hashWeb3Storage);
+  const hash = cid.toBaseEncodedString('base64');
 
-  if (hash1 !== hash2)
-    throw new Error('Unidentical hashes from IPFS and web3.storage');
+  await ipfsTheGraph.pin.add(hash);
 
   await unlink(name);
   await rmdir(path.dirname(name));
 
-  return hash1;
+  return hash;
 };
