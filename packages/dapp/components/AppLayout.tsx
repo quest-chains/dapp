@@ -5,6 +5,7 @@ import {
   HStack,
   Link as ChakraLink,
   Stack,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
@@ -32,7 +33,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       >
         <HStack w="100%" justify="space-between" pos="relative">
           <NextLink href="/" passHref>
-            <ChakraLink display="block" _hover={{}}>
+            <ChakraLink display="block" _hover={{}} w="20%">
               {router.pathname !== '/' && (
                 <Heading color="main" fontSize={30} fontWeight="bold">
                   DAOQuest
@@ -41,26 +42,46 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             </ChakraLink>
           </NextLink>
           {router.pathname !== '/' && (
-            <>
+            <HStack gap={4}>
               <NextLink href="/search" passHref>
                 <ChakraLink display="block" _hover={{}}>
-                  Search For DAO
+                  <Text
+                    borderBottomWidth={router.pathname === '/search' ? 1 : 0}
+                    borderBottomColor="main"
+                    color={router.pathname === '/search' ? 'main' : 'inherit'}
+                  >
+                    SEARCH FOR DAO
+                  </Text>
                 </ChakraLink>
               </NextLink>
               <NextLink href="/create" passHref>
                 <ChakraLink display="block" _hover={{}}>
-                  Create Quest Chain
+                  <Text
+                    borderBottomWidth={router.pathname === '/create' ? 1 : 0}
+                    borderBottomColor="main"
+                    color={router.pathname === '/create' ? 'main' : 'inherit'}
+                  >
+                    CREATE QUEST CHAIN
+                  </Text>
                 </ChakraLink>
               </NextLink>
               <NextLink href="/overview" passHref>
                 <ChakraLink display="block" _hover={{}}>
-                  Quests overview
+                  <Text
+                    borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
+                    borderBottomColor="main"
+                    color={router.pathname === '/overview' ? 'main' : 'inherit'}
+                  >
+                    QUESTS OVERVIEW
+                  </Text>
                 </ChakraLink>
               </NextLink>
-            </>
+            </HStack>
           )}
 
-          {isConnected && <ConnectWallet isHeader />}
+          <Box w="20%" textAlign="right">
+            {isConnected && <ConnectWallet isHeader />}
+          </Box>
           {/* <NavToggle isOpen={isOpen} onClick={toggleOpen} /> */}
         </HStack>
       </VStack>

@@ -23,6 +23,13 @@ export const theme = extendTheme({
     main: '#2DF8C7',
   },
   config,
+  styles: {
+    global: (props: { colorMode: string }) => ({
+      'html, body': {
+        backgroundColor: props.colorMode === 'dark' ? '#0d1117' : 'white',
+      },
+    }),
+  },
 });
 
 export const globalStyles = css`
