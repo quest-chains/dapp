@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
+    "clean": "hardhat clean",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
@@ -11,7 +12,8 @@
     "quest": "hardhat run scripts/quest.ts",
     "lint": "eslint --ignore-path .gitignore \"./**/*.{ts,js}\"",
     "solhint": "solhint -f table \"contracts/{*,**/*}.sol\"",
-    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,js,json,md,sol}\""
+    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,js,json,md,sol}\"",
+    "build": "hardhat clean && hardhat compile"
   },
   "devDependencies": {
     "@dao-quest/utils": "1.0.0",

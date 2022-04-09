@@ -8,6 +8,7 @@ import { AppProps } from 'next/app';
 
 import { AppLayout } from '@/components/AppLayout';
 import { globalStyles, theme } from '@/utils/theme';
+import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
@@ -22,9 +23,11 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
         <span></span>
       </div> */}
       <Global styles={globalStyles} />
-      <AppLayout>
-        <Component {...pageProps} />
-      </AppLayout>
+      <WalletProvider>
+        <AppLayout>
+          <Component {...pageProps} />
+        </AppLayout>
+      </WalletProvider>
     </ChakraProvider>
   );
 };
