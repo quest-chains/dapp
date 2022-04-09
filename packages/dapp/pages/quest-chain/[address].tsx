@@ -9,23 +9,41 @@ import {
   FormLabel,
   HStack,
   Input,
+  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
+import { useRouter } from 'next/router';
 
-import { progress } from '@/utils/mockData';
+import {
+  getQuestChainAddresses,
+  getQuestChainInfo,
+} from '@/graphql/questChains';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-const QuestChain: React.FC<Props> = ({ dao }) => {
+const QuestChain: React.FC<Props> = ({ questChain }) => {
+  const { isFallback } = useRouter();
+  if (isFallback) {
+    return (
+      <VStack>
+        <Spinner color="main" />
+      </VStack>
+    );
+  }
+  if (!questChain) {
+    return (
+      <VStack>
+        <Text> Quest Chain not found! </Text>
+      </VStack>
+    );
+  }
   return (
     <VStack>
-      <Box>DAO name: {dao?.name}</Box>
-      <Box>Quest Chain Name: {dao?.questChainName}</Box>
-      <Box>Completed: {dao?.completed}</Box>
-      <Box>Total: {dao?.total}</Box>
+      <Box>Name: {questChain.name}</Box>
+      <Box>Description: {questChain.description}</Box>
 
       <Formik
         initialValues={{}}
@@ -109,33 +127,27 @@ const QuestChain: React.FC<Props> = ({ dao }) => {
   );
 };
 
-type QueryParams = { id: string };
+type QueryParams = { address: string };
 
 export async function getStaticPaths() {
-  // Call an external API endpoint to get posts
-
-  const ids = progress.map(dao => dao.name.toString());
-
-  // Get the paths we want to pre-render based on posts
-  const paths = ids.map(id => ({
-    params: { id },
+  const addresses = await getQuestChainAddresses(1000);
+  const paths = addresses.map(address => ({
+    params: { address },
   }));
 
-  // We'll pre-render only these paths at build time.
-  // { fallback: false } means other routes should 404.
-  return { paths, fallback: false };
+  return { paths, fallback: true };
 }
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
-  const id = context.params?.id;
+  const address = context.params?.address;
 
-  const dao = progress.find(dao => dao.name.toString() === id);
+  const questChain = address ? await getQuestChainInfo(address) : null;
 
   return {
     props: {
-      dao,
+      questChain,
     },
     revalidate: 1,
   };

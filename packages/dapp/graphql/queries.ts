@@ -22,6 +22,14 @@ gql`
 `;
 
 gql`
+  query QuestChainAddresses($limit: Int!) {
+    questChains(first: $limit) {
+      address: id
+    }
+  }
+`;
+
+gql`
   query QuestChainSearch($search: String, $first: Int) {
     questChains(
       first: $first

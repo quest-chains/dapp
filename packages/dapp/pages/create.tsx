@@ -5,21 +5,24 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
   Input,
   Text,
+  VStack,
+  Wrap,
 } from '@chakra-ui/react';
-import { Field, FieldArray, Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 
 interface MyFormValues {
-  daoName: string;
-  coreMemberAddresses: string[];
+  name: string;
+  description: string;
+  // coreMemberAddresses: string[];
 }
 
 const Create: React.FC = () => {
   const initialValues: MyFormValues = {
-    daoName: '',
-    coreMemberAddresses: [],
+    name: '',
+    description: '',
+    // coreMemberAddresses: [],
   };
 
   return (
@@ -36,7 +39,7 @@ const Create: React.FC = () => {
     >
       {props => (
         <Form>
-          {/* Left Column: DAO Name, Quest Chain title, Core Member Addresses */}
+          {/* Left Column: Quest Chain Name, Quest Chain Description, Core Member Addresses */}
           <Flex flexDirection="column">
             <Text mb={6} color="main" fontSize={20}>
               QUEST CHAIN INFO
@@ -47,41 +50,47 @@ const Create: React.FC = () => {
               p={8}
               borderRadius={30}
             >
-              <HStack mb={4}>
-                <Field name="daoName">
+              <VStack mb={4} align="flex-start">
+                <Wrap minW="20rem">
+                  <Field name="name">
+                    {({ field, form }: { field: any; form: any }) => (
+                      <FormControl isRequired>
+                        <FormLabel color="main" htmlFor="name">
+                          Quest Chain Name
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          id="name"
+                          placeholder="Quest Chain Name"
+                        />
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Wrap>
+                <Field name="description">
                   {({ field, form }: { field: any; form: any }) => (
                     <FormControl isRequired>
-                      <FormLabel color="main" htmlFor="daoName">
-                        DAO Name
-                      </FormLabel>
-                      <Input {...field} id="daoName" placeholder="DAO Name" />
-                      <FormErrorMessage>{form.errors.daoName}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
-                <Field name="questChainName">
-                  {({ field, form }: { field: any; form: any }) => (
-                    <FormControl isRequired>
-                      <FormLabel color="main" htmlFor="questChainName">
-                        Quest Chain Title
+                      <FormLabel color="main" htmlFor="description">
+                        Quest Chain Description
                       </FormLabel>
                       <Input
                         {...field}
-                        id="questChainName"
-                        placeholder="Quest Chain Title"
+                        id="description"
+                        placeholder="Quest Chain Description"
                       />
                       <FormErrorMessage>
-                        {form.errors.questChainName}
+                        {form.errors.description}
                       </FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>
-              </HStack>
-              <FieldArray
+              </VStack>
+              {/* <FieldArray
                 name="coreMemberAddresses"
                 render={arrayHelpers => (
                   <Box>
-                    <FormLabel color="main" htmlFor="daoName">
+                    <FormLabel color="main" htmlFor="name">
                       Core Member Addresses
                     </FormLabel>
                     {props.values.coreMemberAddresses.map((address, index) => (
@@ -110,7 +119,7 @@ const Create: React.FC = () => {
                     </Button>
                   </Box>
                 )}
-              />
+              /> */}
             </Flex>
             <Box>
               <Button

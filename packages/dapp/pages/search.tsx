@@ -67,7 +67,12 @@ const Search: React.FC = () => {
           !error &&
           results.length > 0 &&
           results.map(({ address, name, description }) => (
-            <NextLink href={`/quest-chain/${address}`} passHref key={address}>
+            <NextLink
+              href={`/quest-chain/${address}`}
+              as={`/quest-chain/[address]`}
+              passHref
+              key={address}
+            >
               <ChakraLink display="block" _hover={{}} w="full">
                 <HStack
                   cursor="pointer"

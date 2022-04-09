@@ -30,11 +30,11 @@ type QuestChain @entity {
   search: String
   imageUrl: String
   externalUrl: String
-  edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
-  status: [QuestStatus!]! @derivedFrom(field: "questChain")
   questsPassed: [QuestStatus!]!
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!
+  edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
+  status: [QuestStatus!]! @derivedFrom(field: "questChain")
 }
 
 type QuestEdit @entity {
@@ -72,14 +72,14 @@ type Quest @entity {
 
 type User @entity {
   id: ID!
-  adminOf: [QuestChain!]! @derivedFrom(field: "admins")
-  editorOf: [QuestChain!]! @derivedFrom(field: "editors")
-  reviewerOf: [QuestChain!]! @derivedFrom(field: "reviewers")
-  status: [QuestStatus!]! @derivedFrom(field: "user")
   questsPassed: [QuestStatus!]!
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!
   questEdits: [QuestEdit!]! @derivedFrom(field: "editor")
+  adminOf: [QuestChain!]! @derivedFrom(field: "admins")
+  editorOf: [QuestChain!]! @derivedFrom(field: "editors")
+  reviewerOf: [QuestChain!]! @derivedFrom(field: "reviewers")
+  status: [QuestStatus!]! @derivedFrom(field: "user")
 }
 
 enum Status {
