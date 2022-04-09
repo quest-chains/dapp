@@ -12,6 +12,8 @@ interface IQuestChain {
 
     function init(address _admin, string calldata _details) external;
 
+    function edit(string calldata _details) external;
+
     function createQuest(string calldata _details) external;
 
     function editQuest(uint256 _questId, string calldata _details) external;
@@ -28,6 +30,4 @@ interface IQuestChain {
         external
         view
         returns (Status);
-
-    function getCompletion(address _quester) external view returns (bool);
 }

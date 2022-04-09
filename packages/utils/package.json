@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "ajv": "^8.11.0",
+    "cids": "^1.1.9",
     "ipfs-http-client": "34.0.0",
     "web3.storage": "^4.0.0"
   }

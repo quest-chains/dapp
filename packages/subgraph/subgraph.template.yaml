@@ -4,15 +4,16 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   # prettier-ignore
+  {{#factories}}
   - kind: ethereum/contract
-    name: QuestChainFactoryVersion00
+    name: QuestChainFactory{{factoryName}}
     # prettier-ignore
-    network: mumbai
+    network: {{network}}
     source:
-      address: '0x5977840c83B4f2Ba952D8001a647516c979915E4'
+      address: '{{address}}'
       abi: QuestChainFactory
       # prettier-ignore
-      startBlock: 25862494
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -33,11 +34,12 @@ dataSources:
 
       file: ./src/mappings/factory.ts
   # prettier-ignore
+  {{/factories}}
 templates:
   - kind: ethereum/contract
     name: QuestChain
     # prettier-ignore
-    network: mumbai
+    network: {{network}}
     source:
       abi: QuestChain
     mapping:

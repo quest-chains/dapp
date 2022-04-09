@@ -24,9 +24,10 @@ contract QuestChain is
 
     mapping(address => mapping(uint256 => Status)) public completions;
 
-    event QuestChainCreated(address indexed _admin, string details);
+    event QuestChainCreated(address indexed creator, string details);
+    event QuestChainEdited(address indexed editor, string details);
     event QuestCreated(
-        address indexed editor,
+        address indexed creator,
         uint256 indexed questId,
         string details
     );
@@ -66,6 +67,14 @@ contract QuestChain is
         emit QuestChainCreated(_admin, _details);
     }
 
+    function edit(string calldata _details)
+        external
+        override
+        onlyRole(ADMIN_ROLE)
+    {
+        emit QuestChainEdited(msg.sender, _details);
+    }
+
     function createQuest(string calldata _details)
         external
         override
@@ -95,10 +104,6 @@ contract QuestChain is
             status == Status.init || status == Status.fail,
             "QuestChain: in review or passed"
         );
-        if (_questId > 0) {
-            Status prevStatus = completions[msg.sender][_questId - 1];
-            require(prevStatus == Status.pass, "QuestChain: not passed");
-        }
 
         completions[msg.sender][_questId] = Status.review;
 
@@ -126,14 +131,5 @@ contract QuestChain is
         returns (Status status)
     {
         status = completions[_quester][_questId];
-    }
-
-    function getCompletion(address _quester)
-        external
-        view
-        override
-        returns (bool)
-    {
-        return completions[_quester][questCount - 1] == Status.pass;
     }
 }

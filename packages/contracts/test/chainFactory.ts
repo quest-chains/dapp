@@ -21,6 +21,7 @@ describe('QuestChainFactory', () => {
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
+    admin = signers[0].address;
 
     questChain = await deploy<QuestChain>('QuestChain', {});
 
@@ -44,15 +45,14 @@ describe('QuestChainFactory', () => {
   });
 
   it('Should revert init for implementation', async () => {
-    const tx = questChain.init(signers[0].address, DETAILS_STRING);
+    const tx = questChain.init(admin, DETAILS_STRING);
     await expect(tx).to.revertedWith(
       'Initializable: contract is already initialized',
     );
   });
 
   it('Should deploy a QuestChain', async () => {
-    admin = signers[0].address;
-    const tx = await chainFactory.create(admin, DETAILS_STRING);
+    const tx = await chainFactory.create(DETAILS_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
       .to.emit(chainFactory, 'NewQuestChain')
@@ -74,7 +74,6 @@ describe('QuestChainFactory', () => {
     );
 
     const tx = await chainFactory.createDeterministic(
-      admin,
       DETAILS_STRING,
       EMPTY_BYTES32,
     );
@@ -90,10 +89,10 @@ describe('QuestChainFactory', () => {
 
   it('Should update questChainCount', async () => {
     expect(await chainFactory.questChainCount()).to.equal(0);
-    let tx = await chainFactory.create(admin, DETAILS_STRING);
+    let tx = await chainFactory.create(DETAILS_STRING);
     const chain0 = await awaitQuestChainAddress(await tx.wait());
     expect(await chainFactory.questChainCount()).to.equal(1);
-    tx = await chainFactory.create(admin, DETAILS_STRING);
+    tx = await chainFactory.create(DETAILS_STRING);
     const chain1 = await awaitQuestChainAddress(await tx.wait());
     expect(await chainFactory.questChainCount()).to.equal(2);
 

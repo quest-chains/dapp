@@ -39,7 +39,7 @@ describe('QuestChain', () => {
 
     await chainFactory.deployed();
 
-    const tx = await chainFactory.create(signers[0].address, DETAILS_STRING);
+    const tx = await chainFactory.create(DETAILS_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
       .to.emit(chainFactory, 'NewQuestChain')

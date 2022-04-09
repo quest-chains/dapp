@@ -21,10 +21,9 @@ contract QuestChainFactory is IQuestChainFactory {
 
     function _newQuestChain(
         address _questChainAddress,
-        address _admin,
         string calldata _details
     ) internal {
-        IQuestChain(_questChainAddress).init(_admin, _details);
+        IQuestChain(_questChainAddress).init(msg.sender, _details);
 
         _questChains[questChainCount] = _questChainAddress;
         emit NewQuestChain(questChainCount, _questChainAddress);
@@ -32,14 +31,14 @@ contract QuestChainFactory is IQuestChainFactory {
         questChainCount++;
     }
 
-    function create(address _admin, string calldata _details)
+    function create(string calldata _details)
         external
         override
         returns (address)
     {
         address questChainAddress = Clones.clone(implementation);
 
-        _newQuestChain(questChainAddress, _admin, _details);
+        _newQuestChain(questChainAddress, _details);
 
         return questChainAddress;
     }
@@ -54,7 +53,6 @@ contract QuestChainFactory is IQuestChainFactory {
     }
 
     function createDeterministic(
-        address _admin,
         string calldata _details,
         bytes32 _salt
     ) external override returns (address) {
@@ -63,7 +61,7 @@ contract QuestChainFactory is IQuestChainFactory {
             _salt
         );
 
-        _newQuestChain(questChainAddress, _admin, _details);
+        _newQuestChain(questChainAddress, _details);
 
         return questChainAddress;
     }

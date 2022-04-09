@@ -5,7 +5,7 @@ export const networkName: Record<number, string> = {
   1: 'Ethereum Mainnet',
   4: 'Rinkeby Testnet',
   137: 'Polygon Mainnet',
-  80001: 'Mumbai Testnet',
+  80001: 'Polygon Mumbai Testnet',
   31337: 'Hardhat Chain',
 };
 

@@ -4,16 +4,22 @@
   "license": "MIT",
   "dependencies": {
     "@graphprotocol/graph-cli": "0.29.0",
-    "@graphprotocol/graph-ts": "0.26.0"
+    "@graphprotocol/graph-ts": "0.26.0",
+    "mustache": "^4.2.0"
   },
   "scripts": {
     "auth": "graph auth https://api.thegraph.com/ $GRAPH_ACCESS_TOKEN",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "deploy": "graph deploy paulrberg/create-eth-app --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+    "create-local": "graph create --node http://localhost:8020/ test/quest-chains",
+    "remove-local": "graph remove --node http://localhost:8020/ test/quest-chains",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 test/quest-chains",
+    "prepare-mumbai": "mustache src/config/mumbai.json subgraph.template.yaml > subgraph.yaml",
+    "deploy-only-mumbai": "graph deploy dan13ram/quest-chains-mumbai --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "deploy-mumbai": "yarn prepare-mumbai && yarn codegen && yarn build && yarn deploy-only-mumbai"
   },
   "lint-staged": {
-    "*.{json,yml,yaml,md,ts,tsx,js,jsx}": [
+    "*.{json,ts}": [
       "prettier --write"
     ]
   }
