@@ -28,7 +28,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         alignItems="center"
         borderBottomRadius="md"
         w="100%"
-        maxW="8xl"
         mx="auto"
       >
         <HStack w="100%" justify="space-between" pos="relative">
@@ -88,7 +87,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       <Box
         w="100%"
         h="100%"
-        p={{ base: 6, md: 8, lg: 12 }}
+        py={{ base: 6, md: 8, lg: 12 }}
+        px={8}
         maxW="8xl"
         mx="auto"
         overflow="scroll"
