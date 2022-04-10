@@ -262,7 +262,7 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
 
       questsInReview = questChain.questsInReview;
       questsInReview.push(questStatus.id);
-      user.questsInReview = questsInReview;
+      questChain.questsInReview = questsInReview;
 
       questStatus.status = 'review';
       let details = event.params.proof;

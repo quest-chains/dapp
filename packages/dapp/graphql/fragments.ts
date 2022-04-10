@@ -5,13 +5,13 @@ export const QuestChainInfoFragment = gql`
     address: id
     name
     description
-    admins {
-      address: id
-    }
     quests {
       questId
       name
       description
+    }
+    admins {
+      address: id
     }
     editors {
       address: id
@@ -27,14 +27,7 @@ export const QuestStatusInfoFragment = gql`
     id
     status
     questChain {
-      address: id
-      name
-      description
-      quests {
-        questId
-        name
-        description
-      }
+      ...QuestChainInfo
     }
     quest {
       questId
@@ -44,5 +37,8 @@ export const QuestStatusInfoFragment = gql`
     user {
       id
     }
+    description
+    externalUrl
   }
+  ${QuestChainInfoFragment}
 `;

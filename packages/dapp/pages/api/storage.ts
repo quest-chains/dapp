@@ -37,7 +37,7 @@ export const handler: (
       }
 
       const tmpFiles = files.map(({ field, name }) => ({
-        name: `${field}/${path.basename(name)}`,
+        name: field,
         stream: () =>
           fs.createReadStream(name) as unknown as ReadableStream<string>,
       }));
