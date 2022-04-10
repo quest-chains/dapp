@@ -23,6 +23,7 @@ export const theme = extendTheme({
     main: '#2DF8C7',
     pending: '#EFFF8F',
     rejected: '#FD86FF',
+    neutral: '#BCBCBC',
   },
   config: {
     initialColorMode: 'dark',

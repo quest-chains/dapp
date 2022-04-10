@@ -1,7 +1,6 @@
 import {
-  Box,
-  HStack,
   Link as ChakraLink,
+  SimpleGrid,
   Spinner,
   Text,
   VStack,
@@ -20,17 +19,22 @@ export const QuestsToReview = () => {
   const chainsToReview =
     data?.questChains.filter(c => c.questsInReview.length > 0) ?? [];
 
-  if (chainsToReview.length === 0) return null;
-
   return (
     <VStack spacing={4} align="stretch">
-      <Text mb={2} mx={8} color="main" fontSize={20}>
+      <Text w="100%" textAlign="center" mb={2} color="main" fontSize={20}>
         SUBMISSIONS TO REVIEW
       </Text>
       {fetching ? (
-        <Spinner color="main" mx={10} />
+        <VStack w="100%">
+          <Spinner color="main" />
+        </VStack>
       ) : (
         <>
+          {chainsToReview.length === 0 && (
+            <VStack w="100%">
+              <Text color="white">No submissions found</Text>
+            </VStack>
+          )}
           {chainsToReview.map(chain => (
             <NextLink
               as={`/review/${chain.address}`}
@@ -51,11 +55,34 @@ export const QuestsToReview = () => {
                   <Text mb={4} fontSize="lg" fontWeight="bold">
                     {chain.name}
                   </Text>
-                  <HStack>
-                    <Box>Pending: {chain.questsInReview.length}</Box>
-                    <Box>Accepted: {chain.questsPassed.length}</Box>
-                    <Box>Rejected: {chain.questsFailed.length}</Box>
-                  </HStack>
+                  <SimpleGrid columns={3} w="100%">
+                    <VStack color="neutral">
+                      <Text textAlign="center">Submitted</Text>
+                    </VStack>
+                    <VStack color="main">
+                      <Text textAlign="center">Accepted</Text>
+                    </VStack>
+                    <VStack color="rejected">
+                      <Text textAlign="center">Rejected</Text>
+                    </VStack>
+                    <VStack color="neutral">
+                      <Text textAlign="center">
+                        {chain.questsInReview.length +
+                          chain.questsPassed.length +
+                          chain.questsFailed.length}
+                      </Text>
+                    </VStack>
+                    <VStack color="main">
+                      <Text textAlign="center">
+                        {chain.questsPassed.length}
+                      </Text>
+                    </VStack>
+                    <VStack color="rejected">
+                      <Text textAlign="center">
+                        {chain.questsFailed.length}
+                      </Text>
+                    </VStack>
+                  </SimpleGrid>
                 </VStack>
               </ChakraLink>
             </NextLink>

@@ -98,12 +98,12 @@ const Search: React.FC = () => {
                   letterSpacing={4}
                 >
                   <Box>
-                    <Text mb={4} fontSize="lg" fontWeight="bold">
+                    <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
                       {name}
                     </Text>
                     <Text>{description}</Text>
                   </Box>
-                  <Text>1/20</Text>
+                  {/* <Text>1/20</Text> */}
                 </HStack>
               </ChakraLink>
             </NextLink>
