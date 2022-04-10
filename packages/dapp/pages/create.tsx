@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { LinkIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -21,6 +22,7 @@ import {
   FormikHelpers,
   FormikState,
 } from 'formik';
+import Head from 'next/head';
 import NextLink from 'next/link';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -113,6 +115,10 @@ const Create: React.FC = () => {
 
   return (
     <VStack w="100%" align="stretch">
+      <Head>
+        <title>DAOQuest</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
         {({ isSubmitting }: FormikState<FormValues>) => (
           <Form>

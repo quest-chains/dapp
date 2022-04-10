@@ -1,5 +1,7 @@
+/* eslint-disable import/no-unresolved */
 import { Flex, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
@@ -45,6 +47,10 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   return (
     <VStack w="100%" align="flex-start" color="main">
+      <Head>
+        <title>{questChain.name}</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Text fontSize="xl">{questChain.name}</Text>
       <Text>{questChain.description}</Text>
       <SimpleGrid columns={isUser ? 1 : 2} spacing={8} pt={8} w="100%">

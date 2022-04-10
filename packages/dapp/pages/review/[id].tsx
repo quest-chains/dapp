@@ -2,6 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import { Box, Button, Flex, VStack } from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
+import Head from 'next/head';
 
 import { reviews } from '@/utils/mockData';
 
@@ -17,6 +18,10 @@ const onReject = ({ id }: { id: number }) => {
 const Review: React.FC<Props> = ({ review }) => {
   return (
     <VStack>
+      <Head>
+        <title>Review</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Box>Address: {review?.address}</Box>
       <VStack>
         {review?.submissions.map(({ id, status }) => (

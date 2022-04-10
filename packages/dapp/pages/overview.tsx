@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { Box, Flex, HStack, Link as ChakraLink, Text } from '@chakra-ui/react';
+import Head from 'next/head';
 import NextLink from 'next/link';
 
 import { progress, reviews } from '@/utils/mockData';
@@ -8,6 +9,10 @@ import { status } from '@/utils/status';
 const Overview: React.FC = () => {
   return (
     <Flex gap={20}>
+      <Head>
+        <title>Quests Overview</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       {/* left */}
       <Flex flexGrow={1} flexDirection="column">
         <Text mb={6} color="main" fontSize={20}>

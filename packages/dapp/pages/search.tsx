@@ -12,6 +12,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import Head from 'next/head';
 import NextLink from 'next/link';
 import { useState } from 'react';
 
@@ -35,6 +36,10 @@ const Search: React.FC = () => {
 
   return (
     <VStack px={40} alignItems="flex-start" gap={4}>
+      <Head>
+        <title>Search</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Text color="main" fontSize={20}>
         Search for Quest Chain
       </Text>

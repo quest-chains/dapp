@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { Button, Flex, Heading, VStack } from '@chakra-ui/react';
+import Head from 'next/head';
 import NextLink from 'next/link';
 import { useState } from 'react';
 
@@ -21,7 +22,10 @@ const Home: React.FC = () => {
       <Heading color="main" fontSize={87} pb={10}>
         DAOQuest
       </Heading>
-
+      <Head>
+        <title>DAOQuest</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Flex>
         {!isConnected && <ConnectWallet />}
 
