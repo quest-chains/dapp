@@ -27,6 +27,8 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
+import { SubmitButton } from './SubmitButton';
+
 interface FormValues {
   name: string;
   description: string;
@@ -65,7 +67,7 @@ export const AddQuestBlock: React.FC<{
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(
-          'Waiting for Confirmation - Confirm this transaction in your Wallet',
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
         );
         const tx = await contract.createQuest(details);
         toast.dismiss(tid);
@@ -98,8 +100,13 @@ export const AddQuestBlock: React.FC<{
           <Form>
             <Flex w="full" gap={20} alignItems="normal">
               <Flex flexGrow={1} flexDirection="column">
-                <Text mb={6} color="main" fontSize={20}>
-                  Add a quest to the quest chain
+                <Text
+                  mb={6}
+                  color="main"
+                  fontSize={20}
+                  textTransform="uppercase"
+                >
+                  Add Quest
                 </Text>
                 <Flex
                   flexDir="column"
@@ -143,21 +150,14 @@ export const AddQuestBlock: React.FC<{
                       )}
                     </Field>
                   </VStack>
+                  <Flex w="100%" justify="flex-end">
+                    <SubmitButton mt={4} isLoading={isSubmitting} type="submit">
+                      Add
+                    </SubmitButton>
+                  </Flex>
                 </Flex>
               </Flex>
-
-              {/* Right Column, Quests Creator */}
             </Flex>
-
-            <Button
-              mt={4}
-              colorScheme="teal"
-              isLoading={isSubmitting}
-              type="submit"
-              float="right"
-            >
-              Add
-            </Button>
           </Form>
         )}
       </Formik>

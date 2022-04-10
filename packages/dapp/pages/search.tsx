@@ -28,17 +28,16 @@ const Search: React.FC = () => {
   const [{ fetching, data, error }] = useQuestChainSearchQuery({
     variables: { search: value.toLowerCase() },
     requestPolicy: 'network-only',
-    pause: value.length < 3,
   });
 
   const results: QuestChainInfoFragment[] = data?.questChains ?? [];
 
   return (
     <VStack px={40} alignItems="flex-start" gap={4}>
-      <Text color="main" fontSize={20}>
+      <Text color="main" fontSize={20} mb={2} textTransform="uppercase">
         Search for Quest Chain
       </Text>
-      <InputGroup maxW="2xl">
+      <InputGroup maxW="2xl" size="lg">
         <InputLeftElement pointerEvents="none">
           {fetching ? (
             <Spinner size="sm" color="main" />
@@ -47,17 +46,21 @@ const Search: React.FC = () => {
           )}
         </InputLeftElement>
         <Input
-          placeholder="search for Quest Chain"
+          backdropFilter="blur(40px)"
+          border="none"
+          borderRadius="full"
+          boxShadow="inset 0px 0px 0px 1px #AD90FF"
+          placeholder="Search by name or description"
           onChange={e => delayedSetValue(e.target.value)}
           mb={6}
         />
       </InputGroup>
 
-      {!fetching && !!value && (
-        <Text color="main" fontSize={20}>
+      {!fetching && (
+        <Text color="main" fontSize={20} textTransform="uppercase">
           {error
             ? 'Error: Something went wrong!'
-            : `${results.length} results found`}
+            : `${results.length} Quest Chains found`}
         </Text>
       )}
       <VStack w="full" gap={4}>

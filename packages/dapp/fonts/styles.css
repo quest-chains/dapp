@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'Nineties Display';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./NinetiesDisplay.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Baumans Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Baumans-Regular.ttf') format('truetype');
+}

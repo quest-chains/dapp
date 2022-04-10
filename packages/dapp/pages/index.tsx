@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 import { useState } from 'react';
 
 import { ConnectWallet } from '@/components/ConnectWallet';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { useWallet } from '@/web3';
 
 const Home: React.FC = () => {
@@ -26,77 +27,22 @@ const Home: React.FC = () => {
         {!isConnected && <ConnectWallet />}
 
         {!isEntered && isConnected && (
-          <Button
-            ml={6}
-            px={20}
-            background="rgba(255, 255, 255, 0.05)"
-            fontWeight="400"
-            backdropFilter="blur(40px)"
-            borderRadius="full"
-            boxShadow="inset 0px 0px 0px 1px #AD90FF"
-            onClick={() => setIsEntered(true)}
-            color="main"
-            letterSpacing={4}
-            fontSize={30}
-            height={16}
-          >
+          <PrimaryButton onClick={() => setIsEntered(true)}>
             enter
-          </Button>
+          </PrimaryButton>
         )}
       </Flex>
 
       {isEntered && (
         <VStack spacing={6}>
           <NextLink href="/search" passHref>
-            <Button
-              px={20}
-              background="rgba(255, 255, 255, 0.05)"
-              fontWeight="400"
-              backdropFilter="blur(40px)"
-              borderRadius="full"
-              boxShadow="inset 0px 0px 0px 1px #AD90FF"
-              onClick={() => setIsEntered(true)}
-              color="main"
-              letterSpacing={4}
-              fontSize={30}
-              height={16}
-            >
-              search for Quest Chain
-            </Button>
+            <PrimaryButton>search for Quest Chain</PrimaryButton>
           </NextLink>
           <NextLink href="/create" passHref>
-            <Button
-              px={20}
-              background="rgba(255, 255, 255, 0.05)"
-              fontWeight="400"
-              backdropFilter="blur(40px)"
-              borderRadius="full"
-              boxShadow="inset 0px 0px 0px 1px #AD90FF"
-              onClick={() => setIsEntered(true)}
-              color="main"
-              letterSpacing={4}
-              fontSize={30}
-              height={16}
-            >
-              create Quest Chain
-            </Button>
+            <PrimaryButton>create Quest Chain</PrimaryButton>
           </NextLink>
           <NextLink href="/overview" passHref>
-            <Button
-              px={20}
-              background="rgba(255, 255, 255, 0.05)"
-              fontWeight="400"
-              backdropFilter="blur(40px)"
-              borderRadius="full"
-              boxShadow="inset 0px 0px 0px 1px #AD90FF"
-              onClick={() => setIsEntered(true)}
-              color="main"
-              letterSpacing={4}
-              fontSize={30}
-              height={16}
-            >
-              quests overview
-            </Button>
+            <PrimaryButton>quests overview</PrimaryButton>
           </NextLink>
         </VStack>
       )}
