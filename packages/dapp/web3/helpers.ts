@@ -29,3 +29,11 @@ export const getTxUrl = (
   const { explorer } = NETWORK_INFO[chainId];
   return `${explorer}/tx/${txHash}`;
 };
+
+export const getAddressUrl = (
+  address: string,
+  chainId: string = CHAIN_ID,
+): string => {
+  const { explorer } = NETWORK_INFO[chainId];
+  return `${explorer}/address/${address}`;
+};

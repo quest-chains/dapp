@@ -63,7 +63,7 @@ const Search: React.FC = () => {
       </InputGroup>
 
       {!fetching && (
-        <Text color="main" fontSize={20} textTransform="uppercase">
+        <Text fontSize={20} textTransform="uppercase" color="white">
           {error
             ? 'Error: Something went wrong!'
             : `${results.length} Quest Chains found`}

@@ -77,7 +77,7 @@ gql`
 `;
 
 gql`
-  query StatusForChain($address: String!, $reviewer: String!, $first: Int) {
+  query StatusForChain($address: String!, $first: Int) {
     questStatuses(first: $first, where: { questChain: $address }) {
       ...QuestStatusInfo
     }
