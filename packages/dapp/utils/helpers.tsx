@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { HStack, Link, Text } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 
-import { getTxUrl } from '@/web3';
+import { getExplorerLabel, getTxUrl } from '@/web3';
 
 export const handleError = (error: unknown) => {
   // eslint-disable-next-line no-console
@@ -21,7 +21,7 @@ export const handleTxLoading = (txHash: string): string => {
         <Text>
           Transaction submitted. You can{' '}
           <Text as="span" textDecor="underline">
-            view the transaction on Etherscan
+            view the transaction on {getExplorerLabel()}
           </Text>
           .
         </Text>

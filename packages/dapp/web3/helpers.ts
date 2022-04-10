@@ -37,3 +37,8 @@ export const getAddressUrl = (
   const { explorer } = NETWORK_INFO[chainId];
   return `${explorer}/address/${address}`;
 };
+
+export const getExplorerLabel = (chainId: string = CHAIN_ID): string => {
+  const { explorerLabel } = NETWORK_INFO[chainId];
+  return explorerLabel;
+};
