@@ -123,12 +123,22 @@ export const CreateFlow = () => {
       }
       const amountInWei = ethers.BigNumber.from(amount);
       const monthlyAmount = ethers.utils.formatEther(amountInWei.toString());
-      const calculatedFlowRate = monthlyAmount * 3600 * 24 * 30;
+      const calculatedFlowRate = Number(monthlyAmount) * 3600 * 24 * 30;
       return calculatedFlowRate;
     }
   }
 
-  function CreateButton({ isLoading, children, ...props }) {
+  function CreateButton({
+    isLoading,
+    children,
+    onClick,
+    ...props
+  }: {
+    isLoading: boolean;
+    children: any;
+    props?: any;
+    onClick: () => void;
+  }) {
     return (
       <Button variant="success" className="button" {...props}>
         {isButtonLoading ? <Spinner animation="border" /> : children}
