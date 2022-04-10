@@ -1,11 +1,20 @@
 /* eslint-disable import/no-unresolved */
 import {
+  Button,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { Signer } from 'ethers';
@@ -38,6 +47,7 @@ export const AddQuestBlock: React.FC<{
   questChain: QuestChainInfoFragment;
   refresh: () => void;
 }> = ({ questChain, refresh }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { address, provider } = useWallet();
   const isEditor: boolean = questChain.editors.some(
     ({ address: a }) => a === address?.toLowerCase(),
@@ -57,11 +67,20 @@ export const AddQuestBlock: React.FC<{
       { name, description }: FormValues,
       { setSubmitting }: FormikHelpers<FormValues>,
     ) => {
+      if (questChain.quests.length > 4) {
+        onOpen();
+        return;
+      }
+
       const metadata: Metadata = {
         name,
         description,
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+
+      // if the user is trying to create more than 5 quests
+      // and if the user has not purchased the subscription
+
       try {
         const hash = await uploadMetadataViaAPI(metadata);
         const details = `ipfs://${hash}`;
@@ -88,6 +107,7 @@ export const AddQuestBlock: React.FC<{
 
       setSubmitting(false);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [contract, refresh],
   );
 
@@ -163,6 +183,25 @@ export const AddQuestBlock: React.FC<{
           </Form>
         )}
       </Formik>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Payment plan</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormLabel color="main" htmlFor="proofDescription">
+              Description
+            </FormLabel>
+          </ModalBody>
+
+          <ModalFooter alignItems="baseline">
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };

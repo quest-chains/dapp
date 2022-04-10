@@ -20,7 +20,7 @@ const Home: React.FC = () => {
       alignItems="center"
       flexDirection="column"
     >
-      <Heading color="main" fontSize={87} pb={10}>
+      <Heading color="main" fontSize={87} pb={10} fontWeight="normal">
         DAOQuest
       </Heading>
       <Head>

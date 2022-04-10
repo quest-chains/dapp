@@ -97,7 +97,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       <Text fontWeight="lg">{questChain.description}</Text>
       <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
         <VStack spacing={6}>
-          <Text w="100%" color="main" fontSize={20} textTransform="uppercase">
+          <Text w="100%" color="white" fontSize={20} textTransform="uppercase">
             {questChain.quests.length} Quests found
           </Text>
           {questChain.quests.map(quest => (

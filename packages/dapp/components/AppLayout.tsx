@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import {
   Box,
   Flex,
@@ -36,7 +37,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             <NextLink href="/" passHref>
               <ChakraLink display="block" _hover={{}} w="20%">
                 {router.pathname !== '/' && (
-                  <Heading color="main" fontSize={30} fontWeight="bold">
+                  <Heading color="main" fontSize={30} fontWeight="normal">
                     DAOQuest
                   </Heading>
                 )}
@@ -109,7 +110,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             alignItems="center"
             flexDirection="column"
           >
-            <Heading color="main" fontSize={87} pb={10}>
+            <Heading color="main" fontSize={87} pb={10} fontWeight="normal">
               DAOQuest
             </Heading>
             <ConnectWallet />
