@@ -23,7 +23,14 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   const router = useRouter();
 
   return (
-    <Stack align="center" p="0" m="0" spacing="0" fontFamily="body">
+    <Stack
+      align="center"
+      p="0"
+      m="0"
+      spacing="0"
+      fontFamily="body"
+      minH="100vh"
+    >
       <VStack
         p={{ base: 6, lg: 8 }}
         alignItems="center"
@@ -92,20 +99,22 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           </HStack>
         )}
       </VStack>
-      <Box
+      <Flex
+        direction="column"
         w="100%"
-        py={{ base: 6, md: 8, lg: 12 }}
+        pt={{ base: 6, md: 8, lg: 12 }}
         px={8}
-        pb={16}
+        pb={20}
         maxW="8xl"
         mx="auto"
+        flex={1}
         overflowX="hidden"
       >
         {isConnected ? (
           children
         ) : (
           <Flex
-            h="full"
+            flex={1}
             justifyContent="center"
             alignItems="center"
             flexDirection="column"
@@ -116,7 +125,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             <ConnectWallet />
           </Flex>
         )}
-      </Box>
+      </Flex>
     </Stack>
   );
 };

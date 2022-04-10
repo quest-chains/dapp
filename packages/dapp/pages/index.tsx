@@ -15,7 +15,7 @@ const Home: React.FC = () => {
 
   return (
     <Flex
-      h="full"
+      flex={1}
       justifyContent="center"
       alignItems="center"
       flexDirection="column"
