@@ -122,6 +122,7 @@ export const AddQuestBlock: React.FC<{
                             Quest Name
                           </FormLabel>
                           <Input
+                            color="white"
                             {...field}
                             id="name"
                             placeholder="Quest Name"
@@ -139,6 +140,7 @@ export const AddQuestBlock: React.FC<{
                             Quest Description
                           </FormLabel>
                           <Input
+                            color="white"
                             {...field}
                             id="description"
                             placeholder="Quest Description"

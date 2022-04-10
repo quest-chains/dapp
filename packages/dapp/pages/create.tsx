@@ -141,6 +141,7 @@ const Create: React.FC = () => {
                             Quest Chain Name
                           </FormLabel>
                           <Input
+                            color="white"
                             {...field}
                             id="name"
                             placeholder="Quest Chain Name"
@@ -159,6 +160,7 @@ const Create: React.FC = () => {
                           Quest Chain Description
                         </FormLabel>
                         <Input
+                          color="white"
                           {...field}
                           id="description"
                           placeholder="Quest Chain Description"
@@ -183,6 +185,7 @@ const Create: React.FC = () => {
                           {({ field }: { field: any }) => (
                             <FormControl isRequired>
                               <Input
+                              color="white"
                                 {...field}
                                 id={`coreMemberAddresses.${index}`}
                                 placeholder="Core Member Address"

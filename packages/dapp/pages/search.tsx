@@ -52,6 +52,7 @@ const Search: React.FC = () => {
         </InputLeftElement>
         <Input
           backdropFilter="blur(40px)"
+          color="white"
           border="none"
           borderRadius="full"
           boxShadow="inset 0px 0px 0px 1px #AD90FF"

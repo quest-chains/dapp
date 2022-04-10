@@ -151,7 +151,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       p={4}
                       mb={4}
                     >
-                      <input {...getInputProps()} />
+                      <input {...getInputProps()} color="white" />
                       <Box mb={4}>Drag 'n' drop some files here</Box>
                       <Box>
                         <Button
