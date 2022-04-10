@@ -7,6 +7,7 @@ import {
   HStack,
   Input,
   Link as ChakraLink,
+  Spinner,
   Text,
   VStack,
   Wrap,
@@ -51,7 +52,7 @@ const Create: React.FC = () => {
     provider?.getSigner() as Signer,
   );
 
-  const { questChains, refresh } = useLatestCreatedQuestChainsData();
+  const { questChains, fetching, refresh } = useLatestCreatedQuestChainsData();
 
   const onSubmit = useCallback(
     async (
@@ -197,43 +198,58 @@ const Create: React.FC = () => {
           </Form>
         )}
       </Formik>
-      <VStack w="full" gap={4} flex={1}>
-        {questChains.map(({ address, name, description }) => (
-          <NextLink
-            as={`/quest-chain/${address}`}
-            href={`/quest-chain/[address]`}
-            passHref
-            key={address}
-          >
-            <ChakraLink display="block" _hover={{}} w="full">
-              <HStack
-                cursor="pointer"
-                justify="space-between"
-                w="full"
-                px={10}
-                py={4}
-                background="rgba(255, 255, 255, 0.02)"
-                _hover={{
-                  background: 'whiteAlpha.100',
-                }}
-                fontWeight="400"
-                backdropFilter="blur(40px)"
-                borderRadius="full"
-                boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                letterSpacing={4}
+      {fetching ? (
+        <VStack w="100%">
+          <Spinner color="main" />
+        </VStack>
+      ) : (
+        <>
+          {questChains.length > 0 && (
+            <Text fontSize={20} textTransform="uppercase" color="white">
+              {`Created ${questChains.length} Quest Chain${
+                questChains.length > 1 ? 's' : ''
+              }`}
+            </Text>
+          )}
+          <VStack w="full" gap={4} flex={1}>
+            {questChains.map(({ address, name, description }) => (
+              <NextLink
+                as={`/quest-chain/${address}`}
+                href={`/quest-chain/[address]`}
+                passHref
+                key={address}
               >
-                <Box>
-                  <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
-                    {name}
-                  </Text>
-                  <Text>{description}</Text>
-                </Box>
-                {/* <Text>1/20</Text> */}
-              </HStack>
-            </ChakraLink>
-          </NextLink>
-        ))}
-      </VStack>
+                <ChakraLink display="block" _hover={{}} w="full">
+                  <HStack
+                    cursor="pointer"
+                    justify="space-between"
+                    w="full"
+                    px={10}
+                    py={4}
+                    background="rgba(255, 255, 255, 0.02)"
+                    _hover={{
+                      background: 'whiteAlpha.100',
+                    }}
+                    fontWeight="400"
+                    backdropFilter="blur(40px)"
+                    borderRadius="full"
+                    boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                    letterSpacing={4}
+                  >
+                    <Box>
+                      <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
+                        {name}
+                      </Text>
+                      <Text>{description}</Text>
+                    </Box>
+                    {/* <Text>1/20</Text> */}
+                  </HStack>
+                </ChakraLink>
+              </NextLink>
+            ))}
+          </VStack>
+        </>
+      )}
     </VStack>
   );
 };

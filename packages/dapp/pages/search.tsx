@@ -64,7 +64,9 @@ const Search: React.FC = () => {
         <Text fontSize={20} textTransform="uppercase" color="white">
           {error
             ? 'Error: Something went wrong!'
-            : `${results.length} Quest Chains found`}
+            : `${results.length} Quest Chain${
+                results.length > 1 ? 's' : ''
+              } found`}
         </Text>
       )}
       <VStack w="full" gap={4} flex={1}>
