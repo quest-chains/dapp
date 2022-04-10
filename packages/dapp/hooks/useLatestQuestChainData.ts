@@ -15,7 +15,7 @@ export const useLatestQuestChainData = (
   error: CombinedError | undefined;
 } => {
   const [{ data, fetching, error }, execute] = useQuestChainInfoQuery({
-    variables: { address: inputQuestChain?.address ?? '' },
+    variables: { address: (inputQuestChain?.address ?? '').toLowerCase() },
     requestPolicy: 'network-only',
     pause: !!inputQuestChain,
   });

@@ -93,3 +93,12 @@ gql`
   }
   ${QuestStatusInfoFragment}
 `;
+
+gql`
+  query StatusForUserAndChain($user: String!, $address: String!, $first: Int) {
+    questStatuses(first: $first, where: { user: $user, questChain: $address }) {
+      ...QuestStatusInfo
+    }
+  }
+  ${QuestStatusInfoFragment}
+`;

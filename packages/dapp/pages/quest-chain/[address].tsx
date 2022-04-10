@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
-/* eslint-disable import/no-unresolved */
-import { CloseIcon } from '@chakra-ui/icons';
+import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -22,11 +20,13 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { Signer } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import toast from 'react-hot-toast';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
 import { CollapsableText } from '@/components/CollapsableText';
@@ -35,15 +35,23 @@ import {
   getQuestChainAddresses,
   getQuestChainInfo,
 } from '@/graphql/questChains';
+import { useStatusForUserAndChainQuery } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
-import { uploadFilesViaAPI } from '@/utils/metadata';
+import { QuestChain, QuestChain__factory } from '@/types';
+import { waitUntilBlock } from '@/utils/graphHelpers';
+import { handleError, handleTxLoading } from '@/utils/helpers';
+import {
+  Metadata,
+  uploadFilesViaAPI,
+  uploadMetadataViaAPI,
+} from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
-  const { address } = useWallet();
+  const { address, provider } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [quest, setQuest] = useState<{
     questId: string;
@@ -51,13 +59,67 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     description: string | null | undefined;
   } | null>(null);
   const [proofDescription, setProofDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<any[] | []>([]);
+  const [myFiles, setMyFiles] = useState<File[]>([]);
 
   const onDrop = useCallback(
-    (acceptedFiles: any) => {
+    (acceptedFiles: File[]) => {
       setMyFiles([...myFiles, ...acceptedFiles]);
     },
     [myFiles],
+  );
+
+  const {
+    questChain,
+    fetching: fetchingQuests,
+    refresh,
+  } = useLatestQuestChainData(inputQuestChain);
+
+  const isAdmin: boolean = useMemo(
+    () =>
+      questChain?.admins.some(
+        ({ address: a }) => a === address?.toLowerCase(),
+      ) ?? false,
+    [questChain, address],
+  );
+  const isEditor: boolean = useMemo(
+    () =>
+      questChain?.editors.some(
+        ({ address: a }) => a === address?.toLowerCase(),
+      ) ?? false,
+    [questChain, address],
+  );
+  const isReviewer: boolean = useMemo(
+    () =>
+      questChain?.editors.some(
+        ({ address: a }) => a === address?.toLowerCase(),
+      ) ?? false,
+    [questChain, address],
+  );
+
+  const isUser = !(isAdmin || isEditor || isReviewer);
+
+  const [{ data, fetching: fetchingStatus }, execute] =
+    useStatusForUserAndChainQuery({
+      variables: {
+        address: (questChain?.address ?? '').toLowerCase(),
+        user: (address ?? '').toLowerCase(),
+      },
+      pause: !address || !questChain,
+    });
+
+  const userStatus = useMemo(() => {
+    const userStat: Record<string, string> = {};
+    data?.questStatuses.forEach(item => {
+      userStat[item.quest.questId] = item.status;
+    });
+    return userStat;
+  }, [data]);
+
+  const fetching = fetchingStatus || fetchingQuests;
+
+  const contract: QuestChain = QuestChain__factory.connect(
+    questChain?.address ?? '',
+    provider?.getSigner() as Signer,
   );
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -68,7 +130,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     onDrop,
   });
 
-  const removeFile = (file: any) => () => {
+  const removeFile = (file: File) => () => {
     const newFiles = [...myFiles];
     newFiles.splice(newFiles.indexOf(file), 1);
     setMyFiles(newFiles);
@@ -81,14 +143,58 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     onClose();
   }, [onClose]);
 
-  const submit = useCallback(async () => {
-    if (quest && proofDescription && myFiles.length > 0) {
-      const hash = await uploadFilesViaAPI(myFiles);
-      console.log(hash);
-    }
-  }, [proofDescription, myFiles, quest]);
+  const [isSubmitting, setSubmitting] = useState(false);
 
-  const { questChain, refresh } = useLatestQuestChainData(inputQuestChain);
+  const onSubmit = useCallback(async () => {
+    if (quest && proofDescription && myFiles.length > 0) {
+      setSubmitting(true);
+      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      try {
+        let hash = await uploadFilesViaAPI(myFiles);
+        const metadata: Metadata = {
+          name: `Submission - ${quest.name} - ${address}`,
+          description: proofDescription,
+          external_url: `ipfs://${hash}`,
+        };
+
+        hash = await uploadMetadataViaAPI(metadata);
+        const details = `ipfs://${hash}`;
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const tx = await contract.submitProof(quest.questId, details);
+        toast.dismiss(tid);
+        tid = handleTxLoading(tx.hash);
+        const receipt = await tx.wait(1);
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(receipt.blockNumber);
+        toast.dismiss(tid);
+        toast.success('Successfully submitted proof');
+        execute();
+        refresh();
+        onModalClose();
+      } catch (error) {
+        toast.dismiss(tid);
+        handleError(error);
+      }
+
+      setSubmitting(false);
+    }
+  }, [
+    proofDescription,
+    myFiles,
+    quest,
+    address,
+    contract,
+    refresh,
+    execute,
+    onModalClose,
+  ]);
+
   if (isFallback) {
     return (
       <VStack>
@@ -103,17 +209,6 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       </VStack>
     );
   }
-  const isAdmin: boolean = questChain.admins.some(
-    ({ address: a }) => a === address?.toLowerCase(),
-  );
-  const isEditor: boolean = questChain.editors.some(
-    ({ address: a }) => a === address?.toLowerCase(),
-  );
-  const isReviewer: boolean = questChain.editors.some(
-    ({ address: a }) => a === address?.toLowerCase(),
-  );
-
-  const isUser = !(isAdmin || isEditor || isReviewer);
 
   return (
     <VStack w="100%" align="flex-start" color="main" px={isUser ? 40 : 0}>
@@ -127,117 +222,166 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       <Text fontWeight="lg">{questChain.description}</Text>
       <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
         <VStack spacing={6}>
-          <Text w="100%" color="white" fontSize={20} textTransform="uppercase">
-            {questChain.quests.length} Quests found
-          </Text>
-          {questChain.quests.map(quest => (
-            <Flex
-              w="100%"
-              boxShadow="inset 0px 0px 0px 1px #AD90FF"
-              p={8}
-              gap={3}
-              borderRadius={20}
-              align="stretch"
-              key={quest.questId}
-              justifyContent="space-between"
-            >
-              <Flex flexDirection="column">
-                <CollapsableText title={quest.name}>
-                  <Text mx={4} mt={2} color="white" fontStyle="italic">
-                    {quest.description}
-                  </Text>
-                </CollapsableText>
-              </Flex>
-
-              {isUser && (
-                <Box>
-                  <Button
-                    onClick={() => {
-                      setQuest({
-                        questId: quest.questId,
-                        name: quest.name,
-                        description: quest.description,
-                      });
-                      onOpen();
-                    }}
-                  >
-                    Upload Proof
-                  </Button>
-                </Box>
-              )}
-
-              <Modal
-                isOpen={!!quest && isOpen}
-                onClose={onModalClose}
-                size="xl"
+          {fetching ? (
+            <Spinner />
+          ) : (
+            <>
+              <Text
+                w="100%"
+                color="white"
+                fontSize={20}
+                textTransform="uppercase"
               >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <FormControl isRequired>
-                      <FormLabel color="main" htmlFor="proofDescription">
-                        Description
-                      </FormLabel>
-                      <Textarea
-                        id="proofDescription"
-                        value={proofDescription}
-                        onChange={e => setProofDescription(e.target.value)}
-                        mb={4}
-                      />
-                    </FormControl>
-                    <FormLabel color="main" htmlFor="file">
-                      Upload file
-                    </FormLabel>
-                    <Flex
-                      {...getRootProps({ className: 'dropzone' })}
-                      flexDir="column"
-                      borderWidth={1}
-                      borderStyle="dashed"
-                      borderRadius={20}
-                      p={10}
-                      mb={4}
-                      onClick={open}
-                    >
-                      <input {...getInputProps()} color="white" />
-                      <Box alignSelf="center">
-                        Drag 'n' drop some files here
-                      </Box>
-                    </Flex>
-                    <Text>Files:</Text>
-                    {myFiles.map((file: any) => (
-                      <Flex key={file.path}>
-                        <Text mr={4} alignSelf="center">
-                          {file.path} - {file.size} bytes
-                        </Text>
-                        <IconButton
-                          borderRadius="full"
-                          onClick={removeFile(file)}
-                          icon={<CloseIcon />}
-                          aria-label={''}
-                        />
-                      </Flex>
-                    ))}
-                  </ModalBody>
+                {questChain.quests.length} Quests found
+              </Text>
+              {questChain.quests.map(quest => (
+                <Flex
+                  w="100%"
+                  boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                  p={8}
+                  gap={3}
+                  borderRadius={20}
+                  align="stretch"
+                  key={quest.questId}
+                  justifyContent="space-between"
+                >
+                  <Flex flexDirection="column">
+                    <CollapsableText title={quest.name}>
+                      <Text mx={4} mt={2} color="white" fontStyle="italic">
+                        {quest.description}
+                      </Text>
+                    </CollapsableText>
+                  </Flex>
 
-                  <ModalFooter alignItems="baseline">
-                    <Button variant="ghost" mr={3} onClick={onModalClose}>
-                      Close
-                    </Button>
-                    <SubmitButton
-                      mt={4}
-                      type="submit"
-                      onClick={submit}
-                      isDisabled={!myFiles.length || !proofDescription}
-                    >
-                      Submit
-                    </SubmitButton>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </Flex>
-          ))}
+                  {isUser && (
+                    <>
+                      {!userStatus[quest.questId] ||
+                      userStatus[quest.questId] === 'init' ||
+                      userStatus[quest.questId] === 'fail' ? (
+                        <Box>
+                          <Button
+                            onClick={() => {
+                              setQuest({
+                                questId: quest.questId,
+                                name: quest.name,
+                                description: quest.description,
+                              });
+                              onOpen();
+                            }}
+                          >
+                            Upload Proof
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Box>
+                          <Button
+                            pointerEvents="none"
+                            _hover={{}}
+                            cursor="default"
+                            color={
+                              userStatus[quest.questId] === 'review'
+                                ? 'pending'
+                                : 'main'
+                            }
+                            border="1px solid"
+                            borderColor={
+                              userStatus[quest.questId] === 'review'
+                                ? 'pending'
+                                : 'main'
+                            }
+                          >
+                            {userStatus[quest.questId] === 'review'
+                              ? 'Review Pending'
+                              : 'Accepted'}
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  )}
+
+                  <Modal
+                    isOpen={!!quest && isOpen}
+                    onClose={onModalClose}
+                    size="xl"
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <FormControl isRequired>
+                          <FormLabel color="main" htmlFor="proofDescription">
+                            Description
+                          </FormLabel>
+                          <Textarea
+                            id="proofDescription"
+                            value={proofDescription}
+                            onChange={e => setProofDescription(e.target.value)}
+                            mb={4}
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel color="main" htmlFor="file">
+                            Upload file
+                          </FormLabel>
+                          <Flex
+                            {...getRootProps({ className: 'dropzone' })}
+                            flexDir="column"
+                            borderWidth={1}
+                            borderStyle="dashed"
+                            borderRadius={20}
+                            p={10}
+                            mb={4}
+                            onClick={open}
+                          >
+                            <input {...getInputProps()} color="white" />
+                            <Box alignSelf="center">
+                              {`Drag 'n' drop some files here`}
+                            </Box>
+                          </Flex>
+                        </FormControl>
+                        <Text mb={1}>Files:</Text>
+                        {myFiles.map((file: File) => (
+                          <Flex key={file.name} w="100%" mb={1}>
+                            <IconButton
+                              size="xs"
+                              borderRadius="full"
+                              onClick={removeFile(file)}
+                              icon={<SmallCloseIcon boxSize="1rem" />}
+                              aria-label={''}
+                            />
+                            <Text ml={1} alignSelf="center">
+                              {file.name} - {file.size} bytes
+                            </Text>
+                          </Flex>
+                        ))}
+                      </ModalBody>
+
+                      <ModalFooter alignItems="baseline">
+                        <Button
+                          variant="ghost"
+                          mr={3}
+                          onClick={onModalClose}
+                          borderRadius="full"
+                        >
+                          Close
+                        </Button>
+                        <SubmitButton
+                          mt={4}
+                          type="submit"
+                          onClick={onSubmit}
+                          isDisabled={!myFiles.length || !proofDescription}
+                          isLoading={isSubmitting}
+                        >
+                          Submit
+                        </SubmitButton>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
+                </Flex>
+              ))}
+            </>
+          )}
         </VStack>
         <VStack spacing={8}>
           <AddQuestBlock questChain={questChain} refresh={refresh} />

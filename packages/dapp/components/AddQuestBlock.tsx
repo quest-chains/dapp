@@ -72,15 +72,14 @@ export const AddQuestBlock: React.FC<{
         onOpen();
         return;
       }
+      // if the user is trying to create more than 5 quests
+      // and if the user has not purchased the subscription
 
       const metadata: Metadata = {
         name,
         description,
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-
-      // if the user is trying to create more than 5 quests
-      // and if the user has not purchased the subscription
 
       try {
         const hash = await uploadMetadataViaAPI(metadata);
@@ -108,8 +107,7 @@ export const AddQuestBlock: React.FC<{
 
       setSubmitting(false);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contract, refresh],
+    [contract, refresh, onOpen, questChain],
   );
 
   if (!isEditor) return null;
