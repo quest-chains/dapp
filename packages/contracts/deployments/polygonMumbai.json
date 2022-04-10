@@ -1,7 +1,7 @@
 {
   "network": "polygonMumbai",
-  "factory": "0x5977840c83B4f2Ba952D8001a647516c979915E4",
-  "implemention": "0x9089aB0f1eB6f9C0Cf1Ffb59B003dDA2d898C002",
-  "txHash": "0xbad4766d565f8dd97831ecb6c39af6d13c84c7db107cd355106e69dc12c3ecac",
-  "blockNumber": "25862494"
+  "factory": "0xC4a6Ec9eDD324A0F46F0e5080cd856443D982Ebd",
+  "implemention": "0x4D503cB90254B278987fF0E5770aeDCBe2BCd552",
+  "txHash": "0x0cdd5013ce3617fe23e521956a441135d5310047d6dd9f52d65ccb4f3e5ba133",
+  "blockNumber": "25875837"
 }

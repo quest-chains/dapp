@@ -90,7 +90,7 @@ contract QuestChain is
         override
         onlyRole(EDITOR_ROLE)
     {
-        require(_questId < questCount, "QuestChain: quest not created");
+        require(_questId < questCount, "QuestChain: quest not found");
 
         emit QuestEdited(msg.sender, _questId, _details);
     }
@@ -99,6 +99,7 @@ contract QuestChain is
         external
         override
     {
+        require(_questId < questCount, "QuestChain: quest not found");
         Status status = completions[msg.sender][_questId];
         require(
             status == Status.init || status == Status.fail,
@@ -115,11 +116,10 @@ contract QuestChain is
         uint256 _questId,
         bool _success
     ) external override onlyRole(REVIEWER_ROLE) {
+        require(_questId < questCount, "QuestChain: quest not found");
         Status status = completions[_quester][_questId];
         require(status == Status.review, "QuestChain: quest not in review");
-        completions[msg.sender][_questId] = _success
-            ? Status.pass
-            : Status.fail;
+        completions[_quester][_questId] = _success ? Status.pass : Status.fail;
 
         emit QuestProofReviewed(msg.sender, _quester, _questId, _success);
     }
@@ -130,6 +130,7 @@ contract QuestChain is
         override
         returns (Status status)
     {
+        require(_questId < questCount, "QuestChain: quest not found");
         status = completions[_quester][_questId];
     }
 }

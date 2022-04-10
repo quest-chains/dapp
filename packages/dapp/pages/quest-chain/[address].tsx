@@ -36,8 +36,8 @@ import {
   getQuestChainAddresses,
   getQuestChainInfo,
 } from '@/graphql/questChains';
-import { useStatusForUserAndChainQuery } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
+import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { QuestChain, QuestChain__factory } from '@/types';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -72,8 +72,18 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const {
     questChain,
     fetching: fetchingQuests,
-    refresh,
+    refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
+
+  const {
+    questStatuses,
+    fetching: fetchingStatus,
+    refresh: refreshStatus,
+  } = useLatestQuestStatusesForUserAndChainData(
+    questChain?.address,
+    address,
+    [],
+  );
 
   const isAdmin: boolean = useMemo(
     () =>
@@ -99,24 +109,20 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const isUser = !(isAdmin || isEditor || isReviewer);
 
-  const [{ data, fetching: fetchingStatus }, execute] =
-    useStatusForUserAndChainQuery({
-      variables: {
-        address: (questChain?.address ?? '').toLowerCase(),
-        user: (address ?? '').toLowerCase(),
-      },
-      pause: !address || !questChain,
-    });
-
   const userStatus = useMemo(() => {
     const userStat: Record<string, string> = {};
-    data?.questStatuses.forEach(item => {
+    questStatuses.forEach(item => {
       userStat[item.quest.questId] = item.status;
     });
     return userStat;
-  }, [data]);
+  }, [questStatuses]);
 
   const fetching = fetchingStatus || fetchingQuests;
+
+  const refresh = useCallback(() => {
+    refreshStatus();
+    refreshQuests();
+  }, [refreshQuests, refreshStatus]);
 
   const contract: QuestChain = QuestChain__factory.connect(
     questChain?.address ?? '',
@@ -175,7 +181,6 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         await waitUntilBlock(receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully submitted proof');
-        execute();
         refresh();
         onModalClose();
       } catch (error) {
@@ -192,7 +197,6 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     address,
     contract,
     refresh,
-    execute,
     onModalClose,
   ]);
 

@@ -35,7 +35,7 @@ export const UserProgress = () => {
       statuses[qs.questChain.address] = [...arr, qs];
     });
     return Object.values(statuses)
-      .filter(value => value.length === 0)
+      .filter(value => value.length !== 0)
       .map(value => {
         const chain = value[0].questChain;
         const total = chain.quests.length;
@@ -88,7 +88,9 @@ export const UserProgress = () => {
                     </Text>
                     <Text>{us.chain.description}</Text>
                   </Flex>
-                  {us.completed} / {us.total}
+                  <Text>
+                    {us.completed} / {us.total}
+                  </Text>
                 </HStack>
               </ChakraLink>
             </NextLink>
