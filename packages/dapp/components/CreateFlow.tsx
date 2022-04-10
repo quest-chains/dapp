@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Box, Button, Input, Spinner } from '@chakra-ui/react';
+import { Box, Button, Flex, Input, Spinner, Text } from '@chakra-ui/react';
 import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
@@ -53,7 +53,9 @@ async function createNewFlow(recipient: string, flowRate: string) {
   }
 }
 
-export const CreateFlow = () => {
+type CreateFlowProps = { ownerAddress: string };
+
+export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
   const [recipient, setRecipient] = useState('');
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [flowRate, setFlowRate] = useState('');
@@ -140,17 +142,11 @@ export const CreateFlow = () => {
     onClick: () => void;
   }) {
     return (
-      <Button variant="success" className="button" {...props}>
+      <Button {...props}>
         {isButtonLoading ? <Spinner animation="border" /> : children}
       </Button>
     );
   }
-
-  const handleRecipientChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setRecipient(e.target.value);
-  };
 
   const handleFlowRateChange = (e: {
     target: { value: React.SetStateAction<string> };
@@ -162,23 +158,34 @@ export const CreateFlow = () => {
 
   return (
     <div>
-      <h2>Create a Flow</h2>
-      {currentAccount === '' ? (
-        <button id="connectWallet" className="button" onClick={connectWallet}>
-          Connect Wallet
-        </button>
-      ) : (
-        <Box className="connectedWallet">
-          {`${currentAccount.substring(0, 4)}...${currentAccount.substring(
-            38,
-          )}`}
+      <Text>Limit Reached!</Text>
+      <Text mb={4}>Select a plan to continue creating quests:</Text>
+
+      <Flex justifyContent="space-between" mb={4}>
+        <Box p={4} boxShadow="inset 0px 0px 0px 1px #AD90FF" borderRadius={20}>
+          <Text>Free Plan</Text>
+          <Text>up to 5 quests</Text>
         </Box>
+        <Box p={4} boxShadow="inset 0px 0px 0px 1px #2DF8C7" borderRadius={20}>
+          <Text>Basic Plan</Text>
+          <Text>5 - 20 quests</Text>
+        </Box>
+        <Box p={4} boxShadow="inset 0px 0px 0px 1px #ff7038" borderRadius={20}>
+          <Text>Premium plan</Text>
+          <Text>20 - ∞ quests</Text>
+        </Box>
+      </Flex>
+
+      {currentAccount === '' && (
+        <Button id="connectWallet" onClick={connectWallet}>
+          Connect Wallet
+        </Button>
       )}
       <Input
         name="recipient"
-        value={recipient}
-        onChange={handleRecipientChange}
+        value={ownerAddress}
         placeholder="Enter recipient address"
+        mb={4}
       ></Input>
       <Input
         name="flowRate"
@@ -186,31 +193,37 @@ export const CreateFlow = () => {
         onChange={handleFlowRateChange}
         placeholder="Enter a flowRate in wei/second"
       ></Input>
-      <CreateButton
+      <Button
         onClick={() => {
           setIsButtonLoading(true);
-          createNewFlow(recipient, flowRate);
+          createNewFlow(ownerAddress, flowRate);
           setTimeout(() => {
             setIsButtonLoading(false);
           }, 1000);
         }}
-        isLoading={isButtonLoading}
+        my={4}
       >
-        Click to Create Your Stream
-      </CreateButton>
+        {isButtonLoading ? (
+          <Spinner animation="border" />
+        ) : (
+          'Click to Create Your Stream'
+        )}
+      </Button>
 
-      <div className="description">
+      <Box
+        mb={2}
+        boxShadow="inset 0px 0px 0px 1px #AD90FF"
+        p={4}
+        borderRadius={20}
+        _hover={{
+          background: 'whiteAlpha.100',
+        }}
+      >
+        <p>Your flow will be equal to:</p>
         <p>
-          Go to the CreateFlow.js component and look at the <b>createFlow() </b>
-          function to see under the hood
+          <b>${flowRateDisplay !== ' ' ? flowRateDisplay : 0}</b> DAIx/month
         </p>
-        <div className="calculation">
-          <p>Your flow will be equal to:</p>
-          <p>
-            <b>${flowRateDisplay !== ' ' ? flowRateDisplay : 0}</b> DAIx/month
-          </p>
-        </div>
-      </div>
+      </Box>
     </div>
   );
 };

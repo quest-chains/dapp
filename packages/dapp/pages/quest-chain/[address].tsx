@@ -59,7 +59,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [myFiles],
   );
 
-  const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     // Disable click and keydown behavior
     noClick: true,
     noKeyboard: true,

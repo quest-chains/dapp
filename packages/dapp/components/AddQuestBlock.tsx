@@ -191,7 +191,7 @@ export const AddQuestBlock: React.FC<{
           <ModalHeader>Payment plan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <CreateFlow />
+            <CreateFlow ownerAddress={questChain.admins[0].address} />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">
