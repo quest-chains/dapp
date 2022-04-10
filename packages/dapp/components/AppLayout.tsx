@@ -52,7 +52,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
                       borderBottomColor="main"
                       color={router.pathname === '/search' ? 'main' : 'inherit'}
                     >
-                      SEARCH FOR QUEST CHAIN
+                      QUEST CHAINS
                     </Text>
                   </ChakraLink>
                 </NextLink>

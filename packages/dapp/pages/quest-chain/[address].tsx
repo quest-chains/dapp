@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
+import { CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -48,13 +50,32 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     description: string | null | undefined;
   } | null>(null);
   const [proofDescription, setProofDescription] = useState('');
+  const [myFiles, setMyFiles] = useState<any[] | []>([]);
+
+  const onDrop = useCallback(
+    (acceptedFiles: any) => {
+      setMyFiles([...myFiles, ...acceptedFiles]);
+    },
+    [myFiles],
+  );
 
   const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
     // Disable click and keydown behavior
     noClick: true,
     noKeyboard: true,
     accept: 'image/*,audio/*,video/*',
+    onDrop,
   });
+
+  const removeFile = (file: any) => () => {
+    const newFiles = [...myFiles];
+    newFiles.splice(newFiles.indexOf(file), 1);
+    setMyFiles(newFiles);
+  };
+
+  const resetFiles = () => {
+    setMyFiles([]);
+  };
 
   const onModalClose = useCallback(() => {
     setProofDescription('');
@@ -137,6 +158,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         name: quest.name,
                         description: quest.description,
                       });
+                      resetFiles();
                       onOpen();
                     }}
                   >
@@ -175,26 +197,28 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       borderWidth={1}
                       borderStyle="dashed"
                       borderRadius={20}
-                      p={4}
+                      p={10}
                       mb={4}
+                      onClick={open}
                     >
                       <input {...getInputProps()} color="white" />
-                      <Box mb={4}>Drag 'n' drop some files here</Box>
-                      <Box>
-                        <Button
-                          type="button"
-                          onClick={open}
-                          borderRadius="full"
-                        >
-                          Open File Dialog
-                        </Button>
+                      <Box alignSelf="center">
+                        Drag 'n' drop some files here
                       </Box>
                     </Flex>
                     <Text>Files:</Text>
-                    {acceptedFiles.map((file: any) => (
-                      <li key={file.path}>
-                        {file.path} - {file.size} bytes
-                      </li>
+                    {myFiles.map((file: any) => (
+                      <Flex key={file.path}>
+                        <Text mr={4} alignSelf="center">
+                          {file.path} - {file.size} bytes
+                        </Text>
+                        <IconButton
+                          borderRadius="full"
+                          onClick={removeFile(file)}
+                          icon={<CloseIcon />}
+                          aria-label={''}
+                        />
+                      </Flex>
                     ))}
                   </ModalBody>
 
@@ -206,7 +230,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       mt={4}
                       type="submit"
                       onClick={submit}
-                      isDisabled={!acceptedFiles.length || !proofDescription}
+                      isDisabled={!myFiles.length || !proofDescription}
                     >
                       Submit
                     </SubmitButton>
