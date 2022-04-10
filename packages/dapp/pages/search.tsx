@@ -69,7 +69,7 @@ const Search: React.FC = () => {
             : `${results.length} Quest Chains found`}
         </Text>
       )}
-      <VStack w="full" gap={4}>
+      <VStack w="full" gap={4} flex={1}>
         {!fetching &&
           !error &&
           results.length > 0 &&

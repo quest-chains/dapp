@@ -94,9 +94,9 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       </VStack>
       <Box
         w="100%"
-        h="100%"
         py={{ base: 6, md: 8, lg: 12 }}
         px={8}
+        pb={16}
         maxW="8xl"
         mx="auto"
         overflowX="hidden"
