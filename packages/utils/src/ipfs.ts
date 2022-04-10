@@ -43,7 +43,7 @@ export const uploadMetadata = async (
   const jsonString = JSON.stringify(metadata, undefined, 2);
 
   const name = path.join(
-    await mkdtemp(path.join(os.tmpdir(), 'metadatas')),
+    await mkdtemp(path.join(os.tmpdir(), 'metadatas-')),
     'metadata.json',
   );
   await writeFile(name, jsonString);

@@ -18,3 +18,22 @@ export const uploadMetadataViaAPI = async (
 
   return response;
 };
+
+export const uploadFilesViaAPI = async (
+  files: File[] | FileList,
+): Promise<string> => {
+  const formData = new FormData();
+  for (let i = 0; i < files.length; ++i) {
+    formData.append(files[i].name, files[i]);
+  }
+
+  const res = await fetch('/api/storage', {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  });
+  const { response, error } = await res.json();
+  if (error) throw new Error(error);
+
+  return response;
+};

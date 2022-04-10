@@ -36,6 +36,7 @@ import {
   getQuestChainInfo,
 } from '@/graphql/questChains';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
+import { uploadFilesViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
@@ -73,20 +74,17 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     setMyFiles(newFiles);
   };
 
-  const resetFiles = () => {
-    setMyFiles([]);
-  };
-
   const onModalClose = useCallback(() => {
     setProofDescription('');
+    setMyFiles([]);
     setQuest(null);
     onClose();
   }, [onClose]);
 
   const submit = useCallback(async () => {
     if (quest && proofDescription && myFiles.length > 0) {
-      console.log('proofDescription', proofDescription);
-      console.log(myFiles);
+      const hash = await uploadFilesViaAPI(myFiles);
+      console.log(hash);
     }
   }, [proofDescription, myFiles, quest]);
 
@@ -160,7 +158,6 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         name: quest.name,
                         description: quest.description,
                       });
-                      resetFiles();
                       onOpen();
                     }}
                   >
