@@ -13,6 +13,20 @@ gql`
 `;
 
 gql`
+  query CreatedQuestChainsInfo($limit: Int, $user: String) {
+    questChains(
+      first: $limit
+      where: { createdBy: $user }
+      orderBy: createdAt
+      orderDirection: desc
+    ) {
+      ...QuestChainInfo
+    }
+  }
+  ${QuestChainInfoFragment}
+`;
+
+gql`
   query QuestChainInfo($address: ID!) {
     questChain(id: $address) {
       ...QuestChainInfo

@@ -18,14 +18,11 @@ export const useLatestQuestStatusesForChainData = (
   const [{ data, fetching, error }, execute] = useStatusForChainQuery({
     variables: { address: (address ?? '').toLowerCase(), first: 1000 },
     requestPolicy: 'network-only',
-    pause: !!address,
+    pause: !address,
   });
   const questStatuses = useMemo(
-    () =>
-      !fetching && data?.questStatuses
-        ? data.questStatuses
-        : inputQuestStatuses,
-    [data, fetching, inputQuestStatuses],
+    () => (data?.questStatuses ? data.questStatuses : inputQuestStatuses),
+    [data, inputQuestStatuses],
   );
 
   return {

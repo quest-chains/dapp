@@ -17,11 +17,11 @@ export const useLatestQuestChainData = (
   const [{ data, fetching, error }, execute] = useQuestChainInfoQuery({
     variables: { address: (inputQuestChain?.address ?? '').toLowerCase() },
     requestPolicy: 'network-only',
-    pause: !!inputQuestChain,
+    pause: !inputQuestChain?.address,
   });
   const questChain = useMemo(
-    () => (!fetching && data?.questChain ? data.questChain : inputQuestChain),
-    [data, fetching, inputQuestChain],
+    () => (data?.questChain ? data.questChain : inputQuestChain),
+    [data, inputQuestChain],
   );
 
   return {

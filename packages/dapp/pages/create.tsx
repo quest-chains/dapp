@@ -1,17 +1,17 @@
-/* eslint-disable import/no-unresolved */
-import { LinkIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
-  Link,
+  Link as ChakraLink,
   Text,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
-import { providers, Signer } from 'ethers';
+import { Signer } from 'ethers';
 import {
   Field,
   FieldProps,
@@ -22,10 +22,11 @@ import {
 } from 'formik';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 import { SubmitButton } from '@/components/SubmitButton';
+import { useLatestCreatedQuestChainsData } from '@/hooks/useLatestCreatedQuestChainsData';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { FACTORY_CONTRACT } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -38,25 +39,7 @@ interface FormValues {
   description: string;
 }
 
-const getQuestChainAddress = (
-  factoryContract: QuestChainFactory,
-  receipt: providers.TransactionReceipt,
-): string | null => {
-  const abi = factoryContract.interface;
-  const eventFragment = abi.getEvent('NewQuestChain');
-  const eventTopic = abi.getEventTopic(eventFragment);
-  const log = receipt.logs.find(e => e.topics[0] === eventTopic);
-  if (log) {
-    const decodedLog = abi.decodeEventLog(eventFragment, log.data, log.topics);
-    return decodedLog.questChain;
-  }
-  return null;
-};
-
 const Create: React.FC = () => {
-  const [questChains, setQuestChains] = useState<
-    (Metadata & { address: string })[]
-  >([]);
   const initialValues: FormValues = {
     name: '',
     description: '',
@@ -67,6 +50,8 @@ const Create: React.FC = () => {
     FACTORY_CONTRACT,
     provider?.getSigner() as Signer,
   );
+
+  const { questChains, refresh } = useLatestCreatedQuestChainsData();
 
   const onSubmit = useCallback(
     async (
@@ -96,12 +81,7 @@ const Create: React.FC = () => {
         await waitUntilBlock(receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully created a new Quest Chain');
-        const address = getQuestChainAddress(factoryContract, receipt);
-        if (address) {
-          setQuestChains(chains => {
-            return [...chains, { ...metadata, address }];
-          });
-        }
+        refresh();
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -109,11 +89,11 @@ const Create: React.FC = () => {
 
       setSubmitting(false);
     },
-    [factoryContract],
+    [factoryContract, refresh],
   );
 
   return (
-    <VStack w="100%" align="stretch" px={40}>
+    <VStack w="100%" align="stretch" px={40} spacing={8}>
       <Head>
         <title>DAOQuest</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -217,19 +197,43 @@ const Create: React.FC = () => {
           </Form>
         )}
       </Formik>
-      {questChains.map(({ name, address }, index) => (
-        <Wrap key="address">
+      <VStack w="full" gap={4} flex={1}>
+        {questChains.map(({ address, name, description }) => (
           <NextLink
             as={`/quest-chain/${address}`}
             href={`/quest-chain/[address]`}
             passHref
+            key={address}
           >
-            <Link textDecor="underline">
-              {index + 1}. {name} <LinkIcon />
-            </Link>
+            <ChakraLink display="block" _hover={{}} w="full">
+              <HStack
+                cursor="pointer"
+                justify="space-between"
+                w="full"
+                px={10}
+                py={4}
+                background="rgba(255, 255, 255, 0.02)"
+                _hover={{
+                  background: 'whiteAlpha.100',
+                }}
+                fontWeight="400"
+                backdropFilter="blur(40px)"
+                borderRadius="full"
+                boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                letterSpacing={4}
+              >
+                <Box>
+                  <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
+                    {name}
+                  </Text>
+                  <Text>{description}</Text>
+                </Box>
+                {/* <Text>1/20</Text> */}
+              </HStack>
+            </ChakraLink>
           </NextLink>
-        </Wrap>
-      ))}
+        ))}
+      </VStack>
     </VStack>
   );
 };

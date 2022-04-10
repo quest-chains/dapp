@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable no-console */
 import { SearchIcon } from '@chakra-ui/icons';
 import {
   Box,

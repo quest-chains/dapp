@@ -25,11 +25,8 @@ export const useLatestQuestStatusesForUserAndChainData = (
     pause: !user || !chain,
   });
   const questStatuses = useMemo(
-    () =>
-      !fetching && data?.questStatuses
-        ? data.questStatuses
-        : inputQuestStatuses,
-    [data, fetching, inputQuestStatuses],
+    () => (data?.questStatuses ? data.questStatuses : inputQuestStatuses),
+    [data, inputQuestStatuses],
   );
 
   return {
