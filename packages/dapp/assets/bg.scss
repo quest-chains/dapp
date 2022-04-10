@@ -4,8 +4,9 @@
   background: #0d1117;
   position: absolute;
   z-index: -10;
-  overflow: 'hidden';
+  overflow: hidden;
 }
+
 .background-root {
   width: 100vw;
   height: 100vh;
@@ -14,7 +15,7 @@
   background-size: cover;
   position: absolute;
   z-index: -10;
-  overflow: 'hidden';
+  overflow: hidden;
 }
 
 $randomNumber: random(5);

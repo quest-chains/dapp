@@ -47,4 +47,7 @@ export const globalStyles = css`
     outline: none;
     box-shadow: none;
   }
+  body {
+    overflow-x: hidden;
+  }
 `;
