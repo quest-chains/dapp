@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
 import {
   Button,
@@ -17,6 +18,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { Framework } from '@superfluid-finance/sdk-core';
 import { Signer } from 'ethers';
 import {
   Field,
@@ -31,6 +33,7 @@ import toast from 'react-hot-toast';
 
 import { QuestChainInfoFragment } from '@/graphql/types';
 import { QuestChain, QuestChain__factory } from '@/types';
+import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
@@ -69,9 +72,39 @@ export const AddQuestBlock: React.FC<{
       { setSubmitting }: FormikHelpers<FormValues>,
     ) => {
       if (questChain.quests.length > 4) {
-        onOpen();
-        return;
+        const signer = provider?.getSigner();
+
+        const chainId = await window.ethereum.request({
+          method: 'eth_chainId',
+        });
+        const sf = await Framework.create({
+          chainId: Number(chainId),
+          provider: provider,
+        });
+
+        if (signer) {
+          const { flowRate } = await sf.cfaV1.getFlow({
+            superToken: DAIx,
+            sender: questChain.admins[0].address,
+            receiver: DAOQUEST_ADDRESS,
+            providerOrSigner: signer,
+          });
+
+          if (Number(flowRate) > 190001234567901) {
+            console.log('has premium subscription');
+          } else if (Number(flowRate) > 190001234567901 / 2) {
+            if (questChain.quests.length > 19) {
+              onOpen();
+            } else {
+              console.log('has basic subscription');
+            }
+          } else {
+            onOpen();
+            return;
+          }
+        }
       }
+
       // if the user is trying to create more than 5 quests
       // and if the user has not purchased the subscription
 
@@ -107,6 +140,7 @@ export const AddQuestBlock: React.FC<{
 
       setSubmitting(false);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [contract, refresh, onOpen, questChain],
   );
 

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,

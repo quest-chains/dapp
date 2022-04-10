@@ -7,7 +7,7 @@ import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 
-import { DAOQUEST_ADDRESS } from '@/utils/constants';
+import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 // let account;
 
 //where the Superfluid logic takes place
@@ -21,8 +21,6 @@ async function createNewFlow(recipient: string, flowRatePerSecond: string) {
     chainId: Number(chainId),
     provider: provider,
   });
-
-  const DAIx = '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f';
 
   try {
     const createFlowOperation = sf.cfaV1.createFlow({
