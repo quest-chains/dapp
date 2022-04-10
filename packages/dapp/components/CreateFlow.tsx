@@ -5,13 +5,20 @@
 import { Box, Button, Flex, Input, Spinner, Text } from '@chakra-ui/react';
 import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
+
+import { SubmitButton } from './SubmitButton';
 // let account;
 
 //where the Superfluid logic takes place
-async function createNewFlow(recipient: string, flowRatePerSecond: string) {
+async function createNewFlow(
+  recipient: string,
+  flowRatePerSecond: string,
+  setIsButtonLoading: Dispatch<SetStateAction<boolean>>,
+) {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   const signer = provider.getSigner();
@@ -30,22 +37,22 @@ async function createNewFlow(recipient: string, flowRatePerSecond: string) {
       // userData?: string
     });
 
-    console.log('Creating your stream...');
+    const tid = toast.loading('Creating your stream...');
 
     const result = await createFlowOperation.exec(signer);
-    console.log(result);
+    toast.dismiss(tid);
 
-    console.log(
-      `Congrats - you've just created a money stream!
-    View Your Stream At: https://app.superfluid.finance/dashboard/${recipient}
-    Network: Kovan
-    Super Token: DAIx
-    Sender: 0xDCB45e4f6762C3D7C61a00e96Fb94ADb7Cf27721
-    Receiver: ${recipient},
-    FlowRate: ${flowRatePerSecond}
+    toast.success(
+      `Congrats - you've just purchased a yearly subscription to DAO Quest!
+			View Your Stream At: https://app.superfluid.finance/dashboard/${recipient}
     `,
+      {
+        duration: 6000,
+      },
     );
+    setIsButtonLoading(false);
   } catch (error) {
+    setIsButtonLoading(false);
     console.log(
       "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!",
     );
@@ -80,7 +87,6 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
   }
 
   const handlePlanChange = (plan: string, rate: string) => {
-    console.log('rate', rate);
     setPlan(plan);
     setFlowRatePerYear(rate);
     setFlowRatePerSecond(
@@ -163,27 +169,10 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
             <Text mr={4}>Flowrate in wei/year: </Text>
             <Text>{flowRatePerYear}</Text>
           </Flex>
-          <Flex>
+          <Flex mb={3}>
             <Text mr={4}>Flowrate in wei/second: </Text>
             <Text>{flowRatePerSecond}</Text>
           </Flex>
-
-          <Button
-            onClick={() => {
-              setIsButtonLoading(true);
-              createNewFlow(DAOQUEST_ADDRESS, flowRatePerSecond);
-              setTimeout(() => {
-                setIsButtonLoading(false);
-              }, 1000);
-            }}
-            my={4}
-          >
-            {isButtonLoading ? (
-              <Spinner animation="border" />
-            ) : (
-              'Click to Create Your Stream'
-            )}
-          </Button>
 
           <Box
             mb={2}
@@ -205,6 +194,21 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
               DAIx/month
             </p>
           </Box>
+
+          <SubmitButton
+            onClick={() => {
+              setIsButtonLoading(true);
+              createNewFlow(
+                DAOQUEST_ADDRESS,
+                flowRatePerSecond,
+                setIsButtonLoading,
+              );
+            }}
+            my={4}
+            float="right"
+          >
+            {isButtonLoading ? <Spinner color="main" /> : 'Create Your Stream'}
+          </SubmitButton>
         </Box>
       )}
     </div>

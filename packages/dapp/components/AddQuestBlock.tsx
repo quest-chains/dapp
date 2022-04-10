@@ -225,12 +225,6 @@ export const AddQuestBlock: React.FC<{
           <ModalBody>
             <CreateFlow ownerAddress={questChain.admins[0].address} />
           </ModalBody>
-
-          <ModalFooter alignItems="baseline">
-            <Button variant="ghost" mr={3} onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </Flex>

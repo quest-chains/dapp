@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Flex, HStack, Link, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Signer } from 'ethers';
