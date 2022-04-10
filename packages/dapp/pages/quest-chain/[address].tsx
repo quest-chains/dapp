@@ -1,11 +1,4 @@
-import {
-  Button,
-  Flex,
-  SimpleGrid,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
@@ -51,7 +44,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const isUser = !(isAdmin || isEditor || isReviewer);
 
   return (
-    <VStack w="100%" align="flex-start" color="main">
+    <VStack w="100%" align="flex-start" color="main" px={isUser ? 40 : 0}>
       <Text fontSize="2xl" fontWeight="bold">
         {questChain.name}
       </Text>

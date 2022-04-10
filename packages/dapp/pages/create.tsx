@@ -1,7 +1,5 @@
 import { LinkIcon } from '@chakra-ui/icons';
 import {
-  Box,
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -113,7 +111,7 @@ const Create: React.FC = () => {
   );
 
   return (
-    <VStack w="100%" align="stretch">
+    <VStack w="100%" align="stretch" px={40}>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
         {({ isSubmitting }: FormikState<FormValues>) => (
           <Form>
