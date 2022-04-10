@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -6,6 +7,7 @@ import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 
+import { DAOQUEST_ADDRESS } from '@/utils/constants';
 // let account;
 
 //where the Superfluid logic takes place
@@ -56,64 +58,9 @@ async function createNewFlow(recipient: string, flowRate: string) {
 type CreateFlowProps = { ownerAddress: string };
 
 export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
-  const [recipient, setRecipient] = useState('');
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [flowRate, setFlowRate] = useState('');
   const [flowRateDisplay, setFlowRateDisplay] = useState('');
-  const [currentAccount, setCurrentAccount] = useState('');
-
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        alert('Get MetaMask!');
-        return;
-      }
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      console.log('Connected', accounts[0]);
-      setCurrentAccount(accounts[0]);
-      // let account = currentAccount;
-      // Setup listener! This is for the case where a user comes to our site
-      // and connected their wallet for the first time.
-      // setupEventListener()
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const checkIfWalletIsConnected = async () => {
-    const { ethereum } = window;
-
-    if (!ethereum) {
-      console.log('Make sure you have metamask!');
-      return;
-    } else {
-      console.log('We have the ethereum object', ethereum);
-    }
-
-    const accounts = await ethereum.request({ method: 'eth_accounts' });
-    const chain = await window.ethereum.request({ method: 'eth_chainId' });
-    const chainId = chain;
-    console.log('chain ID:', chain);
-    console.log('global Chain Id:', chainId);
-    if (accounts.length !== 0) {
-      const account = accounts[0];
-      console.log('Found an authorized account:', account);
-      setCurrentAccount(account);
-      // Setup listener! This is for the case where a user comes to our site
-      // and ALREADY had their wallet connected + authorized.
-      // setupEventListener()
-    } else {
-      console.log('No authorized account found');
-    }
-  };
-
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  }, []);
 
   function calculateFlowRate(amount: any) {
     if (typeof Number(amount) !== 'number' || isNaN(Number(amount)) === true) {
@@ -123,107 +70,133 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
       if (Number(amount) === 0) {
         return 0;
       }
-      const amountInWei = ethers.BigNumber.from(amount);
+      const amountInWei = ethers.BigNumber.from(
+        Math.trunc(Number(flowRate) / (3600 * 24 * 30 * 365)),
+      );
+      console.log('amountInWei', amountInWei);
       const monthlyAmount = ethers.utils.formatEther(amountInWei.toString());
+      console.log('monthlyAmount', monthlyAmount);
       const calculatedFlowRate = Number(monthlyAmount) * 3600 * 24 * 30;
       return calculatedFlowRate;
     }
   }
 
-  function CreateButton({
-    isLoading,
-    children,
-    onClick,
-    ...props
-  }: {
-    isLoading: boolean;
-    children: any;
-    props?: any;
-    onClick: () => void;
-  }) {
-    return (
-      <Button {...props}>
-        {isButtonLoading ? <Spinner animation="border" /> : children}
-      </Button>
-    );
-  }
-
-  const handleFlowRateChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setFlowRate(e.target.value);
-    const newFlowRateDisplay = calculateFlowRate(e.target.value) || 0;
+  const handlePlanChange = (plan: string, rate: string) => {
+    setPlan(plan);
+    setFlowRate(rate);
+    const newFlowRateDisplay = calculateFlowRate(rate) || 0;
     setFlowRateDisplay(newFlowRateDisplay.toString());
   };
+
+  const [plan, setPlan] = useState('');
 
   return (
     <div>
       <Text>Limit Reached!</Text>
       <Text mb={4}>Select a plan to continue creating quests:</Text>
 
-      <Flex justifyContent="space-between" mb={4}>
-        <Box p={4} boxShadow="inset 0px 0px 0px 1px #AD90FF" borderRadius={20}>
-          <Text>Free Plan</Text>
-          <Text>up to 5 quests</Text>
+      <Flex justifyContent="space-between" mb={4} gap={3}>
+        <Box
+          cursor="pointer"
+          p={4}
+          boxShadow="inset 0px 0px 0px 1px #AD90FF"
+          borderRadius={20}
+          onClick={() => {
+            handlePlanChange('free', String(0));
+          }}
+          backgroundColor={plan === 'free' ? '#352859' : 'transparent'}
+        >
+          <Text fontSize={20} mb={3}>
+            Free Plan
+          </Text>
+          <Text> &gt; 5 quests</Text>
         </Box>
-        <Box p={4} boxShadow="inset 0px 0px 0px 1px #2DF8C7" borderRadius={20}>
-          <Text>Basic Plan</Text>
+        <Box
+          cursor="pointer"
+          p={4}
+          boxShadow="inset 0px 0px 0px 1px #2DF8C7"
+          borderRadius={20}
+          onClick={() => {
+            handlePlanChange('basic', String(1000000000000000000));
+          }}
+          backgroundColor={plan === 'basic' ? '#106d57' : 'transparent'}
+        >
+          <Text mb={3} fontSize={20}>
+            Basic Plan
+          </Text>
           <Text>5 - 20 quests</Text>
+          <Text>Price: 1 ETH / year</Text>
         </Box>
-        <Box p={4} boxShadow="inset 0px 0px 0px 1px #ff7038" borderRadius={20}>
-          <Text>Premium plan</Text>
+        <Box
+          cursor="pointer"
+          p={4}
+          boxShadow="inset 0px 0px 0px 1px #ff7038"
+          borderRadius={20}
+          onClick={() => {
+            handlePlanChange('premium', String(2000000000000000000));
+          }}
+          backgroundColor={plan === 'premium' ? '#583426' : 'transparent'}
+        >
+          <Text mb={3} fontSize={20}>
+            Premium plan
+          </Text>
           <Text>20 - ∞ quests</Text>
+          <Text>Price: 2 ETH / year</Text>
         </Box>
       </Flex>
 
-      {currentAccount === '' && (
-        <Button id="connectWallet" onClick={connectWallet}>
-          Connect Wallet
-        </Button>
-      )}
-      <Input
-        name="recipient"
-        value={ownerAddress}
-        placeholder="Enter recipient address"
-        mb={4}
-      ></Input>
-      <Input
-        name="flowRate"
-        value={flowRate}
-        onChange={handleFlowRateChange}
-        placeholder="Enter a flowRate in wei/second"
-      ></Input>
-      <Button
-        onClick={() => {
-          setIsButtonLoading(true);
-          createNewFlow(ownerAddress, flowRate);
-          setTimeout(() => {
-            setIsButtonLoading(false);
-          }, 1000);
-        }}
-        my={4}
-      >
-        {isButtonLoading ? (
-          <Spinner animation="border" />
-        ) : (
-          'Click to Create Your Stream'
-        )}
-      </Button>
+      {plan !== '' && plan !== 'free' && (
+        <Box>
+          <Text>Recipient&apos;s address</Text>
+          <Input
+            name="recipient"
+            value={DAOQUEST_ADDRESS}
+            placeholder="Enter recipient address"
+            mb={4}
+          ></Input>
 
-      <Box
-        mb={2}
-        boxShadow="inset 0px 0px 0px 1px #AD90FF"
-        p={4}
-        borderRadius={20}
-        _hover={{
-          background: 'whiteAlpha.100',
-        }}
-      >
-        <p>Your flow will be equal to:</p>
-        <p>
-          <b>${flowRateDisplay !== ' ' ? flowRateDisplay : 0}</b> DAIx/month
-        </p>
-      </Box>
+          <Flex>
+            <Text mr={4}>Flowrate in wei/year: </Text>
+            <Text>{flowRate}</Text>
+          </Flex>
+          <Flex>
+            <Text mr={4}>Flowrate in wei/second: </Text>
+            <Text>{Number(flowRate) / (3600 * 24 * 30 * 365)}</Text>
+          </Flex>
+
+          <Button
+            onClick={() => {
+              setIsButtonLoading(true);
+              createNewFlow(DAOQUEST_ADDRESS, flowRate);
+              setTimeout(() => {
+                setIsButtonLoading(false);
+              }, 1000);
+            }}
+            my={4}
+          >
+            {isButtonLoading ? (
+              <Spinner animation="border" />
+            ) : (
+              'Click to Create Your Stream'
+            )}
+          </Button>
+
+          <Box
+            mb={2}
+            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            p={4}
+            borderRadius={20}
+            _hover={{
+              background: 'whiteAlpha.100',
+            }}
+          >
+            <p>Your flow will be equal to:</p>
+            <p>
+              <b>${flowRateDisplay !== ' ' ? flowRateDisplay : 0}</b> DAIx/month
+            </p>
+          </Box>
+        </Box>
+      )}
     </div>
   );
 };

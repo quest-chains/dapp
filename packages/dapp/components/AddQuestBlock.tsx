@@ -185,7 +185,7 @@ export const AddQuestBlock: React.FC<{
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="36rem">
           <ModalHeader>Payment plan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
