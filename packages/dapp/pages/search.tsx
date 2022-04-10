@@ -89,7 +89,7 @@ const Search: React.FC = () => {
                   py={4}
                   background="rgba(255, 255, 255, 0.02)"
                   _hover={{
-                    background: 'rgba(255, 255, 255, 0.1)',
+                    background: 'whiteAlpha.100',
                   }}
                   fontWeight="400"
                   backdropFilter="blur(40px)"

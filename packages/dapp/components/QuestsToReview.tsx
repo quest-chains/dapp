@@ -44,6 +44,9 @@ export const QuestsToReview = () => {
                   boxShadow="inset 0px 0px 0px 1px #AD90FF"
                   p={8}
                   borderRadius={20}
+                  _hover={{
+                    background: 'whiteAlpha.100',
+                  }}
                 >
                   <Text mb={4} fontSize="lg" fontWeight="bold">
                     {chain.name}

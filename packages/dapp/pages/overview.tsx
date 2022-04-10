@@ -34,6 +34,9 @@ const Overview: React.FC = () => {
                 p={8}
                 borderRadius={20}
                 justify="space-between"
+                _hover={{
+                  background: 'whiteAlpha.100',
+                }}
               >
                 <Flex flexDir="column">
                   <Text>{dao.name}</Text>

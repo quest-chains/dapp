@@ -23,7 +23,7 @@ import {
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
@@ -42,21 +42,30 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const [quest, setQuest] = useState<{
+    questId: string;
+    name: string | null | undefined;
+    description: string | null | undefined;
+  } | null>(null);
   const [proofDescription, setProofDescription] = useState('');
-
-  const handleInputChange = (e: any) => setProofDescription(e.target.value);
 
   const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
     // Disable click and keydown behavior
     noClick: true,
     noKeyboard: true,
+    accept: 'image/*,audio/*,video/*',
   });
 
-  const submit = () => {
-    console.log(proofDescription);
-    console.log(acceptedFiles);
-  };
+  const onModalClose = useCallback(() => {
+    setProofDescription('');
+    setQuest(null);
+    onClose();
+  }, [onClose]);
+
+  const submit = useCallback(async () => {
+    if (quest && proofDescription && acceptedFiles.length > 0) {
+    }
+  }, [proofDescription, acceptedFiles, quest]);
 
   const { questChain, refresh } = useLatestQuestChainData(inputQuestChain);
   if (isFallback) {
@@ -118,14 +127,32 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   </Text>
                 </CollapsableText>
               </Flex>
-              <Box>
-                <Button onClick={onOpen}>Upload Proof</Button>
-              </Box>
 
-              <Modal isOpen={isOpen} onClose={onClose}>
+              {isUser && (
+                <Box>
+                  <Button
+                    onClick={() => {
+                      setQuest({
+                        questId: quest.questId,
+                        name: quest.name,
+                        description: quest.description,
+                      });
+                      onOpen();
+                    }}
+                  >
+                    Upload Proof
+                  </Button>
+                </Box>
+              )}
+
+              <Modal
+                isOpen={!!quest && isOpen}
+                onClose={onModalClose}
+                size="xl"
+              >
                 <ModalOverlay />
                 <ModalContent>
-                  <ModalHeader>Upload Proof</ModalHeader>
+                  <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
                     <FormControl isRequired>
@@ -135,7 +162,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       <Textarea
                         id="proofDescription"
                         value={proofDescription}
-                        onChange={handleInputChange}
+                        onChange={e => setProofDescription(e.target.value)}
                         mb={4}
                       />
                     </FormControl>
@@ -172,7 +199,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   </ModalBody>
 
                   <ModalFooter alignItems="baseline">
-                    <Button variant="ghost" mr={3} onClick={onClose}>
+                    <Button variant="ghost" mr={3} onClick={onModalClose}>
                       Close
                     </Button>
                     <SubmitButton
@@ -213,7 +240,13 @@ export const getStaticProps = async (
 ) => {
   const address = context.params?.address;
 
-  const questChain = address ? await getQuestChainInfo(address) : null;
+  let questChain = null;
+  try {
+    questChain = address ? await getQuestChainInfo(address) : null;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Could not fetch Quest Chain for address ${address}`, error);
+  }
 
   return {
     props: {
