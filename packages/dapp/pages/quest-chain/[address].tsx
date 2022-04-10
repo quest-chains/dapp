@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { Flex, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
+import { SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -46,30 +46,32 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const isUser = !(isAdmin || isEditor || isReviewer);
 
   return (
-    <VStack w="100%" align="flex-start" color="main">
+    <VStack w="100%" align="flex-start" color="main" px={isUser ? 40 : 0}>
       <Head>
         <title>{questChain.name}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Text fontSize="xl">{questChain.name}</Text>
-      <Text>{questChain.description}</Text>
-      <SimpleGrid columns={isUser ? 1 : 2} spacing={8} pt={8} w="100%">
-        <VStack spacing={2}>
-          <Text w="100%">{questChain.quests.length} Quests Found</Text>
+      <Text fontSize="2xl" fontWeight="bold">
+        {questChain.name}
+      </Text>
+      <Text fontWeight="lg">{questChain.description}</Text>
+      <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
+        <VStack spacing={6}>
+          <Text w="100%" color="main" fontSize={20} textTransform="uppercase">
+            {questChain.quests.length} Quests found
+          </Text>
           {questChain.quests.map(quest => (
-            <Flex
+            <VStack
               w="100%"
               boxShadow="inset 0px 0px 0px 1px #AD90FF"
               p={8}
               borderRadius={20}
-              justify="space-between"
+              align="stretch"
               key={quest.questId}
             >
-              <Flex flexDir="column">
-                <Text fontSize="lg">{quest.name}</Text>
-                <Text>{quest.description}</Text>
-              </Flex>
-            </Flex>
+              <Text fontSize="lg">{quest.name}</Text>
+              <Text>{quest.description}</Text>
+            </VStack>
           ))}
         </VStack>
         <VStack spacing={8}>

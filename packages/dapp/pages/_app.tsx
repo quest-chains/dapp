@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import 'focus-visible/dist/focus-visible';
 import '@/assets/bg.scss';
+import '@/fonts/styles.css';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';

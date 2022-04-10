@@ -1,5 +1,13 @@
 /* eslint-disable import/no-unresolved */
-import { Box, Flex, HStack, Link as ChakraLink, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  HStack,
+  Link as ChakraLink,
+  SimpleGrid,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 
@@ -8,14 +16,14 @@ import { status } from '@/utils/status';
 
 const Overview: React.FC = () => {
   return (
-    <Flex gap={20}>
+    <SimpleGrid columns={2} spacing={8}>
       <Head>
         <title>Quests Overview</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {/* left */}
-      <Flex flexGrow={1} flexDirection="column">
-        <Text mb={6} color="main" fontSize={20}>
+      <VStack spacing={4} align="stretch">
+        <Text mb={2} mx={8} color="main" fontSize={20}>
           MY PROGRESS
         </Text>
         {progress.map(dao => (
@@ -38,11 +46,11 @@ const Overview: React.FC = () => {
             </ChakraLink>
           </NextLink>
         ))}
-      </Flex>
+      </VStack>
 
       {/* right */}
-      <Flex flexDirection="column" flexGrow={1}>
-        <Text mb={6} color="main" fontSize={20}>
+      <VStack spacing={4} align="stretch">
+        <Text mb={2} mx={8} color="main" fontSize={20}>
           SUBMISSIONS TO REVIEW
         </Text>
         {reviews.map(person => (
@@ -85,8 +93,8 @@ const Overview: React.FC = () => {
             </ChakraLink>
           </NextLink>
         ))}
-      </Flex>
-    </Flex>
+      </VStack>
+    </SimpleGrid>
   );
 };
 

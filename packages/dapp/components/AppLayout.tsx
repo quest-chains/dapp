@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import {
   Box,
   Flex,
@@ -23,13 +22,14 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   const router = useRouter();
 
   return (
-    <Stack align="center" p="0" m="0" spacing="0">
+    <Stack align="center" p="0" m="0" spacing="0" fontFamily="body">
       <VStack
         p={{ base: 6, lg: 8 }}
         alignItems="center"
         borderBottomRadius="md"
         w="100%"
         mx="auto"
+        maxW="9xl"
       >
         {isConnected && (
           <HStack w="100%" justify="space-between" pos="relative">

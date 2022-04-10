@@ -1,8 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { LinkIcon } from '@chakra-ui/icons';
 import {
-  Box,
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -27,6 +25,7 @@ import NextLink from 'next/link';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { SubmitButton } from '@/components/SubmitButton';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { FACTORY_CONTRACT } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -84,7 +83,7 @@ const Create: React.FC = () => {
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(
-          'Waiting for Confirmation - Confirm this transaction in your Wallet',
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
         );
         const tx = await factoryContract.create(details);
         toast.dismiss(tid);
@@ -114,7 +113,7 @@ const Create: React.FC = () => {
   );
 
   return (
-    <VStack w="100%" align="stretch">
+    <VStack w="100%" align="stretch" px={40}>
       <Head>
         <title>DAOQuest</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -125,7 +124,7 @@ const Create: React.FC = () => {
             {/* Left Column: Quest Chain Name, Quest Chain Description, Core Member Addresses */}
             <Flex flexDirection="column">
               <Text mb={6} color="main" fontSize={20}>
-                QUEST CHAIN INFO
+                CREATE QUEST CHAIN
               </Text>
               <Flex
                 flexDir="column"
@@ -205,18 +204,12 @@ const Create: React.FC = () => {
                   </Box>
                 )}
               /> */}
+                <Flex w="100%" justify="flex-end">
+                  <SubmitButton mt={4} isLoading={isSubmitting} type="submit">
+                    Create
+                  </SubmitButton>
+                </Flex>
               </Flex>
-              <Box>
-                <Button
-                  mt={4}
-                  colorScheme="teal"
-                  isLoading={isSubmitting}
-                  type="submit"
-                  float="right"
-                >
-                  Create Quest Chain
-                </Button>
-              </Box>
             </Flex>
           </Form>
         )}
