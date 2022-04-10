@@ -21,3 +21,28 @@ export const QuestChainInfoFragment = gql`
     }
   }
 `;
+
+export const QuestStatusInfoFragment = gql`
+  fragment QuestStatusInfo on QuestStatus {
+    id
+    status
+    questChain {
+      address: id
+      name
+      description
+      quests {
+        questId
+        name
+        description
+      }
+    }
+    quest {
+      questId
+      name
+      description
+    }
+    user {
+      id
+    }
+  }
+`;

@@ -1,10 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { CombinedError } from 'urql';
 
 import {
   QuestChainInfoFragment,
   useQuestChainInfoQuery,
 } from '@/graphql/types';
-import { useRefresh } from '@/hooks/useRefresh';
 
 export const useLatestQuestChainData = (
   inputQuestChain: QuestChainInfoFragment | null,
@@ -12,8 +12,9 @@ export const useLatestQuestChainData = (
   questChain: QuestChainInfoFragment | null;
   refresh: () => void;
   fetching: boolean;
+  error: CombinedError | undefined;
 } => {
-  const [{ data, fetching }, execute] = useQuestChainInfoQuery({
+  const [{ data, fetching, error }, execute] = useQuestChainInfoQuery({
     variables: { address: inputQuestChain?.address ?? '' },
     requestPolicy: 'network-only',
     pause: !!inputQuestChain,
@@ -23,14 +24,10 @@ export const useLatestQuestChainData = (
     [data, fetching, inputQuestChain],
   );
 
-  const [refreshCount, refresh] = useRefresh();
-  useEffect(() => {
-    execute();
-  }, [refreshCount, execute]);
-
   return {
     questChain,
     fetching,
-    refresh,
+    refresh: execute,
+    error,
   };
 };

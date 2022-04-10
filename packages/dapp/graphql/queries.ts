@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { gql } from 'graphql-tag';
 
-import { QuestChainInfoFragment } from './fragments';
+import { QuestChainInfoFragment, QuestStatusInfoFragment } from './fragments';
 
 gql`
   query QuestChainsInfo($limit: Int) {
@@ -58,39 +58,38 @@ gql`
 `;
 
 gql`
-  query QuestsToReview($reviewer: String!, $first: Int) {
+  query QuestChainsReviewStatus($reviewer: String!, $first: Int) {
     questChains(first: $first, where: { reviewers_contains: [$reviewer] }) {
+      address: id
+      name
+      description
+      questsFailed {
+        id
+      }
+      questsPassed {
+        id
+      }
       questsInReview {
-        quest {
-          questId
-          name
-          description
-        }
-        user {
-          id
-        }
+        id
       }
     }
   }
 `;
 
 gql`
-  query QuestsStatus($user: String!, $first: Int) {
-    questStatuses(first: $first, where: { user: $user }) {
-      questChain {
-        address: id
-        name
-        description
-        quests {
-          questId
-        }
-      }
-      quest {
-        questId
-        name
-        description
-      }
-      status
+  query StatusForChain($address: String!, $reviewer: String!, $first: Int) {
+    questStatuses(first: $first, where: { questChain: $address }) {
+      ...QuestStatusInfo
     }
   }
+  ${QuestStatusInfoFragment}
+`;
+
+gql`
+  query StatusForUser($user: String!, $first: Int) {
+    questStatuses(first: $first, where: { user: $user }) {
+      ...QuestStatusInfo
+    }
+  }
+  ${QuestStatusInfoFragment}
 `;
