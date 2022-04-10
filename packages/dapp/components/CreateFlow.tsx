@@ -75,9 +75,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
       const amountInWei = ethers.BigNumber.from(
         Math.trunc(Number(amount) / (3600 * 24 * 30 * 12)),
       );
-      console.log('amountInWei', amountInWei);
       const monthlyAmount = ethers.utils.formatEther(amountInWei.toString());
-      console.log('monthlyAmount', monthlyAmount);
       const calculatedFlowRate = Number(monthlyAmount) * 3600 * 24 * 30;
       return calculatedFlowRate;
     }
@@ -87,7 +85,9 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
     console.log('rate', rate);
     setPlan(plan);
     setFlowRatePerYear(rate);
-    setFlowRatePerSecond(String(Number(rate) / (3600 * 24 * 30 * 12)));
+    setFlowRatePerSecond(
+      String(Math.trunc(Number(rate) / (3600 * 24 * 30 * 12))),
+    );
     const newFlowRateDisplay = calculateFlowRate(rate) || 0;
 
     setFlowRateDisplay(newFlowRateDisplay.toString());
@@ -155,6 +155,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
           <Text>Recipient&apos;s address</Text>
           <Input
             name="recipient"
+            readOnly
             value={DAOQUEST_ADDRESS}
             placeholder="Enter recipient address"
             mb={4}
@@ -172,7 +173,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
           <Button
             onClick={() => {
               setIsButtonLoading(true);
-              createNewFlow(DAOQUEST_ADDRESS, flowRatePerYear);
+              createNewFlow(DAOQUEST_ADDRESS, flowRatePerSecond);
               setTimeout(() => {
                 setIsButtonLoading(false);
               }, 1000);
@@ -197,7 +198,13 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
           >
             <p>Your flow will be equal to:</p>
             <p>
-              <b>${flowRateDisplay !== ' ' ? flowRateDisplay : 0}</b> DAIx/month
+              <b>
+                $
+                {flowRateDisplay !== ' '
+                  ? Math.ceil(Number(flowRateDisplay))
+                  : 0}
+              </b>{' '}
+              DAIx/month
             </p>
           </Box>
         </Box>
