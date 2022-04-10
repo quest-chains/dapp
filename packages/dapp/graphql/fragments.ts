@@ -5,14 +5,13 @@ export const QuestChainInfoFragment = gql`
     address: id
     name
     description
-    imageUrl
-    externalUrl
-    createdAt
-    createdBy {
-      address: id
-    }
     admins {
       address: id
+    }
+    quests {
+      questId
+      name
+      description
     }
     editors {
       address: id

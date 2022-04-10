@@ -1,6 +1,10 @@
-import { Metadata } from '@/../utils/dist';
+import type { Metadata as MetadataType } from '@/../utils/dist';
 
-export const uploadMetadata = async (metadata: Metadata): Promise<string> => {
+export type Metadata = MetadataType;
+
+export const uploadMetadataViaAPI = async (
+  metadata: MetadataType,
+): Promise<string> => {
   const res = await fetch('/api/metadata', {
     method: 'POST',
     headers: {

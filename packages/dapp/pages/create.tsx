@@ -13,30 +13,35 @@ import {
   Wrap,
 } from '@chakra-ui/react';
 import { providers, Signer } from 'ethers';
-import { Field, Form, Formik } from 'formik';
+import {
+  Field,
+  FieldProps,
+  Form,
+  Formik,
+  FormikHelpers,
+  FormikState,
+} from 'formik';
 import NextLink from 'next/link';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { Metadata } from '@/../utils/dist';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { FACTORY_CONTRACT } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { uploadMetadata } from '@/utils/metadata';
+import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
-interface QuestChainCreationFormValues {
+interface FormValues {
   name: string;
   description: string;
-  // coreMemberAddresses: string[];
 }
 
 const getQuestChainAddress = (
-  factory: QuestChainFactory,
+  factoryContract: QuestChainFactory,
   receipt: providers.TransactionReceipt,
 ): string | null => {
-  const abi = factory.interface;
+  const abi = factoryContract.interface;
   const eventFragment = abi.getEvent('NewQuestChain');
   const eventTopic = abi.getEventTopic(eventFragment);
   const log = receipt.logs.find(e => e.topics[0] === eventTopic);
@@ -51,22 +56,21 @@ const Create: React.FC = () => {
   const [questChains, setQuestChains] = useState<
     (Metadata & { address: string })[]
   >([]);
-  const initialValues: QuestChainCreationFormValues = {
+  const initialValues: FormValues = {
     name: '',
     description: '',
-    // coreMemberAddresses: [],
   };
 
   const { provider } = useWallet();
-  const factory: QuestChainFactory = QuestChainFactory__factory.connect(
+  const factoryContract: QuestChainFactory = QuestChainFactory__factory.connect(
     FACTORY_CONTRACT,
     provider?.getSigner() as Signer,
   );
 
   const onSubmit = useCallback(
     async (
-      { name, description }: QuestChainCreationFormValues,
-      { setSubmitting }: { setSubmitting: (b: boolean) => void },
+      { name, description }: FormValues,
+      { setSubmitting }: FormikHelpers<FormValues>,
     ) => {
       const metadata: Metadata = {
         name,
@@ -74,13 +78,13 @@ const Create: React.FC = () => {
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
-        const hash = await uploadMetadata(metadata);
+        const hash = await uploadMetadataViaAPI(metadata);
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(
           'Waiting for Confirmation - Confirm this transaction in your Wallet',
         );
-        const tx = await factory.create(details);
+        const tx = await factoryContract.create(details);
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash);
         const receipt = await tx.wait(1);
@@ -91,7 +95,7 @@ const Create: React.FC = () => {
         await waitUntilBlock(receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully created a new Quest Chain');
-        const address = getQuestChainAddress(factory, receipt);
+        const address = getQuestChainAddress(factoryContract, receipt);
         if (address) {
           setQuestChains(chains => {
             return [...chains, { ...metadata, address }];
@@ -104,13 +108,13 @@ const Create: React.FC = () => {
 
       setSubmitting(false);
     },
-    [factory],
+    [factoryContract],
   );
 
   return (
     <VStack w="100%" align="stretch">
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
-        {props => (
+        {({ isSubmitting }: FormikState<FormValues>) => (
           <Form>
             {/* Left Column: Quest Chain Name, Quest Chain Description, Core Member Addresses */}
             <Flex flexDirection="column">
@@ -126,7 +130,7 @@ const Create: React.FC = () => {
                 <VStack mb={4} align="flex-start">
                   <Wrap minW="20rem">
                     <Field name="name">
-                      {({ field, form }: { field: any; form: any }) => (
+                      {({ field, form }: FieldProps<string, FormValues>) => (
                         <FormControl isRequired>
                           <FormLabel color="main" htmlFor="name">
                             Quest Chain Name
@@ -144,7 +148,7 @@ const Create: React.FC = () => {
                     </Field>
                   </Wrap>
                   <Field name="description">
-                    {({ field, form }: { field: any; form: any }) => (
+                    {({ field, form }: FieldProps<string, FormValues>) => (
                       <FormControl isRequired>
                         <FormLabel color="main" htmlFor="description">
                           Quest Chain Description
@@ -200,7 +204,7 @@ const Create: React.FC = () => {
                 <Button
                   mt={4}
                   colorScheme="teal"
-                  isLoading={props.isSubmitting}
+                  isLoading={isSubmitting}
                   type="submit"
                   float="right"
                 >

@@ -1,31 +1,22 @@
-/* eslint-disable no-console */
-/* eslint-disable import/no-unresolved */
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  HStack,
-  Input,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { Field, Form, Formik } from 'formik';
+import { Flex, SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
+import { AddQuestBlock } from '@/components/AddQuestBlock';
 import {
   getQuestChainAddresses,
   getQuestChainInfo,
 } from '@/graphql/questChains';
+import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
+import { useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-const QuestChain: React.FC<Props> = ({ questChain }) => {
+const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
+  const { address } = useWallet();
+
+  const { questChain, refresh } = useLatestQuestChainData(inputQuestChain);
   if (isFallback) {
     return (
       <VStack>
@@ -40,89 +31,45 @@ const QuestChain: React.FC<Props> = ({ questChain }) => {
       </VStack>
     );
   }
+  const isAdmin: boolean = questChain.admins.some(
+    ({ address: a }) => a === address?.toLowerCase(),
+  );
+  const isEditor: boolean = questChain.editors.some(
+    ({ address: a }) => a === address?.toLowerCase(),
+  );
+  const isReviewer: boolean = questChain.editors.some(
+    ({ address: a }) => a === address?.toLowerCase(),
+  );
+
+  const isUser = !(isAdmin || isEditor || isReviewer);
+
   return (
-    <VStack>
-      <Box>Name: {questChain.name}</Box>
-      <Box>Description: {questChain.description}</Box>
-
-      <Formik
-        initialValues={{}}
-        onSubmit={(values, actions) => {
-          setTimeout(() => {
-            // if deleting/re adding quests, some values become empty. we need to filter out these quests when
-            // we decide to send the data! (const quests = values.quests.filter(quest => quest.name))
-            alert(JSON.stringify(values, null, 2));
-            actions.setSubmitting(false);
-          }, 1000);
-        }}
-      >
-        {props => (
-          <Form>
-            <Flex w="full" gap={20} alignItems="normal">
-              <Flex flexGrow={1} flexDirection="column">
-                <Text mb={6} color="main" fontSize={20}>
-                  Add a quest to the quest chain
-                </Text>
-                <Flex
-                  flexDir="column"
-                  boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                  p={8}
-                  borderRadius={30}
-                >
-                  <HStack mb={4}>
-                    <Field name="questName">
-                      {({ field, form }: { field: any; form: any }) => (
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="questName">
-                            Quest Name
-                          </FormLabel>
-                          <Input
-                            {...field}
-                            id="questName"
-                            placeholder="Quest Name"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.questName}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <Field name="questDescription">
-                      {({ field, form }: { field: any; form: any }) => (
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="questDescription">
-                            Quest Description
-                          </FormLabel>
-                          <Input
-                            {...field}
-                            id="questDescription"
-                            placeholder="Quest Description"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.questDescription}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                  </HStack>
-                </Flex>
-              </Flex>
-
-              {/* Right Column, Quests Creator */}
-            </Flex>
-
-            <Button
-              mt={4}
-              colorScheme="teal"
-              isLoading={props.isSubmitting}
-              type="submit"
-              float="right"
+    <VStack w="100%" align="flex-start" color="main">
+      <Text fontSize="xl">{questChain.name}</Text>
+      <Text>{questChain.description}</Text>
+      <SimpleGrid columns={isUser ? 1 : 2} spacing={8} pt={8} w="100%">
+        <VStack spacing={2}>
+          <Text w="100%">{questChain.quests.length} Quests Found</Text>
+          {questChain.quests.map(quest => (
+            <Flex
+              w="100%"
+              boxShadow="inset 0px 0px 0px 1px #AD90FF"
+              p={8}
+              borderRadius={20}
+              justify="space-between"
+              key={quest.questId}
             >
-              Add
-            </Button>
-          </Form>
-        )}
-      </Formik>
+              <Flex flexDir="column">
+                <Text fontSize="lg">{quest.name}</Text>
+                <Text>{quest.description}</Text>
+              </Flex>
+            </Flex>
+          ))}
+        </VStack>
+        <VStack spacing={8}>
+          <AddQuestBlock questChain={questChain} refresh={refresh} />
+        </VStack>
+      </SimpleGrid>
     </VStack>
   );
 };

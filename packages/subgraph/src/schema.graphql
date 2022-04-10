@@ -18,7 +18,7 @@ type QuestChain @entity {
   admins: [User!]!
   reviewers: [User!]!
   editors: [User!]!
-  quests: [Quest!]!
+  quests: [Quest!]! @derivedFrom(field: "questChain")
   createdBy: User!
   createdAt: BigInt!
   editedBy: User
