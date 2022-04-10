@@ -11,7 +11,7 @@ import { DAOQUEST_ADDRESS } from '@/utils/constants';
 // let account;
 
 //where the Superfluid logic takes place
-async function createNewFlow(recipient: string, flowRate: string) {
+async function createNewFlow(recipient: string, flowRatePerSecond: string) {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   const signer = provider.getSigner();
@@ -27,7 +27,7 @@ async function createNewFlow(recipient: string, flowRate: string) {
   try {
     const createFlowOperation = sf.cfaV1.createFlow({
       receiver: recipient,
-      flowRate: flowRate,
+      flowRate: flowRatePerSecond,
       superToken: DAIx,
       // userData?: string
     });
@@ -44,7 +44,7 @@ async function createNewFlow(recipient: string, flowRate: string) {
     Super Token: DAIx
     Sender: 0xDCB45e4f6762C3D7C61a00e96Fb94ADb7Cf27721
     Receiver: ${recipient},
-    FlowRate: ${flowRate}
+    FlowRate: ${flowRatePerSecond}
     `,
     );
   } catch (error) {
@@ -59,10 +59,12 @@ type CreateFlowProps = { ownerAddress: string };
 
 export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
-  const [flowRate, setFlowRate] = useState('');
+  const [flowRatePerYear, setFlowRatePerYear] = useState('');
+  const [flowRatePerSecond, setFlowRatePerSecond] = useState('');
   const [flowRateDisplay, setFlowRateDisplay] = useState('');
 
   function calculateFlowRate(amount: any) {
+    console.log('amount', amount);
     if (typeof Number(amount) !== 'number' || isNaN(Number(amount)) === true) {
       alert('You can only calculate a flowRate based on a number');
       return;
@@ -71,7 +73,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
         return 0;
       }
       const amountInWei = ethers.BigNumber.from(
-        Math.trunc(Number(flowRate) / (3600 * 24 * 30 * 365)),
+        Math.trunc(Number(amount) / (3600 * 24 * 30 * 12)),
       );
       console.log('amountInWei', amountInWei);
       const monthlyAmount = ethers.utils.formatEther(amountInWei.toString());
@@ -82,9 +84,12 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
   }
 
   const handlePlanChange = (plan: string, rate: string) => {
+    console.log('rate', rate);
     setPlan(plan);
-    setFlowRate(rate);
+    setFlowRatePerYear(rate);
+    setFlowRatePerSecond(String(Number(rate) / (3600 * 24 * 30 * 12)));
     const newFlowRateDisplay = calculateFlowRate(rate) || 0;
+
     setFlowRateDisplay(newFlowRateDisplay.toString());
   };
 
@@ -117,7 +122,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
           boxShadow="inset 0px 0px 0px 1px #2DF8C7"
           borderRadius={20}
           onClick={() => {
-            handlePlanChange('basic', String(1000000000000000000));
+            handlePlanChange('basic', String(1000000000000000000 * 3000));
           }}
           backgroundColor={plan === 'basic' ? '#106d57' : 'transparent'}
         >
@@ -133,7 +138,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
           boxShadow="inset 0px 0px 0px 1px #ff7038"
           borderRadius={20}
           onClick={() => {
-            handlePlanChange('premium', String(2000000000000000000));
+            handlePlanChange('premium', String(1000000000000000000 * 6000));
           }}
           backgroundColor={plan === 'premium' ? '#583426' : 'transparent'}
         >
@@ -157,17 +162,17 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
 
           <Flex>
             <Text mr={4}>Flowrate in wei/year: </Text>
-            <Text>{flowRate}</Text>
+            <Text>{flowRatePerYear}</Text>
           </Flex>
           <Flex>
             <Text mr={4}>Flowrate in wei/second: </Text>
-            <Text>{Number(flowRate) / (3600 * 24 * 30 * 365)}</Text>
+            <Text>{flowRatePerSecond}</Text>
           </Flex>
 
           <Button
             onClick={() => {
               setIsButtonLoading(true);
-              createNewFlow(DAOQUEST_ADDRESS, flowRate);
+              createNewFlow(DAOQUEST_ADDRESS, flowRatePerYear);
               setTimeout(() => {
                 setIsButtonLoading(false);
               }, 1000);
