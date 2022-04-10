@@ -27,6 +27,7 @@ import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
+import { CollapsableText } from '@/components/CollapsableText';
 import { SubmitButton } from '@/components/SubmitButton';
 import {
   getQuestChainAddresses,
@@ -100,7 +101,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             {questChain.quests.length} Quests found
           </Text>
           {questChain.quests.map(quest => (
-            <VStack
+            <Flex
               w="100%"
               boxShadow="inset 0px 0px 0px 1px #AD90FF"
               p={8}
@@ -108,10 +109,15 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               borderRadius={20}
               align="stretch"
               key={quest.questId}
+              justifyContent="space-between"
             >
-              <Text fontSize="lg">{quest.name}</Text>
-              <Text color="white">{quest.description}</Text>
-
+              <Flex flexDirection="column">
+                <CollapsableText title={quest.name}>
+                  <Text mx={4} mt={2} color="white" fontStyle="italic">
+                    {quest.description}
+                  </Text>
+                </CollapsableText>
+              </Flex>
               <Box>
                 <Button onClick={onOpen}>Upload Proof</Button>
               </Box>
@@ -180,7 +186,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   </ModalFooter>
                 </ModalContent>
               </Modal>
-            </VStack>
+            </Flex>
           ))}
         </VStack>
         <VStack spacing={8}>
