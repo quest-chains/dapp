@@ -1,10 +1,33 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
-import { SimpleGrid, Spinner, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Spinner,
+  Text,
+  Textarea,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
+import { SubmitButton } from '@/components/SubmitButton';
 import {
   getQuestChainAddresses,
   getQuestChainInfo,
@@ -17,6 +40,22 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>;
 const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address } = useWallet();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [proofDescription, setProofDescription] = useState('');
+
+  const handleInputChange = (e: any) => setProofDescription(e.target.value);
+
+  const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
+    // Disable click and keydown behavior
+    noClick: true,
+    noKeyboard: true,
+  });
+
+  const submit = () => {
+    console.log(proofDescription);
+    console.log(acceptedFiles);
+  };
 
   const { questChain, refresh } = useLatestQuestChainData(inputQuestChain);
   if (isFallback) {
@@ -65,12 +104,82 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               w="100%"
               boxShadow="inset 0px 0px 0px 1px #AD90FF"
               p={8}
+              gap={3}
               borderRadius={20}
               align="stretch"
               key={quest.questId}
             >
               <Text fontSize="lg">{quest.name}</Text>
-              <Text>{quest.description}</Text>
+              <Text color="white">{quest.description}</Text>
+
+              <Box>
+                <Button onClick={onOpen}>Upload Proof</Button>
+              </Box>
+
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Upload Proof</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <FormControl isRequired>
+                      <FormLabel color="main" htmlFor="proofDescription">
+                        Description
+                      </FormLabel>
+                      <Textarea
+                        id="proofDescription"
+                        value={proofDescription}
+                        onChange={handleInputChange}
+                        mb={4}
+                      />
+                    </FormControl>
+                    <FormLabel color="main" htmlFor="file">
+                      Upload file
+                    </FormLabel>
+                    <Flex
+                      {...getRootProps({ className: 'dropzone' })}
+                      flexDir="column"
+                      borderWidth={1}
+                      borderStyle="dashed"
+                      borderRadius={20}
+                      p={4}
+                      mb={4}
+                    >
+                      <input {...getInputProps()} />
+                      <Box mb={4}>Drag 'n' drop some files here</Box>
+                      <Box>
+                        <Button
+                          type="button"
+                          onClick={open}
+                          borderRadius="full"
+                        >
+                          Open File Dialog
+                        </Button>
+                      </Box>
+                    </Flex>
+                    <Text>Files:</Text>
+                    {acceptedFiles.map((file: any) => (
+                      <li key={file.path}>
+                        {file.path} - {file.size} bytes
+                      </li>
+                    ))}
+                  </ModalBody>
+
+                  <ModalFooter alignItems="baseline">
+                    <Button variant="ghost" mr={3} onClick={onClose}>
+                      Close
+                    </Button>
+                    <SubmitButton
+                      mt={4}
+                      type="submit"
+                      onClick={submit}
+                      isDisabled={!acceptedFiles.length || !proofDescription}
+                    >
+                      Submit
+                    </SubmitButton>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
             </VStack>
           ))}
         </VStack>

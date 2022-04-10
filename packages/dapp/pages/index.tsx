@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { Button, Flex, Heading, VStack } from '@chakra-ui/react';
+import { Flex, Heading, VStack } from '@chakra-ui/react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useState } from 'react';
