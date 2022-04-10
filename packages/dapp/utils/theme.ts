@@ -32,7 +32,7 @@ export const theme = extendTheme({
   styles: {
     global: (props: { colorMode: string }) => ({
       'html, body': {
-        backgroundColor: props.colorMode === 'dark' ? '#0d1117' : 'white',
+        backgroundColor: props.colorMode === 'dark' ? 'transparent' : 'white',
       },
     }),
   },

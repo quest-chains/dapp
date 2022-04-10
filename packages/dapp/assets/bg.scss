@@ -1,7 +1,17 @@
 .background {
   width: 100vw;
   height: 100vh;
-  background: #3e1e68;
+  background: #0d1117;
+  position: absolute;
+  z-index: -10;
+  overflow: 'hidden';
+}
+.background-root {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("background.png");;
+  background-color: #0d1117;
+  background-size: cover;
   position: absolute;
   z-index: -10;
   overflow: 'hidden';
@@ -22,13 +32,13 @@ $amount: 20;
   animation-duration: $animationDuration;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  $colors: (#583c87, #7a53fc, #8a54cb);
+  $colors: (#573c8761, #c9823f5c, #4a6e4581);
   @for $i from 1 through $amount {
     &:nth-child(#{$i}) {
       color: nth($colors, random(length($colors)));
       top: random(100) * 1%;
       left: random(100) * 1%;
-      animation-duration: (random($animationDuration * 10) / 10) * 1s + 10s;
+      animation-duration: (random($animationDuration * 10) / 10) * 1s + 15s;
       animation-delay: random(($animationDuration + 10s) * 10) / 10 * -1s;
       transform-origin: (random(50) - 25) * 1vw (random(50) - 25) * 1vh;
       $blurRadius: (random() + 0.7) * $particleSize * 0.5;

@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
 import {
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -11,7 +10,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,

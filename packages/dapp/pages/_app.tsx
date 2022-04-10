@@ -6,6 +6,7 @@ import '@/fonts/styles.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { withUrqlClient } from 'next-urql';
 import { Toaster } from 'react-hot-toast';
 
@@ -15,17 +16,17 @@ import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
+  const router = useRouter();
+
   return (
     <ChakraProvider resetCSS theme={theme}>
-      {/* <div className="background">
+      <div
+        className={router.pathname === '/' ? 'background-root' : 'background'}
+      >
         <span></span>
         <span></span>
         <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div> */}
+      </div>
       <Global styles={globalStyles} />
       <WalletProvider>
         <AppLayout>
