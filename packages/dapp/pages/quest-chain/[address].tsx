@@ -84,9 +84,11 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }, [onClose]);
 
   const submit = useCallback(async () => {
-    if (quest && proofDescription && acceptedFiles.length > 0) {
+    if (quest && proofDescription && myFiles.length > 0) {
+      console.log('proofDescription', proofDescription);
+      console.log(myFiles);
     }
-  }, [proofDescription, acceptedFiles, quest]);
+  }, [proofDescription, myFiles, quest]);
 
   const { questChain, refresh } = useLatestQuestChainData(inputQuestChain);
   if (isFallback) {
