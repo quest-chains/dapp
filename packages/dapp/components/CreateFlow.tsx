@@ -22,7 +22,7 @@ async function createNewFlow(recipient: string, flowRatePerSecond: string) {
     provider: provider,
   });
 
-  const DAIx = '0xe3cb950cb164a31c66e32c320a800d477019dcff';
+  const DAIx = '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f';
 
   try {
     const createFlowOperation = sf.cfaV1.createFlow({
