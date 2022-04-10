@@ -36,6 +36,7 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
+import { CreateFlow } from './CreateFlow';
 import { SubmitButton } from './SubmitButton';
 
 interface FormValues {
@@ -190,9 +191,7 @@ export const AddQuestBlock: React.FC<{
           <ModalHeader>Payment plan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormLabel color="main" htmlFor="proofDescription">
-              Description
-            </FormLabel>
+            <CreateFlow />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">
