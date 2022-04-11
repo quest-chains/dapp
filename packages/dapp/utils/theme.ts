@@ -29,13 +29,6 @@ export const theme = extendTheme({
     initialColorMode: 'dark',
     useSystemColorMode: false,
   },
-  styles: {
-    global: (props: { colorMode: string }) => ({
-      'html, body': {
-        backgroundColor: props.colorMode === 'dark' ? 'transparent' : 'white',
-      },
-    }),
-  },
 });
 
 export const globalStyles = css`
@@ -48,6 +41,7 @@ export const globalStyles = css`
     box-shadow: none;
   }
   body {
+    background: #0d1117;
     overflow-x: hidden;
   }
 `;

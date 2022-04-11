@@ -2,7 +2,7 @@
   width: 100vw;
   height: 100vh;
   background: #0d1117;
-  position: absolute;
+  position: fixed;
   z-index: -10;
   overflow: hidden;
 }
@@ -10,10 +10,10 @@
 .background-root {
   width: 100vw;
   height: 100vh;
-  background-image: url("background.png");;
+  background-image: url('background.png');
   background-color: #0d1117;
   background-size: cover;
-  position: absolute;
+  position: fixed;
   z-index: -10;
   overflow: hidden;
 }
@@ -54,8 +54,6 @@ $amount: 20;
     transform: translate3d(1px, 0, 1px) rotate(360deg);
   }
 }
-
-
 
 .description {
   margin-top: 3%;

@@ -1,7 +1,12 @@
 {
   "name": "dao-quest",
   "version": "1.0.0",
-  "keywords": ["ethereum", "react", "workspaces", "yarn"],
+  "keywords": [
+    "ethereum",
+    "react",
+    "workspaces",
+    "yarn"
+  ],
   "private": true,
   "scripts": {
     "lint": "concurrently \"yarn workspace @dao-quest/dapp lint\" \"yarn workspace @dao-quest/contracts lint\"",
@@ -18,7 +23,9 @@
     "prepare": "yarn root:prepare"
   },
   "workspaces": {
-    "packages": ["packages/*"]
+    "packages": [
+      "packages/*"
+    ]
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.1.0",

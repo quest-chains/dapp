@@ -52,10 +52,11 @@ contract QuestChainFactory is IQuestChainFactory {
         return Clones.predictDeterministicAddress(implementation, _salt);
     }
 
-    function createDeterministic(
-        string calldata _details,
-        bytes32 _salt
-    ) external override returns (address) {
+    function createDeterministic(string calldata _details, bytes32 _salt)
+        external
+        override
+        returns (address)
+    {
         address questChainAddress = Clones.cloneDeterministic(
             implementation,
             _salt

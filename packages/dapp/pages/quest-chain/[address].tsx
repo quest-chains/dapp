@@ -303,91 +303,87 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       )}
                     </>
                   )}
-
-                  <Modal
-                    isOpen={!!quest && isOpen}
-                    onClose={onModalClose}
-                    size="xl"
-                  >
-                    <ModalOverlay />
-                    <ModalContent>
-                      <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
-                      <ModalCloseButton />
-                      <ModalBody>
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="proofDescription">
-                            Description
-                          </FormLabel>
-                          <Textarea
-                            id="proofDescription"
-                            value={proofDescription}
-                            onChange={e => setProofDescription(e.target.value)}
-                            mb={4}
-                          />
-                        </FormControl>
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="file">
-                            Upload file
-                          </FormLabel>
-                          <Flex
-                            {...getRootProps({ className: 'dropzone' })}
-                            flexDir="column"
-                            borderWidth={1}
-                            borderStyle="dashed"
-                            borderRadius={20}
-                            p={10}
-                            mb={4}
-                            onClick={open}
-                          >
-                            <input {...getInputProps()} color="white" />
-                            <Box alignSelf="center">
-                              {`Drag 'n' drop some files here`}
-                            </Box>
-                          </Flex>
-                        </FormControl>
-                        <Text mb={1}>Files:</Text>
-                        {myFiles.map((file: File) => (
-                          <Flex key={file.name} w="100%" mb={1}>
-                            <IconButton
-                              size="xs"
-                              borderRadius="full"
-                              onClick={removeFile(file)}
-                              icon={<SmallCloseIcon boxSize="1rem" />}
-                              aria-label={''}
-                            />
-                            <Text ml={1} alignSelf="center">
-                              {file.name} - {file.size} bytes
-                            </Text>
-                          </Flex>
-                        ))}
-                      </ModalBody>
-
-                      <ModalFooter alignItems="baseline">
-                        <Button
-                          variant="ghost"
-                          mr={3}
-                          onClick={onModalClose}
-                          borderRadius="full"
-                        >
-                          Close
-                        </Button>
-                        <SubmitButton
-                          mt={4}
-                          type="submit"
-                          onClick={onSubmit}
-                          isDisabled={!myFiles.length || !proofDescription}
-                          isLoading={isSubmitting}
-                        >
-                          Submit
-                        </SubmitButton>
-                      </ModalFooter>
-                    </ModalContent>
-                  </Modal>
                 </Flex>
               ))}
             </>
           )}
         </VStack>
+
+        <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl isRequired>
+                <FormLabel color="main" htmlFor="proofDescription">
+                  Description
+                </FormLabel>
+                <Textarea
+                  id="proofDescription"
+                  value={proofDescription}
+                  onChange={e => setProofDescription(e.target.value)}
+                  mb={4}
+                />
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel color="main" htmlFor="file">
+                  Upload file
+                </FormLabel>
+                <Flex
+                  {...getRootProps({ className: 'dropzone' })}
+                  flexDir="column"
+                  borderWidth={1}
+                  borderStyle="dashed"
+                  borderRadius={20}
+                  p={10}
+                  mb={4}
+                  onClick={open}
+                >
+                  <input {...getInputProps()} color="white" />
+                  <Box alignSelf="center">
+                    {`Drag 'n' drop some files here`}
+                  </Box>
+                </Flex>
+              </FormControl>
+              <Text mb={1}>Files:</Text>
+              {myFiles.map((file: File) => (
+                <Flex key={file.name} w="100%" mb={1}>
+                  <IconButton
+                    size="xs"
+                    borderRadius="full"
+                    onClick={removeFile(file)}
+                    icon={<SmallCloseIcon boxSize="1rem" />}
+                    aria-label={''}
+                  />
+                  <Text ml={1} alignSelf="center">
+                    {file.name} - {file.size} bytes
+                  </Text>
+                </Flex>
+              ))}
+            </ModalBody>
+
+            <ModalFooter alignItems="baseline">
+              <Button
+                variant="ghost"
+                mr={3}
+                onClick={onModalClose}
+                borderRadius="full"
+              >
+                Close
+              </Button>
+              <SubmitButton
+                mt={4}
+                type="submit"
+                onClick={onSubmit}
+                isDisabled={!myFiles.length || !proofDescription}
+                isLoading={isSubmitting}
+              >
+                Submit
+              </SubmitButton>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <VStack spacing={8}>
           <AddQuestBlock questChain={questChain} refresh={refresh} />
         </VStack>
