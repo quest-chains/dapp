@@ -19,5 +19,3 @@ In the project directory, you can run:
 #### `yarn subgraph:build`
 
 #### `yarn subgraph:auth`
-
-#### `yarn subgraph:deploy`
