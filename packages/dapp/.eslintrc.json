@@ -24,7 +24,8 @@
     "react/no-unescaped-entities": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
-    "no-console": "error"
+    "no-console": "error",
+    "import/no-unresolved": "off"
   },
   "globals": {
     "React": "writable"

@@ -1,5 +1,9 @@
-/* eslint-disable import/no-unresolved */
-import { EditIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import {
+  CheckIcon,
+  CloseIcon,
+  EditIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -7,6 +11,7 @@ import {
   FormControl,
   FormLabel,
   IconButton,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -73,6 +78,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address, provider } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [editing, setEditing] = useState(false);
   const [quest, setQuest] = useState<{
     questId: string;
     name: string | null | undefined;
@@ -93,6 +99,11 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     fetching: fetchingQuests,
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
+
+  const [chainName, setChainName] = useState(questChain?.name);
+  const [chainDescription, setChainDescription] = useState(
+    questChain?.description,
+  );
 
   const {
     questStatuses,
@@ -254,17 +265,66 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <VStack>
-        <Flex justifyContent="space-between">
-          <Text fontSize="2xl" fontWeight="bold">
-            {questChain.name}
-          </Text>
-          <EditIcon />
+      <Flex flexDirection="column" w="full">
+        <Flex justifyContent="space-between" w="full">
+          {!editing && (
+            <>
+              <Text fontSize="2xl" fontWeight="bold" mb={3}>
+                {questChain.name}
+              </Text>
+              <IconButton
+                borderRadius="full"
+                onClick={() => setEditing(true)}
+                icon={<EditIcon boxSize="1rem" />}
+                aria-label={''}
+              />
+            </>
+          )}
+
+          {editing && (
+            <>
+              <Input
+                fontSize="2xl"
+                mb={3}
+                value={chainName}
+                isReadOnly={!editing}
+                onChange={e => setChainName(e.target.value)}
+              />
+              <IconButton
+                borderRadius="full"
+                onClick={() => setEditing(false)}
+                icon={<CheckIcon boxSize="1rem" />}
+                aria-label={''}
+                mx={2}
+              />
+              <IconButton
+                borderRadius="full"
+                onClick={() => setEditing(false)}
+                icon={<CloseIcon boxSize="1rem" />}
+                aria-label={''}
+              />
+            </>
+          )}
         </Flex>
-        <Text fontWeight="lg" color="white">
-          {questChain.description}
-        </Text>
-      </VStack>
+
+        <Flex w="full">
+          {!editing && (
+            <Text fontWeight="lg" color="white">
+              {questChain.description}
+            </Text>
+          )}
+
+          {editing && (
+            <Textarea
+              id="chainDescription"
+              value={questChain.description}
+              onChange={e => setProofDescription(e.target.value)}
+              mb={4}
+              color="white"
+            />
+          )}
+        </Flex>
+      </Flex>
 
       <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
         <VStack spacing={6}>
