@@ -100,9 +100,9 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
 
-  const [chainName, setChainName] = useState(questChain?.name);
+  const [chainName, setChainName] = useState(questChain?.name || '');
   const [chainDescription, setChainDescription] = useState(
-    questChain?.description,
+    questChain?.description || '',
   );
 
   const {
@@ -317,8 +317,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           {editing && (
             <Textarea
               id="chainDescription"
-              value={questChain.description}
-              onChange={e => setProofDescription(e.target.value)}
+              value={chainDescription}
+              onChange={e => setChainDescription(e.target.value)}
               mb={4}
               color="white"
             />
