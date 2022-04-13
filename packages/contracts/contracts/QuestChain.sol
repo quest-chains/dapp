@@ -45,7 +45,8 @@ contract QuestChain is
         address indexed reviewer,
         address indexed quester,
         uint256 indexed questId,
-        bool success
+        bool success,
+        string details
     );
 
     // solhint-disable-next-line no-empty-blocks
@@ -114,14 +115,21 @@ contract QuestChain is
     function reviewProof(
         address _quester,
         uint256 _questId,
-        bool _success
+        bool _success,
+        string calldata _details
     ) external override onlyRole(REVIEWER_ROLE) {
         require(_questId < questCount, "QuestChain: quest not found");
         Status status = completions[_quester][_questId];
         require(status == Status.review, "QuestChain: quest not in review");
         completions[_quester][_questId] = _success ? Status.pass : Status.fail;
 
-        emit QuestProofReviewed(msg.sender, _quester, _questId, _success);
+        emit QuestProofReviewed(
+            msg.sender,
+            _quester,
+            _questId,
+            _success,
+            _details
+        );
     }
 
     function getStatus(address _quester, uint256 _questId)

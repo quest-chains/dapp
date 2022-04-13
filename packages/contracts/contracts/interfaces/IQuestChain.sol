@@ -23,7 +23,8 @@ interface IQuestChain {
     function reviewProof(
         address _quester,
         uint256 _questId,
-        bool _success
+        bool _success,
+        string calldata _details
     ) external;
 
     function getStatus(address _quester, uint256 _questId)
