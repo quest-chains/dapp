@@ -47,6 +47,9 @@ export const QuestStatusInfoFragment = gql`
       timestamp
       description
       externalUrl
+      reviewer {
+        id
+      }
     }
   }
   ${QuestChainInfoFragment}
