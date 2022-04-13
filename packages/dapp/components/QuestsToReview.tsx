@@ -37,8 +37,8 @@ export const QuestsToReview = () => {
           )}
           {chainsToReview.map(chain => (
             <NextLink
-              as={`/review/${chain.address}`}
-              href={`/review/[address]`}
+              as={`/chain/${chain.address}/review`}
+              href={`/chain/[address]/review`}
               passHref
               key={chain.address}
             >

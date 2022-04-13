@@ -65,8 +65,8 @@ export const UserProgress = () => {
           )}
           {userStatuses.map(us => (
             <NextLink
-              as={`/quest-chain/${us.chain.address}`}
-              href={`/quest-chain/[address]`}
+              as={`/chain/${us.chain.address}`}
+              href={`/chain/[address]`}
               passHref
               key={us.chain.address}
             >

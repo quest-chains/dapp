@@ -75,8 +75,8 @@ const Search: React.FC = () => {
           results.length > 0 &&
           results.map(({ address, name, description }) => (
             <NextLink
-              as={`/quest-chain/${address}`}
-              href={`/quest-chain/[address]`}
+              as={`/chain/${address}`}
+              href={`/chain/[address]`}
               passHref
               key={address}
             >

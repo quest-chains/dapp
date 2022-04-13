@@ -217,8 +217,8 @@ const Create: React.FC = () => {
           <VStack w="full" gap={4} flex={1}>
             {questChains.map(({ address, name, description }) => (
               <NextLink
-                as={`/quest-chain/${address}`}
-                href={`/quest-chain/[address]`}
+                as={`/chain/${address}`}
+                href={`/chain/[address]`}
                 passHref
                 key={address}
               >
