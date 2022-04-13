@@ -35,6 +35,7 @@ import {
   getQuestChainAddresses,
   getQuestChainInfo,
 } from '@/graphql/questChains';
+import { Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { QuestChain, QuestChain__factory } from '@/types';
@@ -48,6 +49,24 @@ import {
 import { useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
+
+type UserStatusType = {
+  [questId: string]: {
+    submissions: {
+      description: string | undefined | null;
+      externalUrl: string | undefined | null;
+      timestamp: string;
+    }[];
+    reviews: {
+      description: string | undefined | null;
+      externalUrl: string | undefined | null;
+      timestamp: string;
+      reviewer: string;
+      accepted: boolean;
+    }[];
+    status: Status;
+  };
+};
 
 const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
@@ -108,10 +127,24 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const isUser = !(isAdmin || isEditor || isReviewer);
 
-  const userStatus = useMemo(() => {
-    const userStat: Record<string, string> = {};
+  const userStatus: UserStatusType = useMemo(() => {
+    const userStat: UserStatusType = {};
     questStatuses.forEach(item => {
-      userStat[item.quest.questId] = item.status;
+      userStat[item.quest.questId] = {
+        status: item.status,
+        submissions: item.submissions.map(sub => ({
+          description: sub.description,
+          externalUrl: sub.externalUrl,
+          timestamp: sub.timestamp,
+        })),
+        reviews: item.reviews.map(sub => ({
+          description: sub.description,
+          externalUrl: sub.externalUrl,
+          timestamp: sub.timestamp,
+          accepted: sub.accepted,
+          reviewer: sub.reviewer.id,
+        })),
+      };
     });
     return userStat;
   }, [questStatuses]);
@@ -258,47 +291,50 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
                   {isUser && (
                     <>
-                      {!userStatus[quest.questId] ||
-                      userStatus[quest.questId] === 'init' ||
-                      userStatus[quest.questId] === 'fail' ? (
-                        <Box>
-                          <Button
-                            onClick={() => {
-                              setQuest({
-                                questId: quest.questId,
-                                name: quest.name,
-                                description: quest.description,
-                              });
-                              onOpen();
-                            }}
-                          >
-                            Upload Proof
-                          </Button>
-                        </Box>
-                      ) : (
-                        <Box>
-                          <Button
-                            pointerEvents="none"
-                            _hover={{}}
-                            cursor="default"
-                            color={
-                              userStatus[quest.questId] === 'review'
-                                ? 'pending'
-                                : 'main'
-                            }
-                            border="1px solid"
-                            borderColor={
-                              userStatus[quest.questId] === 'review'
-                                ? 'pending'
-                                : 'main'
-                            }
-                          >
-                            {userStatus[quest.questId] === 'review'
-                              ? 'Review Pending'
-                              : 'Accepted'}
-                          </Button>
-                        </Box>
-                      )}
+                      {
+                        // TODO: Also display prev submissions and reviews here
+                        !userStatus[quest.questId]?.status ||
+                        userStatus[quest.questId]?.status === 'init' ||
+                        userStatus[quest.questId]?.status === 'fail' ? (
+                          <Box>
+                            <Button
+                              onClick={() => {
+                                setQuest({
+                                  questId: quest.questId,
+                                  name: quest.name,
+                                  description: quest.description,
+                                });
+                                onOpen();
+                              }}
+                            >
+                              Upload Proof
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Box>
+                            <Button
+                              pointerEvents="none"
+                              _hover={{}}
+                              cursor="default"
+                              color={
+                                userStatus[quest.questId]?.status === 'review'
+                                  ? 'pending'
+                                  : 'main'
+                              }
+                              border="1px solid"
+                              borderColor={
+                                userStatus[quest.questId]?.status === 'review'
+                                  ? 'pending'
+                                  : 'main'
+                              }
+                            >
+                              {userStatus[quest.questId]?.status === 'review'
+                                ? 'Review Pending'
+                                : 'Accepted'}
+                            </Button>
+                          </Box>
+                        )
+                      }
                     </>
                   )}
                 </Flex>
