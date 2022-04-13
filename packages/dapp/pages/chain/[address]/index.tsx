@@ -1,4 +1,5 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
+/* eslint-disable import/no-unresolved */
+import { EditIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -252,10 +253,19 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         <title>{questChain.name}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Text fontSize="2xl" fontWeight="bold">
-        {questChain.name}
-      </Text>
-      <Text fontWeight="lg">{questChain.description}</Text>
+
+      <VStack>
+        <Flex justifyContent="space-between">
+          <Text fontSize="2xl" fontWeight="bold">
+            {questChain.name}
+          </Text>
+          <EditIcon />
+        </Flex>
+        <Text fontWeight="lg" color="white">
+          {questChain.description}
+        </Text>
+      </VStack>
+
       <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
         <VStack spacing={6}>
           {fetching ? (
