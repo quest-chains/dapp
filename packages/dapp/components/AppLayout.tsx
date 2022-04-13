@@ -51,7 +51,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
               </ChakraLink>
             </NextLink>
             {router.pathname !== '/' && (
-              <HStack gap={4}>
+              <HStack gap={6}>
                 <NextLink href="/search" passHref>
                   <ChakraLink display="block" _hover={{}}>
                     <Text
@@ -59,7 +59,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
                       borderBottomColor="main"
                       color={router.pathname === '/search' ? 'main' : 'inherit'}
                     >
-                      QUEST CHAINS
+                      SEARCH
                     </Text>
                   </ChakraLink>
                 </NextLink>
@@ -70,7 +70,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
                       borderBottomColor="main"
                       color={router.pathname === '/create' ? 'main' : 'inherit'}
                     >
-                      CREATE QUEST CHAIN
+                      CREATE
                     </Text>
                   </ChakraLink>
                 </NextLink>
@@ -85,7 +85,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
                         router.pathname === '/overview' ? 'main' : 'inherit'
                       }
                     >
-                      QUESTS OVERVIEW
+                      OVERVIEW
                     </Text>
                   </ChakraLink>
                 </NextLink>
