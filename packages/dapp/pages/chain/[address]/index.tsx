@@ -78,7 +78,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address, provider } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [editing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [quest, setQuest] = useState<{
     questId: string;
     name: string | null | undefined;
@@ -243,6 +243,14 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     onModalClose,
   ]);
 
+  const onSubmitQuestChain = useCallback(
+    async ({ name, description }: { name: string; description: string }) => {
+      // eslint-disable-next-line no-console
+      console.log(name, description);
+    },
+    [],
+  );
+
   if (isFallback) {
     return (
       <VStack>
@@ -267,39 +275,47 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
       <Flex flexDirection="column" w="full">
         <Flex justifyContent="space-between" w="full">
-          {!editing && (
+          {!isEditing && (
             <>
               <Text fontSize="2xl" fontWeight="bold" mb={3}>
                 {questChain.name}
               </Text>
-              <IconButton
-                borderRadius="full"
-                onClick={() => setEditing(true)}
-                icon={<EditIcon boxSize="1rem" />}
-                aria-label={''}
-              />
+              {!isUser && (
+                <IconButton
+                  borderRadius="full"
+                  onClick={() => setIsEditing(true)}
+                  icon={<EditIcon boxSize="1rem" />}
+                  aria-label={''}
+                />
+              )}
             </>
           )}
 
-          {editing && (
+          {isEditing && (
             <>
               <Input
                 fontSize="2xl"
+                fontWeight="bold"
                 mb={3}
                 value={chainName}
-                isReadOnly={!editing}
+                isReadOnly={!isEditing}
                 onChange={e => setChainName(e.target.value)}
               />
               <IconButton
                 borderRadius="full"
-                onClick={() => setEditing(false)}
+                onClick={() =>
+                  onSubmitQuestChain({
+                    name: chainName,
+                    description: chainDescription,
+                  })
+                }
                 icon={<CheckIcon boxSize="1rem" />}
                 aria-label={''}
                 mx={2}
               />
               <IconButton
                 borderRadius="full"
-                onClick={() => setEditing(false)}
+                onClick={() => setIsEditing(false)}
                 icon={<CloseIcon boxSize="1rem" />}
                 aria-label={''}
               />
@@ -308,13 +324,13 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         </Flex>
 
         <Flex w="full">
-          {!editing && (
+          {!isEditing && (
             <Text fontWeight="lg" color="white">
               {questChain.description}
             </Text>
           )}
 
-          {editing && (
+          {isEditing && (
             <Textarea
               id="chainDescription"
               value={chainDescription}
