@@ -120,6 +120,12 @@
           "internalType": "bool",
           "name": "success",
           "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "details",
+          "type": "string"
         }
       ],
       "name": "QuestProofReviewed",
@@ -495,6 +501,11 @@
           "internalType": "bool",
           "name": "_success",
           "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "_details",
+          "type": "string"
         }
       ],
       "name": "reviewProof",

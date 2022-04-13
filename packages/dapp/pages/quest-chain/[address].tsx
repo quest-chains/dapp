@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -133,7 +132,6 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     // Disable click and keydown behavior
     noClick: true,
     noKeyboard: true,
-    accept: 'image/*,audio/*,video/*',
     onDrop,
   });
 
@@ -159,7 +157,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       try {
         let hash = await uploadFilesViaAPI(myFiles);
         const metadata: Metadata = {
-          name: `Submission - ${quest.name} - ${address}`,
+          name: `Submission - Quest - ${quest.name} - User - ${address}`,
           description: proofDescription,
           external_url: `ipfs://${hash}`,
         };

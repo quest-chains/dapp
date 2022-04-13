@@ -37,8 +37,17 @@ export const QuestStatusInfoFragment = gql`
     user {
       id
     }
-    description
-    externalUrl
+    submissions {
+      timestamp
+      description
+      externalUrl
+    }
+    reviews {
+      accepted
+      timestamp
+      description
+      externalUrl
+    }
   }
   ${QuestChainInfoFragment}
 `;

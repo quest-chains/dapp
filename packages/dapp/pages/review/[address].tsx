@@ -1,11 +1,32 @@
-/* eslint-disable import/no-unresolved */
-import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Flex, HStack, Link, Spinner, Text, VStack } from '@chakra-ui/react';
+import { ExternalLinkIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  IconButton,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  Textarea,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import { CollapsableText } from '@/components/CollapsableText';
@@ -22,61 +43,25 @@ import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatus
 import { QuestChain, QuestChain__factory } from '@/types';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { useWallet } from '@/web3';
+import {
+  Metadata,
+  uploadFilesViaAPI,
+  uploadMetadataViaAPI,
+} from '@/utils/metadata';
+import { formatAddress, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const StatusDisplay: React.FC<{
   review: QuestStatusInfoFragment;
-  refresh: () => void;
-}> = ({ review, refresh }) => {
-  const { quest, description, externalUrl, user, questChain } = review;
+  onSelect: (quest: ModalQuestType) => void;
+}> = ({ review, onSelect }) => {
+  const { quest, submissions, user } = review;
+
+  const { description, externalUrl } = submissions[submissions.length - 1];
 
   const hash = externalUrl?.split('/').pop();
   const url = `https://${hash}.ipfs.infura-ipfs.io`;
-
-  const [rejecting, setRejecting] = useState(false);
-  const [accepting, setAccepting] = useState(false);
-
-  const { provider } = useWallet();
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChain.address,
-    provider?.getSigner() as Signer,
-  );
-
-  const onSubmit = useCallback(
-    async (questId: string, user: string, success: boolean) => {
-      setRejecting(!success);
-      setAccepting(success);
-
-      let tid = toast.loading(
-        'Waiting for Confirmation - Confirm the transaction in your Wallet',
-      );
-      try {
-        const tx = await contract.reviewProof(user, questId, success);
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success(
-          `Successfully ${success ? 'Accepted' : 'Rejected'} the Submission!`,
-        );
-        refresh();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      }
-
-      setRejecting(false);
-      setAccepting(false);
-    },
-    [contract, refresh],
-  );
 
   return (
     <VStack
@@ -101,30 +86,33 @@ const StatusDisplay: React.FC<{
       <HStack justify="space-between" w="100%" pt={4}>
         <Link isExternal href={url} _hover={{}}>
           <SubmitButton color="white" rightIcon={<ExternalLinkIcon />}>
-            view proof on IPFS
+            View proof
           </SubmitButton>
         </Link>
-        <HStack justify="space-between" spacing={4}>
-          <SubmitButton
-            borderColor="rejected"
-            color="rejected"
-            isLoading={rejecting}
-            onClick={() => onSubmit(quest.questId, user.id, false)}
-          >
-            reject
-          </SubmitButton>
-          <SubmitButton
-            borderColor="main"
-            color="main"
-            isLoading={accepting}
-            onClick={() => onSubmit(quest.questId, user.id, true)}
-          >
-            accept
-          </SubmitButton>
-        </HStack>
+        <SubmitButton
+          borderColor="rejected"
+          color="rejected"
+          onClick={() =>
+            onSelect({
+              userId: user.id,
+              questId: quest.questId,
+              name: quest.name,
+              description: quest.description,
+            })
+          }
+        >
+          Review Submission
+        </SubmitButton>
       </HStack>
     </VStack>
   );
+};
+
+type ModalQuestType = {
+  userId: string;
+  questId: string;
+  name: string | null | undefined;
+  description: string | null | undefined;
 };
 
 const Review: React.FC<Props> = ({
@@ -136,6 +124,8 @@ const Review: React.FC<Props> = ({
     fetching: fetchingQuests,
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [quest, setQuest] = useState<ModalQuestType | null>(null);
 
   const {
     questStatuses,
@@ -146,17 +136,127 @@ const Review: React.FC<Props> = ({
     inputQuestStatues,
   );
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     refreshStatuses();
     refreshQuests();
-  };
+  }, [refreshStatuses, refreshQuests]);
   const fetching = fetchingStatuses || fetchingQuests;
 
   const { isFallback } = useRouter();
 
+  const [rejecting, setRejecting] = useState(false);
+  const [accepting, setAccepting] = useState(false);
+
+  const { provider, address } = useWallet();
+  const contract: QuestChain = QuestChain__factory.connect(
+    questChain?.address ?? '',
+    provider?.getSigner() as Signer,
+  );
+
   const reviews = useMemo(
     () => questStatuses.filter(q => q.status === 'review'),
     [questStatuses],
+  );
+
+  const [reviewDescription, setReviewDescription] = useState('');
+  const [myFiles, setMyFiles] = useState<File[]>([]);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      setMyFiles([...myFiles, ...acceptedFiles]);
+    },
+    [myFiles],
+  );
+
+  const { getRootProps, getInputProps, open } = useDropzone({
+    // Disable click and keydown behavior
+    noClick: true,
+    noKeyboard: true,
+    onDrop,
+  });
+
+  const removeFile = (file: File) => () => {
+    const newFiles = [...myFiles];
+    newFiles.splice(newFiles.indexOf(file), 1);
+    setMyFiles(newFiles);
+  };
+
+  const onModalClose = useCallback(() => {
+    setReviewDescription('');
+    setMyFiles([]);
+    setQuest(null);
+    onClose();
+  }, [onClose]);
+
+  const onSelect = useCallback(
+    (selected: ModalQuestType) => {
+      setQuest(selected);
+      onOpen();
+    },
+    [onOpen],
+  );
+
+  const onSubmit = useCallback(
+    async (success: boolean) => {
+      if (quest && reviewDescription) {
+        setRejecting(!success);
+        setAccepting(success);
+
+        let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+        try {
+          const metadata: Metadata = {
+            name: `Review - Quest - ${quest.name} - User - ${quest.userId} - Reviewer - ${address}`,
+            description: reviewDescription,
+          };
+          if (myFiles.length > 0) {
+            const filesHash = await uploadFilesViaAPI(myFiles);
+            metadata.external_url = `ipfs://${filesHash}`;
+          }
+
+          const hash = await uploadMetadataViaAPI(metadata);
+          const details = `ipfs://${hash}`;
+          toast.dismiss(tid);
+          tid = toast.loading(
+            'Waiting for Confirmation - Confirm the transaction in your Wallet',
+          );
+          const tx = await contract.reviewProof(
+            quest.userId,
+            quest.questId,
+            success,
+            details,
+          );
+          toast.dismiss(tid);
+          tid = handleTxLoading(tx.hash);
+          const receipt = await tx.wait(1);
+          toast.dismiss(tid);
+          tid = toast.loading(
+            'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+          );
+          await waitUntilBlock(receipt.blockNumber);
+          toast.dismiss(tid);
+          toast.success(
+            `Successfully ${success ? 'Accepted' : 'Rejected'} the Submission!`,
+          );
+          refresh();
+          onModalClose();
+        } catch (error) {
+          toast.dismiss(tid);
+          handleError(error);
+        }
+
+        setRejecting(false);
+        setAccepting(false);
+      }
+    },
+    [
+      contract,
+      refresh,
+      quest,
+      reviewDescription,
+      myFiles,
+      onModalClose,
+      address,
+    ],
   );
 
   if (isFallback) {
@@ -204,13 +304,100 @@ const Review: React.FC<Props> = ({
             {reviews.map(review => (
               <StatusDisplay
                 review={review}
-                refresh={refresh}
+                onSelect={onSelect}
                 key={review.id}
               />
             ))}
           </>
         )}
       </VStack>
+      <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Review Proof - {quest?.name} -{' '}
+            {formatAddress(quest?.userId).toUpperCase()}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl isRequired>
+              <FormLabel color="main" htmlFor="reviewDescription">
+                Description
+              </FormLabel>
+              <Textarea
+                id="reviewDescription"
+                value={reviewDescription}
+                onChange={e => setReviewDescription(e.target.value)}
+                mb={4}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel color="main" htmlFor="file">
+                Upload file
+              </FormLabel>
+              <Flex
+                {...getRootProps({ className: 'dropzone' })}
+                flexDir="column"
+                borderWidth={1}
+                borderStyle="dashed"
+                borderRadius={20}
+                p={10}
+                mb={4}
+                onClick={open}
+              >
+                <input {...getInputProps()} color="white" />
+                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
+              </Flex>
+            </FormControl>
+            <Text mb={1}>Files:</Text>
+            {myFiles.map((file: File) => (
+              <Flex key={file.name} w="100%" mb={1}>
+                <IconButton
+                  size="xs"
+                  borderRadius="full"
+                  onClick={removeFile(file)}
+                  icon={<SmallCloseIcon boxSize="1rem" />}
+                  aria-label={''}
+                />
+                <Text ml={1} alignSelf="center">
+                  {file.name} - {file.size} bytes
+                </Text>
+              </Flex>
+            ))}
+          </ModalBody>
+
+          <ModalFooter alignItems="baseline">
+            <HStack justify="space-between" spacing={4}>
+              <Button
+                variant="ghost"
+                mr={3}
+                onClick={onModalClose}
+                borderRadius="full"
+              >
+                Close
+              </Button>
+              <SubmitButton
+                borderColor="rejected"
+                color="rejected"
+                isLoading={rejecting}
+                isDisabled={!reviewDescription}
+                onClick={() => onSubmit(false)}
+              >
+                Reject
+              </SubmitButton>
+              <SubmitButton
+                borderColor="main"
+                color="main"
+                isLoading={accepting}
+                isDisabled={!reviewDescription}
+                onClick={() => onSubmit(true)}
+              >
+                Accept
+              </SubmitButton>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };

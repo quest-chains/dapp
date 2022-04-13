@@ -13,6 +13,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  Textarea,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -67,7 +68,7 @@ export const AddQuestBlock: React.FC<{
   const onSubmit = useCallback(
     async (
       { name, description }: FormValues,
-      { setSubmitting }: FormikHelpers<FormValues>,
+      { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       if (questChain.quests.length > 4) {
         const signer = provider?.getSigner();
@@ -131,6 +132,7 @@ export const AddQuestBlock: React.FC<{
         toast.dismiss(tid);
         toast.success('Successfully added a new Quest');
         refresh();
+        resetForm();
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -190,7 +192,7 @@ export const AddQuestBlock: React.FC<{
                           <FormLabel color="main" htmlFor="description">
                             Quest Description
                           </FormLabel>
-                          <Input
+                          <Textarea
                             color="white"
                             {...field}
                             id="description"

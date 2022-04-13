@@ -5,6 +5,8 @@ import {
   QuestChain,
   QuestEdit,
   QuestStatus,
+  ProofSubmission,
+  ReviewSubmission,
 } from '../types/schema';
 
 import {
@@ -66,6 +68,7 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
     questChainEdit.imageUrl = questChain.imageUrl;
     questChainEdit.externalUrl = questChain.externalUrl;
     questChainEdit.timestamp = event.block.timestamp;
+    questChainEdit.txHash = event.transaction.hash;
     questChainEdit.questChain = questChain.id;
     questChainEdit.editor = user.id;
     questChainEdit.save();
@@ -155,6 +158,7 @@ export function handleCreated(event: QuestCreatedEvent): void {
     quest.description = metadata.description;
     quest.imageUrl = metadata.imageUrl;
     quest.externalUrl = metadata.externalUrl;
+    quest.creationTxHash = event.transaction.hash;
 
     let search = createSearchString(metadata.name, metadata.description);
     quest.search = search;
@@ -196,6 +200,7 @@ export function handleEdited(event: QuestEditedEvent): void {
       questEdit.imageUrl = quest.imageUrl;
       questEdit.externalUrl = quest.externalUrl;
       questEdit.timestamp = event.block.timestamp;
+      questEdit.txHash = event.transaction.hash;
       questEdit.quest = quest.id;
       questEdit.editor = user.id;
       questEdit.save();
@@ -238,6 +243,7 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
         questStatus.questChain = questChain.id;
         questStatus.quest = quest.id;
         questStatus.user = user.id;
+        questStatus.submissions = new Array<string>();
       } else {
         let questsFailed = questChain.questsFailed;
         let newArray = removeFromArray(questsFailed, questStatusId);
@@ -265,17 +271,39 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
       questChain.questsInReview = questsInReview;
 
       questStatus.status = 'review';
+
+      let proofId = questStatus.id
+        .concat('-')
+        .concat('proof')
+        .concat('-')
+        .concat(event.block.timestamp.toHexString())
+        .concat('-')
+        .concat(event.logIndex.toHexString());
+      let proof = new ProofSubmission(proofId);
       let details = event.params.proof;
       let metadata = fetchMetadata(details);
-      questStatus.details = details;
-      questStatus.name = metadata.name;
-      questStatus.description = metadata.description;
-      questStatus.imageUrl = metadata.imageUrl;
-      questStatus.externalUrl = metadata.externalUrl;
+      proof.details = details;
+      proof.name = metadata.name;
+      proof.description = metadata.description;
+      proof.imageUrl = metadata.imageUrl;
+      proof.externalUrl = metadata.externalUrl;
+
+      proof.quest = quest.id;
+      proof.questChain = questChain.id;
+      proof.questStatus = questStatus.id;
+
+      proof.timestamp = event.block.timestamp;
+      proof.txHash = event.transaction.hash;
+      proof.user = user.id;
 
       let search = createSearchString(metadata.name, metadata.description);
-      questStatus.search = search;
+      proof.search = search;
 
+      let submissions = questStatus.submissions;
+      submissions.push(proof.id);
+      questStatus.submissions = submissions;
+
+      proof.save();
       questStatus.save();
       user.save();
       quest.save();
@@ -346,6 +374,45 @@ export function handleProofReviewed(event: QuestProofReviewedEvent): void {
         quest.usersFailed = usersFailed;
       }
 
+      let reviewId = questStatus.id
+        .concat('-')
+        .concat('review')
+        .concat('-')
+        .concat(event.block.timestamp.toHexString())
+        .concat('-')
+        .concat(event.logIndex.toHexString());
+      let review = new ReviewSubmission(reviewId);
+      let details = event.params.details;
+      let metadata = fetchMetadata(details);
+      review.details = details;
+      review.name = metadata.name;
+      review.description = metadata.description;
+      review.imageUrl = metadata.imageUrl;
+      review.externalUrl = metadata.externalUrl;
+
+      review.quest = quest.id;
+      review.questChain = questChain.id;
+      review.questStatus = questStatus.id;
+
+      review.accepted = event.params.success;
+
+      let submissions = questStatus.submissions;
+      if (submissions.length > 0) {
+        let lastSubmission = submissions[submissions.length - 1];
+        review.proof = lastSubmission;
+      }
+
+      review.timestamp = event.block.timestamp;
+      review.txHash = event.transaction.hash;
+      review.user = user.id;
+      let reviewer = getUser(event.params.reviewer);
+      review.reviewer = reviewer.id;
+
+      let search = createSearchString(metadata.name, metadata.description);
+      review.search = search;
+
+      review.save();
+      reviewer.save();
       questStatus.save();
       user.save();
       quest.save();

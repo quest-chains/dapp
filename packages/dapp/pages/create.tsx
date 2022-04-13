@@ -9,6 +9,7 @@ import {
   Link as ChakraLink,
   Spinner,
   Text,
+  Textarea,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
@@ -57,7 +58,7 @@ const Create: React.FC = () => {
   const onSubmit = useCallback(
     async (
       { name, description }: FormValues,
-      { setSubmitting }: FormikHelpers<FormValues>,
+      { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       const metadata: Metadata = {
         name,
@@ -83,6 +84,7 @@ const Create: React.FC = () => {
         toast.dismiss(tid);
         toast.success('Successfully created a new Quest Chain');
         refresh();
+        resetForm();
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -140,7 +142,8 @@ const Create: React.FC = () => {
                         <FormLabel color="main" htmlFor="description">
                           Quest Chain Description
                         </FormLabel>
-                        <Input
+                        <Textarea
+                          mb={4}
                           color="white"
                           {...field}
                           id="description"

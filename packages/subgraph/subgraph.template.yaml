@@ -10,10 +10,10 @@ dataSources:
     # prettier-ignore
     network: {{network}}
     source:
-      address: '{{address}}'
+      address: '{{factory}}'
       abi: QuestChainFactory
       # prettier-ignore
-      startBlock: {{startBlock}}
+      startBlock: {{blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -71,6 +71,6 @@ templates:
           handler: handleEdited
         - event: QuestProofSubmitted(indexed address,indexed uint256,string)
           handler: handleProofSubmitted
-        - event: QuestProofReviewed(indexed address,indexed address,indexed uint256,bool)
+        - event: QuestProofReviewed(indexed address,indexed address,indexed uint256,bool,string)
           handler: handleProofReviewed
       file: ./src/mappings/questChain.ts

@@ -3,6 +3,7 @@ type QuestChainEdit @entity {
   questChain: QuestChain!
   editor: User!
   timestamp: BigInt!
+  txHash: Bytes!
   details: String
   name: String
   description: String
@@ -35,6 +36,8 @@ type QuestChain @entity {
   quests: [Quest!]! @derivedFrom(field: "questChain")
   edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
   status: [QuestStatus!]! @derivedFrom(field: "questChain")
+  submittedProofs: [ProofSubmission!]! @derivedFrom(field: "questChain")
+  submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "questChain")
 }
 
 type QuestEdit @entity {
@@ -42,6 +45,7 @@ type QuestEdit @entity {
   quest: Quest!
   editor: User!
   timestamp: BigInt!
+  txHash: Bytes!
   details: String
   name: String
   description: String
@@ -63,11 +67,14 @@ type Quest @entity {
   createdAt: BigInt!
   editedBy: User
   editedAt: BigInt
+  creationTxHash: Bytes!
   usersPassed: [QuestStatus!]!
   usersFailed: [QuestStatus!]!
   usersInReview: [QuestStatus!]!
   status: [QuestStatus!]! @derivedFrom(field: "quest")
   edits: [QuestEdit!]! @derivedFrom(field: "quest")
+  submittedProofs: [ProofSubmission!]! @derivedFrom(field: "quest")
+  submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "quest")
 }
 
 type User @entity {
@@ -80,6 +87,8 @@ type User @entity {
   editorOf: [QuestChain!]! @derivedFrom(field: "editors")
   reviewerOf: [QuestChain!]! @derivedFrom(field: "reviewers")
   status: [QuestStatus!]! @derivedFrom(field: "user")
+  submittedProofs: [ProofSubmission!]! @derivedFrom(field: "user")
+  submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "reviewer")
 }
 
 enum Status {
@@ -95,10 +104,41 @@ type QuestStatus @entity {
   questChain: QuestChain!
   user: User!
   status: Status!
+  submissions: [ProofSubmission!]!
+  reviews: [ReviewSubmission!]! @derivedFrom(field: "questStatus")
+}
+
+type ProofSubmission @entity {
+  id: ID!
+  quest: Quest!
+  questChain: QuestChain!
+  questStatus: QuestStatus!
+  user: User!
   details: String!
   name: String
   description: String
   search: String
   imageUrl: String
   externalUrl: String
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type ReviewSubmission @entity {
+  id: ID!
+  quest: Quest!
+  questChain: QuestChain!
+  questStatus: QuestStatus!
+  proof: ProofSubmission
+  accepted: Boolean!
+  user: User!
+  reviewer: User!
+  details: String!
+  name: String
+  description: String
+  search: String
+  imageUrl: String
+  externalUrl: String
+  timestamp: BigInt!
+  txHash: Bytes!
 }

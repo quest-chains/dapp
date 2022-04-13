@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Box, Button, Flex, Input, Spinner, Text } from '@chakra-ui/react';
+import { Box, Flex, Input, Spinner, Text } from '@chakra-ui/react';
 import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
 import React, { Dispatch, SetStateAction, useState } from 'react';
@@ -68,7 +68,7 @@ export const CreateFlow = ({ ownerAddress }: CreateFlowProps) => {
   const [flowRatePerSecond, setFlowRatePerSecond] = useState('');
   const [flowRateDisplay, setFlowRateDisplay] = useState('');
 
-  function calculateFlowRate(amount: any) {
+  function calculateFlowRate(amount: string) {
     console.log('amount', amount);
     if (typeof Number(amount) !== 'number' || isNaN(Number(amount)) === true) {
       alert('You can only calculate a flowRate based on a number');
