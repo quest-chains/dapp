@@ -274,7 +274,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         );
         await waitUntilBlock(receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain');
+        toast.success(`Successfully updated the Quest Chain: ${name}`);
         refresh();
       } catch (error) {
         toast.dismiss(tid);
@@ -319,7 +319,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         );
         await waitUntilBlock(receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain');
+        toast.success(`Successfully updated the Quest: ${name}`);
         refresh();
       } catch (error) {
         toast.dismiss(tid);
