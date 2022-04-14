@@ -279,7 +279,6 @@ const Review: React.FC<Props> = ({
         <Text fontSize="2xl" fontWeight="bold">
           {questChain.name}
         </Text>
-        <Text fontWeight="lg">{questChain.description}</Text>
       </VStack>
       <VStack w="100%" spacing={6}>
         {fetching ? (
