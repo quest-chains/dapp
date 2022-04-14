@@ -1,15 +1,11 @@
 import {
-  Box,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
   Input,
-  Link as ChakraLink,
   Spinner,
   Text,
-  Textarea,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
@@ -23,10 +19,11 @@ import {
   FormikState,
 } from 'formik';
 import Head from 'next/head';
-import NextLink from 'next/link';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { QuestChainTile } from '@/components/QuestChainTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useLatestCreatedQuestChainsData } from '@/hooks/useLatestCreatedQuestChainsData';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
@@ -38,14 +35,13 @@ import { useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
-  description: string;
 }
 
 const Create: React.FC = () => {
   const initialValues: FormValues = {
     name: '',
-    description: '',
   };
+  const [description, setDescription] = useState('');
 
   const { provider } = useWallet();
   const factoryContract: QuestChainFactory = QuestChainFactory__factory.connect(
@@ -57,7 +53,7 @@ const Create: React.FC = () => {
 
   const onSubmit = useCallback(
     async (
-      { name, description }: FormValues,
+      { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       const metadata: Metadata = {
@@ -85,6 +81,7 @@ const Create: React.FC = () => {
         toast.success('Successfully created a new Quest Chain');
         refresh();
         resetForm();
+        setDescription('');
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -92,11 +89,11 @@ const Create: React.FC = () => {
 
       setSubmitting(false);
     },
-    [factoryContract, refresh],
+    [factoryContract, refresh, description],
   );
 
   return (
-    <VStack w="100%" align="stretch" px={40} spacing={8}>
+    <VStack w="100%" align="stretch" px={{ base: 0, lg: 40 }} spacing={8}>
       <Head>
         <title>DAOQuest</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -136,25 +133,16 @@ const Create: React.FC = () => {
                       )}
                     </Field>
                   </Wrap>
-                  <Field name="description">
-                    {({ field, form }: FieldProps<string, FormValues>) => (
-                      <FormControl isRequired>
-                        <FormLabel color="main" htmlFor="description">
-                          Quest Chain Description
-                        </FormLabel>
-                        <Textarea
-                          mb={4}
-                          color="white"
-                          {...field}
-                          id="description"
-                          placeholder="Quest Chain Description"
-                        />
-                        <FormErrorMessage>
-                          {form.errors.description}
-                        </FormErrorMessage>
-                      </FormControl>
-                    )}
-                  </Field>
+                  <FormControl isRequired>
+                    <FormLabel color="main" htmlFor="description">
+                      Quest Chain Description
+                    </FormLabel>
+                    <MarkdownEditor
+                      value={description}
+                      onChange={setDescription}
+                      placeholder="Quest Chain Description"
+                    />
+                  </FormControl>
                 </VStack>
                 {/* <FieldArray
                 name="coreMemberAddresses"
@@ -216,39 +204,10 @@ const Create: React.FC = () => {
           )}
           <VStack w="full" gap={4} flex={1}>
             {questChains.map(({ address, name, description }) => (
-              <NextLink
-                as={`/chain/${address}`}
-                href={`/chain/[address]`}
-                passHref
+              <QuestChainTile
+                {...{ address, name, description }}
                 key={address}
-              >
-                <ChakraLink display="block" _hover={{}} w="full">
-                  <HStack
-                    cursor="pointer"
-                    justify="space-between"
-                    w="full"
-                    px={10}
-                    py={4}
-                    background="rgba(255, 255, 255, 0.02)"
-                    _hover={{
-                      background: 'whiteAlpha.100',
-                    }}
-                    fontWeight="400"
-                    backdropFilter="blur(40px)"
-                    borderRadius="full"
-                    boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                    letterSpacing={4}
-                  >
-                    <Box>
-                      <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
-                        {name}
-                      </Text>
-                      <Text>{description}</Text>
-                    </Box>
-                    {/* <Text>1/20</Text> */}
-                  </HStack>
-                </ChakraLink>
-              </NextLink>
+              />
             ))}
           </VStack>
         </>

@@ -1,7 +1,7 @@
 import Busboy from 'busboy';
 import * as fs from 'fs';
 import { mkdtemp, rmdir, unlink } from 'fs/promises';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import * as os from 'os';
 import * as path from 'path';
 import { Readable } from 'stream';

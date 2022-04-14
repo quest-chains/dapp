@@ -35,8 +35,10 @@ import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
-import { CollapsableText } from '@/components/CollapsableText';
+import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
 import {
   getQuestChainAddresses,
@@ -46,6 +48,7 @@ import { Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { QuestChain, QuestChain__factory } from '@/types';
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import {
@@ -188,7 +191,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }, [refreshQuests, refreshStatus]);
 
   const contract: QuestChain = QuestChain__factory.connect(
-    questChain?.address ?? '',
+    questChain?.address ?? ZERO_ADDRESS,
     provider?.getSigner() as Signer,
   );
 
@@ -421,19 +424,14 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         </Flex>
 
         <Flex w="full">
-          {!isEditingQuestChain && (
-            <Text fontWeight="lg" color="white">
-              {questChain.description}
-            </Text>
+          {!isEditingQuestChain && questChain.description && (
+            <MarkdownViewer markdown={questChain.description} />
           )}
 
           {isEditingQuestChain && (
-            <Textarea
-              id="chainDescription"
+            <MarkdownEditor
               value={chainDescription}
-              onChange={e => setChainDescription(e.target.value)}
-              mb={4}
-              color="white"
+              onChange={setChainDescription}
             />
           )}
         </Flex>
@@ -453,8 +451,13 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         />
       </Flex>
 
-      <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
-        <VStack spacing={6}>
+      <SimpleGrid
+        columns={isUser ? 1 : { base: 1, lg: 2 }}
+        spacing={16}
+        pt={8}
+        w="100%"
+      >
+        <VStack spacing={6} px={isUser ? { base: 0, lg: 40 } : 0}>
           {fetching ? (
             <Spinner />
           ) : (
@@ -481,18 +484,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Flex flexDirection="column" w="full">
                     {!(isEditingQuest && questEditId === quest.questId) && (
                       <Flex justifyContent="space-between" w="full">
-                        <Box>
-                          <CollapsableText title={quest.name}>
-                            <Text
-                              mx={4}
-                              mt={2}
-                              color="white"
-                              fontStyle="italic"
-                            >
-                              {quest.description}
-                            </Text>
-                          </CollapsableText>
-                        </Box>
+                        <CollapsableQuestDisplay {...quest} />
                         {(isAdmin || isEditor) && (
                           <IconButton
                             borderRadius="full"
@@ -552,12 +544,9 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           />
                         </Flex>
 
-                        <Textarea
+                        <MarkdownEditor
                           value={questDescription}
-                          fontStyle="italic"
-                          onChange={e => setQuestDescription(e.target.value)}
-                          mb={4}
-                          color="white"
+                          onChange={setQuestDescription}
                         />
                       </Flex>
                     )}
@@ -616,86 +605,84 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </>
           )}
         </VStack>
-
-        <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl isRequired>
-                <FormLabel color="main" htmlFor="proofDescription">
-                  Description
-                </FormLabel>
-                <Textarea
-                  id="proofDescription"
-                  value={proofDescription}
-                  onChange={e => setProofDescription(e.target.value)}
-                  mb={4}
-                />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel color="main" htmlFor="file">
-                  Upload file
-                </FormLabel>
-                <Flex
-                  {...getRootProps({ className: 'dropzone' })}
-                  flexDir="column"
-                  borderWidth={1}
-                  borderStyle="dashed"
-                  borderRadius={20}
-                  p={10}
-                  mb={4}
-                  onClick={open}
-                >
-                  <input {...getInputProps()} color="white" />
-                  <Box alignSelf="center">
-                    {`Drag 'n' drop some files here`}
-                  </Box>
-                </Flex>
-              </FormControl>
-              <Text mb={1}>Files:</Text>
-              {myFiles.map((file: File) => (
-                <Flex key={file.name} w="100%" mb={1}>
-                  <IconButton
-                    size="xs"
-                    borderRadius="full"
-                    onClick={removeFile(file)}
-                    icon={<SmallCloseIcon boxSize="1rem" />}
-                    aria-label={''}
-                  />
-                  <Text ml={1} alignSelf="center">
-                    {file.name} - {file.size} bytes
-                  </Text>
-                </Flex>
-              ))}
-            </ModalBody>
-
-            <ModalFooter alignItems="baseline">
-              <Button
-                variant="ghost"
-                mr={3}
-                onClick={onModalClose}
-                borderRadius="full"
-              >
-                Close
-              </Button>
-              <SubmitButton
-                mt={4}
-                type="submit"
-                onClick={onSubmit}
-                isDisabled={!myFiles.length || !proofDescription}
-                isLoading={isSubmitting}
-              >
-                Submit
-              </SubmitButton>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
         <VStack spacing={8}>
           <AddQuestBlock questChain={questChain} refresh={refresh} />
         </VStack>
       </SimpleGrid>
+
+      <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl isRequired>
+              <FormLabel color="main" htmlFor="proofDescription">
+                Description
+              </FormLabel>
+              <Textarea
+                id="proofDescription"
+                value={proofDescription}
+                onChange={e => setProofDescription(e.target.value)}
+                mb={4}
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel color="main" htmlFor="file">
+                Upload file
+              </FormLabel>
+              <Flex
+                {...getRootProps({ className: 'dropzone' })}
+                flexDir="column"
+                borderWidth={1}
+                borderStyle="dashed"
+                borderRadius={20}
+                p={10}
+                mb={4}
+                onClick={open}
+              >
+                <input {...getInputProps()} color="white" />
+                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
+              </Flex>
+            </FormControl>
+            <Text mb={1}>Files:</Text>
+            {myFiles.map((file: File) => (
+              <Flex key={file.name} w="100%" mb={1}>
+                <IconButton
+                  size="xs"
+                  borderRadius="full"
+                  onClick={removeFile(file)}
+                  icon={<SmallCloseIcon boxSize="1rem" />}
+                  aria-label={''}
+                />
+                <Text ml={1} alignSelf="center">
+                  {file.name} - {file.size} bytes
+                </Text>
+              </Flex>
+            ))}
+          </ModalBody>
+
+          <ModalFooter alignItems="baseline">
+            <Button
+              variant="ghost"
+              mr={3}
+              onClick={onModalClose}
+              borderRadius="full"
+            >
+              Close
+            </Button>
+            <SubmitButton
+              mt={4}
+              type="submit"
+              onClick={onSubmit}
+              isDisabled={!myFiles.length || !proofDescription}
+              isLoading={isSubmitting}
+            >
+              Submit
+            </SubmitButton>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };

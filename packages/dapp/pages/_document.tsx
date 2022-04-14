@@ -20,6 +20,7 @@ class TSDocument extends Document {
   render(): JSX.Element {
     return (
       <Html
+        data-color-mode="dark"
         style={{
           height: '100%',
         }}

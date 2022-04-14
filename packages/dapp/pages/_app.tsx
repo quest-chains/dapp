@@ -2,6 +2,8 @@
 import 'focus-visible/dist/focus-visible';
 import '@/assets/bg.scss';
 import '@/fonts/styles.css';
+import 'react-markdown-editor-lite/lib/index.css';
+import '@/assets/custom-markdown-editor.scss';
 
 import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';

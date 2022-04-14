@@ -1,4 +1,4 @@
-import type { Metadata as MetadataType } from '@/../utils/dist';
+import { Metadata as MetadataType } from '@/../utils/dist';
 
 export type Metadata = MetadataType;
 
