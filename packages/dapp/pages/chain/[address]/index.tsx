@@ -367,13 +367,18 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }
 
   return (
-    <VStack w="100%" align="flex-start" color="main" px={isUser ? 40 : 0}>
+    <VStack
+      w="100%"
+      align="flex-start"
+      color="main"
+      px={isUser ? { base: 0, lg: 40 } : 0}
+    >
       <Head>
         <title>{questChain.name}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <Flex flexDirection="column" w="full">
+      <Flex flexDirection="column" w="full" justify="center">
         <Flex justifyContent="space-between" w="full">
           {!isEditingQuestChain && (
             <>
@@ -468,7 +473,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 fontSize={20}
                 textTransform="uppercase"
               >
-                {questChain.quests.length} Quests found
+                {questChain.quests.length} Quest
+                {questChain.quests.length === 1 ? '' : 's'} found
               </Text>
               {questChain.quests.map(quest => (
                 <Flex

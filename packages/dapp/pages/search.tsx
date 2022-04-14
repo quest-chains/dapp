@@ -62,7 +62,7 @@ const Search: React.FC = () => {
           {error
             ? 'Error: Something went wrong!'
             : `${results.length} Quest Chain${
-                results.length > 1 ? 's' : ''
+                results.length === 1 ? '' : 's'
               } found`}
         </Text>
       )}
