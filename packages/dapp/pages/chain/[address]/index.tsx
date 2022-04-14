@@ -361,7 +361,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               <Text fontSize="2xl" fontWeight="bold" mb={3}>
                 {questChain.name}
               </Text>
-              {!isUser && (
+              {isAdmin && (
                 <IconButton
                   borderRadius="full"
                   onClick={() => setIsEditingQuestChain(true)}
@@ -462,7 +462,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                             </Text>
                           </CollapsableText>
                         </Box>
-                        {!isUser && (
+                        {(isAdmin || isEditor) && (
                           <IconButton
                             borderRadius="full"
                             onClick={() => {
