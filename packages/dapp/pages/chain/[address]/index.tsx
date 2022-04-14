@@ -79,7 +79,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { address, provider } = useWallet();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingQuestChain, setIsEditingQuestChain] = useState(false);
+  const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [quest, setQuest] = useState<{
     questId: string;
     name: string | null | undefined;
@@ -105,6 +106,11 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const [chainDescription, setChainDescription] = useState(
     questChain?.description || '',
   );
+
+  const [questName, setQuestName] = useState('');
+  const [questDescription, setQuestDescription] = useState('');
+
+  const [questEditId, setQuestEditId] = useState(0);
 
   const {
     questStatuses,
@@ -270,13 +276,57 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         toast.dismiss(tid);
         toast.success('Successfully created a new Quest Chain');
         refresh();
-        setIsEditing(false);
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
-        setIsEditing(false);
       }
 
+      setIsEditingQuestChain(false);
+      setSubmitting(false);
+    },
+    [contract, refresh],
+  );
+
+  const onSubmitQuest = useCallback(
+    async ({
+      name,
+      description,
+      questId,
+    }: {
+      name: string;
+      description: string;
+      questId: number;
+    }) => {
+      const metadata: Metadata = {
+        name,
+        description,
+      };
+      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      try {
+        const hash = await uploadMetadataViaAPI(metadata);
+        const details = `ipfs://${hash}`;
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const tx = await contract.editQuest(questId, details);
+        toast.dismiss(tid);
+        tid = handleTxLoading(tx.hash);
+        const receipt = await tx.wait(1);
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(receipt.blockNumber);
+        toast.dismiss(tid);
+        toast.success('Successfully created a new Quest Chain');
+        refresh();
+      } catch (error) {
+        toast.dismiss(tid);
+        handleError(error);
+      }
+
+      setIsEditingQuest(false);
       setSubmitting(false);
     },
     [contract, refresh],
@@ -306,7 +356,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
       <Flex flexDirection="column" w="full">
         <Flex justifyContent="space-between" w="full">
-          {!isEditing && (
+          {!isEditingQuestChain && (
             <>
               <Text fontSize="2xl" fontWeight="bold" mb={3}>
                 {questChain.name}
@@ -314,7 +364,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               {!isUser && (
                 <IconButton
                   borderRadius="full"
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => setIsEditingQuestChain(true)}
                   icon={<EditIcon boxSize="1rem" />}
                   aria-label={''}
                 />
@@ -322,14 +372,13 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </>
           )}
 
-          {isEditing && (
+          {isEditingQuestChain && (
             <>
               <Input
                 fontSize="2xl"
                 fontWeight="bold"
                 mb={3}
                 value={chainName}
-                isReadOnly={!isEditing}
                 onChange={e => setChainName(e.target.value)}
               />
               <IconButton
@@ -346,7 +395,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               />
               <IconButton
                 borderRadius="full"
-                onClick={() => setIsEditing(false)}
+                onClick={() => setIsEditingQuestChain(false)}
                 icon={<CloseIcon boxSize="1rem" />}
                 aria-label={''}
               />
@@ -355,13 +404,13 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         </Flex>
 
         <Flex w="full">
-          {!isEditing && (
+          {!isEditingQuestChain && (
             <Text fontWeight="lg" color="white">
               {questChain.description}
             </Text>
           )}
 
-          {isEditing && (
+          {isEditingQuestChain && (
             <Textarea
               id="chainDescription"
               value={chainDescription}
@@ -380,7 +429,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           ) : (
             <>
               <Text
-                w="100%"
+                w="full"
                 color="white"
                 fontSize={20}
                 textTransform="uppercase"
@@ -389,7 +438,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Text>
               {questChain.quests.map(quest => (
                 <Flex
-                  w="100%"
+                  w="full"
                   boxShadow="inset 0px 0px 0px 1px #AD90FF"
                   p={8}
                   gap={3}
@@ -398,12 +447,75 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   key={quest.questId}
                   justifyContent="space-between"
                 >
-                  <Flex flexDirection="column">
-                    <CollapsableText title={quest.name}>
-                      <Text mx={4} mt={2} color="white" fontStyle="italic">
-                        {quest.description}
-                      </Text>
-                    </CollapsableText>
+                  <Flex flexDirection="column" w="full">
+                    {!(isEditingQuest && questEditId === quest.questId) && (
+                      <Flex justifyContent="space-between" w="full">
+                        <Box>
+                          <CollapsableText title={quest.name}>
+                            <Text
+                              mx={4}
+                              mt={2}
+                              color="white"
+                              fontStyle="italic"
+                            >
+                              {quest.description}
+                            </Text>
+                          </CollapsableText>
+                        </Box>
+                        {!isUser && (
+                          <IconButton
+                            borderRadius="full"
+                            onClick={() => {
+                              setIsEditingQuest(true);
+                              setQuestName(quest.name || '');
+                              setQuestDescription(quest.description || '');
+                              setQuestEditId(quest.questId);
+                            }}
+                            icon={<EditIcon boxSize="1rem" />}
+                            aria-label={''}
+                          />
+                        )}
+                      </Flex>
+                    )}
+
+                    {isEditingQuest && questEditId === quest.questId && (
+                      <Flex flexDirection="column">
+                        <Flex>
+                          <Input
+                            mb={3}
+                            value={questName}
+                            onChange={e => setQuestName(e.target.value)}
+                          />
+                          <IconButton
+                            borderRadius="full"
+                            onClick={() =>
+                              onSubmitQuest({
+                                name: questName,
+                                description: questDescription,
+                                questId: quest.questId,
+                              })
+                            }
+                            icon={<CheckIcon boxSize="1rem" />}
+                            aria-label={''}
+                            mx={2}
+                          />
+                          <IconButton
+                            borderRadius="full"
+                            onClick={() => setIsEditingQuest(false)}
+                            icon={<CloseIcon boxSize="1rem" />}
+                            aria-label={''}
+                          />
+                        </Flex>
+
+                        <Textarea
+                          value={questDescription}
+                          fontStyle="italic"
+                          onChange={e => setQuestDescription(e.target.value)}
+                          mb={4}
+                          color="white"
+                        />
+                      </Flex>
+                    )}
                   </Flex>
 
                   {isUser && (
