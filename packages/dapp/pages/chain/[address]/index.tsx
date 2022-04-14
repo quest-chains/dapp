@@ -77,6 +77,7 @@ type UserStatusType = {
 const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address, provider } = useWallet();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [quest, setQuest] = useState<{
@@ -245,10 +246,40 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
-      // eslint-disable-next-line no-console
-      console.log(name, description);
+      const metadata: Metadata = {
+        name,
+        description,
+      };
+      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      try {
+        const hash = await uploadMetadataViaAPI(metadata);
+        const details = `ipfs://${hash}`;
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const tx = await contract.edit(details);
+        toast.dismiss(tid);
+        tid = handleTxLoading(tx.hash);
+        const receipt = await tx.wait(1);
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(receipt.blockNumber);
+        toast.dismiss(tid);
+        toast.success('Successfully created a new Quest Chain');
+        refresh();
+        setIsEditing(false);
+      } catch (error) {
+        toast.dismiss(tid);
+        handleError(error);
+        setIsEditing(false);
+      }
+
+      setSubmitting(false);
     },
-    [],
+    [contract, refresh],
   );
 
   if (isFallback) {
