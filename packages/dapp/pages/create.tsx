@@ -1,8 +1,11 @@
 import {
+  Box,
+  Button,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
   Spinner,
   Text,
@@ -12,6 +15,7 @@ import {
 import { Signer } from 'ethers';
 import {
   Field,
+  FieldArray,
   FieldProps,
   Form,
   Formik,
@@ -35,11 +39,15 @@ import { useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
+  editorAddresses: string[];
+  reviewerAddresses: string[];
 }
 
 const Create: React.FC = () => {
   const initialValues: FormValues = {
     name: '',
+    editorAddresses: [],
+    reviewerAddresses: [],
   };
   const [description, setDescription] = useState('');
 
@@ -53,12 +61,14 @@ const Create: React.FC = () => {
 
   const onSubmit = useCallback(
     async (
-      { name }: FormValues,
+      { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       const metadata: Metadata = {
         name,
         description,
+        editors: editorAddresses.map(address => ({ id: address })),
+        reviewers: reviewerAddresses.map(address => ({ id: address })),
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
@@ -99,7 +109,7 @@ const Create: React.FC = () => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
-        {({ isSubmitting }: FormikState<FormValues>) => (
+        {({ isSubmitting, values }: FormikState<FormValues>) => (
           <Form>
             {/* Left Column: Quest Chain Name, Quest Chain Description, Core Member Addresses */}
             <Flex flexDirection="column">
@@ -112,7 +122,7 @@ const Create: React.FC = () => {
                 p={8}
                 borderRadius={30}
               >
-                <VStack mb={4} align="flex-start">
+                <VStack mb={4} align="flex-start" gap={3}>
                   <Wrap minW="20rem">
                     <Field name="name">
                       {({ field, form }: FieldProps<string, FormValues>) => (
@@ -133,6 +143,80 @@ const Create: React.FC = () => {
                       )}
                     </Field>
                   </Wrap>
+                  <FieldArray
+                    name="editorAddresses"
+                    render={arrayHelpers => (
+                      <Box>
+                        <FormLabel color="main" htmlFor="editorAddresses">
+                          Editor Addresses
+                        </FormLabel>
+                        {values.editorAddresses.map((address, index) => (
+                          <HStack key={index} mb={2}>
+                            <Field name={`editorAddresses.${index}`}>
+                              {({ field }: { field: any }) => (
+                                <FormControl isRequired>
+                                  <Input
+                                    {...field}
+                                    id={`editorAddresses.${index}`}
+                                    placeholder="Editor Address"
+                                  />
+                                </FormControl>
+                              )}
+                            </Field>
+                            <Button
+                              type="button"
+                              onClick={() => arrayHelpers.remove(index)}
+                            >
+                              -
+                            </Button>
+                          </HStack>
+                        ))}
+                        <Button
+                          type="button"
+                          onClick={() => arrayHelpers.push('')}
+                        >
+                          Add address
+                        </Button>
+                      </Box>
+                    )}
+                  />
+                  <FieldArray
+                    name="reviewerAddresses"
+                    render={arrayHelpers => (
+                      <Box>
+                        <FormLabel htmlFor="reviewerAddresses" color="main">
+                          Reviewer Addresses
+                        </FormLabel>
+                        {values.reviewerAddresses.map((address, index) => (
+                          <HStack key={index} mb={2}>
+                            <Field name={`reviewerAddresses.${index}`}>
+                              {({ field }: { field: any }) => (
+                                <FormControl isRequired>
+                                  <Input
+                                    {...field}
+                                    id={`reviewerAddresses.${index}`}
+                                    placeholder="Reviewer Address"
+                                  />
+                                </FormControl>
+                              )}
+                            </Field>
+                            <Button
+                              type="button"
+                              onClick={() => arrayHelpers.remove(index)}
+                            >
+                              -
+                            </Button>
+                          </HStack>
+                        ))}
+                        <Button
+                          type="button"
+                          onClick={() => arrayHelpers.push('')}
+                        >
+                          Add address
+                        </Button>
+                      </Box>
+                    )}
+                  />
                   <FormControl isRequired>
                     <FormLabel color="main" htmlFor="description">
                       Quest Chain Description
@@ -144,41 +228,6 @@ const Create: React.FC = () => {
                     />
                   </FormControl>
                 </VStack>
-                {/* <FieldArray
-                name="coreMemberAddresses"
-                render={arrayHelpers => (
-                  <Box>
-                    <FormLabel color="main" htmlFor="name">
-                      Core Member Addresses
-                    </FormLabel>
-                    {props.values.coreMemberAddresses.map((address, index) => (
-                      <HStack key={index} mb={2}>
-                        <Field name={`coreMemberAddresses.${index}`}>
-                          {({ field }: { field: any }) => (
-                            <FormControl isRequired>
-                              <Input
-                              color="white"
-                                {...field}
-                                id={`coreMemberAddresses.${index}`}
-                                placeholder="Core Member Address"
-                              />
-                            </FormControl>
-                          )}
-                        </Field>
-                        <Button
-                          type="button"
-                          onClick={() => arrayHelpers.remove(index)}
-                        >
-                          -
-                        </Button>
-                      </HStack>
-                    ))}
-                    <Button type="button" onClick={() => arrayHelpers.push('')}>
-                      Add address
-                    </Button>
-                  </Box>
-                )}
-              /> */}
                 <Flex w="100%" justify="flex-end">
                   <SubmitButton mt={4} isLoading={isSubmitting} type="submit">
                     Create

@@ -20,6 +20,8 @@ const ipfsTheGraph = new IPFSClient({
 export type Metadata = {
   name: string;
   description: string;
+  editors?: { id: string }[];
+  reviewers?: { id: string }[];
   image_url?: string;
   external_url?: string;
 };
