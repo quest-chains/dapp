@@ -29,7 +29,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
-import { CollapsableText } from '@/components/CollapsableText';
+import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -41,6 +41,7 @@ import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { QuestChain, QuestChain__factory } from '@/types';
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import {
@@ -73,13 +74,7 @@ const StatusDisplay: React.FC<{
       align="stretch"
     >
       <HStack align="flex-start" justify="space-between" w="100%">
-        <Flex direction="column">
-          <CollapsableText title={quest.name}>
-            <Text mx={4} mt={2} color="white" fontStyle="italic">
-              {quest.description}
-            </Text>
-          </CollapsableText>
-        </Flex>
+        <CollapsableQuestDisplay {...quest} />
         <UserDisplay address={user.id} />
       </HStack>
       <Text fontSize="lg">{description}</Text>
@@ -149,7 +144,7 @@ const Review: React.FC<Props> = ({
 
   const { provider, address } = useWallet();
   const contract: QuestChain = QuestChain__factory.connect(
-    questChain?.address ?? '',
+    questChain?.address ?? ZERO_ADDRESS,
     provider?.getSigner() as Signer,
   );
 
@@ -275,7 +270,7 @@ const Review: React.FC<Props> = ({
   }
 
   return (
-    <VStack px={40} spacing={8}>
+    <VStack px={{ base: 0, lg: 40 }} spacing={8}>
       <Head>
         <title>{questChain.name} Review</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />

@@ -1,19 +1,16 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import {
-  Box,
-  HStack,
   Input,
   InputGroup,
   InputLeftElement,
-  Link as ChakraLink,
   Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import Head from 'next/head';
-import NextLink from 'next/link';
 import { useState } from 'react';
 
+import { QuestChainTile } from '@/components/QuestChainTile';
 import {
   QuestChainInfoFragment,
   useQuestChainSearchQuery,
@@ -32,7 +29,7 @@ const Search: React.FC = () => {
   const results: QuestChainInfoFragment[] = data?.questChains ?? [];
 
   return (
-    <VStack px={40} alignItems="flex-start" gap={4}>
+    <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
       <Head>
         <title>Search</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -74,39 +71,7 @@ const Search: React.FC = () => {
           !error &&
           results.length > 0 &&
           results.map(({ address, name, description }) => (
-            <NextLink
-              as={`/chain/${address}`}
-              href={`/chain/[address]`}
-              passHref
-              key={address}
-            >
-              <ChakraLink display="block" _hover={{}} w="full">
-                <HStack
-                  cursor="pointer"
-                  justify="space-between"
-                  w="full"
-                  px={10}
-                  py={4}
-                  background="rgba(255, 255, 255, 0.02)"
-                  _hover={{
-                    background: 'whiteAlpha.100',
-                  }}
-                  fontWeight="400"
-                  backdropFilter="blur(40px)"
-                  borderRadius="full"
-                  boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                  letterSpacing={4}
-                >
-                  <Box>
-                    <Text mb={4} fontSize="lg" fontWeight="bold" color="main">
-                      {name}
-                    </Text>
-                    <Text>{description}</Text>
-                  </Box>
-                  {/* <Text>1/20</Text> */}
-                </HStack>
-              </ChakraLink>
-            </NextLink>
+            <QuestChainTile {...{ address, name, description }} key={address} />
           ))}
       </VStack>
     </VStack>

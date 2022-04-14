@@ -28,6 +28,9 @@ packages/contracts/types
 packages/contracts/artifacts
 packages/contracts/coverage*
 
+# dapp
+packages/dapp/types
+
 # subgraph
 packages/subgraph/build/
 packages/subgraph/src/types/

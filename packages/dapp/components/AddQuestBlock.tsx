@@ -13,7 +13,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  Textarea,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -27,7 +26,7 @@ import {
   FormikHelpers,
   FormikState,
 } from 'formik';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { QuestChainInfoFragment } from '@/graphql/types';
@@ -39,11 +38,11 @@ import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 import { CreateFlow } from './CreateFlow';
+import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
 
 interface FormValues {
   name: string;
-  description: string;
 }
 
 export const AddQuestBlock: React.FC<{
@@ -57,7 +56,6 @@ export const AddQuestBlock: React.FC<{
   );
   const initialValues: FormValues = {
     name: '',
-    description: '',
   };
 
   const contract: QuestChain = QuestChain__factory.connect(
@@ -65,9 +63,10 @@ export const AddQuestBlock: React.FC<{
     provider?.getSigner() as Signer,
   );
 
+  const [description, setDescription] = useState('');
   const onSubmit = useCallback(
     async (
-      { name, description }: FormValues,
+      { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       if (questChain.quests.length > 4) {
@@ -133,6 +132,7 @@ export const AddQuestBlock: React.FC<{
         toast.success('Successfully added a new Quest');
         refresh();
         resetForm();
+        setDescription('');
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -141,7 +141,7 @@ export const AddQuestBlock: React.FC<{
       setSubmitting(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contract, refresh, onOpen, questChain],
+    [contract, refresh, onOpen, questChain, description],
   );
 
   if (!isEditor) return null;
@@ -186,24 +186,16 @@ export const AddQuestBlock: React.FC<{
                         </FormControl>
                       )}
                     </Field>
-                    <Field name="description">
-                      {({ field, form }: FieldProps<string, FormValues>) => (
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="description">
-                            Quest Description
-                          </FormLabel>
-                          <Textarea
-                            color="white"
-                            {...field}
-                            id="description"
-                            placeholder="Quest Description"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.description}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
+                    <FormControl isRequired>
+                      <FormLabel color="main" htmlFor="description">
+                        Quest Description
+                      </FormLabel>
+                      <MarkdownEditor
+                        value={description}
+                        placeholder="Quest Description"
+                        onChange={setDescription}
+                      />
+                    </FormControl>
                   </VStack>
                   <Flex w="100%" justify="flex-end">
                     <SubmitButton mt={4} isLoading={isSubmitting} type="submit">
