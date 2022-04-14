@@ -91,8 +91,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     onClose: onUpdateQuestChainConfirmationClose,
   } = useDisclosure();
 
-  const [isEditingQuestChain, setIsEditingQuestChain] = useState(false);
-  const [isEditingQuest, setIsEditingQuest] = useState(false);
+  const [isEditingQuestChain, setEditingQuestChain] = useState(false);
+  const [isEditingQuest, setEditingQuest] = useState(false);
   const [quest, setQuest] = useState<{
     questId: string;
     name: string | null | undefined;
@@ -213,6 +213,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }, [onClose]);
 
   const [isSubmitting, setSubmitting] = useState(false);
+  const [isSubmittingQuest, setSubmittingQuest] = useState(false);
+  const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
   const onSubmit = useCallback(async () => {
     if (quest && proofDescription && myFiles.length > 0) {
@@ -264,6 +266,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
+      setSubmittingQuestChain(true);
       const metadata: Metadata = {
         name,
         description,
@@ -293,8 +296,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         handleError(error);
       }
 
-      setIsEditingQuestChain(false);
-      setSubmitting(false);
+      setEditingQuestChain(false);
+      setSubmittingQuestChain(false);
     },
     [contract, refresh],
   );
@@ -309,6 +312,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       description: string;
       questId: number;
     }) => {
+      setSubmittingQuest(true);
       const metadata: Metadata = {
         name,
         description,
@@ -338,8 +342,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         handleError(error);
       }
 
-      setIsEditingQuest(false);
-      setSubmitting(false);
+      setEditingQuest(false);
+      setSubmittingQuest(false);
     },
     [contract, refresh],
   );
@@ -376,7 +380,11 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               {isAdmin && (
                 <IconButton
                   borderRadius="full"
-                  onClick={() => setIsEditingQuestChain(true)}
+                  onClick={() => {
+                    setEditingQuestChain(true);
+                    setChainName(questChain.name || '');
+                    setQuestDescription(questChain.description || '');
+                  }}
                   icon={<EditIcon boxSize="1rem" />}
                   aria-label={''}
                 />
@@ -396,13 +404,15 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               <IconButton
                 borderRadius="full"
                 onClick={onUpdateQuestChainConfirmationOpen}
+                isDisabled={isSubmittingQuestChain}
                 icon={<CheckIcon boxSize="1rem" />}
                 aria-label={''}
                 mx={2}
               />
               <IconButton
                 borderRadius="full"
-                onClick={() => setIsEditingQuestChain(false)}
+                onClick={() => setEditingQuestChain(false)}
+                isDisabled={isSubmittingQuestChain}
                 icon={<CloseIcon boxSize="1rem" />}
                 aria-label={''}
               />
@@ -487,7 +497,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           <IconButton
                             borderRadius="full"
                             onClick={() => {
-                              setIsEditingQuest(true);
+                              setEditingQuest(true);
                               setQuestName(quest.name || '');
                               setQuestDescription(quest.description || '');
                               setQuestEditId(quest.questId);
@@ -510,13 +520,15 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           <IconButton
                             borderRadius="full"
                             onClick={onUpdateQuestConfirmationOpen}
+                            isDisabled={isSubmittingQuest}
                             icon={<CheckIcon boxSize="1rem" />}
                             aria-label={''}
                             mx={2}
                           />
                           <IconButton
                             borderRadius="full"
-                            onClick={() => setIsEditingQuest(false)}
+                            onClick={() => setEditingQuest(false)}
+                            isDisabled={isSubmittingQuest}
                             icon={<CloseIcon boxSize="1rem" />}
                             aria-label={''}
                           />
