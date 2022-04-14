@@ -473,7 +473,8 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 fontSize={20}
                 textTransform="uppercase"
               >
-                {questChain.quests.length} Quests found
+                {questChain.quests.length} Quest
+                {questChain.quests.length === 1 ? '' : 's'} found
               </Text>
               {questChain.quests.map(quest => (
                 <Flex

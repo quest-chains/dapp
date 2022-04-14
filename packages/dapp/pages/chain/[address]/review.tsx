@@ -292,7 +292,7 @@ const Review: React.FC<Props> = ({
               w="100%"
             >
               {`${reviews.length} Quest Submission${
-                reviews.length > 1 ? 's' : ''
+                reviews.length === 1 ? '' : 's'
               } found`}
             </Text>
             {reviews.map(review => (
