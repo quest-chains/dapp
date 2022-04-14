@@ -36,6 +36,7 @@ import toast from 'react-hot-toast';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
 import { CollapsableText } from '@/components/CollapsableText';
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { SubmitButton } from '@/components/SubmitButton';
 import {
   getQuestChainAddresses,
@@ -79,6 +80,17 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { address, provider } = useWallet();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isUpdateQuestConfirmationOpen,
+    onOpen: onUpdateQuestConfirmationOpen,
+    onClose: onUpdateQuestConfirmationClose,
+  } = useDisclosure();
+  const {
+    isOpen: isUpdateQuestChainConfirmationOpen,
+    onOpen: onUpdateQuestChainConfirmationOpen,
+    onClose: onUpdateQuestChainConfirmationClose,
+  } = useDisclosure();
+
   const [isEditingQuestChain, setIsEditingQuestChain] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [quest, setQuest] = useState<{
@@ -383,12 +395,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               />
               <IconButton
                 borderRadius="full"
-                onClick={() =>
-                  onSubmitQuestChain({
-                    name: chainName,
-                    description: chainDescription,
-                  })
-                }
+                onClick={onUpdateQuestChainConfirmationOpen}
                 icon={<CheckIcon boxSize="1rem" />}
                 aria-label={''}
                 mx={2}
@@ -420,6 +427,20 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             />
           )}
         </Flex>
+
+        <ConfirmationDialog
+          onSubmit={() => {
+            onUpdateQuestChainConfirmationClose();
+            onSubmitQuestChain({
+              name: chainName,
+              description: chainDescription,
+            });
+          }}
+          title="Update Quest Chain"
+          content="Are you sure you want to update this quest chain?"
+          isOpen={isUpdateQuestChainConfirmationOpen}
+          onClose={onUpdateQuestChainConfirmationClose}
+        />
       </Flex>
 
       <SimpleGrid columns={isUser ? 1 : 2} spacing={16} pt={8} w="100%">
@@ -488,13 +509,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           />
                           <IconButton
                             borderRadius="full"
-                            onClick={() =>
-                              onSubmitQuest({
-                                name: questName,
-                                description: questDescription,
-                                questId: quest.questId,
-                              })
-                            }
+                            onClick={onUpdateQuestConfirmationOpen}
                             icon={<CheckIcon boxSize="1rem" />}
                             aria-label={''}
                             mx={2}
@@ -504,6 +519,20 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                             onClick={() => setIsEditingQuest(false)}
                             icon={<CloseIcon boxSize="1rem" />}
                             aria-label={''}
+                          />
+                          <ConfirmationDialog
+                            onSubmit={() => {
+                              onUpdateQuestConfirmationClose();
+                              onSubmitQuest({
+                                name: questName,
+                                description: questDescription,
+                                questId: quest.questId,
+                              });
+                            }}
+                            title="Update Quest"
+                            content="Are you sure you want to update this quest?"
+                            isOpen={isUpdateQuestConfirmationOpen}
+                            onClose={onUpdateQuestConfirmationClose}
                           />
                         </Flex>
 
