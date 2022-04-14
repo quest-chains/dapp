@@ -36,7 +36,7 @@ import toast from 'react-hot-toast';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
 import { CollapsableText } from '@/components/CollapsableText';
-import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { SubmitButton } from '@/components/SubmitButton';
 import {
   getQuestChainAddresses,
@@ -438,7 +438,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           )}
         </Flex>
 
-        <ConfirmationDialog
+        <ConfirmationModal
           onSubmit={() => {
             onUpdateQuestChainConfirmationClose();
             onSubmitQuestChain({
@@ -532,7 +532,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                             icon={<CloseIcon boxSize="1rem" />}
                             aria-label={''}
                           />
-                          <ConfirmationDialog
+                          <ConfirmationModal
                             onSubmit={() => {
                               onUpdateQuestConfirmationClose();
                               onSubmitQuest({
@@ -544,7 +544,11 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                             title="Update Quest"
                             content="Are you sure you want to update this quest?"
                             isOpen={isUpdateQuestConfirmationOpen}
-                            onClose={onUpdateQuestConfirmationClose}
+                            onClose={() => {
+                              setChainDescription(quest.description || '');
+                              setChainName(quest.name || '');
+                              onUpdateQuestConfirmationClose();
+                            }}
                           />
                         </Flex>
 

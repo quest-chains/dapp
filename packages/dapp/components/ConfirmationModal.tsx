@@ -21,7 +21,7 @@ interface DialogProps {
   onSubmit: () => void;
 }
 
-export const ConfirmationDialog: React.FC<DialogProps> = ({
+export const ConfirmationModal: React.FC<DialogProps> = ({
   title,
   content,
   isDisabled,
