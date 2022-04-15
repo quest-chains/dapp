@@ -365,6 +365,12 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [contract, refresh],
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const deleteMember = (address: string) => {
+    // eslint-disable-next-line no-console
+    console.log(address);
+  };
+
   if (isFallback) {
     return (
       <VStack>
@@ -488,10 +494,71 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           )}
 
           {isEditingQuestChain && (
-            <MarkdownEditor
-              value={chainDescription}
-              onChange={setChainDescription}
-            />
+            <Flex gap={6}>
+              <Flex flexGrow={1}>
+                <MarkdownEditor
+                  value={chainDescription}
+                  onChange={setChainDescription}
+                />
+              </Flex>
+              <Flex flexGrow={1} flexDir="column">
+                <Text>Members</Text>
+                {admins &&
+                  admins.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="pending">
+                        Admin
+                      </Text>
+                      <IconButton
+                        borderRadius="full"
+                        size="xs"
+                        onClick={() => deleteMember(address)}
+                        icon={<CloseIcon boxSize="0.7rem" />}
+                        aria-label={''}
+                      />
+                    </Flex>
+                  ))}
+                {editors &&
+                  editors.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="rejected">
+                        Editor
+                      </Text>
+                      <IconButton
+                        borderRadius="full"
+                        size="xs"
+                        onClick={() => deleteMember(address)}
+                        icon={<CloseIcon boxSize="0.7rem" />}
+                        aria-label={''}
+                      />
+                    </Flex>
+                  ))}
+                {reviewers &&
+                  reviewers.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="neutral">
+                        Reviewer
+                      </Text>
+                      <IconButton
+                        borderRadius="full"
+                        size="xs"
+                        onClick={() => deleteMember(address)}
+                        icon={<CloseIcon boxSize="0.7rem" />}
+                        aria-label={''}
+                      />
+                    </Flex>
+                  ))}
+              </Flex>
+            </Flex>
           )}
         </Flex>
 
