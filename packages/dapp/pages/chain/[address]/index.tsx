@@ -159,6 +159,20 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [questChain, address],
   );
 
+  const admins = questChain?.admins.map(admin => ({
+    ...admin,
+  }));
+
+  const editors = questChain?.editors.filter(
+    ({ address }) =>
+      !questChain?.admins.map(({ address }) => address).includes(address),
+  );
+
+  const reviewers = questChain?.reviewers.filter(
+    ({ address }) =>
+      !questChain?.editors.map(({ address }) => address).includes(address),
+  );
+
   const isUser = !(isAdmin || isEditor || isReviewer);
 
   const userStatus: UserStatusType = useMemo(() => {
@@ -430,7 +444,47 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
         <Flex w="full">
           {!isEditingQuestChain && questChain.description && (
-            <MarkdownViewer markdown={questChain.description} />
+            <Flex gap={6}>
+              <Flex flexGrow={1}>
+                <MarkdownViewer markdown={questChain.description} />
+              </Flex>
+              <Flex flexGrow={1} flexDir="column">
+                <Text>Members</Text>
+                {admins &&
+                  admins.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="pending">
+                        Admin
+                      </Text>
+                    </Flex>
+                  ))}
+                {editors &&
+                  editors.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="rejected">
+                        Editor
+                      </Text>
+                    </Flex>
+                  ))}
+                {reviewers &&
+                  reviewers.map(({ address }) => (
+                    <Flex justifyContent="space-between" key={address} gap={4}>
+                      <Text key={address} color="white">
+                        {address}
+                      </Text>
+                      <Text fontSize="sm" color="neutral">
+                        Reviewer
+                      </Text>
+                    </Flex>
+                  ))}
+              </Flex>
+            </Flex>
           )}
 
           {isEditingQuestChain && (
