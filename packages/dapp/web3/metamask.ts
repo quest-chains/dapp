@@ -1,5 +1,6 @@
 import { utils } from 'ethers';
-import { NETWORK_INFO } from 'web3/networks';
+
+import { NETWORK_INFO } from './networks';
 
 export const switchChainOnMetaMask = async (
   chainId: string,

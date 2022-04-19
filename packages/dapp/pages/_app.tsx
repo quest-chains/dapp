@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-import 'focus-visible/dist/focus-visible';
 import '@/assets/bg.scss';
 import '@/fonts/styles.css';
 import 'react-markdown-editor-lite/lib/index.css';

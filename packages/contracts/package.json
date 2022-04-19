@@ -11,7 +11,7 @@
     "deploy": "hardhat run scripts/deploy.ts",
     "create-quest-chain": "hardhat run scripts/create-quest-chain.ts",
     "create-metadata": "hardhat run scripts/create-metadata.ts",
-    "lint": "eslint --ignore-path .gitignore \"./**/*.{ts,js}\"",
+    "lint": "eslint --ignore-path .gitignore \"./**/*.{ts,js}\" --fix",
     "solhint": "solhint -f table \"contracts/{*,**/*}.sol\"",
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,js,json,md,sol}\"",
     "build": "hardhat clean && rm -rf ../dapp/types && hardhat compile && cp -rf ./types ../dapp/types"

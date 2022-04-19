@@ -1,33 +1,22 @@
-import { Button, HStack, Text } from '@chakra-ui/react';
+import { HStack, Text } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 
+import { useENS } from '@/hooks/useENS';
 import { ZERO_ADDRESS } from '@/utils/constants';
-import { formatAddress, useENS, useWallet } from '@/web3';
+import { formatAddress, useWallet } from '@/web3';
 
-type Props = {
-  isHeader?: boolean;
-};
+import { PrimaryButton } from './PrimaryButton';
 
-export const ConnectWallet: React.FC<Props> = ({ isHeader }) => {
+export const ConnectWallet: React.FC = () => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =
     useWallet();
-  const { ens } = useENS(address ?? ZERO_ADDRESS);
+  const { ens } = useENS(address);
   return (
-    <Button
+    <PrimaryButton
       role="group"
       isLoading={isConnecting}
       onClick={isConnected ? disconnect : connectWallet}
-      px={isHeader ? 4 : 20}
-      background="rgba(255, 255, 255, 0.05)"
-      fontWeight="400"
-      backdropFilter="blur(40px)"
-      borderRadius="full"
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      color="main"
-      letterSpacing={4}
-      fontSize={isHeader ? 12 : 30}
-      height={isHeader ? 8 : 16}
     >
       {!isConnected || !address ? (
         'connect'
@@ -59,6 +48,6 @@ export const ConnectWallet: React.FC<Props> = ({ isHeader }) => {
           </Text>
         </HStack>
       )}
-    </Button>
+    </PrimaryButton>
   );
 };

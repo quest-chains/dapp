@@ -9,11 +9,9 @@ import {
 import toast from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
-import { CHAIN_ID } from '@/utils/constants';
-
 import { isSupportedNetwork } from './helpers';
 import { switchChainOnMetaMask } from './metamask';
-import { NETWORK_INFO } from './networks';
+import { CHAIN_ID, NETWORK_INFO } from './networks';
 import { WEB3_MODAL_OPTIONS } from './options';
 
 export type WalletContextType = {

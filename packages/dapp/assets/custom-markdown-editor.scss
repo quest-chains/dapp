@@ -45,6 +45,9 @@
         font-size: var(--chakra-fontSizes-md);
         background: none;
         overflow-y: auto;
+        &:focus {
+          box-shadow: var(--chakra-shadows-outline);
+        }
       }
     }
     .sec-html {

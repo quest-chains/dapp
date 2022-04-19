@@ -150,10 +150,10 @@ const Create: React.FC = () => {
                         <FormLabel color="main" htmlFor="editorAddresses">
                           Editor Addresses
                         </FormLabel>
-                        {values.editorAddresses.map((address, index) => (
+                        {values.editorAddresses.map((_address, index) => (
                           <HStack key={index} mb={2}>
                             <Field name={`editorAddresses.${index}`}>
-                              {({ field }: { field: any }) => (
+                              {({ field }: FieldProps<string, FormValues>) => (
                                 <FormControl isRequired>
                                   <Input
                                     {...field}
@@ -187,10 +187,10 @@ const Create: React.FC = () => {
                         <FormLabel htmlFor="reviewerAddresses" color="main">
                           Reviewer Addresses
                         </FormLabel>
-                        {values.reviewerAddresses.map((address, index) => (
+                        {values.reviewerAddresses.map((_address, index) => (
                           <HStack key={index} mb={2}>
                             <Field name={`reviewerAddresses.${index}`}>
-                              {({ field }: { field: any }) => (
+                              {({ field }: FieldProps<string, FormValues>) => (
                                 <FormControl isRequired>
                                   <Input
                                     {...field}

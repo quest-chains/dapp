@@ -1,6 +1,19 @@
 import { extendTheme } from '@chakra-ui/react';
 import { css } from '@emotion/react';
 
+const Input = {
+  variants: {
+    outline: {
+      field: {
+        _focus: {
+          borderColor: 'transparent',
+          boxShadow: '0px 0px 0px 2px #AD90FF',
+        },
+      },
+    },
+  },
+};
+
 export const theme = extendTheme({
   breakpoints: {
     '3xl': '108em',
@@ -25,21 +38,19 @@ export const theme = extendTheme({
     rejected: '#FD86FF',
     neutral: '#BCBCBC',
   },
+  shadows: {
+    outline: '0px 0px 0px 2px #AD90FF',
+  },
   config: {
     initialColorMode: 'dark',
     useSystemColorMode: false,
   },
+  components: {
+    Input,
+  },
 });
 
 export const globalStyles = css`
-  /*
-    This will hide the focus indicator if the element receives focus 
-    via the mouse, but it will still show up on keyboard focus.
-  */
-  .js-focus-visible :focus:not([data-focus-visible-added]) {
-    outline: none;
-    box-shadow: none;
-  }
   body {
     background: #0d1117;
     overflow-x: hidden;

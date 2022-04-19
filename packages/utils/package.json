@@ -11,6 +11,6 @@
   "dependencies": {
     "ajv": "^8.11.0",
     "ipfs-http-client": "34.0.0",
-    "web3.storage": "^4.0.0"
+    "web3.storage": "^4.2.0"
   }
 }

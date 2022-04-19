@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getEthersProvider } from 'web3/providers';
+
+import { getEthersProvider } from '@/web3/providers';
 
 export const useENS = (
   address: string | null | undefined,

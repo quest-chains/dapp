@@ -1,6 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import memoize from 'fast-memoize';
-import { NETWORK_INFO } from 'web3/networks';
+
+import { NETWORK_INFO } from './networks';
 
 const memoized = memoize((url: string) => new StaticJsonRpcProvider(url));
 

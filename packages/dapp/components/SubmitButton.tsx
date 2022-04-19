@@ -11,6 +11,9 @@ export const SubmitButton: React.FC<ButtonProps> = props => (
     color="main"
     fontSize={20}
     height={12}
+    _hover={{
+      background: 'whiteAlpha.200',
+    }}
     {...props}
   />
 );

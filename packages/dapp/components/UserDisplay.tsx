@@ -9,7 +9,12 @@ import { formatAddress, getAddressUrl, useENS } from '@/web3';
 export const UserDisplay: React.FC<{ address: string }> = ({ address }) => {
   const { ens } = useENS(address);
   return (
-    <Link isExternal href={getAddressUrl(address)} _hover={{}}>
+    <Link
+      isExternal
+      href={getAddressUrl(address)}
+      _hover={{}}
+      borderRadius="full"
+    >
       <SubmitButton size="md" px={4} letterSpacing={4} fontSize={12} height={8}>
         <HStack spacing={2} position="relative">
           <Davatar address={address} size={20} generatedAvatarType="jazzicon" />

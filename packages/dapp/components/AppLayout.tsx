@@ -1,26 +1,79 @@
-/* eslint-disable import/no-unresolved */
 import {
-  Box,
   Flex,
   Heading,
   HStack,
   Link as ChakraLink,
   Stack,
   Text,
+  useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 import { ConnectWallet } from '@/components/ConnectWallet';
 import { useWallet } from '@/web3';
+
+import { NavToggle } from './NavToggle';
+import { WalletDisplay } from './WalletDisplay';
+
+export const Menu: React.FC = () => {
+  const router = useRouter();
+
+  return (
+    <>
+      {router.pathname !== '/' && (
+        <HStack gap={6}>
+          <NextLink href="/search" passHref>
+            <ChakraLink display="block" _hover={{}}>
+              <Text
+                borderBottomWidth={router.pathname === '/search' ? 1 : 0}
+                borderBottomColor="main"
+                color={router.pathname === '/search' ? 'main' : 'inherit'}
+              >
+                SEARCH
+              </Text>
+            </ChakraLink>
+          </NextLink>
+          <NextLink href="/create" passHref>
+            <ChakraLink display="block" _hover={{}}>
+              <Text
+                borderBottomWidth={router.pathname === '/create' ? 1 : 0}
+                borderBottomColor="main"
+                color={router.pathname === '/create' ? 'main' : 'inherit'}
+              >
+                CREATE
+              </Text>
+            </ChakraLink>
+          </NextLink>
+          <NextLink href="/overview" passHref>
+            <ChakraLink display="block" _hover={{}}>
+              <Text
+                borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
+                borderBottomColor="main"
+                color={router.pathname === '/overview' ? 'main' : 'inherit'}
+              >
+                OVERVIEW
+              </Text>
+            </ChakraLink>
+          </NextLink>
+        </HStack>
+      )}
+
+      <WalletDisplay />
+    </>
+  );
+};
 
 export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
   const { isConnected } = useWallet();
-
+  const [isOpen, setOpen] = useState(false);
+  const toggleOpen = () => setOpen(o => !o);
   const router = useRouter();
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <Stack
@@ -45,57 +98,15 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
               <ChakraLink display="block" _hover={{}} w="20%">
                 {router.pathname !== '/' && (
                   <Heading color="main" fontSize={30} fontWeight="normal">
-                    DAOQuest
+                    {isSmallScreen ? 'Q' : 'DAOQuest'}
                   </Heading>
                 )}
               </ChakraLink>
             </NextLink>
-            {router.pathname !== '/' && (
-              <HStack gap={6}>
-                <NextLink href="/search" passHref>
-                  <ChakraLink display="block" _hover={{}}>
-                    <Text
-                      borderBottomWidth={router.pathname === '/search' ? 1 : 0}
-                      borderBottomColor="main"
-                      color={router.pathname === '/search' ? 'main' : 'inherit'}
-                    >
-                      SEARCH
-                    </Text>
-                  </ChakraLink>
-                </NextLink>
-                <NextLink href="/create" passHref>
-                  <ChakraLink display="block" _hover={{}}>
-                    <Text
-                      borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-                      borderBottomColor="main"
-                      color={router.pathname === '/create' ? 'main' : 'inherit'}
-                    >
-                      CREATE
-                    </Text>
-                  </ChakraLink>
-                </NextLink>
-                <NextLink href="/overview" passHref>
-                  <ChakraLink display="block" _hover={{}}>
-                    <Text
-                      borderBottomWidth={
-                        router.pathname === '/overview' ? 1 : 0
-                      }
-                      borderBottomColor="main"
-                      color={
-                        router.pathname === '/overview' ? 'main' : 'inherit'
-                      }
-                    >
-                      OVERVIEW
-                    </Text>
-                  </ChakraLink>
-                </NextLink>
-              </HStack>
+            <Menu />
+            {isSmallScreen && (
+              <NavToggle isOpen={isOpen} onClick={toggleOpen} />
             )}
-
-            <Box w="20%" textAlign="right">
-              <ConnectWallet isHeader />
-            </Box>
-            {/* <NavToggle isOpen={isOpen} onClick={toggleOpen} /> */}
           </HStack>
         )}
       </VStack>
