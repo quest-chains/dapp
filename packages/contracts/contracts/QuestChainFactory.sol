@@ -31,6 +31,25 @@ contract QuestChainFactory is IQuestChainFactory {
         questChainCount++;
     }
 
+    function _newQuestChainWithRoles(
+        address _questChainAddress,
+        string calldata _details,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) internal {
+        IQuestChain(_questChainAddress).initWithRoles(
+            msg.sender,
+            _details,
+            _editors,
+            _reviewers
+        );
+
+        _questChains[questChainCount] = _questChainAddress;
+        emit NewQuestChain(questChainCount, _questChainAddress);
+
+        questChainCount++;
+    }
+
     function create(string calldata _details)
         external
         override
@@ -39,6 +58,23 @@ contract QuestChainFactory is IQuestChainFactory {
         address questChainAddress = Clones.clone(implementation);
 
         _newQuestChain(questChainAddress, _details);
+
+        return questChainAddress;
+    }
+
+    function createWithRoles(
+        string calldata _details,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) external override returns (address) {
+        address questChainAddress = Clones.clone(implementation);
+
+        _newQuestChainWithRoles(
+            questChainAddress,
+            _details,
+            _editors,
+            _reviewers
+        );
 
         return questChainAddress;
     }

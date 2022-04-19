@@ -12,6 +12,13 @@ interface IQuestChain {
 
     function init(address _admin, string calldata _details) external;
 
+    function initWithRoles(
+        address _admin,
+        string calldata _details,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) external;
+
     function edit(string calldata _details) external;
 
     function createQuest(string calldata _details) external;

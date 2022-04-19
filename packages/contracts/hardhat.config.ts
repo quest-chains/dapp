@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
   solidity: '0.8.13',
   networks: {
     rinkeby: {
-      url: process.env.RINKEBY_URL || '',
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },

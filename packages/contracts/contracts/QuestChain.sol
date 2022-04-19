@@ -68,6 +68,31 @@ contract QuestChain is
         emit QuestChainCreated(_admin, _details);
     }
 
+    function initWithRoles(
+        address _admin,
+        string calldata _details,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) external override initializer {
+        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+
+        _setupRole(ADMIN_ROLE, _admin);
+        _setupRole(EDITOR_ROLE, _admin);
+        _setupRole(REVIEWER_ROLE, _admin);
+
+        for (uint256 i = 0; i < _editors.length; i = i + 1) {
+            _setupRole(EDITOR_ROLE, _editors[i]);
+        }
+
+        for (uint256 i = 0; i < _reviewers.length; i = i + 1) {
+            _setupRole(REVIEWER_ROLE, _reviewers[i]);
+        }
+
+        emit QuestChainCreated(_admin, _details);
+    }
+
     function edit(string calldata _details)
         external
         override

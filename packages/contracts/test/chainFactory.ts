@@ -17,6 +17,9 @@ describe('QuestChainFactory', () => {
   let QuestChainFactory: ContractFactory;
   let signers: SignerWithAddress[];
   let chainAddress: string;
+  let ADMIN_ROLE: string;
+  let EDITOR_ROLE: string;
+  let REVIEWER_ROLE: string;
   let admin: string;
 
   beforeEach(async () => {
@@ -24,6 +27,12 @@ describe('QuestChainFactory', () => {
     admin = signers[0].address;
 
     questChain = await deploy<QuestChain>('QuestChain', {});
+
+    [ADMIN_ROLE, EDITOR_ROLE, REVIEWER_ROLE] = await Promise.all([
+      questChain.ADMIN_ROLE(),
+      questChain.EDITOR_ROLE(),
+      questChain.REVIEWER_ROLE(),
+    ]);
 
     QuestChainFactory = await ethers.getContractFactory('QuestChainFactory');
 
@@ -62,6 +71,46 @@ describe('QuestChainFactory', () => {
     await expect(tx)
       .to.emit(chain, 'QuestChainCreated')
       .withArgs(admin, DETAILS_STRING);
+
+    expect(await chain.hasRole(ADMIN_ROLE, admin)).to.equal(true);
+    expect(await chain.hasRole(EDITOR_ROLE, admin)).to.equal(true);
+    expect(await chain.hasRole(REVIEWER_ROLE, admin)).to.equal(true);
+
+    expect(await chain.getRoleAdmin(ADMIN_ROLE)).to.equal(ADMIN_ROLE);
+    expect(await chain.getRoleAdmin(EDITOR_ROLE)).to.equal(ADMIN_ROLE);
+    expect(await chain.getRoleAdmin(REVIEWER_ROLE)).to.equal(ADMIN_ROLE);
+
+    expect(await chainFactory.getQuestChainAddress(0)).to.equal(chainAddress);
+  });
+
+  it('Should deploy a QuestChain with roles', async () => {
+    const editors = [signers[1].address, signers[2].address];
+    const reviewers = [signers[2].address, signers[3].address];
+    const tx = await chainFactory.createWithRoles(
+      DETAILS_STRING,
+      editors,
+      reviewers,
+    );
+    chainAddress = await awaitQuestChainAddress(await tx.wait());
+    await expect(tx)
+      .to.emit(chainFactory, 'NewQuestChain')
+      .withArgs(0, chainAddress);
+
+    const chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
+    await expect(tx)
+      .to.emit(chain, 'QuestChainCreated')
+      .withArgs(admin, DETAILS_STRING);
+
+    await Promise.all(
+      editors.map(async editor =>
+        expect(await chain.hasRole(EDITOR_ROLE, editor)).to.equal(true),
+      ),
+    );
+    await Promise.all(
+      reviewers.map(async reviewer =>
+        expect(await chain.hasRole(REVIEWER_ROLE, reviewer)).to.equal(true),
+      ),
+    );
 
     expect(await chainFactory.getQuestChainAddress(0)).to.equal(chainAddress);
   });
