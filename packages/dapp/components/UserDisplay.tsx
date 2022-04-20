@@ -4,7 +4,8 @@ import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 
 import { SubmitButton } from '@/components/SubmitButton';
-import { formatAddress, getAddressUrl, useENS } from '@/web3';
+import { useENS } from '@/hooks/useENS';
+import { formatAddress, getAddressUrl } from '@/web3';
 
 export const UserDisplay: React.FC<{ address: string }> = ({ address }) => {
   const { ens } = useENS(address);

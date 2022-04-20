@@ -1,5 +1,4 @@
 import {
-  Flex,
   HStack,
   Link as ChakraLink,
   Spinner,
@@ -7,45 +6,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { useMemo } from 'react';
 
-import {
-  QuestChainInfoFragment,
-  QuestStatusInfoFragment,
-  useStatusForUserQuery,
-} from '@/graphql/types';
-import { useWallet } from '@/web3';
+import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains';
 
-type UserStatus = {
-  chain: QuestChainInfoFragment;
-  completed: number;
-  total: number;
-};
+import { NetworkDisplay } from './NetworkDisplay';
 
 export const UserProgress = () => {
-  const { address } = useWallet();
-  const [{ data, fetching }] = useStatusForUserQuery({
-    variables: { user: address?.toLowerCase() ?? '', first: 1000 },
-  });
-
-  const userStatuses: UserStatus[] = useMemo(() => {
-    const statuses: Record<string, QuestStatusInfoFragment[]> = {};
-    data?.questStatuses.forEach(qs => {
-      const arr = statuses[qs.questChain.address] ?? [];
-      statuses[qs.questChain.address] = [...arr, qs];
-    });
-    return Object.values(statuses)
-      .filter(value => value.length !== 0)
-      .map(value => {
-        const chain = value[0].questChain;
-        const total = chain.quests.length;
-        const completed = value.reduce(
-          (t, a) => t + (a.status === 'pass' ? 1 : 0),
-          0,
-        );
-        return { chain, completed, total };
-      });
-  }, [data]);
+  const { fetching, results: userStatuses } = useUserProgressForAllChains();
 
   return (
     <VStack spacing={4} align="stretch">
@@ -71,7 +38,7 @@ export const UserProgress = () => {
               key={us.chain.address}
             >
               <ChakraLink display="block" _hover={{}}>
-                <HStack
+                <VStack
                   mb={2}
                   boxShadow="inset 0px 0px 0px 1px #AD90FF"
                   p={8}
@@ -79,19 +46,25 @@ export const UserProgress = () => {
                   _hover={{
                     background: 'whiteAlpha.100',
                   }}
-                  align="flex-start"
+                  align="stretch"
+                  spacing={4}
                   justify="space-between"
                 >
-                  <Flex flexDir="column">
-                    <Text color="main" fontWeight="bold" fontSize="lg" mb={4}>
+                  <HStack justify="space-between" w="100%">
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color="main"
+                      letterSpacing={4}
+                    >
                       {us.chain.name}
                     </Text>
-                    <Text>{us.chain.description}</Text>
-                  </Flex>
+                    <NetworkDisplay asTag chainId={us.chain.chainId} />
+                  </HStack>
                   <Text>
                     {us.completed} / {us.total}
                   </Text>
-                </HStack>
+                </VStack>
               </ChakraLink>
             </NextLink>
           ))}

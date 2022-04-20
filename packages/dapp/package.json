@@ -33,7 +33,6 @@
     "graphql-request": "^4.2.0",
     "graphql-tag": "^2.12.6",
     "next": "12.1.4",
-    "next-urql": "^3.3.2",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-dropzone": "^12.0.5",

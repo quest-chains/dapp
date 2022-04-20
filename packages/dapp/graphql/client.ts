@@ -1,5 +1,12 @@
-import { createClient } from 'urql';
+import { Client, createClient } from 'urql';
 
-import { GRAPH_URL } from '@/utils/constants';
+import { NETWORK_INFO } from '@/web3/networks';
 
-export const client = createClient({ url: GRAPH_URL });
+export const clients: Record<string, Client> = Object.values(
+  NETWORK_INFO,
+).reduce<Record<string, Client>>((o, info) => {
+  o[info.chainId] = createClient({
+    url: info.subgraphUrl,
+  });
+  return o;
+}, {});

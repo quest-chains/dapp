@@ -56,7 +56,7 @@ import {
   uploadFilesViaAPI,
   uploadMetadataViaAPI,
 } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -78,9 +78,9 @@ type UserStatusType = {
   };
 };
 
-const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
+const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
-  const { address, provider } = useWallet();
+  const { address, chainId, provider } = useWallet();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -132,9 +132,9 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     fetching: fetchingStatus,
     refresh: refreshStatus,
   } = useLatestQuestStatusesForUserAndChainData(
+    questChain?.chainId,
     questChain?.address,
     address,
-    [],
   );
 
   const isAdmin: boolean = useMemo(
@@ -234,6 +234,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
   const onSubmit = useCallback(async () => {
+    if (!chainId || chainId !== questChain?.chainId) return;
     if (quest && proofDescription && myFiles.length > 0) {
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
@@ -259,7 +260,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
-        await waitUntilBlock(receipt.blockNumber);
+        await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully submitted proof');
         refresh();
@@ -279,10 +280,13 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     contract,
     refresh,
     onModalClose,
+    chainId,
+    questChain,
   ]);
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
+      if (!chainId || chainId !== questChain?.chainId) return;
       setSubmittingQuestChain(true);
       const metadata: Metadata = {
         name,
@@ -304,7 +308,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
-        await waitUntilBlock(receipt.blockNumber);
+        await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success(`Successfully updated the Quest Chain: ${name}`);
         refresh();
@@ -316,7 +320,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       setEditingQuestChain(false);
       setSubmittingQuestChain(false);
     },
-    [contract, refresh],
+    [contract, refresh, chainId, questChain],
   );
 
   const onSubmitQuest = useCallback(
@@ -329,6 +333,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       description: string;
       questId: number;
     }) => {
+      if (!chainId || chainId !== questChain?.chainId) return;
       setSubmittingQuest(true);
       const metadata: Metadata = {
         name,
@@ -350,7 +355,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
-        await waitUntilBlock(receipt.blockNumber);
+        await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success(`Successfully updated the Quest: ${name}`);
         refresh();
@@ -362,7 +367,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       setEditingQuest(false);
       setSubmittingQuest(false);
     },
-    [contract, refresh],
+    [contract, refresh, chainId, questChain],
   );
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -394,7 +399,9 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       px={isUser ? { base: 0, lg: 40 } : 0}
     >
       <Head>
-        <title>{questChain.name}</title>
+        <title>
+          {questChain.name} - {NETWORK_INFO[questChain.chainId].name}
+        </title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
@@ -405,7 +412,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               <Text fontSize="2xl" fontWeight="bold" mb={3}>
                 {questChain.name}
               </Text>
-              {isAdmin && (
+              {isAdmin && chainId === questChain.chainId && (
                 <IconButton
                   borderRadius="full"
                   onClick={() => {
@@ -696,6 +703,7 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                 });
                                 onOpen();
                               }}
+                              isDisabled={chainId !== questChain.chainId}
                             >
                               Upload Proof
                             </Button>
@@ -814,13 +822,22 @@ const QuestChain: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   );
 };
 
-type QueryParams = { address: string };
+type QueryParams = { address: string; chainId: string };
 
 export async function getStaticPaths() {
-  const addresses = await getQuestChainAddresses(1000);
-  const paths = addresses.map(address => ({
-    params: { address },
-  }));
+  const paths: { params: QueryParams }[] = [];
+
+  await Promise.all(
+    Object.keys(NETWORK_INFO).map(async chainId => {
+      const addresses = await getQuestChainAddresses(chainId, 1000);
+
+      paths.push(
+        ...addresses.map(address => ({
+          params: { address, chainId },
+        })),
+      );
+    }),
+  );
 
   return { paths, fallback: true };
 }
@@ -829,13 +846,19 @@ export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
   const address = context.params?.address;
+  const chainId = context.params?.chainId;
 
   let questChain = null;
-  try {
-    questChain = address ? await getQuestChainInfo(address) : null;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Could not fetch Quest Chain for address ${address}`, error);
+  if (address && chainId) {
+    try {
+      questChain = address ? await getQuestChainInfo(chainId, address) : null;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not fetch Quest Chain for address ${address}`,
+        error,
+      );
+    }
   }
 
   return {
@@ -846,4 +869,4 @@ export const getStaticProps = async (
   };
 };
 
-export default QuestChain;
+export default QuestChainPage;

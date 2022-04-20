@@ -49,14 +49,15 @@ import {
   uploadFilesViaAPI,
   uploadMetadataViaAPI,
 } from '@/utils/metadata';
-import { formatAddress, useWallet } from '@/web3';
+import { formatAddress, NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const StatusDisplay: React.FC<{
   review: QuestStatusInfoFragment;
   onSelect: (quest: ModalQuestType) => void;
-}> = ({ review, onSelect }) => {
+  isDisabled: boolean;
+}> = ({ review, onSelect, isDisabled }) => {
   const { quest, submissions, user } = review;
 
   const { description, externalUrl } = submissions[submissions.length - 1];
@@ -87,6 +88,7 @@ const StatusDisplay: React.FC<{
         <SubmitButton
           borderColor="rejected"
           color="rejected"
+          isDisabled={isDisabled}
           onClick={() =>
             onSelect({
               userId: user.id,
@@ -127,6 +129,7 @@ const Review: React.FC<Props> = ({
     fetching: fetchingStatuses,
     refresh: refreshStatuses,
   } = useLatestQuestStatusesForChainData(
+    questChain?.chainId,
     questChain?.address,
     inputQuestStatues,
   );
@@ -142,7 +145,7 @@ const Review: React.FC<Props> = ({
   const [rejecting, setRejecting] = useState(false);
   const [accepting, setAccepting] = useState(false);
 
-  const { provider, address } = useWallet();
+  const { provider, address, chainId } = useWallet();
   const contract: QuestChain = QuestChain__factory.connect(
     questChain?.address ?? ZERO_ADDRESS,
     provider?.getSigner() as Signer,
@@ -193,6 +196,7 @@ const Review: React.FC<Props> = ({
 
   const onSubmit = useCallback(
     async (success: boolean) => {
+      if (!chainId || chainId !== questChain?.chainId) return;
       if (quest && reviewDescription) {
         setRejecting(!success);
         setAccepting(success);
@@ -227,7 +231,7 @@ const Review: React.FC<Props> = ({
           tid = toast.loading(
             'Transaction confirmed. Waiting for The Graph to index the transaction data.',
           );
-          await waitUntilBlock(receipt.blockNumber);
+          await waitUntilBlock(chainId, receipt.blockNumber);
           toast.dismiss(tid);
           toast.success(
             `Successfully ${success ? 'Accepted' : 'Rejected'} the Submission!`,
@@ -251,6 +255,8 @@ const Review: React.FC<Props> = ({
       myFiles,
       onModalClose,
       address,
+      chainId,
+      questChain,
     ],
   );
 
@@ -272,7 +278,9 @@ const Review: React.FC<Props> = ({
   return (
     <VStack px={{ base: 0, lg: 40 }} spacing={8}>
       <Head>
-        <title>{questChain.name} Review</title>
+        <title>
+          Review - {questChain.name} - {NETWORK_INFO[questChain.chainId].name}
+        </title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <VStack w="100%" align="flex-start" color="main">
@@ -300,6 +308,7 @@ const Review: React.FC<Props> = ({
                 review={review}
                 onSelect={onSelect}
                 key={review.id}
+                isDisabled={chainId !== questChain?.chainId}
               />
             ))}
           </>
@@ -396,13 +405,22 @@ const Review: React.FC<Props> = ({
   );
 };
 
-type QueryParams = { address: string };
+type QueryParams = { address: string; chainId: string };
 
 export async function getStaticPaths() {
-  const addresses = await getQuestChainAddresses(1000);
-  const paths = addresses.map(address => ({
-    params: { address },
-  }));
+  const paths: { params: QueryParams }[] = [];
+
+  await Promise.all(
+    Object.keys(NETWORK_INFO).map(async chainId => {
+      const addresses = await getQuestChainAddresses(chainId, 1000);
+
+      paths.push(
+        ...addresses.map(address => ({
+          params: { address, chainId },
+        })),
+      );
+    }),
+  );
 
   return { paths, fallback: true };
 }
@@ -411,18 +429,23 @@ export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
   const address = context.params?.address;
+  const chainId = context.params?.chainId;
 
   let questStatuses: QuestStatusInfoFragment[] = [];
   let questChain = null;
-  try {
-    questStatuses = address ? await getStatusesForChain(address) : [];
-    questChain = address ? await getQuestChainInfo(address) : null;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(
-      `Could not fetch Quest Chain/Statuses for address ${address}`,
-      error,
-    );
+  if (chainId && address) {
+    try {
+      questStatuses = address
+        ? await getStatusesForChain(chainId, address)
+        : [];
+      questChain = address ? await getQuestChainInfo(chainId, address) : null;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not fetch Quest Chain/Statuses for address ${address}`,
+        error,
+      );
+    }
   }
 
   return {

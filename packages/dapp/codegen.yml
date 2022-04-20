@@ -1,9 +1,11 @@
 overwrite: true
-schema: 'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-mumbai'
+schema: 'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-rinkeby'
 generates:
   ./graphql/types.ts:
+    config:
+      withHooks: false
     documents:
-      - ./graphql/**/(!(*.d)).ts
+      - ./graphql/**/(!(*.d)).graphql
     plugins:
       - typescript
       - typescript-operations

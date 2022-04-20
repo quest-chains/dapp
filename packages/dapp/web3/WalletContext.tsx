@@ -88,7 +88,9 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       setConnecting(true);
 
       const modalProvider = await web3Modal.connect();
-      let chainId = modalProvider.chainId;
+      let chainId = await modalProvider.request({
+        method: 'eth_chainId',
+      });
       const isMetaMask = modalProvider.isMetaMask;
 
       if (isMetaMask && !isSupportedNetwork(chainId)) {

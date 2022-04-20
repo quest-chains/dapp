@@ -1,10 +1,9 @@
-import { useMemo } from 'react';
-import { CombinedError } from 'urql';
+import { useEffect, useState } from 'react';
 
-import {
-  QuestChainInfoFragment,
-  useQuestChainInfoQuery,
-} from '@/graphql/types';
+import { getQuestChainInfo } from '@/graphql/questChains';
+import { QuestChainInfoFragment } from '@/graphql/types';
+
+import { useRefresh } from './useRefresh';
 
 export const useLatestQuestChainData = (
   inputQuestChain: QuestChainInfoFragment | null,
@@ -12,22 +11,45 @@ export const useLatestQuestChainData = (
   questChain: QuestChainInfoFragment | null;
   refresh: () => void;
   fetching: boolean;
-  error: CombinedError | undefined;
+  error: unknown;
 } => {
-  const [{ data, fetching, error }, execute] = useQuestChainInfoQuery({
-    variables: { address: (inputQuestChain?.address ?? '').toLowerCase() },
-    requestPolicy: 'network-only',
-    pause: !inputQuestChain?.address,
-  });
-  const questChain = useMemo(
-    () => (data?.questChain ? data.questChain : inputQuestChain),
-    [data, inputQuestChain],
+  const [fetching, setFetching] = useState<boolean>(false);
+  const [error, setError] = useState<unknown>();
+  const [questChain, setQuestChain] = useState<QuestChainInfoFragment | null>(
+    inputQuestChain,
   );
+
+  const [refreshCount, refresh] = useRefresh();
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      if (!inputQuestChain?.chainId || !inputQuestChain?.address) return;
+      try {
+        setFetching(true);
+        const data = await getQuestChainInfo(
+          inputQuestChain.chainId,
+          inputQuestChain.address,
+        );
+        if (!isMounted) return;
+        setQuestChain(data);
+      } catch (err) {
+        setError(err);
+        setQuestChain(inputQuestChain);
+      } finally {
+        setFetching(false);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [refreshCount, inputQuestChain]);
 
   return {
     questChain,
     fetching,
-    refresh: execute,
     error,
+    refresh,
   };
 };

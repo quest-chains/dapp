@@ -22,20 +22,22 @@ import {
   FormikHelpers,
   FormikState,
 } from 'formik';
+import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useLatestCreatedQuestChainsData } from '@/hooks/useLatestCreatedQuestChainsData';
+import { getGlobalInfo } from '@/graphql/globalInfo';
+import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
-import { FACTORY_CONTRACT } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { CHAIN_ID, useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
@@ -43,7 +45,9 @@ interface FormValues {
   reviewerAddresses: string[];
 }
 
-const Create: React.FC = () => {
+type Props = InferGetStaticPropsType<typeof getStaticProps>;
+
+const Create: React.FC<Props> = ({ globalInfo }) => {
   const initialValues: FormValues = {
     name: '',
     editorAddresses: [],
@@ -51,19 +55,25 @@ const Create: React.FC = () => {
   };
   const [description, setDescription] = useState('');
 
-  const { provider } = useWallet();
-  const factoryContract: QuestChainFactory = QuestChainFactory__factory.connect(
-    FACTORY_CONTRACT,
-    provider?.getSigner() as Signer,
+  const { provider, chainId } = useWallet();
+  const factoryContract: QuestChainFactory = useMemo(
+    () =>
+      QuestChainFactory__factory.connect(
+        globalInfo[chainId as string],
+        provider?.getSigner() as Signer,
+      ),
+    [provider, chainId, globalInfo],
   );
 
-  const { questChains, fetching, refresh } = useLatestCreatedQuestChainsData();
+  const { questChains, fetching, refresh } =
+    useLatestCreatedQuestChainsDataForAllChains();
 
   const onSubmit = useCallback(
     async (
       { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
+      if (!chainId) return;
       const metadata: Metadata = {
         name,
         description,
@@ -86,7 +96,7 @@ const Create: React.FC = () => {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
-        await waitUntilBlock(receipt.blockNumber);
+        await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully created a new Quest Chain');
         refresh();
@@ -99,7 +109,7 @@ const Create: React.FC = () => {
 
       setSubmitting(false);
     },
-    [factoryContract, refresh, description],
+    [factoryContract, refresh, description, chainId],
   );
 
   return (
@@ -113,9 +123,12 @@ const Create: React.FC = () => {
           <Form>
             {/* Left Column: Quest Chain Name, Quest Chain Description, Core Member Addresses */}
             <Flex flexDirection="column">
-              <Text mb={6} color="main" fontSize={20}>
-                CREATE QUEST CHAIN
-              </Text>
+              <HStack justify="space-between" w="100%" mb={6}>
+                <Text color="main" fontSize={20}>
+                  CREATE QUEST CHAIN
+                </Text>
+                <NetworkDisplay asTag chainId={chainId ?? CHAIN_ID} />
+              </HStack>
               <Flex
                 flexDir="column"
                 boxShadow="inset 0px 0px 0px 1px #AD90FF"
@@ -252,9 +265,9 @@ const Create: React.FC = () => {
             </Text>
           )}
           <VStack w="full" gap={4} flex={1}>
-            {questChains.map(({ address, name, description }) => (
+            {questChains.map(({ address, chainId, name, description }) => (
               <QuestChainTile
-                {...{ address, name, description }}
+                {...{ address, name, description, chainId }}
                 key={address}
               />
             ))}
@@ -263,6 +276,14 @@ const Create: React.FC = () => {
       )}
     </VStack>
   );
+};
+
+export const getStaticProps = async () => {
+  return {
+    props: {
+      globalInfo: await getGlobalInfo(),
+    },
+  };
 };
 
 export default Create;

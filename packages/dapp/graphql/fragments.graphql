@@ -1,0 +1,69 @@
+fragment QuestChainInfo on QuestChain {
+  address: id
+  chainId
+  updatedAt
+  name
+  description
+  quests {
+    questId
+    name
+    description
+  }
+  admins {
+    address: id
+  }
+  editors {
+    address: id
+  }
+  reviewers {
+    address: id
+  }
+}
+
+fragment QuestStatusInfo on QuestStatus {
+  id
+  status
+  updatedAt
+  questChain {
+    ...QuestChainInfo
+  }
+  quest {
+    questId
+    name
+    description
+  }
+  user {
+    id
+  }
+  submissions {
+    timestamp
+    description
+    externalUrl
+  }
+  reviews {
+    accepted
+    timestamp
+    description
+    externalUrl
+    reviewer {
+      id
+    }
+  }
+}
+
+fragment QuestChainReviewInfo on QuestChain {
+  address: id
+  chainId
+  updatedAt
+  name
+  description
+  questsFailed {
+    id
+  }
+  questsPassed {
+    id
+  }
+  questsInReview {
+    id
+  }
+}

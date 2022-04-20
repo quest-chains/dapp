@@ -11,22 +11,16 @@ import Head from 'next/head';
 import { useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
-import {
-  QuestChainInfoFragment,
-  useQuestChainSearchQuery,
-} from '@/graphql/types';
 import { useDelay } from '@/hooks/useDelay';
+import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
 const Search: React.FC = () => {
   const [value, setValue] = useState('');
   const delayedSetValue = useDelay(setValue);
 
-  const [{ fetching, data, error }] = useQuestChainSearchQuery({
-    variables: { search: value.toLowerCase() },
-    requestPolicy: 'network-only',
-  });
-
-  const results: QuestChainInfoFragment[] = data?.questChains ?? [];
+  const { fetching, results, error } = useQuestChainSearchForAllChains(
+    value.toLowerCase(),
+  );
 
   return (
     <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
@@ -70,8 +64,11 @@ const Search: React.FC = () => {
         {!fetching &&
           !error &&
           results.length > 0 &&
-          results.map(({ address, name, description }) => (
-            <QuestChainTile {...{ address, name, description }} key={address} />
+          results.map(({ address, name, description, chainId }) => (
+            <QuestChainTile
+              {...{ address, name, description, chainId }}
+              key={address}
+            />
           ))}
       </VStack>
     </VStack>

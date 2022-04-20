@@ -26,6 +26,7 @@ type QuestChain @entity {
   editors: [User!]!
   createdBy: User!
   createdAt: BigInt!
+  updatedAt: BigInt!
   editedBy: User
   editedAt: BigInt
   creationTxHash: Bytes!
@@ -70,6 +71,7 @@ type Quest @entity {
   externalUrl: String
   createdBy: User!
   createdAt: BigInt!
+  updatedAt: BigInt!
   editedBy: User
   editedAt: BigInt
   creationTxHash: Bytes!
@@ -109,6 +111,7 @@ type QuestStatus @entity {
   questChain: QuestChain!
   user: User!
   status: Status!
+  updatedAt: BigInt!
   submissions: [ProofSubmission!]!
   reviews: [ReviewSubmission!]! @derivedFrom(field: "questStatus")
 }

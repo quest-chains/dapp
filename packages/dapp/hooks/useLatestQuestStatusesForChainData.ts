@@ -1,34 +1,53 @@
-import { useMemo } from 'react';
-import { CombinedError } from 'urql';
+import { useEffect, useState } from 'react';
 
-import {
-  QuestStatusInfoFragment,
-  useStatusForChainQuery,
-} from '@/graphql/types';
+import { getStatusesForChain } from '@/graphql/questStatuses';
+import { QuestStatusInfoFragment } from '@/graphql/types';
+
+import { useRefresh } from './useRefresh';
 
 export const useLatestQuestStatusesForChainData = (
-  address: string | undefined | null,
+  chainId: string | undefined | null,
+  chain: string | undefined | null,
   inputQuestStatuses: QuestStatusInfoFragment[],
 ): {
   questStatuses: QuestStatusInfoFragment[];
   refresh: () => void;
   fetching: boolean;
-  error: CombinedError | undefined;
+  error: unknown;
 } => {
-  const [{ data, fetching, error }, execute] = useStatusForChainQuery({
-    variables: { address: (address ?? '').toLowerCase(), first: 1000 },
-    requestPolicy: 'network-only',
-    pause: !address,
-  });
-  const questStatuses = useMemo(
-    () => (data?.questStatuses ? data.questStatuses : inputQuestStatuses),
-    [data, inputQuestStatuses],
-  );
+  const [fetching, setFetching] = useState<boolean>(false);
+  const [error, setError] = useState<unknown>();
+  const [questStatuses, setQuestStatuses] =
+    useState<QuestStatusInfoFragment[]>(inputQuestStatuses);
+
+  const [refreshCount, refresh] = useRefresh();
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      if (!chainId || !chain) return;
+      try {
+        setFetching(true);
+        const data = await getStatusesForChain(chainId, chain);
+        if (!isMounted) return;
+        setQuestStatuses(data);
+      } catch (err) {
+        setError(err);
+        setQuestStatuses(inputQuestStatuses);
+      } finally {
+        setFetching(false);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [refreshCount, chainId, chain, inputQuestStatuses]);
 
   return {
     questStatuses,
     fetching,
-    refresh: execute,
     error,
+    refresh,
   };
 };

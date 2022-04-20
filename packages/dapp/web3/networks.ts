@@ -12,6 +12,8 @@ export type NetworkInfo = {
     explorer: string;
     explorerLabel: string;
     rpc: string;
+    subgraphName: string;
+    subgraphUrl: string;
     image: string;
   };
 };
@@ -55,6 +57,9 @@ export const NETWORK_INFO: NetworkInfo = {
     explorer: 'https://rinkeby.etherscan.io',
     explorerLabel: 'Etherscan',
     rpc: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
+    subgraphName: 'dan13ram/quest-chains-rinkeby',
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-rinkeby',
     image: EthereumImage.src,
   },
   '0x13881': {
@@ -65,6 +70,9 @@ export const NETWORK_INFO: NetworkInfo = {
     explorer: 'https://mumbai.polygonscan.com',
     explorerLabel: 'PolygonScan',
     rpc: 'https://rpc-mumbai.maticvigil.com',
+    subgraphName: 'dan13ram/quest-chains-mumbai',
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-mumbai',
     image: PolygonImage.src,
   },
 };

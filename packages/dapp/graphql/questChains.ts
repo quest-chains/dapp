@@ -1,5 +1,8 @@
-import { client } from '@/graphql/client';
+import { clients } from '@/graphql/client';
 import {
+  CreatedQuestChainsInfoDocument,
+  CreatedQuestChainsInfoQuery,
+  CreatedQuestChainsInfoQueryVariables,
   QuestChainAddressesDocument,
   QuestChainAddressesQuery,
   QuestChainAddressesQueryVariables,
@@ -7,10 +10,16 @@ import {
   QuestChainInfoFragment,
   QuestChainInfoQuery,
   QuestChainInfoQueryVariables,
+  QuestChainSearchDocument,
+  QuestChainSearchQuery,
+  QuestChainSearchQueryVariables,
 } from '@/graphql/types';
 
-export const getQuestChainAddresses = async (limit = 1000) => {
-  const { data, error } = await client
+export const getQuestChainAddresses = async (
+  chainId: string,
+  limit: number,
+): Promise<string[]> => {
+  const { data, error } = await clients[chainId]
     .query<QuestChainAddressesQuery, QuestChainAddressesQueryVariables>(
       QuestChainAddressesDocument,
       {
@@ -28,9 +37,10 @@ export const getQuestChainAddresses = async (limit = 1000) => {
 };
 
 export const getQuestChainInfo = async (
+  chainId: string,
   address: string,
 ): Promise<QuestChainInfoFragment | null> => {
-  const { data, error } = await client
+  const { data, error } = await clients[chainId]
     .query<QuestChainInfoQuery, QuestChainInfoQueryVariables>(
       QuestChainInfoDocument,
       {
@@ -45,4 +55,48 @@ export const getQuestChainInfo = async (
     return null;
   }
   return data.questChain ?? null;
+};
+
+export const getQuestChainsFromSearch = async (
+  chainId: string,
+  search: string,
+): Promise<QuestChainInfoFragment[]> => {
+  const { data, error } = await clients[chainId]
+    .query<QuestChainSearchQuery, QuestChainSearchQueryVariables>(
+      QuestChainSearchDocument,
+      {
+        search: search.toLowerCase(),
+        limit: 1000,
+      },
+    )
+    .toPromise();
+  if (!data) {
+    if (error) {
+      throw error;
+    }
+    return [];
+  }
+  return data.questChains;
+};
+
+export const getCreatedQuestChains = async (
+  chainId: string,
+  address: string,
+): Promise<QuestChainInfoFragment[]> => {
+  const { data, error } = await clients[chainId]
+    .query<CreatedQuestChainsInfoQuery, CreatedQuestChainsInfoQueryVariables>(
+      CreatedQuestChainsInfoDocument,
+      {
+        user: address.toLowerCase(),
+        limit: 1000,
+      },
+    )
+    .toPromise();
+  if (!data) {
+    if (error) {
+      throw error;
+    }
+    return [];
+  }
+  return data.questChains;
 };

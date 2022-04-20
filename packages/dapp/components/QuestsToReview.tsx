@@ -1,4 +1,5 @@
 import {
+  HStack,
   Link as ChakraLink,
   SimpleGrid,
   Spinner,
@@ -7,17 +8,12 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
-import { useQuestChainsReviewStatusQuery } from '@/graphql/types';
-import { useWallet } from '@/web3';
+import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllChains';
+
+import { NetworkDisplay } from './NetworkDisplay';
 
 export const QuestsToReview = () => {
-  const { address } = useWallet();
-  const [{ data, fetching }] = useQuestChainsReviewStatusQuery({
-    variables: { reviewer: address?.toLowerCase() ?? '', first: 1000 },
-  });
-
-  const chainsToReview =
-    data?.questChains.filter(c => c.questsInReview.length > 0) ?? [];
+  const { results: chainsToReview, fetching } = useQuestsToReviewForAllChains();
 
   return (
     <VStack spacing={4} align="stretch">
@@ -37,13 +33,14 @@ export const QuestsToReview = () => {
           )}
           {chainsToReview.map(chain => (
             <NextLink
-              as={`/chain/${chain.address}/review`}
-              href={`/chain/[address]/review`}
+              as={`/chain/${chain.chainId}/${chain.address}/review`}
+              href={`/chain/[chainId]/[address]/review`}
               passHref
               key={chain.address}
             >
               <ChakraLink display="block" _hover={{}}>
                 <VStack
+                  spacing={4}
                   mb={2}
                   boxShadow="inset 0px 0px 0px 1px #AD90FF"
                   p={8}
@@ -52,9 +49,17 @@ export const QuestsToReview = () => {
                     background: 'whiteAlpha.100',
                   }}
                 >
-                  <Text mb={4} fontSize="lg" fontWeight="bold">
-                    {chain.name}
-                  </Text>
+                  <HStack justify="space-between" w="100%">
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color="main"
+                      letterSpacing={4}
+                    >
+                      {chain.name}
+                    </Text>
+                    <NetworkDisplay asTag chainId={chain.chainId} />
+                  </HStack>
                   <SimpleGrid columns={3} w="100%">
                     <VStack color="neutral">
                       <Text textAlign="center">Submitted</Text>

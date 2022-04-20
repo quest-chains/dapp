@@ -50,7 +50,7 @@ export const AddQuestBlock: React.FC<{
   refresh: () => void;
 }> = ({ questChain, refresh }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { address, provider } = useWallet();
+  const { address, provider, chainId } = useWallet();
   const isEditor: boolean = questChain.editors.some(
     ({ address: a }) => a === address?.toLowerCase(),
   );
@@ -69,12 +69,10 @@ export const AddQuestBlock: React.FC<{
       { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
+      if (!chainId || questChain.chainId !== chainId) return;
       if (questChain.quests.length > 4) {
         const signer = provider?.getSigner();
 
-        const chainId = await window.ethereum.request({
-          method: 'eth_chainId',
-        });
         const sf = await Framework.create({
           chainId: Number(chainId),
           provider: provider,
@@ -127,7 +125,7 @@ export const AddQuestBlock: React.FC<{
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
-        await waitUntilBlock(receipt.blockNumber);
+        await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully added a new Quest');
         refresh();
@@ -141,7 +139,7 @@ export const AddQuestBlock: React.FC<{
       setSubmitting(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contract, refresh, onOpen, questChain, description],
+    [contract, refresh, onOpen, questChain, description, chainId],
   );
 
   if (!isEditor) return null;
@@ -198,7 +196,12 @@ export const AddQuestBlock: React.FC<{
                     </FormControl>
                   </VStack>
                   <Flex w="100%" justify="flex-end">
-                    <SubmitButton mt={4} isLoading={isSubmitting} type="submit">
+                    <SubmitButton
+                      mt={4}
+                      isLoading={isSubmitting}
+                      isDisabled={chainId !== questChain.chainId}
+                      type="submit"
+                    >
                       Add
                     </SubmitButton>
                   </Flex>
