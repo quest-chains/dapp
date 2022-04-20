@@ -35,7 +35,7 @@ export const WalletDisplay: React.FC = () => {
 
   if (!address || !chainId) return null;
   return (
-    <Popover>
+    <Popover placement="auto">
       {/* @ts-expect-error @chakra-ui/react does not support @types/react@18 yet */}
       <PopoverTrigger>
         <PrimaryButton
@@ -56,11 +56,7 @@ export const WalletDisplay: React.FC = () => {
               size={24}
               generatedAvatarType="jazzicon"
             />
-            <Text
-              fontWeight="normal"
-              fontSize="normal"
-              display={{ base: 'none', md: 'block' }}
-            >
+            <Text fontWeight="normal" fontSize="normal">
               {formatAddress(address, ens)}
             </Text>
             <NetworkDisplay

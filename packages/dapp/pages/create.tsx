@@ -28,7 +28,6 @@ import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
-import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { getGlobalInfo } from '@/graphql/globalInfo';
@@ -37,7 +36,7 @@ import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
-import { CHAIN_ID, useWallet } from '@/web3';
+import { useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
@@ -127,7 +126,6 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                 <Text color="main" fontSize={20}>
                   CREATE QUEST CHAIN
                 </Text>
-                <NetworkDisplay asTag chainId={chainId ?? CHAIN_ID} />
               </HStack>
               <Flex
                 flexDir="column"

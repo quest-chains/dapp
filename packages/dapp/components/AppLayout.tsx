@@ -4,7 +4,6 @@ import {
   HStack,
   Link as ChakraLink,
   Stack,
-  Text,
   useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
@@ -15,56 +14,9 @@ import { useState } from 'react';
 import { ConnectWallet } from '@/components/ConnectWallet';
 import { useWallet } from '@/web3';
 
+import { DesktopMenu } from './DesktopMenu';
+import { MobileMenu } from './MobileMenu';
 import { NavToggle } from './NavToggle';
-import { WalletDisplay } from './WalletDisplay';
-
-export const Menu: React.FC = () => {
-  const router = useRouter();
-
-  return (
-    <>
-      {router.pathname !== '/' && (
-        <HStack gap={6}>
-          <NextLink href="/search" passHref>
-            <ChakraLink display="block" _hover={{}}>
-              <Text
-                borderBottomWidth={router.pathname === '/search' ? 1 : 0}
-                borderBottomColor="main"
-                color={router.pathname === '/search' ? 'main' : 'inherit'}
-              >
-                SEARCH
-              </Text>
-            </ChakraLink>
-          </NextLink>
-          <NextLink href="/create" passHref>
-            <ChakraLink display="block" _hover={{}}>
-              <Text
-                borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-                borderBottomColor="main"
-                color={router.pathname === '/create' ? 'main' : 'inherit'}
-              >
-                CREATE
-              </Text>
-            </ChakraLink>
-          </NextLink>
-          <NextLink href="/overview" passHref>
-            <ChakraLink display="block" _hover={{}}>
-              <Text
-                borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
-                borderBottomColor="main"
-                color={router.pathname === '/overview' ? 'main' : 'inherit'}
-              >
-                OVERVIEW
-              </Text>
-            </ChakraLink>
-          </NextLink>
-        </HStack>
-      )}
-
-      <WalletDisplay />
-    </>
-  );
-};
 
 export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   children,
@@ -92,20 +44,27 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         mx="auto"
         maxW="9xl"
       >
-        {isConnected && (
+        {isConnected && router.pathname !== '/' && (
           <HStack w="100%" justify="space-between" pos="relative">
             <NextLink href="/" passHref>
-              <ChakraLink display="block" _hover={{}} w="20%">
-                {router.pathname !== '/' && (
-                  <Heading color="main" fontSize={30} fontWeight="normal">
-                    {isSmallScreen ? 'Q' : 'DAOQuest'}
-                  </Heading>
-                )}
+              <ChakraLink display="block" _hover={{}} zIndex={1500}>
+                <Heading
+                  color="main"
+                  fontSize={isSmallScreen ? '5xl' : '3xl'}
+                  fontWeight="normal"
+                  lineHeight="1rem"
+                >
+                  {isSmallScreen ? 'Q' : 'DAOQuest'}
+                </Heading>
               </ChakraLink>
             </NextLink>
-            <Menu />
-            {isSmallScreen && (
-              <NavToggle isOpen={isOpen} onClick={toggleOpen} />
+            {isSmallScreen ? (
+              <>
+                <NavToggle isOpen={isOpen} onClick={toggleOpen} zIndex={1500} />
+                <MobileMenu isOpen={isOpen} onClose={toggleOpen} />
+              </>
+            ) : (
+              <DesktopMenu />
             )}
           </HStack>
         )}
@@ -120,6 +79,11 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         mx="auto"
         flex={1}
         overflowX="hidden"
+        visibility={
+          isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
+        }
+        opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
+        transition="opacity 0.25s"
       >
         {isConnected ? (
           children
