@@ -1,10 +1,5 @@
 {
   "network": "mumbai",
-  "factories": [
-    {
-      "factoryName": "Version00",
-      "blockNumber": "25916431",
-      "factory": "0xF115d872DCfe5d6a16ADFC97cEaD3c87fEd322DB"
-    }
-  ]
+  "factory": "0x3767BDfb9C60c0FF842D803e67D52d8e8D88AA7F",
+  "blockNumber": "26003048"
 }

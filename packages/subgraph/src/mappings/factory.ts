@@ -1,12 +1,20 @@
-import { log, dataSource } from '@graphprotocol/graph-ts';
-import { QuestChain } from '../types/schema';
+import { log } from '@graphprotocol/graph-ts';
+import { QuestChain, Global } from '../types/schema';
 
-import { NewQuestChain as NewQuestChainEvent } from '../types/QuestChainFactoryVersion00/QuestChainFactory';
+import { NewQuestChain as NewQuestChainEvent } from '../types/QuestChainFactory/QuestChainFactory';
 import { QuestChain as QuestChainTemplate } from '../types/templates';
 
-import { getUser } from './helpers';
+import { getUser, getNetwork } from './helpers';
 
 export function handleNewQuestChain(event: NewQuestChainEvent): void {
+  let network = getNetwork();
+  let globalNode = Global.load(network);
+  if (globalNode == null) {
+    globalNode = new Global(network);
+    globalNode.factoryAddress = event.address;
+    globalNode.save();
+  }
+
   let questChain = new QuestChain(event.params.questChain.toHexString());
 
   log.info('handleNewQuestChain {}', [event.params.questChain.toHexString()]);
@@ -18,7 +26,7 @@ export function handleNewQuestChain(event: NewQuestChainEvent): void {
   questChain.createdAt = event.block.timestamp;
   questChain.createdBy = user.id;
   questChain.creationTxHash = event.transaction.hash;
-  questChain.network = dataSource.network();
+  questChain.chainId = network;
   questChain.admins = new Array<string>();
   questChain.editors = new Array<string>();
   questChain.reviewers = new Array<string>();

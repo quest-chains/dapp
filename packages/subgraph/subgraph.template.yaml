@@ -4,9 +4,8 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   # prettier-ignore
-  {{#factories}}
   - kind: ethereum/contract
-    name: QuestChainFactory{{factoryName}}
+    name: QuestChainFactory
     # prettier-ignore
     network: {{network}}
     source:
@@ -34,7 +33,6 @@ dataSources:
 
       file: ./src/mappings/factory.ts
   # prettier-ignore
-  {{/factories}}
 templates:
   - kind: ethereum/contract
     name: QuestChain

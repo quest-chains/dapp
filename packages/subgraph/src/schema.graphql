@@ -1,3 +1,8 @@
+type Global @entity {
+  id: ID!
+  factoryAddress: Bytes!
+}
+
 type QuestChainEdit @entity {
   id: ID!
   questChain: QuestChain!
@@ -13,7 +18,7 @@ type QuestChainEdit @entity {
 
 type QuestChain @entity {
   id: ID!
-  network: String!
+  chainId: String!
   address: Bytes!
   factoryAddress: Bytes!
   admins: [User!]!
