@@ -10,6 +10,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  HStack,
   IconButton,
   Input,
   Modal,
@@ -21,6 +22,7 @@ import {
   ModalOverlay,
   SimpleGrid,
   Spinner,
+  Tag,
   Text,
   Textarea,
   useDisclosure,
@@ -78,8 +80,6 @@ type UserStatusType = {
     status: Status;
   };
 };
-
-const ENABLE_MEMBER_EDITS = false;
 
 const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
@@ -162,19 +162,41 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [questChain, address],
   );
 
-  const admins = questChain?.admins.map(admin => ({
-    ...admin,
-  }));
+  const members: {
+    [addr: string]: {
+      isAdmin?: boolean;
+      isEditor?: boolean;
+      isReviewer?: boolean;
+    };
+  } = {};
 
-  const editors = questChain?.editors.filter(
-    ({ address }) =>
-      !questChain?.admins.map(({ address }) => address).includes(address),
-  );
+  questChain?.admins.forEach(({ address }) => {
+    if (!members[address]) {
+      members[address] = {};
+    }
+    members[address].isAdmin = true;
+  });
 
-  const reviewers = questChain?.reviewers.filter(
-    ({ address }) =>
-      !questChain?.editors.map(({ address }) => address).includes(address),
-  );
+  questChain?.admins.forEach(({ address }) => {
+    if (!members[address]) {
+      members[address] = {};
+    }
+    members[address].isAdmin = true;
+  });
+
+  questChain?.editors.forEach(({ address }) => {
+    if (!members[address]) {
+      members[address] = {};
+    }
+    members[address].isEditor = true;
+  });
+
+  questChain?.reviewers.forEach(({ address }) => {
+    if (!members[address]) {
+      members[address] = {};
+    }
+    members[address].isReviewer = true;
+  });
 
   const isUser = !(isAdmin || isEditor || isReviewer);
 
@@ -373,12 +395,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [contract, refresh, chainId, questChain],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const deleteMember = (address: string) => {
-    // eslint-disable-next-line no-console
-    console.log(address);
-  };
-
   if (isFallback) {
     return (
       <VStack>
@@ -472,77 +488,30 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             />
           </Flex>
         )}
-        <VStack spacing={2} align="flex-start">
+        <VStack spacing={2} align="flex-start" pt={4}>
           <Text>Members</Text>
-          {admins &&
-            admins.map(({ address }) => (
-              <Flex
-                justify="space-between"
-                key={address}
-                gap={4}
-                align="center"
-              >
+          {Object.entries(members).map(
+            ([address, { isAdmin, isEditor, isReviewer }]) => (
+              <HStack key={address} spacing={2}>
                 <UserDisplay address={address} color="white" />
-                <Text fontSize="sm" color="pending">
-                  Admin
-                </Text>
-                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
-                  <IconButton
-                    borderRadius="full"
-                    size="xs"
-                    onClick={() => deleteMember(address)}
-                    icon={<SmallCloseIcon boxSize="1rem" />}
-                    aria-label={''}
-                  />
+                {isReviewer && (
+                  <Tag fontSize="sm" color="neutral">
+                    Reviewer
+                  </Tag>
                 )}
-              </Flex>
-            ))}
-          {editors &&
-            editors.map(({ address }) => (
-              <Flex
-                justify="space-between"
-                key={address}
-                gap={4}
-                align="center"
-              >
-                <UserDisplay address={address} color="white" />
-                <Text fontSize="sm" color="rejected">
-                  Editor
-                </Text>
-                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
-                  <IconButton
-                    borderRadius="full"
-                    size="xs"
-                    onClick={() => deleteMember(address)}
-                    icon={<SmallCloseIcon boxSize="1rem" />}
-                    aria-label={''}
-                  />
+                {isEditor && (
+                  <Tag fontSize="sm" color="rejected">
+                    Editor
+                  </Tag>
                 )}
-              </Flex>
-            ))}
-          {reviewers &&
-            reviewers.map(({ address }) => (
-              <Flex
-                justify="space-between"
-                key={address}
-                gap={4}
-                align="center"
-              >
-                <UserDisplay address={address} color="white" />
-                <Text fontSize="sm" color="neutral">
-                  Reviewer
-                </Text>
-                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
-                  <IconButton
-                    borderRadius="full"
-                    size="xs"
-                    onClick={() => deleteMember(address)}
-                    icon={<SmallCloseIcon boxSize="1rem" />}
-                    aria-label={''}
-                  />
+                {isAdmin && (
+                  <Tag fontSize="sm" color="pending">
+                    Admin
+                  </Tag>
                 )}
-              </Flex>
-            ))}
+              </HStack>
+            ),
+          )}
         </VStack>
 
         <ConfirmationModal
