@@ -1,3 +1,4 @@
+import { CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -6,6 +7,7 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
+  IconButton,
   Input,
   Spinner,
   Text,
@@ -76,8 +78,6 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       const metadata: Metadata = {
         name,
         description,
-        editors: editorAddresses.map(address => ({ id: address })),
-        reviewers: reviewerAddresses.map(address => ({ id: address })),
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
@@ -87,7 +87,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         tid = toast.loading(
           'Waiting for Confirmation - Confirm the transaction in your Wallet',
         );
-        const tx = await factoryContract.create(details);
+        const tx = await factoryContract.createWithRoles(
+          details,
+          editorAddresses,
+          reviewerAddresses,
+        );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash);
         const receipt = await tx.wait(1);
@@ -157,33 +161,37 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                   <FieldArray
                     name="editorAddresses"
                     render={arrayHelpers => (
-                      <Box>
+                      <Box w="100%">
                         <FormLabel color="main" htmlFor="editorAddresses">
                           Editor Addresses
                         </FormLabel>
                         {values.editorAddresses.map((_address, index) => (
                           <HStack key={index} mb={2}>
-                            <Field name={`editorAddresses.${index}`}>
-                              {({ field }: FieldProps<string, FormValues>) => (
-                                <FormControl isRequired>
-                                  <Input
-                                    {...field}
-                                    id={`editorAddresses.${index}`}
-                                    placeholder="Editor Address"
-                                  />
-                                </FormControl>
-                              )}
-                            </Field>
-                            <Button
-                              type="button"
+                            <Box w="100%" maxW="20rem">
+                              <Field name={`editorAddresses.${index}`}>
+                                {({
+                                  field,
+                                }: FieldProps<string, FormValues>) => (
+                                  <FormControl isRequired>
+                                    <Input
+                                      {...field}
+                                      id={`editorAddresses.${index}`}
+                                      placeholder="Editor Address"
+                                    />
+                                  </FormControl>
+                                )}
+                              </Field>
+                            </Box>
+                            <IconButton
+                              borderRadius="full"
                               onClick={() => arrayHelpers.remove(index)}
-                            >
-                              -
-                            </Button>
+                              icon={<CloseIcon boxSize="0.7rem" />}
+                              aria-label={''}
+                            />
                           </HStack>
                         ))}
                         <Button
-                          type="button"
+                          borderRadius="full"
                           onClick={() => arrayHelpers.push('')}
                         >
                           Add address
@@ -194,33 +202,37 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                   <FieldArray
                     name="reviewerAddresses"
                     render={arrayHelpers => (
-                      <Box>
+                      <Box w="100%">
                         <FormLabel htmlFor="reviewerAddresses" color="main">
                           Reviewer Addresses
                         </FormLabel>
                         {values.reviewerAddresses.map((_address, index) => (
                           <HStack key={index} mb={2}>
-                            <Field name={`reviewerAddresses.${index}`}>
-                              {({ field }: FieldProps<string, FormValues>) => (
-                                <FormControl isRequired>
-                                  <Input
-                                    {...field}
-                                    id={`reviewerAddresses.${index}`}
-                                    placeholder="Reviewer Address"
-                                  />
-                                </FormControl>
-                              )}
-                            </Field>
-                            <Button
-                              type="button"
+                            <Box w="100%" maxW="20rem">
+                              <Field name={`reviewerAddresses.${index}`}>
+                                {({
+                                  field,
+                                }: FieldProps<string, FormValues>) => (
+                                  <FormControl isRequired>
+                                    <Input
+                                      {...field}
+                                      id={`reviewerAddresses.${index}`}
+                                      placeholder="Reviewer Address"
+                                    />
+                                  </FormControl>
+                                )}
+                              </Field>
+                            </Box>
+                            <IconButton
+                              borderRadius="full"
                               onClick={() => arrayHelpers.remove(index)}
-                            >
-                              -
-                            </Button>
+                              icon={<CloseIcon boxSize="0.7rem" />}
+                              aria-label={''}
+                            />
                           </HStack>
                         ))}
                         <Button
-                          type="button"
+                          borderRadius="full"
                           onClick={() => arrayHelpers.push('')}
                         >
                           Add address

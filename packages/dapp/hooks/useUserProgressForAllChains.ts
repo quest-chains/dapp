@@ -34,7 +34,7 @@ export const useUserProgressForAllChains = (): {
               t.push(...a);
               return t;
             }, [])
-            .sort((a, b) => Number(a.updatedAt) - Number(b.updatedAt)),
+            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt)),
         );
       } catch (err) {
         setError(err);

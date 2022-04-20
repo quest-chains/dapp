@@ -6,12 +6,14 @@ import {
   Flex,
   HStack,
   Link,
+  PlacementWithLogical,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
   Tooltip,
+  useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
@@ -33,43 +35,50 @@ export const WalletDisplay: React.FC = () => {
   const { address, chainId, isMetaMask, disconnect } = useWallet();
   const { ens } = useENS(address);
 
+  const placement = useBreakpointValue({
+    base: 'bottom',
+    md: 'bottom-end',
+  }) as PlacementWithLogical;
+
   if (!address || !chainId) return null;
   return (
-    <Popover placement="auto">
+    <Popover placement={placement} gutter={20}>
       {/* @ts-expect-error @chakra-ui/react does not support @types/react@18 yet */}
       <PopoverTrigger>
-        <PrimaryButton
-          px={2}
-          background="rgba(255, 255, 255, 0.05)"
-          fontWeight="400"
-          backdropFilter="blur(40px)"
-          borderRadius="full"
-          boxShadow="inset 0px 0px 0px 1px #AD90FF"
-          letterSpacing={2}
-          color="main"
-          fontSize={14}
-          height={10}
-        >
-          <HStack spacing={2}>
-            <Davatar
-              address={address}
-              size={24}
-              generatedAvatarType="jazzicon"
-            />
-            <Text fontWeight="normal" fontSize="normal">
-              {formatAddress(address, ens)}
-            </Text>
-            <NetworkDisplay
-              chainId={chainId}
-              fontWeight="normal"
-              spacing={1}
-              asTag
-            />
-          </HStack>
-        </PrimaryButton>
+        <Box>
+          <PrimaryButton
+            px={2}
+            background="rgba(255, 255, 255, 0.05)"
+            fontWeight="400"
+            backdropFilter="blur(40px)"
+            borderRadius="full"
+            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            letterSpacing={2}
+            color="main"
+            fontSize={14}
+            height={10}
+            zIndex={1500}
+          >
+            <HStack spacing={2}>
+              <Davatar
+                address={address}
+                size={24}
+                generatedAvatarType="jazzicon"
+              />
+              <Text fontWeight="normal" fontSize="normal">
+                {formatAddress(address, ens)}
+              </Text>
+              <NetworkDisplay
+                chainId={chainId}
+                fontWeight="normal"
+                spacing={1}
+                asTag
+              />
+            </HStack>
+          </PrimaryButton>
+        </Box>
       </PopoverTrigger>
       <PopoverContent
-        right={0}
         backdropFilter="blur(40px)"
         boxShadow="inset 0px 0px 0px 1px #AD90FF"
         background="whiteAlpha.50"

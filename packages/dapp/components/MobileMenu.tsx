@@ -23,6 +23,7 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       <ModalContent minW="100%" h="100%" minH="100%" bg="none" m={0} p={0}>
         <ModalBody h="100%">
           <VStack spacing={6} h="100%" w="100%" justify="center">
+            <WalletDisplay />
             <NextLink href="/search" passHref>
               <ChakraLink display="block" _hover={{}} onClick={onClose}>
                 <Text
@@ -56,10 +57,6 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 </Text>
               </ChakraLink>
             </NextLink>
-
-            <Box>
-              <WalletDisplay />
-            </Box>
           </VStack>
         </ModalBody>
       </ModalContent>

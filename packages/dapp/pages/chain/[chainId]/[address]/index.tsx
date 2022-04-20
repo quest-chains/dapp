@@ -40,6 +40,7 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
+import { UserDisplay } from '@/components/UserDisplay';
 import {
   getQuestChainAddresses,
   getQuestChainInfo,
@@ -77,6 +78,8 @@ type UserStatusType = {
     status: Status;
   };
 };
+
+const ENABLE_MEMBER_EDITS = false;
 
 const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
@@ -455,119 +458,92 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           )}
         </Flex>
 
-        <Flex w="full">
-          {!isEditingQuestChain && questChain.description && (
-            <Flex gap={6}>
-              <Flex flexGrow={1}>
-                <MarkdownViewer markdown={questChain.description} />
-              </Flex>
-              <Flex flexGrow={1} flexDir="column">
-                <Text>Members</Text>
-                {admins &&
-                  admins.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="pending">
-                        Admin
-                      </Text>
-                    </Flex>
-                  ))}
-                {editors &&
-                  editors.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="rejected">
-                        Editor
-                      </Text>
-                    </Flex>
-                  ))}
-                {reviewers &&
-                  reviewers.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="neutral">
-                        Reviewer
-                      </Text>
-                    </Flex>
-                  ))}
-              </Flex>
-            </Flex>
-          )}
+        {!isEditingQuestChain && questChain.description && (
+          <Flex w="100%">
+            <MarkdownViewer markdown={questChain.description} />
+          </Flex>
+        )}
 
-          {isEditingQuestChain && (
-            <Flex gap={6}>
-              <Flex flexGrow={1}>
-                <MarkdownEditor
-                  value={chainDescription}
-                  onChange={setChainDescription}
-                />
+        {isEditingQuestChain && (
+          <Flex w="100%">
+            <MarkdownEditor
+              value={chainDescription}
+              onChange={setChainDescription}
+            />
+          </Flex>
+        )}
+        <VStack spacing={2} align="flex-start">
+          <Text>Members</Text>
+          {admins &&
+            admins.map(({ address }) => (
+              <Flex
+                justify="space-between"
+                key={address}
+                gap={4}
+                align="center"
+              >
+                <UserDisplay address={address} color="white" />
+                <Text fontSize="sm" color="pending">
+                  Admin
+                </Text>
+                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
+                  <IconButton
+                    borderRadius="full"
+                    size="xs"
+                    onClick={() => deleteMember(address)}
+                    icon={<SmallCloseIcon boxSize="1rem" />}
+                    aria-label={''}
+                  />
+                )}
               </Flex>
-              <Flex flexGrow={1} flexDir="column">
-                <Text>Members</Text>
-                {admins &&
-                  admins.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="pending">
-                        Admin
-                      </Text>
-                      <IconButton
-                        borderRadius="full"
-                        size="xs"
-                        onClick={() => deleteMember(address)}
-                        icon={<CloseIcon boxSize="0.7rem" />}
-                        aria-label={''}
-                      />
-                    </Flex>
-                  ))}
-                {editors &&
-                  editors.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="rejected">
-                        Editor
-                      </Text>
-                      <IconButton
-                        borderRadius="full"
-                        size="xs"
-                        onClick={() => deleteMember(address)}
-                        icon={<CloseIcon boxSize="0.7rem" />}
-                        aria-label={''}
-                      />
-                    </Flex>
-                  ))}
-                {reviewers &&
-                  reviewers.map(({ address }) => (
-                    <Flex justifyContent="space-between" key={address} gap={4}>
-                      <Text key={address} color="white">
-                        {address}
-                      </Text>
-                      <Text fontSize="sm" color="neutral">
-                        Reviewer
-                      </Text>
-                      <IconButton
-                        borderRadius="full"
-                        size="xs"
-                        onClick={() => deleteMember(address)}
-                        icon={<CloseIcon boxSize="0.7rem" />}
-                        aria-label={''}
-                      />
-                    </Flex>
-                  ))}
+            ))}
+          {editors &&
+            editors.map(({ address }) => (
+              <Flex
+                justify="space-between"
+                key={address}
+                gap={4}
+                align="center"
+              >
+                <UserDisplay address={address} color="white" />
+                <Text fontSize="sm" color="rejected">
+                  Editor
+                </Text>
+                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
+                  <IconButton
+                    borderRadius="full"
+                    size="xs"
+                    onClick={() => deleteMember(address)}
+                    icon={<SmallCloseIcon boxSize="1rem" />}
+                    aria-label={''}
+                  />
+                )}
               </Flex>
-            </Flex>
-          )}
-        </Flex>
+            ))}
+          {reviewers &&
+            reviewers.map(({ address }) => (
+              <Flex
+                justify="space-between"
+                key={address}
+                gap={4}
+                align="center"
+              >
+                <UserDisplay address={address} color="white" />
+                <Text fontSize="sm" color="neutral">
+                  Reviewer
+                </Text>
+                {isEditingQuestChain && ENABLE_MEMBER_EDITS && (
+                  <IconButton
+                    borderRadius="full"
+                    size="xs"
+                    onClick={() => deleteMember(address)}
+                    icon={<SmallCloseIcon boxSize="1rem" />}
+                    aria-label={''}
+                  />
+                )}
+              </Flex>
+            ))}
+        </VStack>
 
         <ConfirmationModal
           onSubmit={() => {

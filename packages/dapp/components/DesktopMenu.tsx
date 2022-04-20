@@ -15,6 +15,7 @@ export const DesktopMenu: React.FC = () => {
         top="50%"
         left="50%"
         transform="translate(-50%, -50%)"
+        zIndex={1500}
       >
         <NextLink href="/search" passHref>
           <ChakraLink display="block" _hover={{}}>

@@ -32,8 +32,8 @@ export const UserProgress = () => {
           )}
           {userStatuses.map(us => (
             <NextLink
-              as={`/chain/${us.chain.address}`}
-              href={`/chain/[address]`}
+              as={`/chain/${us.chain.chainId}/${us.chain.address}`}
+              href={`/chain/[chainId]/[address]`}
               passHref
               key={us.chain.address}
             >
@@ -62,7 +62,7 @@ export const UserProgress = () => {
                     <NetworkDisplay asTag chainId={us.chain.chainId} />
                   </HStack>
                   <Text>
-                    {us.completed} / {us.total}
+                    {us.completed} / {us.total} completed
                   </Text>
                 </VStack>
               </ChakraLink>

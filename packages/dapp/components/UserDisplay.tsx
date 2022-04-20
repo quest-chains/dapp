@@ -7,7 +7,10 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { useENS } from '@/hooks/useENS';
 import { formatAddress, getAddressUrl } from '@/web3';
 
-export const UserDisplay: React.FC<{ address: string }> = ({ address }) => {
+export const UserDisplay: React.FC<{ address: string; color?: string }> = ({
+  address,
+  color = 'main',
+}) => {
   const { ens } = useENS(address);
   return (
     <Link
@@ -17,9 +20,9 @@ export const UserDisplay: React.FC<{ address: string }> = ({ address }) => {
       borderRadius="full"
     >
       <SubmitButton size="md" px={4} letterSpacing={4} fontSize={12} height={8}>
-        <HStack spacing={2} position="relative">
+        <HStack spacing={2} position="relative" color={color}>
           <Davatar address={address} size={20} generatedAvatarType="jazzicon" />
-          <Text transition="opacity 0.25s" minW="6rem" textAlign="left">
+          <Text transition="opacity 0.25s" minW="8rem" textAlign="left">
             {formatAddress(utils.getAddress(address), ens)}
           </Text>
           <ExternalLinkIcon />

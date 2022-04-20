@@ -1,4 +1,4 @@
-import { Client, createClient } from 'urql';
+import { Client, createClient, dedupExchange, fetchExchange } from 'urql';
 
 import { NETWORK_INFO } from '@/web3/networks';
 
@@ -7,6 +7,7 @@ export const clients: Record<string, Client> = Object.values(
 ).reduce<Record<string, Client>>((o, info) => {
   o[info.chainId] = createClient({
     url: info.subgraphUrl,
+    exchanges: [dedupExchange, fetchExchange],
   });
   return o;
 }, {});
