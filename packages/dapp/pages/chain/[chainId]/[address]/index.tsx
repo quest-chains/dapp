@@ -559,7 +559,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Flex>
 
               <Modal isOpen={isOpenCreateQuest} onClose={onCloseCreateQUest}>
-                <ModalOverlay />
+                <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
                 <ModalContent maxW="36rem">
                   <ModalHeader>Create Quest</ModalHeader>
                   <ModalCloseButton />
