@@ -1,5 +1,4 @@
 import {
-  Box,
   Link as ChakraLink,
   Modal,
   ModalBody,

@@ -12,7 +12,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -48,8 +47,9 @@ interface FormValues {
 export const AddQuestBlock: React.FC<{
   questChain: QuestChainInfoFragment;
   refresh: () => void;
-}> = ({ questChain, refresh }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  onClose: () => void;
+}> = ({ questChain, refresh, onClose }) => {
+  const { isOpen, onOpen, onClose: onClosePaymentPlan } = useDisclosure();
   const { address, provider, chainId } = useWallet();
   const isEditor: boolean = questChain.editors.some(
     ({ address: a }) => a === address?.toLowerCase(),
@@ -70,6 +70,9 @@ export const AddQuestBlock: React.FC<{
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       if (!chainId || questChain.chainId !== chainId) return;
+
+      // close the dialog
+      onClose();
       if (questChain.quests.length > 4) {
         const signer = provider?.getSigner();
 
@@ -151,60 +154,43 @@ export const AddQuestBlock: React.FC<{
           <Form>
             <Flex w="full" gap={20} alignItems="normal">
               <Flex flexGrow={1} flexDirection="column">
-                <Text
-                  mb={6}
-                  color="main"
-                  fontSize={20}
-                  textTransform="uppercase"
-                >
-                  Add Quest
-                </Text>
-                <Flex
-                  flexDir="column"
-                  boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                  p={8}
-                  borderRadius={30}
-                >
-                  <VStack mb={4} spacing={4}>
-                    <Field name="name">
-                      {({ field, form }: FieldProps<string, FormValues>) => (
-                        <FormControl isRequired>
-                          <FormLabel color="main" htmlFor="name">
-                            Quest Name
-                          </FormLabel>
-                          <Input
-                            color="white"
-                            {...field}
-                            id="name"
-                            placeholder="Quest Name"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.name}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <FormControl isRequired>
-                      <FormLabel color="main" htmlFor="description">
-                        Quest Description
-                      </FormLabel>
-                      <MarkdownEditor
-                        value={description}
-                        placeholder="Quest Description"
-                        onChange={setDescription}
-                      />
-                    </FormControl>
-                  </VStack>
-                  <Flex w="100%" justify="flex-end">
-                    <SubmitButton
-                      mt={4}
-                      isLoading={isSubmitting}
-                      isDisabled={chainId !== questChain.chainId}
-                      type="submit"
-                    >
-                      Add
-                    </SubmitButton>
-                  </Flex>
+                <VStack mb={4} spacing={4}>
+                  <Field name="name">
+                    {({ field, form }: FieldProps<string, FormValues>) => (
+                      <FormControl isRequired>
+                        <FormLabel color="main" htmlFor="name">
+                          Quest Name
+                        </FormLabel>
+                        <Input
+                          color="white"
+                          {...field}
+                          id="name"
+                          placeholder="Quest Name"
+                        />
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <FormControl isRequired>
+                    <FormLabel color="main" htmlFor="description">
+                      Quest Description
+                    </FormLabel>
+                    <MarkdownEditor
+                      value={description}
+                      placeholder="Quest Description"
+                      onChange={setDescription}
+                    />
+                  </FormControl>
+                </VStack>
+                <Flex w="100%" justify="flex-end" mb={4}>
+                  <SubmitButton
+                    mt={4}
+                    isLoading={isSubmitting}
+                    isDisabled={chainId !== questChain.chainId}
+                    type="submit"
+                  >
+                    Add
+                  </SubmitButton>
                 </Flex>
               </Flex>
             </Flex>
@@ -212,7 +198,7 @@ export const AddQuestBlock: React.FC<{
         )}
       </Formik>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClosePaymentPlan}>
         <ModalOverlay />
         <ModalContent maxW="36rem">
           <ModalHeader>Payment plan</ModalHeader>

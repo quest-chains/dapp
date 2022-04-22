@@ -96,6 +96,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     onOpen: onUpdateQuestChainConfirmationOpen,
     onClose: onUpdateQuestChainConfirmationClose,
   } = useDisclosure();
+  const {
+    isOpen: isOpenCreateQuest,
+    onOpen: onOpenCreateQuest,
+    onClose: onCloseCreateQUest,
+  } = useDisclosure();
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
   const [isEditingQuest, setEditingQuest] = useState(false);
@@ -540,15 +545,34 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             <Spinner />
           ) : (
             <>
-              <Text
-                w="full"
-                color="white"
-                fontSize={20}
-                textTransform="uppercase"
-              >
-                {questChain.quests.length} Quest
-                {questChain.quests.length === 1 ? '' : 's'} found
-              </Text>
+              <Flex justifyContent="space-between" w="full">
+                <Text
+                  w="full"
+                  color="white"
+                  fontSize={20}
+                  textTransform="uppercase"
+                >
+                  {questChain.quests.length} Quest
+                  {questChain.quests.length === 1 ? '' : 's'} found
+                </Text>
+                <Button onClick={onOpenCreateQuest}>Create Quest</Button>
+              </Flex>
+
+              <Modal isOpen={isOpenCreateQuest} onClose={onCloseCreateQUest}>
+                <ModalOverlay />
+                <ModalContent maxW="36rem">
+                  <ModalHeader>Create Quest</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <AddQuestBlock
+                      questChain={questChain}
+                      refresh={refresh}
+                      onClose={onCloseCreateQUest}
+                    />
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+
               {questChain.quests.map(quest => (
                 <Flex
                   w="full"
@@ -684,9 +708,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               ))}
             </>
           )}
-        </VStack>
-        <VStack spacing={8}>
-          <AddQuestBlock questChain={questChain} refresh={refresh} />
         </VStack>
       </SimpleGrid>
 
