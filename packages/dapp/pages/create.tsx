@@ -26,7 +26,8 @@ import {
 } from 'formik';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
-import { useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -34,8 +35,9 @@ import { QuestChainTile } from '@/components/QuestChainTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
+import { useRefresh } from '@/hooks/useRefresh';
 import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
-import { waitUntilBlock } from '@/utils/graphHelpers';
+import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
@@ -55,6 +57,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     reviewerAddresses: [],
   };
   const [description, setDescription] = useState('');
+  const router = useRouter();
+  const [refreshCount] = useRefresh();
 
   const { provider, chainId } = useWallet();
   const factoryContract: QuestChainFactory = useMemo(
@@ -68,6 +72,10 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
   const { questChains, fetching, refresh } =
     useLatestCreatedQuestChainsDataForAllChains();
+
+  useEffect(() => {
+    // refresh();
+  }, [refresh, refreshCount]);
 
   const onSubmit = useCallback(
     async (
@@ -101,10 +109,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain');
-        refresh();
+        toast.success('Successfully created a new Quest Chain, redirecting...');
+
         resetForm();
         setDescription('');
+
+        const address = await awaitQuestChainAddress(receipt);
+        router.push(`/chain/${chainId}/${address}`);
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -112,7 +123,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
       setSubmitting(false);
     },
-    [factoryContract, refresh, description, chainId],
+    [chainId, description, factoryContract, router],
   );
 
   return (
