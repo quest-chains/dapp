@@ -30,7 +30,7 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   borderBottomColor="main"
                   color={router.pathname === '/explore' ? 'main' : 'inherit'}
                 >
-                  SEARCH
+                  EXPLORE
                 </Text>
               </ChakraLink>
             </NextLink>
