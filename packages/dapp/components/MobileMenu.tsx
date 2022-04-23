@@ -23,12 +23,12 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         <ModalBody h="100%">
           <VStack spacing={6} h="100%" w="100%" justify="center">
             <WalletDisplay />
-            <NextLink href="/search" passHref>
+            <NextLink href="/explore" passHref>
               <ChakraLink display="block" _hover={{}} onClick={onClose}>
                 <Text
-                  borderBottomWidth={router.pathname === '/search' ? 1 : 0}
+                  borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
                   borderBottomColor="main"
-                  color={router.pathname === '/search' ? 'main' : 'inherit'}
+                  color={router.pathname === '/explore' ? 'main' : 'inherit'}
                 >
                   SEARCH
                 </Text>

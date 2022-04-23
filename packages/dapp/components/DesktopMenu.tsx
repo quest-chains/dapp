@@ -17,12 +17,12 @@ export const DesktopMenu: React.FC = () => {
         transform="translate(-50%, -50%)"
         zIndex={1500}
       >
-        <NextLink href="/search" passHref>
+        <NextLink href="/explore" passHref>
           <ChakraLink display="block" _hover={{}}>
             <Text
-              borderBottomWidth={router.pathname === '/search' ? 1 : 0}
+              borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
               borderBottomColor="main"
-              color={router.pathname === '/search' ? 'main' : 'inherit'}
+              color={router.pathname === '/explore' ? 'main' : 'inherit'}
             >
               SEARCH
             </Text>

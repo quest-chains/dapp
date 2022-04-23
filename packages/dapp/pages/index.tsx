@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (isConnected && !isConnecting) router.push('search');
+    if (isConnected && !isConnecting) router.push('explore');
   }, [isConnected, isConnecting, router]);
 
   return (
