@@ -555,7 +555,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   {questChain.quests.length} Quest
                   {questChain.quests.length === 1 ? '' : 's'} found
                 </Text>
-                <Button onClick={onOpenCreateQuest}>Create Quest</Button>
+                {(isAdmin || isEditor) && (
+                  <Button onClick={onOpenCreateQuest}>Create Quest</Button>
+                )}
               </Flex>
 
               <Modal isOpen={isOpenCreateQuest} onClose={onCloseCreateQUest}>
