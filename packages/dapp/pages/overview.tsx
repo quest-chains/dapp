@@ -8,7 +8,7 @@ const Overview: React.FC = () => {
   return (
     <SimpleGrid columns={2} spacing={8}>
       <Head>
-        <title>Quests Overview</title>
+        <title>Overview</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {/* left */}

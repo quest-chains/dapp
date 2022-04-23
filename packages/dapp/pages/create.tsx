@@ -129,7 +129,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   return (
     <VStack w="100%" align="stretch" px={{ base: 0, lg: 40 }} spacing={8}>
       <Head>
-        <title>DAOQuest</title>
+        <title>Create</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
