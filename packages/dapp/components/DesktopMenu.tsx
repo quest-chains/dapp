@@ -48,10 +48,8 @@ export const DesktopMenu: React.FC = () => {
 
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
           <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Search for quest chain</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={8}>
+          <ModalContent maxW="2xl">
+            <ModalBody py={6}>
               <SearchQuestChains />
             </ModalBody>
           </ModalContent>

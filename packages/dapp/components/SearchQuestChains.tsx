@@ -23,9 +23,6 @@ const SearchQuestChains: React.FC = () => {
 
   return (
     <VStack alignItems="flex-start" gap={4} w="full">
-      <Text color="main" fontSize={20} mb={2} textTransform="uppercase">
-        Search for Quest Chain
-      </Text>
       <InputGroup maxW="2xl" size="lg">
         <InputLeftElement pointerEvents="none">
           {fetching ? (
