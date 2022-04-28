@@ -1,12 +1,17 @@
 import { log } from '@graphprotocol/graph-ts';
 import { QuestChain, Global } from '../types/schema';
 
-import { NewQuestChain as NewQuestChainEvent } from '../types/QuestChainFactory/QuestChainFactory';
+import {
+  NewQuestChain as NewQuestChainEvent,
+  QuestChainFactoryInit as QuestChainFactoryInitEvent,
+} from '../types/QuestChainFactory/QuestChainFactory';
 import { QuestChain as QuestChainTemplate } from '../types/templates';
 
 import { getUser, getNetwork } from './helpers';
 
-export function handleNewQuestChain(event: NewQuestChainEvent): void {
+export function handleQuestChainFactoryInit(
+  event: QuestChainFactoryInitEvent,
+): void {
   let network = getNetwork();
   let globalNode = Global.load(network);
   if (globalNode == null) {
@@ -14,6 +19,10 @@ export function handleNewQuestChain(event: NewQuestChainEvent): void {
     globalNode.factoryAddress = event.address;
     globalNode.save();
   }
+}
+
+export function handleNewQuestChain(event: NewQuestChainEvent): void {
+  let network = getNetwork();
 
   let questChain = new QuestChain(event.params.questChain.toHexString());
 

@@ -168,12 +168,14 @@ contract QuestChainFactory is IQuestChainFactory {
     mapping(uint256 => address) internal _questChains;
 
     event NewQuestChain(uint256 indexed index, address questChain);
+    event QuestChainFactoryInit();
 
-    address public immutable implementation;
+    address public immutable cloneRoot;
 
-    constructor(address _implementation) {
-        require(_implementation != address(0), "invalid implementation");
-        implementation = _implementation;
+    constructor(address _cloneRoot) {
+        require(_cloneRoot != address(0), "invalid implementation");
+        cloneRoot = _cloneRoot;
+        emit QuestChainFactoryInit();
     }
 
     function _newQuestChain(
@@ -212,7 +214,7 @@ contract QuestChainFactory is IQuestChainFactory {
         override
         returns (address)
     {
-        address questChainAddress = Clones.clone(implementation);
+        address questChainAddress = Clones.clone(cloneRoot);
 
         _newQuestChain(questChainAddress, _details);
 
@@ -224,7 +226,7 @@ contract QuestChainFactory is IQuestChainFactory {
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override returns (address) {
-        address questChainAddress = Clones.clone(implementation);
+        address questChainAddress = Clones.clone(cloneRoot);
 
         _newQuestChainWithRoles(
             questChainAddress,
@@ -242,7 +244,7 @@ contract QuestChainFactory is IQuestChainFactory {
         override
         returns (address)
     {
-        return Clones.predictDeterministicAddress(implementation, _salt);
+        return Clones.predictDeterministicAddress(cloneRoot, _salt);
     }
 
     function createDeterministic(string calldata _details, bytes32 _salt)
@@ -251,7 +253,7 @@ contract QuestChainFactory is IQuestChainFactory {
         returns (address)
     {
         address questChainAddress = Clones.cloneDeterministic(
-            implementation,
+            cloneRoot,
             _salt
         );
 

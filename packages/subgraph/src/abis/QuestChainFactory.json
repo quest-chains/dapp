@@ -5,7 +5,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_implementation",
+          "name": "_cloneRoot",
           "type": "address"
         }
       ],
@@ -30,6 +30,25 @@
       ],
       "name": "NewQuestChain",
       "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "QuestChainFactoryInit",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "cloneRoot",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "inputs": [
@@ -77,12 +96,22 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "_index",
-          "type": "uint256"
+          "internalType": "string",
+          "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_editors",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_reviewers",
+          "type": "address[]"
         }
       ],
-      "name": "getQuestChainAddress",
+      "name": "createWithRoles",
       "outputs": [
         {
           "internalType": "address",
@@ -90,12 +119,18 @@
           "type": "address"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "implementation",
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getQuestChainAddress",
       "outputs": [
         {
           "internalType": "address",

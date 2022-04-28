@@ -28,6 +28,8 @@ dataSources:
         - name: QuestChainFactory
           file: ./src/abis/QuestChainFactory.json
       eventHandlers:
+        - event: QuestChainFactoryInit()
+          handler: handleQuestChainFactoryInit
         - event: NewQuestChain(indexed uint256,address)
           handler: handleNewQuestChain
 

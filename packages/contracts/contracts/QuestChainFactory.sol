@@ -11,12 +11,14 @@ contract QuestChainFactory is IQuestChainFactory {
     mapping(uint256 => address) internal _questChains;
 
     event NewQuestChain(uint256 indexed index, address questChain);
+    event QuestChainFactoryInit();
 
     address public immutable cloneRoot;
 
     constructor(address _cloneRoot) {
         require(_cloneRoot != address(0), "invalid implementation");
         cloneRoot = _cloneRoot;
+        emit QuestChainFactoryInit();
     }
 
     function _newQuestChain(
