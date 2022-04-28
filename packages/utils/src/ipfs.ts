@@ -50,7 +50,9 @@ export const uploadMetadata = async (
   );
   await writeFile(name, jsonString);
 
-  const readable = createReadStream(name) as unknown as ReadableStream<string>;
+  const readable = (createReadStream(name) as unknown) as ReadableStream<
+    string
+  >;
 
   const tmpFile = {
     name: 'metadata.json',

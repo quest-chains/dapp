@@ -9,13 +9,8 @@ import { formatAddress, useWallet } from '@/web3';
 import { PrimaryButton } from './PrimaryButton';
 
 export const ConnectWallet: React.FC = () => {
-  const {
-    connectWallet,
-    isConnecting,
-    isConnected,
-    disconnect,
-    address,
-  } = useWallet();
+  const { connectWallet, isConnecting, isConnected, disconnect, address } =
+    useWallet();
   const { ens } = useENS(address);
   return (
     <PrimaryButton

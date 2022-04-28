@@ -10,18 +10,14 @@ import {
 
 import { NETWORK_INFO } from '@/web3';
 
-export const NetworkDisplay: React.FC<{
-  chainId: string;
-  asTag?: boolean;
-  imageProps?: ImageProps;
-  textProps?: TextProps;
-} & StackProps> = ({
-  chainId,
-  imageProps,
-  asTag = false,
-  textProps,
-  ...props
-}) => {
+export const NetworkDisplay: React.FC<
+  {
+    chainId: string;
+    asTag?: boolean;
+    imageProps?: ImageProps;
+    textProps?: TextProps;
+  } & StackProps
+> = ({ chainId, imageProps, asTag = false, textProps, ...props }) => {
   const networkInfo = NETWORK_INFO[chainId];
   if (!networkInfo) return null;
   const { image, label, name } = networkInfo;

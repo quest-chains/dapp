@@ -39,7 +39,7 @@ export const handler: (
       const tmpFiles = files.map(({ field, name }) => ({
         name: field,
         stream: () =>
-          (fs.createReadStream(name) as unknown) as ReadableStream<string>,
+          fs.createReadStream(name) as unknown as ReadableStream<string>,
       }));
       const cid = await storage.put(tmpFiles);
 
