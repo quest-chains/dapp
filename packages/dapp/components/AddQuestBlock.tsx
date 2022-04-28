@@ -44,6 +44,9 @@ interface FormValues {
   name: string;
 }
 
+// TODO test superfuild for all supported networks and then enable in production
+const ENABLE_SUPERFLUID = false;
+
 export const AddQuestBlock: React.FC<{
   questChain: QuestChainInfoFragment;
   refresh: () => void;
@@ -73,7 +76,7 @@ export const AddQuestBlock: React.FC<{
 
       // close the dialog
       onClose();
-      if (questChain.quests.length > 4) {
+      if (questChain.quests.length > 4 && ENABLE_SUPERFLUID) {
         const signer = provider?.getSigner();
 
         const sf = await Framework.create({

@@ -1,6 +1,6 @@
 {
-  "name": "@dao-quest/subgraph",
-  "version": "1.0.0",
+  "name": "@quest-chains/subgraph",
+  "version": "0.1.0",
   "license": "MIT",
   "dependencies": {
     "@graphprotocol/graph-cli": "0.29.0",

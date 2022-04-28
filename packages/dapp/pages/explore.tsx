@@ -7,7 +7,7 @@ const Explore: React.FC = () => {
   return (
     <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
       <Head>
-        <title>Explore</title>
+        <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <SearchQuestChains />

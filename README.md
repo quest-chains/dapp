@@ -1,4 +1,4 @@
-# DAO Quest
+# Quest Chains Mono Repo
 
 ## Available Scripts
 
@@ -12,10 +12,16 @@ In the project directory, you can run:
 
 #### `yarn dapp:start`
 
+### Contracts
+
+#### `yarn contracts:compile`
+
+#### `yarn contracts:test`
+
+#### `yarn contracts:deploy`
+
 ### Subgraph
 
 #### `yarn subgraph:codegen`
 
 #### `yarn subgraph:build`
-
-#### `yarn subgraph:auth`

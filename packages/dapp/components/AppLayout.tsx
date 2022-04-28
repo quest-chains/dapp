@@ -54,7 +54,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
                   fontWeight="normal"
                   lineHeight="1rem"
                 >
-                  {isSmallScreen ? 'Q' : 'DAOQuest'}
+                  {isSmallScreen ? 'Q' : 'Quest Chains'}
                 </Heading>
               </ChakraLink>
             </NextLink>
@@ -95,7 +95,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             flexDirection="column"
           >
             <Heading color="main" fontSize={87} pb={10} fontWeight="normal">
-              DAOQuest
+              Quest Chains
             </Heading>
             <ConnectWallet />
           </Flex>

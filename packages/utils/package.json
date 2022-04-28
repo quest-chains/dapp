@@ -1,6 +1,6 @@
 {
-  "name": "@dao-quest/utils",
-  "version": "1.0.0",
+  "name": "@quest-chains/utils",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",

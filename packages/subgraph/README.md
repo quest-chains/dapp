@@ -1,1 +1,1 @@
-# DAO Quest Subgraph
+# Quest Chains Subgraph
