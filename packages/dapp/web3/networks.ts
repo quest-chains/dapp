@@ -1,5 +1,5 @@
 import EthereumImage from '@/assets/ethereum.svg';
-// import GnosisImage from '@/assets/gnosis.svg';
+import GnosisImage from '@/assets/gnosis.svg';
 import PolygonImage from '@/assets/polygon.svg';
 import { INFURA_ID } from '@/utils/constants';
 
@@ -39,16 +39,19 @@ export const NETWORK_INFO: NetworkInfo = {
   //   rpc: `https://polygon-rpc.com`,
   //   image: PolygonImage.src,
   // },
-  // '0x64': {
-  //   chainId: '0x64',
-  //   name: 'Gnosis Chain',
-  //   label: 'Gnosis',
-  //   symbol: 'xDAI',
-  //   explorer: 'https://blockscout.com/xdai/mainnet',
-  //   explorerLabel: 'Blockscout',
-  //   rpc: 'https://rpc.gnosischain.com/',
-  //   image: GnosisImage.src,
-  // },
+  '0x64': {
+    chainId: '0x64',
+    name: 'Gnosis Chain',
+    label: 'Gnosis',
+    symbol: 'xDAI',
+    explorer: 'https://blockscout.com/xdai/mainnet',
+    explorerLabel: 'Blockscout',
+    rpc: 'https://rpc.gnosischain.com/',
+    subgraphName: 'dan13ram/quest-chains-xdai',
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-xdai',
+    image: GnosisImage.src,
+  },
   '0x4': {
     chainId: '0x4',
     name: 'Rinkeby Testnet',

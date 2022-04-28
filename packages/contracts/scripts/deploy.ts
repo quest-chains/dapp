@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { ethers, network, run } from 'hardhat';
 
-import { networkName, validateSetup } from './utils';
+import { BLOCKSCOUT_CHAIN_IDS, networkName, validateSetup } from './utils';
 
 async function main() {
   const [chainId, deployer] = await validateSetup();
@@ -48,7 +48,9 @@ async function main() {
   try {
     await questChainFactory.deployTransaction.wait(5);
     console.log('Verifying Contracts...');
-    const TASK_VERIFY = 'verify:verify';
+    const TASK_VERIFY = BLOCKSCOUT_CHAIN_IDS.includes(chainId)
+      ? 'verify:verify-blockscout'
+      : 'verify:verify';
 
     await run(TASK_VERIFY, {
       address: questChain.address,

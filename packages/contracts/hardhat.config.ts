@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
+import './tasks/verify-blockscout';
 
 import dotenv from 'dotenv';
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -27,6 +28,11 @@ const config: HardhatUserConfig = {
   networks: {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    xdai: {
+      url: `https://rpc.xdaichain.com`,
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },

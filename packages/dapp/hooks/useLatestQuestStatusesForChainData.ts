@@ -17,8 +17,9 @@ export const useLatestQuestStatusesForChainData = (
 } => {
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<unknown>();
-  const [questStatuses, setQuestStatuses] =
-    useState<QuestStatusInfoFragment[]>(inputQuestStatuses);
+  const [questStatuses, setQuestStatuses] = useState<QuestStatusInfoFragment[]>(
+    inputQuestStatuses,
+  );
 
   const [refreshCount, refresh] = useRefresh();
 

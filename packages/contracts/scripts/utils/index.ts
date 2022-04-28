@@ -4,6 +4,7 @@ import { ethers } from 'hardhat';
 export const networkName: Record<number, string> = {
   1: 'Ethereum Mainnet',
   4: 'Rinkeby Testnet',
+  100: 'Gnosis Chain',
   137: 'Polygon Mainnet',
   80001: 'Polygon Mumbai Testnet',
   31337: 'Hardhat Chain',
@@ -12,10 +13,13 @@ export const networkName: Record<number, string> = {
 export const networkCurrency: Record<number, string> = {
   1: 'ETH',
   4: 'ETH',
+  100: 'xDAI',
   137: 'MATIC',
   80001: 'MATIC',
   31337: 'ETH',
 };
+
+export const BLOCKSCOUT_CHAIN_IDS = [77, 100];
 
 export type DeploymentInfo = {
   network: string;

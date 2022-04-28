@@ -70,8 +70,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     [provider, chainId, globalInfo],
   );
 
-  const { questChains, fetching, refresh } =
-    useLatestCreatedQuestChainsDataForAllChains();
+  const {
+    questChains,
+    fetching,
+    refresh,
+  } = useLatestCreatedQuestChainsDataForAllChains();
 
   useEffect(() => {
     // refresh();
