@@ -24,9 +24,12 @@ export const DesktopMenu: React.FC = () => {
   const handleUserKeyPress = useCallback(
     (event: { key: string; metaKey: boolean }) => {
       const { key, metaKey } = event;
-      if (metaKey && key === 'k') onOpen();
+      if (metaKey && key === 'k') {
+        if (isOpen) onClose();
+        else onOpen();
+      }
     },
-    [onOpen],
+    [isOpen, onClose, onOpen],
   );
 
   useEffect(() => {
