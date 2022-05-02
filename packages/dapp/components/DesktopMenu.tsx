@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useCallback, useEffect } from 'react';
 
 import SearchQuestChains from './SearchQuestChains';
 import { WalletDisplay } from './WalletDisplay';
@@ -19,6 +20,22 @@ import { WalletDisplay } from './WalletDisplay';
 export const DesktopMenu: React.FC = () => {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleUserKeyPress = useCallback(
+    (event: { key: string; metaKey: boolean }) => {
+      const { key, metaKey } = event;
+      if (metaKey && key === 'k') onOpen();
+    },
+    [onOpen],
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleUserKeyPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleUserKeyPress);
+    };
+  }, [handleUserKeyPress]);
 
   return (
     <>
