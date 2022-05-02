@@ -1,4 +1,4 @@
-import { Metadata, uploadMetadata } from '@dao-quest/utils';
+import { Metadata, uploadMetadata } from '@quest-chains/utils';
 import Prompt from 'prompt-sync';
 
 const prompt = Prompt({ sigint: true });

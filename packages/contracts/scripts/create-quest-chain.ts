@@ -1,4 +1,4 @@
-import { Metadata, uploadMetadata } from '@dao-quest/utils';
+import { Metadata, uploadMetadata } from '@quest-chains/utils';
 import fs from 'fs';
 import { network } from 'hardhat';
 import Prompt from 'prompt-sync';
