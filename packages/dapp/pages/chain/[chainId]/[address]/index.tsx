@@ -41,6 +41,7 @@ import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -433,9 +434,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         <Flex justifyContent="space-between" w="full">
           {!isEditingQuestChain && (
             <>
-              <Text fontSize="2xl" fontWeight="bold" mb={3}>
-                {questChain.name}
-              </Text>
+              <Flex gap={3}>
+                <Text fontSize="2xl" fontWeight="bold" mb={3}>
+                  {questChain.name}
+                </Text>
+                <NetworkDisplay
+                  asTag
+                  chainId={questChain.chainId}
+                  maxH="2rem"
+                />
+              </Flex>
               {isAdmin && chainId === questChain.chainId && (
                 <IconButton
                   borderRadius="full"
