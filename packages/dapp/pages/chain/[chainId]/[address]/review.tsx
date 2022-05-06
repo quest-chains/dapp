@@ -151,10 +151,10 @@ const Review: React.FC<Props> = ({
     provider?.getSigner() as Signer,
   );
 
-  const reviews = useMemo(
-    () => questStatuses.filter(q => q.status === 'review'),
-    [questStatuses],
-  );
+  const reviews = useMemo(() => {
+    if (questStatuses) return questStatuses.filter(q => q.status === 'review');
+    return [];
+  }, [questStatuses]);
 
   const [reviewDescription, setReviewDescription] = useState('');
   const [myFiles, setMyFiles] = useState<File[]>([]);
