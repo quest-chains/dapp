@@ -25,6 +25,7 @@ import {
   Tag,
   Text,
   Textarea,
+  Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -673,19 +674,25 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         userStatus[quest.questId]?.status === 'init' ||
                         userStatus[quest.questId]?.status === 'fail' ? (
                           <Box>
-                            <Button
-                              onClick={() => {
-                                setQuest({
-                                  questId: quest.questId,
-                                  name: quest.name,
-                                  description: quest.description,
-                                });
-                                onOpen();
-                              }}
-                              isDisabled={chainId !== questChain.chainId}
+                            <Tooltip
+                              shouldWrapChildren
+                              label="Please login or switch to the correct chain"
+                              isDisabled={chainId === questChain.chainId}
                             >
-                              Upload Proof
-                            </Button>
+                              <Button
+                                onClick={() => {
+                                  setQuest({
+                                    questId: quest.questId,
+                                    name: quest.name,
+                                    description: quest.description,
+                                  });
+                                  onOpen();
+                                }}
+                                isDisabled={chainId !== questChain.chainId}
+                              >
+                                Upload Proof
+                              </Button>
+                            </Tooltip>
                           </Box>
                         ) : (
                           <Box>
