@@ -1,11 +1,11 @@
 module.exports = {
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/explore',
-        permanent: false,
-      },
+      // {
+      //   source: '/',
+      //   destination: '/explore',
+      //   permanent: false,
+      // },
     ];
   },
   reactStrictMode: true,
