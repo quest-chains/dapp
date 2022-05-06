@@ -439,11 +439,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 <Text fontSize="2xl" fontWeight="bold" mb={3}>
                   {questChain.name}
                 </Text>
-                <NetworkDisplay
-                  asTag
-                  chainId={questChain.chainId}
-                  maxH="2rem"
-                />
+                <NetworkDisplay asTag chainId={questChain.chainId} />
               </Flex>
               {isAdmin && chainId === questChain.chainId && (
                 <IconButton
@@ -676,7 +672,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           <Box>
                             <Tooltip
                               shouldWrapChildren
-                              label="Please login or switch to the correct chain"
+                              label="Please connect or switch to the correct chain"
                               isDisabled={chainId === questChain.chainId}
                             >
                               <Button
