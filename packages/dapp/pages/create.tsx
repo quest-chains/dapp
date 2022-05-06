@@ -60,7 +60,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const router = useRouter();
   const [refreshCount] = useRefresh();
 
-  const { provider, chainId } = useWallet();
+  const { provider, chainId, isConnected, connectWallet } = useWallet();
 
   const factoryContract: QuestChainFactory | undefined = useMemo(() => {
     if (!isSupportedNetwork(chainId)) return;
@@ -83,6 +83,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
+      if (!isConnected) connectWallet();
+
       // checking for existence of chainId, because waitUntilBlock(chainId, receipt.blockNumber);
       // doesn't understand the implications of if (!isSupportedNetwork(chainId))
       if (!chainId || !isSupportedNetwork(chainId) || !factoryContract) return;
@@ -127,7 +129,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
       setSubmitting(false);
     },
-    [chainId, description, factoryContract, router],
+    [chainId, connectWallet, description, factoryContract, isConnected, router],
   );
 
   return (
@@ -207,7 +209,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                         ))}
                         <Button
                           borderRadius="full"
-                          onClick={() => arrayHelpers.push('')}
+                          onClick={() =>
+                            isConnected
+                              ? arrayHelpers.push('')
+                              : connectWallet()
+                          }
                         >
                           Add address
                         </Button>
@@ -248,7 +254,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                         ))}
                         <Button
                           borderRadius="full"
-                          onClick={() => arrayHelpers.push('')}
+                          onClick={() =>
+                            isConnected
+                              ? arrayHelpers.push('')
+                              : connectWallet()
+                          }
                         >
                           Add address
                         </Button>
