@@ -40,7 +40,7 @@ import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { isSupportedNetwork, useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
@@ -63,7 +63,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const { provider, chainId } = useWallet();
 
   const factoryContract: QuestChainFactory | undefined = useMemo(() => {
-    if (!chainId) return;
+    if (!isSupportedNetwork(chainId)) return;
 
     return QuestChainFactory__factory.connect(
       globalInfo[chainId as string],
@@ -83,7 +83,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
-      if (!chainId || !factoryContract) return;
+      // checking for existence of chainId, because waitUntilBlock(chainId, receipt.blockNumber);
+      // doesn't understand the implications of if (!isSupportedNetwork(chainId))
+      if (!chainId || !isSupportedNetwork(chainId) || !factoryContract) return;
 
       const metadata: Metadata = {
         name,

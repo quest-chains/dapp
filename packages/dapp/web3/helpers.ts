@@ -16,8 +16,12 @@ export const formatAddress = (
   } else return '';
 };
 
-export const isSupportedNetwork = (chainId: string): boolean =>
-  Object.keys(NETWORK_INFO).includes(chainId);
+export const isSupportedNetwork = (
+  chainId: string | null | undefined,
+): boolean => {
+  if (!chainId) return false;
+  return Object.keys(NETWORK_INFO).includes(chainId);
+};
 
 export const getTxUrl = (
   txHash: string,
