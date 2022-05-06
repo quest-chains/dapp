@@ -61,14 +61,15 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [refreshCount] = useRefresh();
 
   const { provider, chainId } = useWallet();
-  const factoryContract: QuestChainFactory = useMemo(
-    () =>
-      QuestChainFactory__factory.connect(
-        globalInfo[chainId as string],
-        provider?.getSigner() as Signer,
-      ),
-    [provider, chainId, globalInfo],
-  );
+
+  const factoryContract: QuestChainFactory | undefined = useMemo(() => {
+    if (!chainId) return;
+
+    return QuestChainFactory__factory.connect(
+      globalInfo[chainId as string],
+      provider?.getSigner() as Signer,
+    );
+  }, [provider, chainId, globalInfo]);
 
   const { questChains, fetching, refresh } =
     useLatestCreatedQuestChainsDataForAllChains();
@@ -82,7 +83,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
-      if (!chainId) return;
+      if (!chainId || !factoryContract) return;
+
       const metadata: Metadata = {
         name,
         description,
