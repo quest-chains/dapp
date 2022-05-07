@@ -15,7 +15,7 @@ type QuestChainTileProps = {
   chainId: string;
   name?: string | undefined | null;
   description?: string | undefined | null;
-  quests?: number;
+  quests: number;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -58,11 +58,9 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
             >
               {name}
             </Text>
-            {typeof quests === 'number' && (
-              <Text fontSize={14} color="whiteAlpha.700">
-                Quests: {quests}
-              </Text>
-            )}
+            <Text fontSize={14} color="whiteAlpha.700">
+              Quests: {quests}
+            </Text>
           </Box>
           <NetworkDisplay asTag chainId={chainId} />
         </HStack>

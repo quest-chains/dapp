@@ -300,12 +300,20 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             </Text>
           )}
           <VStack w="full" gap={4} flex={1}>
-            {questChains.map(({ address, chainId, name, description }) => (
-              <QuestChainTile
-                {...{ address, name, description, chainId }}
-                key={address}
-              />
-            ))}
+            {questChains.map(
+              ({ address, chainId, name, description, quests }) => (
+                <QuestChainTile
+                  {...{
+                    address,
+                    name,
+                    description,
+                    chainId,
+                    quests: quests.length,
+                  }}
+                  key={address}
+                />
+              ),
+            )}
           </VStack>
         </>
       )}
