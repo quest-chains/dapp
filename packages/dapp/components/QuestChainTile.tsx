@@ -1,4 +1,10 @@
-import { HStack, Link as ChakraLink, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  HStack,
+  Link as ChakraLink,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import removeMd from 'remove-markdown';
 
@@ -9,6 +15,7 @@ type QuestChainTileProps = {
   chainId: string;
   name?: string | undefined | null;
   description?: string | undefined | null;
+  quests: number;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -16,6 +23,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   name,
   description,
   chainId,
+  quests,
 }) => (
   <NextLink
     as={`/chain/${chainId}/${address}`}
@@ -41,9 +49,19 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
         spacing={4}
       >
         <HStack justify="space-between" w="100%">
-          <Text fontSize="lg" fontWeight="bold" color="main" letterSpacing={4}>
-            {name}
-          </Text>
+          <Box>
+            <Text
+              fontSize="lg"
+              fontWeight="bold"
+              color="main"
+              letterSpacing={4}
+            >
+              {name}
+            </Text>
+            <Text fontSize={14} color="whiteAlpha.700">
+              Quests: {quests}
+            </Text>
+          </Box>
           <NetworkDisplay asTag chainId={chainId} />
         </HStack>
         <Text
