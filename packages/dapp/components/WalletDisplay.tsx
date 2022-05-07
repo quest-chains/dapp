@@ -90,13 +90,7 @@ export const WalletDisplay: React.FC = () => {
             <VStack w="100%" spacing={0} align="stretch">
               <NextLink href={`/profile/${address}`} passHref>
                 <Link display="block" _hover={{}}>
-                  <SubmitButton
-                    onClick={disconnect}
-                    px={4}
-                    fontSize="md"
-                    height={10}
-                    width="full"
-                  >
+                  <SubmitButton px={4} fontSize="md" height={10} width="full">
                     Profile
                   </SubmitButton>
                 </Link>
