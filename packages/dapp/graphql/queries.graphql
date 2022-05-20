@@ -79,3 +79,17 @@ query StatusForUserAndChain($user: String!, $address: String!, $limit: Int) {
     ...QuestStatusInfo
   }
 }
+
+query RolesForUser($address: ID!) {
+  user(id: $address) {
+    adminOf {
+      ...QuestChainInfo
+    }
+    editorOf {
+      ...QuestChainInfo
+    }
+    reviewerOf {
+      ...QuestChainInfo
+    }
+  }
+}
