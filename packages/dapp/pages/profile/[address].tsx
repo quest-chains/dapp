@@ -1,7 +1,8 @@
-import { Text, VStack } from '@chakra-ui/react';
+import { Box, Grid, Text, VStack } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 
+import { QuestsToReview } from '@/components/QuestsToReview';
 import { UserProgress } from '@/components/UserProgress';
 import { UserRoles } from '@/components/UserRoles';
 
@@ -22,10 +23,18 @@ const Explore: React.FC<Props> = () => {
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Text>Address: {address}</Text>
+      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+        <Box>
+          <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
+            USER
+          </Text>
+          <Text>{address}</Text>
+        </Box>
 
-      <UserRoles />
-      <UserProgress />
+        <UserRoles address={address} />
+        <UserProgress address={address} />
+        <QuestsToReview address={address} />
+      </Grid>
     </VStack>
   );
 };

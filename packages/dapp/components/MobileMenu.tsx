@@ -49,17 +49,6 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 </Text>
               </ChakraLink>
             </NextLink>
-            <NextLink href="/overview" passHref>
-              <ChakraLink display="block" _hover={{}} onClick={onClose}>
-                <Text
-                  borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
-                  borderBottomColor="main"
-                  color={router.pathname === '/overview' ? 'main' : 'inherit'}
-                >
-                  OVERVIEW
-                </Text>
-              </ChakraLink>
-            </NextLink>
           </VStack>
         </ModalBody>
       </ModalContent>

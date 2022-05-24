@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { getStatusForUser, UserStatus } from '@/graphql/statusForUser';
-import { NETWORK_INFO, useWallet } from '@/web3';
+import { NETWORK_INFO } from '@/web3';
 
 const chainIds = Object.keys(NETWORK_INFO);
 
-export const useUserProgressForAllChains = (): {
+export const useUserProgressForAllChains = (
+  address: string,
+): {
   error: unknown;
   fetching: boolean;
   results: UserStatus[];
@@ -13,8 +15,6 @@ export const useUserProgressForAllChains = (): {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
   const [results, setResults] = useState<UserStatus[]>([]);
-
-  const { address } = useWallet();
 
   useEffect(() => {
     let isMounted = true;

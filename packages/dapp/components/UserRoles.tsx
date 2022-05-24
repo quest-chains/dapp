@@ -21,8 +21,10 @@ type RoleProps = {
   role: string;
 };
 
-export const UserRoles = () => {
-  const { fetching, results: userRoles } = useUserRolesForAllChains();
+export const UserRoles: React.FC<{
+  address: string;
+}> = ({ address }) => {
+  const { fetching, results: userRoles } = useUserRolesForAllChains(address);
   const [roles, setRoles] = useState<RoleProps[]>([]);
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export const UserRoles = () => {
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="center" mb={2} color="main" fontSize={20}>
+      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
         ROLES
       </Text>
       {fetching ? (

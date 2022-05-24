@@ -11,12 +11,15 @@ import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains
 
 import { NetworkDisplay } from './NetworkDisplay';
 
-export const UserProgress = () => {
-  const { fetching, results: userStatuses } = useUserProgressForAllChains();
+export const UserProgress: React.FC<{
+  address: string;
+}> = ({ address }) => {
+  const { fetching, results: userStatuses } =
+    useUserProgressForAllChains(address);
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="center" mb={2} color="main" fontSize={20}>
+      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
         MY PROGRESS
       </Text>
       {fetching ? (

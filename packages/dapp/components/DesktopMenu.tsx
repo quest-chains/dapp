@@ -97,17 +97,6 @@ export const DesktopMenu: React.FC = () => {
             </Text>
           </ChakraLink>
         </NextLink>
-        <NextLink href="/overview" passHref>
-          <ChakraLink display="block" _hover={{}}>
-            <Text
-              borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
-              borderBottomColor="main"
-              color={router.pathname === '/overview' ? 'main' : 'inherit'}
-            >
-              OVERVIEW
-            </Text>
-          </ChakraLink>
-        </NextLink>
       </HStack>
 
       {isConnected ? <WalletDisplay /> : <ConnectWallet />}
