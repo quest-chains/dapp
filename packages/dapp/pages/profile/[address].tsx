@@ -15,7 +15,8 @@ const Explore: React.FC<Props> = () => {
     const address = window.location.href.split('/').pop();
 
     if (address) setAddress(address);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location.href]);
 
   return (
     <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
