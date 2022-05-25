@@ -1,19 +1,17 @@
-import {
-  HStack,
-  Link as ChakraLink,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import NextLink from 'next/link';
+import { Box, Spinner, Text, VStack } from '@chakra-ui/react';
 
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
+
+import { UploadProof } from './UploadProof';
 
 export const QuestsRejected: React.FC<{
   address: string;
 }> = ({ address }) => {
-  const { results: questsRejected, fetching } =
-    useUserQuestsRejectedForAllChains(address);
+  const {
+    results: questsRejected,
+    fetching,
+    refresh,
+  } = useUserQuestsRejectedForAllChains(address);
 
   return (
     <VStack spacing={4} align="stretch">
@@ -30,11 +28,19 @@ export const QuestsRejected: React.FC<{
             <Text color="white">No rejected quests</Text>
           )}
           {questsRejected.map(quest => (
-            <NextLink as={`''`} href={''} passHref key={''}>
-              <ChakraLink display="block" _hover={{}}>
-                quest
-              </ChakraLink>
-            </NextLink>
+            <Box key={quest.id}>
+              <Text>
+                {quest.quest.name} ({quest.questChain.name})
+              </Text>
+              <UploadProof
+                address={address}
+                questId={quest.quest.questId}
+                questChainId={quest.questChain.chainId}
+                questChainAddress={quest.questChain.address}
+                name={quest.quest.name}
+                refresh={refresh}
+              />
+            </Box>
           ))}
         </>
       )}

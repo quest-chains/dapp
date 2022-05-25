@@ -4,6 +4,8 @@ import { getQuestsRejectedForUserAndChain } from '@/graphql/questStatuses';
 import { QuestStatusInfoFragment } from '@/graphql/types';
 import { NETWORK_INFO } from '@/web3';
 
+import { useRefresh } from './useRefresh';
+
 const chainIds = Object.keys(NETWORK_INFO);
 
 export const useUserQuestsRejectedForAllChains = (
@@ -12,10 +14,12 @@ export const useUserQuestsRejectedForAllChains = (
   error: unknown;
   fetching: boolean;
   results: QuestStatusInfoFragment[];
+  refresh: () => void;
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
   const [results, setResults] = useState<QuestStatusInfoFragment[]>([]);
+  const [refreshCount, refresh] = useRefresh();
 
   useEffect(() => {
     let isMounted = true;
@@ -41,11 +45,12 @@ export const useUserQuestsRejectedForAllChains = (
     return () => {
       isMounted = false;
     };
-  }, [address]);
+  }, [refreshCount, address]);
 
   return {
     fetching,
     error,
     results,
+    refresh,
   };
 };
