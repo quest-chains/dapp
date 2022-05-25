@@ -6,11 +6,14 @@ import { QuestsRejected } from '@/components/QuestsRejected';
 import { QuestsToReview } from '@/components/QuestsToReview';
 import { UserProgress } from '@/components/UserProgress';
 import { UserRoles } from '@/components/UserRoles';
+import { useWallet } from '@/web3';
 
 type Props = { address: string };
 
 const Explore: React.FC<Props> = () => {
   const [showChild, setShowChild] = useState(false);
+  const { address } = useWallet();
+
   useEffect(() => {
     setShowChild(true);
   }, []);
@@ -20,7 +23,8 @@ const Explore: React.FC<Props> = () => {
   }
 
   if (typeof window !== 'undefined') {
-    const address = window.location.href.split('/').pop() || '';
+    const addressURL = window.location.href.split('/').pop() || '';
+    const isLoggedInUser = addressURL === address;
 
     return (
       <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
@@ -36,13 +40,14 @@ const Explore: React.FC<Props> = () => {
             <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
               USER
             </Text>
-            <Text>{address}</Text>
+            <Text>{addressURL}</Text>
           </Box>
 
-          <UserRoles address={address} />
-          <UserProgress address={address} />
-          <QuestsToReview address={address} />
-          <QuestsRejected address={address} />
+          <UserRoles address={addressURL} />
+          <UserProgress address={addressURL} />
+
+          {isLoggedInUser && <QuestsToReview address={addressURL} />}
+          {isLoggedInUser && <QuestsRejected address={addressURL} />}
         </Grid>
       </VStack>
     );
