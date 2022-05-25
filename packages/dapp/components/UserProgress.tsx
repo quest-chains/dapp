@@ -29,9 +29,7 @@ export const UserProgress: React.FC<{
       ) : (
         <>
           {userStatuses.length === 0 && (
-            <VStack w="100%">
-              <Text color="white">No progress found</Text>
-            </VStack>
+            <Text color="white">No progress found</Text>
           )}
           {userStatuses.map(us => (
             <NextLink

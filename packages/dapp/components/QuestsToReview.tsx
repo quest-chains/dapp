@@ -30,9 +30,7 @@ export const QuestsToReview: React.FC<{
       ) : (
         <>
           {chainsToReview.length === 0 && (
-            <VStack w="100%">
-              <Text color="white">No submissions found</Text>
-            </VStack>
+            <Text color="white">No submissions found</Text>
           )}
           {chainsToReview.map(chain => (
             <NextLink

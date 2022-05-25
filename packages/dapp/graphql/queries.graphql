@@ -93,3 +93,11 @@ query RolesForUser($address: ID!) {
     }
   }
 }
+
+query QuestsRejected($address: ID!) {
+  user(id: $address) {
+    questsFailed {
+      ...QuestStatusInfo
+    }
+  }
+}

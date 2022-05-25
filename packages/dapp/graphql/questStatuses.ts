@@ -1,5 +1,8 @@
 import { clients } from '@/graphql/client';
 import {
+  QuestsRejectedDocument,
+  QuestsRejectedQuery,
+  QuestsRejectedQueryVariables,
   QuestStatusInfoFragment,
   StatusForChainDocument,
   StatusForChainQuery,
@@ -53,4 +56,26 @@ export const getStatusesForUserAndChain = async (
     return [];
   }
   return data.questStatuses;
+};
+
+export const getQuestsRejectedForUserAndChain = async (
+  chainId: string,
+  address: string,
+): Promise<QuestStatusInfoFragment[]> => {
+  const { data, error } = await clients[chainId]
+    .query<QuestsRejectedQuery, QuestsRejectedQueryVariables>(
+      QuestsRejectedDocument,
+      {
+        address: address.toLowerCase(),
+      },
+    )
+    .toPromise();
+  if (!data) {
+    if (error) {
+      throw error;
+    }
+    return [];
+  }
+
+  return data.user?.questsFailed || [];
 };

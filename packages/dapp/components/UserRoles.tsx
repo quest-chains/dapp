@@ -86,11 +86,7 @@ export const UserRoles: React.FC<{
         </VStack>
       ) : (
         <>
-          {roles.length === 0 && (
-            <VStack w="100%">
-              <Text color="white">No roles found</Text>
-            </VStack>
-          )}
+          {roles.length === 0 && <Text color="white">No roles found</Text>}
           {roles?.map(({ address, chainId, name, role }) => (
             <Flex key={address} gap={3} alignItems="center">
               <Box>

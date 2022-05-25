@@ -2,6 +2,7 @@ import { Box, Grid, Text, VStack } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 
+import { QuestsRejected } from '@/components/QuestsRejected';
 import { QuestsToReview } from '@/components/QuestsToReview';
 import { UserProgress } from '@/components/UserProgress';
 import { UserRoles } from '@/components/UserRoles';
@@ -41,6 +42,7 @@ const Explore: React.FC<Props> = () => {
           <UserRoles address={address} />
           <UserProgress address={address} />
           <QuestsToReview address={address} />
+          <QuestsRejected address={address} />
         </Grid>
       </VStack>
     );
