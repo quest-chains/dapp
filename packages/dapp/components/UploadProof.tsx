@@ -37,7 +37,7 @@ import { useWallet } from '@/web3';
 import { SubmitButton } from './SubmitButton';
 
 export const UploadProof: React.FC<{
-  address: string;
+  address: string | null | undefined;
   refresh: () => void;
   questId: string;
   questChainId: string;
@@ -141,10 +141,8 @@ export const UploadProof: React.FC<{
         isDisabled={chainId === questChainId}
       >
         <Button
-          onClick={() => {
-            onOpen();
-          }}
-          isDisabled={chainId !== questChainId}
+          onClick={onOpen}
+          isDisabled={chainId !== questChainId || !address}
         >
           Upload Proof
         </Button>
