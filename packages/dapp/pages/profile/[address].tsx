@@ -9,35 +9,42 @@ import { UserRoles } from '@/components/UserRoles';
 type Props = { address: string };
 
 const Explore: React.FC<Props> = () => {
-  const [address, setAddress] = useState('');
-
+  const [showChild, setShowChild] = useState(false);
   useEffect(() => {
-    const address = window.location.href.split('/').pop();
+    setShowChild(true);
+  }, []);
 
-    if (address) setAddress(address);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.location.href]);
+  if (!showChild) {
+    return null;
+  }
 
-  return (
-    <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
-      <Head>
-        <title>Quest Chains</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-        <Box>
-          <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
-            USER
-          </Text>
-          <Text>{address}</Text>
-        </Box>
+  if (typeof window !== 'undefined') {
+    const address = window.location.href.split('/').pop() || '';
 
-        <UserRoles address={address} />
-        <UserProgress address={address} />
-        <QuestsToReview address={address} />
-      </Grid>
-    </VStack>
-  );
+    return (
+      <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
+        <Head>
+          <title>Quest Chains</title>
+          <meta
+            name="viewport"
+            content="initial-scale=1.0, width=device-width"
+          />
+        </Head>
+        <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          <Box>
+            <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
+              USER
+            </Text>
+            <Text>{address}</Text>
+          </Box>
+
+          <UserRoles address={address} />
+          <UserProgress address={address} />
+          <QuestsToReview address={address} />
+        </Grid>
+      </VStack>
+    );
+  } else return <></>;
 };
 
 export default Explore;
