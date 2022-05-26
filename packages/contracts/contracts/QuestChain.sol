@@ -46,43 +46,52 @@ contract QuestChain is
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}
 
-    function _initRoleAdmins() private {
+    function _initRoleAdmins(address _owner) private {
         _setRoleAdmin(ADMIN_ROLE, OWNER_ROLE);
         _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+
+        _grantRole(OWNER_ROLE, _owner);
+        _grantRole(ADMIN_ROLE, _owner);
+        _grantRole(EDITOR_ROLE, _owner);
+        _grantRole(REVIEWER_ROLE, _owner);
     }
 
-    function init(address _admin, string calldata _details)
+    function init(address _owner, string calldata _details)
         external
         override
         initializer
     {
-        _initRoleAdmins();
+        _initRoleAdmins(_owner);
 
-        grantRole(OWNER_ROLE, _admin);
-
-        emit QuestChainCreated(_admin, _details);
+        emit QuestChainCreated(_owner, _details);
     }
 
     function initWithRoles(
-        address _admin,
+        address _owner,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override initializer {
-        _initRoleAdmins();
+        _initRoleAdmins(_owner);
 
-        grantRole(OWNER_ROLE, _admin);
+        for (uint256 i = 0; i < _admins.length; i = i + 1) {
+            _grantRole(ADMIN_ROLE, _admins[i]);
+            _grantRole(EDITOR_ROLE, _admins[i]);
+            _grantRole(REVIEWER_ROLE, _admins[i]);
+        }
 
         for (uint256 i = 0; i < _editors.length; i = i + 1) {
-            grantRole(EDITOR_ROLE, _editors[i]);
+            _grantRole(EDITOR_ROLE, _editors[i]);
+            _grantRole(REVIEWER_ROLE, _editors[i]);
         }
 
         for (uint256 i = 0; i < _reviewers.length; i = i + 1) {
-            grantRole(REVIEWER_ROLE, _reviewers[i]);
+            _grantRole(REVIEWER_ROLE, _reviewers[i]);
         }
 
-        emit QuestChainCreated(_admin, _details);
+        emit QuestChainCreated(_owner, _details);
     }
 
     function grantRole(bytes32 role, address account)

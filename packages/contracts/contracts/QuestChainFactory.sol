@@ -2,10 +2,11 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IQuestChainFactory.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
+
 import "./interfaces/IQuestChain.sol";
+import "./interfaces/IQuestChainFactory.sol";
 
 contract QuestChainFactory is IQuestChainFactory, Ownable {
     uint256 public questChainCount = 0;
@@ -37,7 +38,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
         address _questChainAddress,
         string calldata _details
     ) internal {
-        IQuestChain(_questChainAddress).init(msg.sender, _details);
+        IQuestChain(_questChainAddress).init(_msgSender(), _details);
 
         _questChains[questChainCount] = _questChainAddress;
         emit NewQuestChain(questChainCount, _questChainAddress);
@@ -48,12 +49,14 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
     function _newQuestChainWithRoles(
         address _questChainAddress,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) internal {
         IQuestChain(_questChainAddress).initWithRoles(
-            msg.sender,
+            _msgSender(),
             _details,
+            _admins,
             _editors,
             _reviewers
         );
@@ -78,6 +81,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
 
     function createWithRoles(
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override returns (address) {
@@ -86,6 +90,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
         _newQuestChainWithRoles(
             questChainAddress,
             _details,
+            _admins,
             _editors,
             _reviewers
         );

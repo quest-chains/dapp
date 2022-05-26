@@ -46,14 +46,12 @@ describe('QuestChain', () => {
 
     const tx = await chainFactory.create(DETAILS_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
-    await expect(tx)
-      .to.emit(chainFactory, 'NewQuestChain')
-      .withArgs(0, chainAddress);
+    expect(tx).to.emit(chainFactory, 'NewQuestChain').withArgs(0, chainAddress);
 
     chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
     admin = signers[0];
 
-    await expect(tx)
+    expect(tx)
       .to.emit(chain, 'QuestChainCreated')
       .withArgs(admin.address, DETAILS_STRING);
   });
@@ -76,7 +74,7 @@ describe('QuestChain', () => {
       const tx = await chain.edit(NEW_DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestChainEdited')
         .withArgs(admin.address, NEW_DETAILS_STRING);
     });
@@ -96,7 +94,7 @@ describe('QuestChain', () => {
       const NEW_DETAILS_STRING = 'ipfs://new-details-3';
       const tx = chain.connect(signers[1]).edit(NEW_DETAILS_STRING);
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestChainEdited')
         .withArgs(signers[1].address, NEW_DETAILS_STRING);
     });
@@ -107,7 +105,7 @@ describe('QuestChain', () => {
       const tx = await chain.createQuest(DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestCreated')
         .withArgs(admin.address, 0, DETAILS_STRING);
       expect(await chain.questCount()).to.equal(1);
@@ -127,7 +125,7 @@ describe('QuestChain', () => {
       const tx = await chain.connect(signers[1]).createQuest(DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestCreated')
         .withArgs(signers[1].address, 1, DETAILS_STRING);
       expect(await chain.questCount()).to.equal(2);
@@ -146,7 +144,7 @@ describe('QuestChain', () => {
       const tx = await chain.editQuest(0, DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestEdited')
         .withArgs(admin.address, 0, DETAILS_STRING);
     });
@@ -171,7 +169,7 @@ describe('QuestChain', () => {
       const tx = await chain.connect(signers[2]).editQuest(0, DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestEdited')
         .withArgs(signers[2].address, 0, DETAILS_STRING);
     });
@@ -182,7 +180,7 @@ describe('QuestChain', () => {
       const tx = await chain.submitProof(0, DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestProofSubmitted')
         .withArgs(admin.address, 0, DETAILS_STRING);
     });
@@ -218,7 +216,7 @@ describe('QuestChain', () => {
       const NEW_DETAILS_STRING = 'ipfs://new-details-1';
       const tx = await chain.submitProof(1, NEW_DETAILS_STRING);
       await tx.wait();
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestProofSubmitted')
         .withArgs(admin.address, 1, NEW_DETAILS_STRING);
     });
@@ -226,7 +224,7 @@ describe('QuestChain', () => {
 
   describe('reviewProof', async () => {
     it('Should accept reviewProof for a proof submission', async () => {
-      expect(await chain.getStatus(signers[1].address, 0)).to.be.equal(
+      expect(await chain.questStatus(signers[1].address, 0)).to.be.equal(
         Status.init,
       );
       await (
@@ -241,16 +239,16 @@ describe('QuestChain', () => {
       );
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestProofReviewed')
         .withArgs(admin.address, signers[1].address, 0, true, DETAILS_STRING);
-      expect(await chain.getStatus(signers[1].address, 0)).to.be.equal(
+      expect(await chain.questStatus(signers[1].address, 0)).to.be.equal(
         Status.pass,
       );
     });
 
     it('Should reject reviewProof for a proof submission', async () => {
-      expect(await chain.getStatus(signers[1].address, 1)).to.be.equal(
+      expect(await chain.questStatus(signers[1].address, 1)).to.be.equal(
         Status.init,
       );
       await (
@@ -265,10 +263,10 @@ describe('QuestChain', () => {
       );
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestProofReviewed')
         .withArgs(admin.address, signers[1].address, 1, false, DETAILS_STRING);
-      expect(await chain.getStatus(signers[1].address, 1)).to.be.equal(
+      expect(await chain.questStatus(signers[1].address, 1)).to.be.equal(
         Status.fail,
       );
     });
@@ -306,7 +304,7 @@ describe('QuestChain', () => {
         .reviewProof(signers[1].address, 3, false, DETAILS_STRING);
       await tx.wait();
 
-      await expect(tx)
+      expect(tx)
         .to.emit(chain, 'QuestProofReviewed')
         .withArgs(
           signers[2].address,
@@ -315,28 +313,28 @@ describe('QuestChain', () => {
           false,
           DETAILS_STRING,
         );
-      expect(await chain.getStatus(signers[1].address, 3)).to.be.equal(
+      expect(await chain.questStatus(signers[1].address, 3)).to.be.equal(
         Status.fail,
       );
     });
   });
 
-  describe('getStatus', async () => {
-    it('Should getStatus review after proof submission', async () => {
-      expect(await chain.getStatus(signers[2].address, 0)).to.be.equal(
+  describe('questStatus', async () => {
+    it('Should questStatus review after proof submission', async () => {
+      expect(await chain.questStatus(signers[2].address, 0)).to.be.equal(
         Status.init,
       );
       await (
         await chain.connect(signers[2]).submitProof(0, DETAILS_STRING)
       ).wait();
 
-      expect(await chain.getStatus(signers[2].address, 0)).to.be.equal(
+      expect(await chain.questStatus(signers[2].address, 0)).to.be.equal(
         Status.review,
       );
     });
 
-    it('Should getStatus pass for an accepted submission', async () => {
-      expect(await chain.getStatus(signers[2].address, 0)).to.be.equal(
+    it('Should questStatus pass for an accepted submission', async () => {
+      expect(await chain.questStatus(signers[2].address, 0)).to.be.equal(
         Status.review,
       );
 
@@ -344,20 +342,20 @@ describe('QuestChain', () => {
         await chain.reviewProof(signers[2].address, 0, true, DETAILS_STRING)
       ).wait();
 
-      expect(await chain.getStatus(signers[2].address, 0)).to.be.equal(
+      expect(await chain.questStatus(signers[2].address, 0)).to.be.equal(
         Status.pass,
       );
     });
 
-    it('Should getStatus fail for a rejected submission', async () => {
-      expect(await chain.getStatus(signers[2].address, 1)).to.be.equal(
+    it('Should questStatus fail for a rejected submission', async () => {
+      expect(await chain.questStatus(signers[2].address, 1)).to.be.equal(
         Status.init,
       );
       await (
         await chain.connect(signers[2]).submitProof(1, DETAILS_STRING)
       ).wait();
 
-      expect(await chain.getStatus(signers[2].address, 1)).to.be.equal(
+      expect(await chain.questStatus(signers[2].address, 1)).to.be.equal(
         Status.review,
       );
 
@@ -365,13 +363,13 @@ describe('QuestChain', () => {
         await chain.reviewProof(signers[2].address, 1, false, DETAILS_STRING)
       ).wait();
 
-      expect(await chain.getStatus(signers[2].address, 1)).to.be.equal(
+      expect(await chain.questStatus(signers[2].address, 1)).to.be.equal(
         Status.fail,
       );
     });
 
-    it('Should revert getStatus if invalid questId', async () => {
-      const tx = chain.getStatus(admin.address, 5);
+    it('Should revert questStatus if invalid questId', async () => {
+      const tx = chain.questStatus(admin.address, 5);
 
       await expect(tx).to.be.revertedWith('QuestChain: quest not found');
     });
