@@ -3,67 +3,63 @@
 
 pragma solidity ^0.8.11;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+
 import "./interfaces/IQuestChain.sol";
 
 contract QuestChain is
     IQuestChain,
-    Initializable,
-    Context,
     ReentrancyGuard,
-    AccessControl
+    Initializable,
+    AccessControl,
+    Pausable
 {
+    bytes32 public constant OWNER_ROLE = bytes32(0);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant EDITOR_ROLE = keccak256("EDITOR_ROLE");
     bytes32 public constant REVIEWER_ROLE = keccak256("REVIEWER_ROLE");
 
+    mapping(uint256 => bool) public questPaused;
     uint256 public questCount;
 
-    mapping(address => mapping(uint256 => Status)) public completions;
+    mapping(address => mapping(uint256 => Status)) private _questStatus;
 
-    event QuestChainCreated(address indexed creator, string details);
-    event QuestChainEdited(address indexed editor, string details);
-    event QuestCreated(
-        address indexed creator,
-        uint256 indexed questId,
-        string details
-    );
-    event QuestEdited(
-        address indexed editor,
-        uint256 indexed questId,
-        string details
-    );
-    event QuestProofSubmitted(
-        address indexed quester,
-        uint256 indexed questId,
-        string proof
-    );
+    event QuestChainCreated(address creator, string details);
+    event QuestChainEdited(address editor, string details);
+    event QuestCreated(address creator, uint256 questId, string details);
+    event QuestEdited(address editor, uint256 questId, string details);
+    event QuestProofSubmitted(address quester, uint256 questId, string proof);
     event QuestProofReviewed(
-        address indexed reviewer,
-        address indexed quester,
-        uint256 indexed questId,
+        address reviewer,
+        address quester,
+        uint256 questId,
         bool success,
         string details
     );
+    event QuestPaused(address editor, uint256 questId);
+    event QuestUnpaused(address editor, uint256 questId);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}
+
+    function _initRoleAdmins() private {
+        _setRoleAdmin(ADMIN_ROLE, OWNER_ROLE);
+        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+    }
 
     function init(address _admin, string calldata _details)
         external
         override
         initializer
     {
-        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+        _initRoleAdmins();
 
-        _setupRole(ADMIN_ROLE, _admin);
-        _setupRole(EDITOR_ROLE, _admin);
-        _setupRole(REVIEWER_ROLE, _admin);
+        grantRole(OWNER_ROLE, _admin);
 
         emit QuestChainCreated(_admin, _details);
     }
@@ -74,23 +70,77 @@ contract QuestChain is
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override initializer {
-        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+        _initRoleAdmins();
 
-        _setupRole(ADMIN_ROLE, _admin);
-        _setupRole(EDITOR_ROLE, _admin);
-        _setupRole(REVIEWER_ROLE, _admin);
+        grantRole(OWNER_ROLE, _admin);
 
         for (uint256 i = 0; i < _editors.length; i = i + 1) {
-            _setupRole(EDITOR_ROLE, _editors[i]);
+            grantRole(EDITOR_ROLE, _editors[i]);
         }
 
         for (uint256 i = 0; i < _reviewers.length; i = i + 1) {
-            _setupRole(REVIEWER_ROLE, _reviewers[i]);
+            grantRole(REVIEWER_ROLE, _reviewers[i]);
         }
 
         emit QuestChainCreated(_admin, _details);
+    }
+
+    function grantRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _grantRole(role, account);
+        if (role == OWNER_ROLE) {
+            grantRole(ADMIN_ROLE, account);
+        } else if (role == ADMIN_ROLE) {
+            grantRole(EDITOR_ROLE, account);
+        } else if (role == EDITOR_ROLE) {
+            grantRole(REVIEWER_ROLE, account);
+        }
+    }
+
+    function pause() external onlyRole(OWNER_ROLE) {
+        _pause();
+    }
+
+    function unpause() external onlyRole(OWNER_ROLE) {
+        _unpause();
+    }
+
+    modifier whenQuestNotPaused(uint256 _questId) {
+        require(!questPaused[_questId], "QuestChain: quest paused");
+        _;
+    }
+
+    modifier whenQuestPaused(uint256 _questId) {
+        require(questPaused[_questId], "QuestChain: quest not paused");
+        _;
+    }
+
+    modifier validQuest(uint256 _questId) {
+        require(_questId < questCount, "QuestChain: quest not found");
+        _;
+    }
+
+    function pauseQuest(uint256 _questId)
+        external
+        onlyRole(EDITOR_ROLE)
+        validQuest(_questId)
+        whenQuestNotPaused(_questId)
+    {
+        questPaused[_questId] = true;
+        emit QuestPaused(_msgSender(), _questId);
+    }
+
+    function unpauseQuest(uint256 _questId)
+        external
+        onlyRole(EDITOR_ROLE)
+        validQuest(_questId)
+        whenQuestPaused(_questId)
+    {
+        questPaused[_questId] = true;
+        emit QuestUnpaused(_msgSender(), _questId);
     }
 
     function edit(string calldata _details)
@@ -98,15 +148,16 @@ contract QuestChain is
         override
         onlyRole(ADMIN_ROLE)
     {
-        emit QuestChainEdited(msg.sender, _details);
+        emit QuestChainEdited(_msgSender(), _details);
     }
 
     function createQuest(string calldata _details)
         external
         override
         onlyRole(EDITOR_ROLE)
+        whenNotPaused
     {
-        emit QuestCreated(msg.sender, questCount, _details);
+        emit QuestCreated(_msgSender(), questCount, _details);
 
         questCount += 1;
     }
@@ -115,26 +166,28 @@ contract QuestChain is
         external
         override
         onlyRole(EDITOR_ROLE)
+        whenNotPaused
+        validQuest(_questId)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-
-        emit QuestEdited(msg.sender, _questId, _details);
+        emit QuestEdited(_msgSender(), _questId, _details);
     }
 
     function submitProof(uint256 _questId, string calldata _proof)
         external
         override
+        whenNotPaused
+        whenQuestNotPaused(_questId)
+        validQuest(_questId)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-        Status status = completions[msg.sender][_questId];
+        Status status = _questStatus[_msgSender()][_questId];
         require(
             status == Status.init || status == Status.fail,
             "QuestChain: in review or passed"
         );
 
-        completions[msg.sender][_questId] = Status.review;
+        _questStatus[_msgSender()][_questId] = Status.review;
 
-        emit QuestProofSubmitted(msg.sender, _questId, _proof);
+        emit QuestProofSubmitted(_msgSender(), _questId, _proof);
     }
 
     function reviewProof(
@@ -142,14 +195,13 @@ contract QuestChain is
         uint256 _questId,
         bool _success,
         string calldata _details
-    ) external override onlyRole(REVIEWER_ROLE) {
-        require(_questId < questCount, "QuestChain: quest not found");
-        Status status = completions[_quester][_questId];
+    ) external override onlyRole(REVIEWER_ROLE) validQuest(_questId) {
+        Status status = _questStatus[_quester][_questId];
         require(status == Status.review, "QuestChain: quest not in review");
-        completions[_quester][_questId] = _success ? Status.pass : Status.fail;
+        _questStatus[_quester][_questId] = _success ? Status.pass : Status.fail;
 
         emit QuestProofReviewed(
-            msg.sender,
+            _msgSender(),
             _quester,
             _questId,
             _success,
@@ -157,13 +209,13 @@ contract QuestChain is
         );
     }
 
-    function getStatus(address _quester, uint256 _questId)
+    function questStatus(address _quester, uint256 _questId)
         external
         view
         override
+        validQuest(_questId)
         returns (Status status)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-        status = completions[_quester][_questId];
+        status = _questStatus[_quester][_questId];
     }
 }

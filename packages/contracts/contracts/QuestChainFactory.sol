@@ -3,22 +3,34 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IQuestChainFactory.sol";
 import "./interfaces/IQuestChain.sol";
 
-contract QuestChainFactory is IQuestChainFactory {
+contract QuestChainFactory is IQuestChainFactory, Ownable {
     uint256 public questChainCount = 0;
-    mapping(uint256 => address) internal _questChains;
+    mapping(uint256 => address) private _questChains;
 
     event NewQuestChain(uint256 indexed index, address questChain);
-    event QuestChainFactoryInit();
+    event QuestChainRootChanged(
+        address indexed oldRoot,
+        address indexed newRoot
+    );
 
-    address public immutable cloneRoot;
+    address public cloneRoot;
 
     constructor(address _cloneRoot) {
-        require(_cloneRoot != address(0), "invalid implementation");
+        updateCloneRoot(_cloneRoot);
+    }
+
+    function updateCloneRoot(address _cloneRoot) public onlyOwner {
+        require(
+            _cloneRoot != address(0),
+            "QuestChainFactory: invalid cloneRoot"
+        );
+        address oldRoot = cloneRoot;
         cloneRoot = _cloneRoot;
-        emit QuestChainFactoryInit();
+        emit QuestChainRootChanged(oldRoot, _cloneRoot);
     }
 
     function _newQuestChain(
@@ -95,10 +107,7 @@ contract QuestChainFactory is IQuestChainFactory {
         override
         returns (address)
     {
-        address questChainAddress = Clones.cloneDeterministic(
-            cloneRoot,
-            _salt
-        );
+        address questChainAddress = Clones.cloneDeterministic(cloneRoot, _salt);
 
         _newQuestChain(questChainAddress, _details);
 
