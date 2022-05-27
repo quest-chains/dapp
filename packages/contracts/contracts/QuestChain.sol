@@ -109,6 +109,21 @@ contract QuestChain is
         }
     }
 
+    function revokeRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _revokeRole(role, account);
+        if (role == REVIEWER_ROLE) {
+            revokeRole(EDITOR_ROLE, account);
+        } else if (role == EDITOR_ROLE) {
+            revokeRole(ADMIN_ROLE, account);
+        } else if (role == ADMIN_ROLE) {
+            revokeRole(OWNER_ROLE, account);
+        }
+    }
+
     function pause() external onlyRole(OWNER_ROLE) {
         _pause();
     }

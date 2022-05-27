@@ -74,7 +74,7 @@ describe('QuestChainFactory', () => {
     const newQuestChain = await deploy<QuestChain>('QuestChain', {});
     const tx = await chainFactory.updateCloneRoot(newQuestChain.address);
     await tx.wait();
-    expect(tx)
+    await expect(tx)
       .to.emit(chainFactory, 'QuestChainRootChanged')
       .withArgs(questChain.address, newQuestChain.address);
     expect(await chainFactory.cloneRoot()).to.equal(newQuestChain.address);
@@ -90,10 +90,12 @@ describe('QuestChainFactory', () => {
   it('Should deploy a QuestChain', async () => {
     const tx = await chainFactory.create(DETAILS_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
-    expect(tx).to.emit(chainFactory, 'NewQuestChain').withArgs(0, chainAddress);
+    await expect(tx)
+      .to.emit(chainFactory, 'NewQuestChain')
+      .withArgs(0, chainAddress);
 
     const chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
-    expect(tx)
+    await expect(tx)
       .to.emit(chain, 'QuestChainCreated')
       .withArgs(owner, DETAILS_STRING);
 
@@ -121,10 +123,12 @@ describe('QuestChainFactory', () => {
       reviewers,
     );
     chainAddress = await awaitQuestChainAddress(await tx.wait());
-    expect(tx).to.emit(chainFactory, 'NewQuestChain').withArgs(1, chainAddress);
+    await expect(tx)
+      .to.emit(chainFactory, 'NewQuestChain')
+      .withArgs(1, chainAddress);
 
     const chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
-    expect(tx)
+    await expect(tx)
       .to.emit(chain, 'QuestChainCreated')
       .withArgs(owner, DETAILS_STRING);
 
@@ -175,7 +179,9 @@ describe('QuestChainFactory', () => {
     );
 
     chainAddress = await awaitQuestChainAddress(await tx.wait());
-    expect(tx).to.emit(chainFactory, 'NewQuestChain').withArgs(2, chainAddress);
+    await expect(tx)
+      .to.emit(chainFactory, 'NewQuestChain')
+      .withArgs(2, chainAddress);
 
     expect(chainAddress).to.equal(predictedAddress);
     expect(await chainFactory.getQuestChainAddress(2)).to.equal(chainAddress);
