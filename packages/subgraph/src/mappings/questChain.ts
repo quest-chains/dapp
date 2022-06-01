@@ -14,7 +14,11 @@ import {
   QuestChainEdited as QuestChainEditedEvent,
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent,
+  Paused as PausedEvent,
+  Unpaused as UnpausedEvent,
   QuestCreated as QuestCreatedEvent,
+  QuestPaused as QuestPausedEvent,
+  QuestUnpaused as QuestUnpausedEvent,
   QuestEdited as QuestEditedEvent,
   QuestProofSubmitted as QuestProofSubmittedEvent,
   QuestProofReviewed as QuestProofReviewedEvent,
@@ -75,6 +79,7 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
 
     let details = event.params.details;
     let metadata = fetchMetadata(details);
+    questChain.paused = false;
     questChain.details = details;
     questChain.name = metadata.name;
     questChain.description = metadata.description;
@@ -97,16 +102,21 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
     let user = getUser(event.params.account);
     let roles = getRoles(event.address);
     if (event.params.role == roles[0]) {
+      // OWNER
+      let newArray = questChain.owners;
+      newArray.push(user.id);
+      questChain.owners = newArray;
+    } else if (event.params.role == roles[1]) {
       // ADMIN
       let newArray = questChain.admins;
       newArray.push(user.id);
       questChain.admins = newArray;
-    } else if (event.params.role == roles[1]) {
+    } else if (event.params.role == roles[2]) {
       // EDITOR
       let newArray = questChain.editors;
       newArray.push(user.id);
       questChain.editors = newArray;
-    } else if (event.params.role == roles[2]) {
+    } else if (event.params.role == roles[3]) {
       // REVIEWER
       let newArray = questChain.reviewers;
       newArray.push(user.id);
@@ -123,16 +133,21 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
     let user = getUser(event.params.account);
     let roles = getRoles(event.address);
     if (event.params.role == roles[0]) {
+      // OWNER
+      let owners = questChain.owners;
+      let newArray = removeFromArray(owners, user.id);
+      questChain.owners = newArray;
+    } else if (event.params.role == roles[1]) {
       // ADMIN
       let admins = questChain.admins;
       let newArray = removeFromArray(admins, user.id);
       questChain.admins = newArray;
-    } else if (event.params.role == roles[1]) {
+    } else if (event.params.role == roles[2]) {
       // EDITOR
       let editors = questChain.admins;
       let newArray = removeFromArray(editors, user.id);
       questChain.editors = newArray;
-    } else if (event.params.role == roles[2]) {
+    } else if (event.params.role == roles[3]) {
       // REVIEWER
       let reviewers = questChain.admins;
       let newArray = removeFromArray(reviewers, user.id);
@@ -143,7 +158,23 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   }
 }
 
-export function handleCreated(event: QuestCreatedEvent): void {
+export function handlePaused(event: PausedEvent): void {
+  let questChain = QuestChain.load(event.address.toHexString());
+  if (questChain != null) {
+    questChain.paused = true;
+    questChain.save();
+  }
+}
+
+export function handleUnpaused(event: UnpausedEvent): void {
+  let questChain = QuestChain.load(event.address.toHexString());
+  if (questChain != null) {
+    questChain.paused = false;
+    questChain.save();
+  }
+}
+
+export function handleQuestCreated(event: QuestCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     let questId = event.address
@@ -156,6 +187,7 @@ export function handleCreated(event: QuestCreatedEvent): void {
 
     let details = event.params.details;
     let metadata = fetchMetadata(details);
+    quest.paused = false;
     quest.details = details;
     quest.name = metadata.name;
     quest.description = metadata.description;
@@ -180,7 +212,37 @@ export function handleCreated(event: QuestCreatedEvent): void {
   }
 }
 
-export function handleEdited(event: QuestEditedEvent): void {
+export function handleQuestPaused(event: QuestPausedEvent): void {
+  let questChain = QuestChain.load(event.address.toHexString());
+  if (questChain != null) {
+    let questId = event.address
+      .toHexString()
+      .concat('-')
+      .concat(event.params.questId.toHexString());
+    let quest = Quest.load(questId);
+    if (quest != null) {
+      quest.paused = true;
+      quest.save();
+    }
+  }
+}
+
+export function handleQuestUnpaused(event: QuestUnpausedEvent): void {
+  let questChain = QuestChain.load(event.address.toHexString());
+  if (questChain != null) {
+    let questId = event.address
+      .toHexString()
+      .concat('-')
+      .concat(event.params.questId.toHexString());
+    let quest = Quest.load(questId);
+    if (quest != null) {
+      quest.paused = false;
+      quest.save();
+    }
+  }
+}
+
+export function handleQuestEdited(event: QuestEditedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     let questId = event.address
@@ -232,7 +294,9 @@ export function handleEdited(event: QuestEditedEvent): void {
   }
 }
 
-export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
+export function handleQuestProofSubmitted(
+  event: QuestProofSubmittedEvent,
+): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     let questId = event.address
@@ -320,7 +384,7 @@ export function handleProofSubmitted(event: QuestProofSubmittedEvent): void {
   }
 }
 
-export function handleProofReviewed(event: QuestProofReviewedEvent): void {
+export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     let questId = event.address

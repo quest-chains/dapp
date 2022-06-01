@@ -1,7 +1,7 @@
 import EthereumImage from '@/assets/ethereum.svg';
 import GnosisImage from '@/assets/gnosis.svg';
 import PolygonImage from '@/assets/polygon.svg';
-import { INFURA_ID } from '@/utils/constants';
+import { INFURA_ID, SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export type NetworkInfo = {
   [chainId: string]: {
@@ -18,27 +18,33 @@ export type NetworkInfo = {
   };
 };
 
-export const NETWORK_INFO: NetworkInfo = {
-  // '0x1': {
-  //   chainId: '0x1',
-  //   name: 'Ethereum Mainnet',
-  //   label: 'Ethereum',
-  //   symbol: 'ETH',
-  //   explorer: 'https://etherscan.io',
-  //   explorerLabel: 'Etherscan',
-  //   rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
-  //   image: EthereumImage.src,
-  // },
-  // '0x89': {
-  //   chainId: '0x89',
-  //   name: 'Polygon Mainnet',
-  //   label: 'Polygon',
-  //   symbol: 'MATIC',
-  //   explorer: 'https://polygonscan.com',
-  //   explorerLabel: 'PolygonScan',
-  //   rpc: `https://polygon-rpc.com`,
-  //   image: PolygonImage.src,
-  // },
+const AVAILABLE_NETWORK_INFO: NetworkInfo = {
+  '0x1': {
+    chainId: '0x1',
+    name: 'Ethereum Mainnet',
+    label: 'Ethereum',
+    symbol: 'ETH',
+    explorer: 'https://etherscan.io',
+    explorerLabel: 'Etherscan',
+    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    image: EthereumImage.src,
+    // TODO: add subgraph details
+    subgraphName: '',
+    subgraphUrl: 'https://api.thegraph.com/subgraphs/name/',
+  },
+  '0x89': {
+    chainId: '0x89',
+    name: 'Polygon Mainnet',
+    label: 'Polygon',
+    symbol: 'MATIC',
+    explorer: 'https://polygonscan.com',
+    explorerLabel: 'PolygonScan',
+    rpc: `https://polygon-rpc.com`,
+    image: PolygonImage.src,
+    // TODO: add subgraph details
+    subgraphName: '',
+    subgraphUrl: 'https://api.thegraph.com/subgraphs/name/',
+  },
   '0x64': {
     chainId: '0x64',
     name: 'Gnosis Chain',
@@ -47,10 +53,10 @@ export const NETWORK_INFO: NetworkInfo = {
     explorer: 'https://blockscout.com/xdai/mainnet',
     explorerLabel: 'Blockscout',
     rpc: 'https://rpc.gnosischain.com/',
+    image: GnosisImage.src,
     subgraphName: 'dan13ram/quest-chains-xdai',
     subgraphUrl:
       'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-xdai',
-    image: GnosisImage.src,
   },
   '0x4': {
     chainId: '0x4',
@@ -60,10 +66,10 @@ export const NETWORK_INFO: NetworkInfo = {
     explorer: 'https://rinkeby.etherscan.io',
     explorerLabel: 'Etherscan',
     rpc: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
+    image: EthereumImage.src,
     subgraphName: 'dan13ram/quest-chains-rinkeby',
     subgraphUrl:
       'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-rinkeby',
-    image: EthereumImage.src,
   },
   '0x13881': {
     chainId: '0x13881',
@@ -73,11 +79,28 @@ export const NETWORK_INFO: NetworkInfo = {
     explorer: 'https://mumbai.polygonscan.com',
     explorerLabel: 'PolygonScan',
     rpc: 'https://rpc-mumbai.maticvigil.com',
+    image: PolygonImage.src,
     subgraphName: 'dan13ram/quest-chains-mumbai',
     subgraphUrl:
       'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-mumbai',
-    image: PolygonImage.src,
   },
 };
+
+const getNetworkInfo = (networks: string[]): NetworkInfo => {
+  if (networks && networks.length > 0 && AVAILABLE_NETWORK_INFO) {
+    return networks
+      .filter(n => !Number.isNaN(Number(n)))
+      .sort((a, b) => (Number(a) > Number(b) ? 1 : -1))
+      .reduce((t, n) => {
+        if (AVAILABLE_NETWORK_INFO[n]) {
+          return { ...t, [n]: AVAILABLE_NETWORK_INFO[n] };
+        }
+        return t;
+      }, {});
+  }
+  return AVAILABLE_NETWORK_INFO;
+};
+
+export const NETWORK_INFO = getNetworkInfo(SUPPORTED_NETWORKS);
 
 export const CHAIN_ID = Object.keys(NETWORK_INFO)[0];

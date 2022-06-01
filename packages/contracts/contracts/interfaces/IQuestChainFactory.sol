@@ -7,6 +7,7 @@ interface IQuestChainFactory {
 
     function createWithRoles(
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external returns (address);

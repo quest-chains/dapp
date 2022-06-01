@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import fs from 'fs';
 import { ethers, network, run } from 'hardhat';
 
@@ -8,8 +9,12 @@ async function main() {
   if (!deployer.provider) {
     throw new Error('Provider not found for network');
   }
+  const commitHash = execSync('git rev-parse --short HEAD', {
+    encoding: 'utf-8',
+  }).trim();
 
   console.log('Deploying QuestChainFactory:', networkName[chainId]);
+  console.log('Commit Hash:', commitHash);
 
   const QuestChain = await ethers.getContractFactory('QuestChain', {});
   const questChain = await QuestChain.deploy();
@@ -28,21 +33,33 @@ async function main() {
   const receipt = await deployer.provider.getTransactionReceipt(txHash);
   console.log('Block Number:', receipt.blockNumber);
 
+  if (chainId === 31337) {
+    return;
+  }
+
   const deploymentInfo = {
     network: network.name,
+    version: commitHash,
     factory: questChainFactory.address,
     implemention: questChain.address,
     txHash,
     blockNumber: receipt.blockNumber.toString(),
   };
 
-  if (chainId === 31337) {
-    return;
-  }
-
   fs.writeFileSync(
     `deployments/${network.name}.json`,
     JSON.stringify(deploymentInfo, undefined, 2),
+  );
+
+  const subgraphInfo = {
+    network: network.name,
+    factory: questChainFactory.address,
+    blockNumber: receipt.blockNumber.toString(),
+  };
+
+  fs.writeFileSync(
+    `../subgraph/src/config/${network.name}.json`,
+    JSON.stringify(subgraphInfo, undefined, 2),
   );
 
   try {

@@ -44,6 +44,7 @@ import { isSupportedNetwork, useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
+  adminAddresses: string[];
   editorAddresses: string[];
   reviewerAddresses: string[];
 }
@@ -53,6 +54,7 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>;
 const Create: React.FC<Props> = ({ globalInfo }) => {
   const initialValues: FormValues = {
     name: '',
+    adminAddresses: [],
     editorAddresses: [],
     reviewerAddresses: [],
   };
@@ -80,7 +82,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
   const onSubmit = useCallback(
     async (
-      { name, editorAddresses, reviewerAddresses }: FormValues,
+      { name, adminAddresses, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       if (!isConnected) connectWallet();
@@ -103,6 +105,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         const tx = await factoryContract.createWithRoles(
           details,
+          adminAddresses,
           editorAddresses,
           reviewerAddresses,
         );
@@ -175,6 +178,51 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                       )}
                     </Field>
                   </Wrap>
+                  <FieldArray
+                    name="adminAddresses"
+                    render={arrayHelpers => (
+                      <Box w="100%">
+                        <FormLabel color="main" htmlFor="adminAddresses">
+                          Admin Addresses
+                        </FormLabel>
+                        {values.adminAddresses.map((_address, index) => (
+                          <HStack key={index} mb={2}>
+                            <Box w="100%" maxW="20rem">
+                              <Field name={`adminAddresses.${index}`}>
+                                {({
+                                  field,
+                                }: FieldProps<string, FormValues>) => (
+                                  <FormControl isRequired>
+                                    <Input
+                                      {...field}
+                                      id={`adminAddresses.${index}`}
+                                      placeholder="Admin Address"
+                                    />
+                                  </FormControl>
+                                )}
+                              </Field>
+                            </Box>
+                            <IconButton
+                              borderRadius="full"
+                              onClick={() => arrayHelpers.remove(index)}
+                              icon={<CloseIcon boxSize="0.7rem" />}
+                              aria-label={''}
+                            />
+                          </HStack>
+                        ))}
+                        <Button
+                          borderRadius="full"
+                          onClick={() =>
+                            isConnected
+                              ? arrayHelpers.push('')
+                              : connectWallet()
+                          }
+                        >
+                          Add address
+                        </Button>
+                      </Box>
+                    )}
+                  />
                   <FieldArray
                     name="editorAddresses"
                     render={arrayHelpers => (

@@ -3,14 +3,14 @@ import { QuestChain, Global } from '../types/schema';
 
 import {
   NewQuestChain as NewQuestChainEvent,
-  QuestChainFactoryInit as QuestChainFactoryInitEvent,
+  QuestChainRootChanged as QuestChainRootChangedEvent,
 } from '../types/QuestChainFactory/QuestChainFactory';
 import { QuestChain as QuestChainTemplate } from '../types/templates';
 
 import { getUser, getNetwork } from './helpers';
 
-export function handleQuestChainFactoryInit(
-  event: QuestChainFactoryInitEvent,
+export function handleQuestChainRootChanged(
+  event: QuestChainRootChangedEvent,
 ): void {
   let network = getNetwork();
   let globalNode = Global.load(network);
@@ -37,6 +37,7 @@ export function handleNewQuestChain(event: NewQuestChainEvent): void {
   questChain.createdBy = user.id;
   questChain.creationTxHash = event.transaction.hash;
   questChain.chainId = network;
+  questChain.owners = new Array<string>();
   questChain.admins = new Array<string>();
   questChain.editors = new Array<string>();
   questChain.reviewers = new Array<string>();

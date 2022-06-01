@@ -2,30 +2,43 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "./interfaces/IQuestChainFactory.sol";
-import "./interfaces/IQuestChain.sol";
 
-contract QuestChainFactory is IQuestChainFactory {
+import "./interfaces/IQuestChain.sol";
+import "./interfaces/IQuestChainFactory.sol";
+
+contract QuestChainFactory is IQuestChainFactory, Ownable {
     uint256 public questChainCount = 0;
-    mapping(uint256 => address) internal _questChains;
+    mapping(uint256 => address) private _questChains;
 
     event NewQuestChain(uint256 indexed index, address questChain);
-    event QuestChainFactoryInit();
+    event QuestChainRootChanged(
+        address indexed oldRoot,
+        address indexed newRoot
+    );
 
-    address public immutable cloneRoot;
+    address public cloneRoot;
 
     constructor(address _cloneRoot) {
-        require(_cloneRoot != address(0), "invalid implementation");
+        updateCloneRoot(_cloneRoot);
+    }
+
+    function updateCloneRoot(address _cloneRoot) public onlyOwner {
+        require(
+            _cloneRoot != address(0),
+            "QuestChainFactory: invalid cloneRoot"
+        );
+        address oldRoot = cloneRoot;
         cloneRoot = _cloneRoot;
-        emit QuestChainFactoryInit();
+        emit QuestChainRootChanged(oldRoot, _cloneRoot);
     }
 
     function _newQuestChain(
         address _questChainAddress,
         string calldata _details
     ) internal {
-        IQuestChain(_questChainAddress).init(msg.sender, _details);
+        IQuestChain(_questChainAddress).init(_msgSender(), _details);
 
         _questChains[questChainCount] = _questChainAddress;
         emit NewQuestChain(questChainCount, _questChainAddress);
@@ -36,12 +49,14 @@ contract QuestChainFactory is IQuestChainFactory {
     function _newQuestChainWithRoles(
         address _questChainAddress,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) internal {
         IQuestChain(_questChainAddress).initWithRoles(
-            msg.sender,
+            _msgSender(),
             _details,
+            _admins,
             _editors,
             _reviewers
         );
@@ -66,6 +81,7 @@ contract QuestChainFactory is IQuestChainFactory {
 
     function createWithRoles(
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override returns (address) {
@@ -74,6 +90,7 @@ contract QuestChainFactory is IQuestChainFactory {
         _newQuestChainWithRoles(
             questChainAddress,
             _details,
+            _admins,
             _editors,
             _reviewers
         );
@@ -95,10 +112,7 @@ contract QuestChainFactory is IQuestChainFactory {
         override
         returns (address)
     {
-        address questChainAddress = Clones.cloneDeterministic(
-            cloneRoot,
-            _salt
-        );
+        address questChainAddress = Clones.cloneDeterministic(cloneRoot, _salt);
 
         _newQuestChain(questChainAddress, _details);
 

@@ -1,13 +1,18 @@
 fragment QuestChainInfo on QuestChain {
   address: id
+  paused
   chainId
   updatedAt
   name
   description
   quests {
     questId
+    paused
     name
     description
+  }
+  owners {
+    address: id
   }
   admins {
     address: id
@@ -29,6 +34,7 @@ fragment QuestStatusInfo on QuestStatus {
   }
   quest {
     questId
+    paused
     name
     description
   }
@@ -53,6 +59,7 @@ fragment QuestStatusInfo on QuestStatus {
 
 fragment QuestChainReviewInfo on QuestChain {
   address: id
+  paused
   chainId
   updatedAt
   name

@@ -1,7 +1,8 @@
 {
   "network": "rinkeby",
-  "factory": "0x99FA9f15dd9f6bDBC96b085295CC955A7B2f5CCD",
-  "implemention": "0x7E0bD6d8EeD336d1487eBcC445280bA004a0e8A9",
-  "txHash": "0x44e691c5e755b7311d24591ff546781809dbc0b6c8f649f86c3e3f84683bb4fd",
-  "blockNumber": "10533464"
+  "version": "98329a9",
+  "factory": "0xDB69e6739021E3d81efC26A44a752d7c78ABa394",
+  "implemention": "0xa2FF891FA4Ba5f25997c193654B9727b7D5EdDaC",
+  "txHash": "0x4034377019c0da7f4333cea2afae4df453fbd02ca06913b7630837f6dffb2f71",
+  "blockNumber": "10778004"
 }

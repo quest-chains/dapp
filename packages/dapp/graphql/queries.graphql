@@ -82,6 +82,9 @@ query StatusForUserAndChain($user: String!, $address: String!, $limit: Int) {
 
 query RolesForUser($address: ID!) {
   user(id: $address) {
+    ownerOf {
+      ...QuestChainInfo
+    }
     adminOf {
       ...QuestChainInfo
     }

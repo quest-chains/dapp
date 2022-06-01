@@ -10,11 +10,12 @@ interface IQuestChain {
         fail
     }
 
-    function init(address _admin, string calldata _details) external;
+    function init(address _owner, string calldata _details) external;
 
     function initWithRoles(
-        address _admin,
+        address _owner,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external;
@@ -34,7 +35,7 @@ interface IQuestChain {
         string calldata _details
     ) external;
 
-    function getStatus(address _quester, uint256 _questId)
+    function questStatus(address _quester, uint256 _questId)
         external
         view
         returns (Status);

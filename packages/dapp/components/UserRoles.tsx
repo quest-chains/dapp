@@ -3,76 +3,76 @@ import {
   Flex,
   Link as ChakraLink,
   Spinner,
-  Tag,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import { useUserRolesForAllChains } from '@/hooks/useUserRolesForAllChains';
 
 import { NetworkDisplay } from './NetworkDisplay';
+import { Role, RoleTag } from './RoleTag';
 
-type RoleProps = {
+type QuestChainRoleInfo = {
   address: string;
   chainId: string;
-  name: string | null | undefined;
-  role: string;
+  name?: string | null | undefined;
+  role: Role;
 };
 
 export const UserRoles: React.FC<{
   address: string;
 }> = ({ address }) => {
   const { fetching, results: userRoles } = useUserRolesForAllChains(address);
-  const [roles, setRoles] = useState<RoleProps[]>([]);
 
-  useEffect(() => {
-    if (userRoles) {
-      const roles = userRoles.map(chainRoles => {
-        const adminOf = chainRoles?.adminOf?.map(chain => ({
+  const roles: QuestChainRoleInfo[] = useMemo(() => {
+    const questRoles: { [addressChainId: string]: QuestChainRoleInfo } = {};
+
+    userRoles?.forEach(chainRoles => {
+      chainRoles?.reviewerOf?.forEach(chain => {
+        const id = chain.address
+          .toLowerCase()
+          .concat('-')
+          .concat(chain.chainId.toLowerCase());
+        questRoles[id] = {
           ...chain,
-          role: 'Admin',
-        }));
-
-        const editorOf = chainRoles?.editorOf
-          ?.filter(
-            ({ address }) =>
-              !adminOf?.map(({ address }) => address).includes(address),
-          )
-          ?.map(chain => ({
-            ...chain,
-            role: 'Editor',
-          }));
-
-        const reviewerOf = chainRoles?.reviewerOf
-          ?.filter(
-            ({ address }) =>
-              !editorOf
-                ?.concat(adminOf || [])
-                ?.map(({ address }) => address)
-                .includes(address),
-          )
-          ?.map(chain => ({
-            ...chain,
-            role: 'Reviewer',
-          }));
-
-        const rolesForChain = (adminOf || [])
-          .concat(editorOf || [])
-          .concat(reviewerOf || [])
-          .map(({ address, chainId, name, role }) => ({
-            address,
-            chainId,
-            name,
-            role,
-          }));
-
-        return rolesForChain;
+          role: 'Reviewer' as Role,
+        };
       });
+      chainRoles?.editorOf?.forEach(chain => {
+        const id = chain.address
+          .toLowerCase()
+          .concat('-')
+          .concat(chain.chainId.toLowerCase());
+        questRoles[id] = {
+          ...chain,
+          role: 'Editor' as Role,
+        };
+      });
+      chainRoles?.adminOf?.forEach(chain => {
+        const id = chain.address
+          .toLowerCase()
+          .concat('-')
+          .concat(chain.chainId.toLowerCase());
+        questRoles[id] = {
+          ...chain,
+          role: 'Admin' as Role,
+        };
+      });
+      chainRoles?.ownerOf?.forEach(chain => {
+        const id = chain.address
+          .toLowerCase()
+          .concat('-')
+          .concat(chain.chainId.toLowerCase());
+        questRoles[id] = {
+          ...chain,
+          role: 'Owner' as Role,
+        };
+      });
+    });
 
-      setRoles(roles.flat()?.filter(role => role));
-    }
+    return Object.values(questRoles);
   }, [userRoles]);
 
   return (
@@ -107,21 +107,7 @@ export const UserRoles: React.FC<{
                 </NextLink>
               </Box>
               <NetworkDisplay asTag chainId={chainId} />
-              {role === 'Reviewer' && (
-                <Tag fontSize="sm" color="neutral">
-                  {role}
-                </Tag>
-              )}
-              {role === 'Editor' && (
-                <Tag fontSize="sm" color="rejected">
-                  {role}
-                </Tag>
-              )}
-              {role === 'Admin' && (
-                <Tag fontSize="sm" color="pending">
-                  {role}
-                </Tag>
-              )}
+              <RoleTag role={role} />
             </Flex>
           ))}
         </>

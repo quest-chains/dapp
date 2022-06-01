@@ -18,9 +18,11 @@ type QuestChainEdit @entity {
 
 type QuestChain @entity {
   id: ID!
+  paused: Boolean!
   chainId: String!
   address: Bytes!
   factoryAddress: Bytes!
+  owners: [User!]!
   admins: [User!]!
   reviewers: [User!]!
   editors: [User!]!
@@ -61,6 +63,7 @@ type QuestEdit @entity {
 
 type Quest @entity {
   id: ID!
+  paused: Boolean!
   questChain: QuestChain!
   questId: BigInt!
   details: String!
@@ -90,6 +93,7 @@ type User @entity {
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!
   questEdits: [QuestEdit!]! @derivedFrom(field: "editor")
+  ownerOf: [QuestChain!]! @derivedFrom(field: "owners")
   adminOf: [QuestChain!]! @derivedFrom(field: "admins")
   editorOf: [QuestChain!]! @derivedFrom(field: "editors")
   reviewerOf: [QuestChain!]! @derivedFrom(field: "reviewers")

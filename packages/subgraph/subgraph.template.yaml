@@ -28,8 +28,8 @@ dataSources:
         - name: QuestChainFactory
           file: ./src/abis/QuestChainFactory.json
       eventHandlers:
-        - event: QuestChainFactoryInit()
-          handler: handleQuestChainFactoryInit
+        - event: QuestChainRootChanged(indexed address,indexed address)
+          handler: handleQuestChainRootChanged
         - event: NewQuestChain(indexed uint256,address)
           handler: handleNewQuestChain
 
@@ -65,12 +65,20 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
+        - event: Paused(address)
+          handler: handlePaused
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: QuestPaused(indexed address,indexed uint256)
+          handler: handleQuestPaused
+        - event: QuestUnpaused(indexed address,indexed uint256)
+          handler: handleQuestUnpaused
         - event: QuestCreated(indexed address,indexed uint256,string)
-          handler: handleCreated
+          handler: handleQuestCreated
         - event: QuestEdited(indexed address,indexed uint256,string)
-          handler: handleEdited
+          handler: handleQuestEdited
         - event: QuestProofSubmitted(indexed address,indexed uint256,string)
-          handler: handleProofSubmitted
+          handler: handleQuestProofSubmitted
         - event: QuestProofReviewed(indexed address,indexed address,indexed uint256,bool,string)
-          handler: handleProofReviewed
+          handler: handleQuestProofReviewed
       file: ./src/mappings/questChain.ts

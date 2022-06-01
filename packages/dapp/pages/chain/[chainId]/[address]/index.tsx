@@ -14,7 +14,6 @@ import {
   ModalOverlay,
   SimpleGrid,
   Spinner,
-  Tag,
   Text,
   useDisclosure,
   VStack,
@@ -32,6 +31,7 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { Role, RoleTag } from '@/components/RoleTag';
 import { UploadProof } from '@/components/UploadProof';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -117,6 +117,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     address,
   );
 
+  const isOwner: boolean = useMemo(
+    () =>
+      questChain?.owners.some(
+        ({ address: a }) => a === address?.toLowerCase(),
+      ) ?? false,
+    [questChain, address],
+  );
   const isAdmin: boolean = useMemo(
     () =>
       questChain?.admins.some(
@@ -140,42 +147,30 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   );
 
   const members: {
-    [addr: string]: {
-      isAdmin?: boolean;
-      isEditor?: boolean;
-      isReviewer?: boolean;
-    };
-  } = {};
+    [addr: string]: Role;
+  } = useMemo(() => {
+    const memberRoles: { [addr: string]: Role } = {};
 
-  questChain?.admins.forEach(({ address }) => {
-    if (!members[address]) {
-      members[address] = {};
-    }
-    members[address].isAdmin = true;
-  });
+    questChain?.reviewers.forEach(({ address }) => {
+      memberRoles[address] = 'Reviewer';
+    });
 
-  questChain?.admins.forEach(({ address }) => {
-    if (!members[address]) {
-      members[address] = {};
-    }
-    members[address].isAdmin = true;
-  });
+    questChain?.editors.forEach(({ address }) => {
+      memberRoles[address] = 'Editor';
+    });
 
-  questChain?.editors.forEach(({ address }) => {
-    if (!members[address]) {
-      members[address] = {};
-    }
-    members[address].isEditor = true;
-  });
+    questChain?.admins.forEach(({ address }) => {
+      memberRoles[address] = 'Admin';
+    });
 
-  questChain?.reviewers.forEach(({ address }) => {
-    if (!members[address]) {
-      members[address] = {};
-    }
-    members[address].isReviewer = true;
-  });
+    questChain?.owners.forEach(({ address }) => {
+      memberRoles[address] = 'Owner';
+    });
 
-  const isUser = !(isAdmin || isEditor || isReviewer);
+    return memberRoles;
+  }, [questChain]);
+
+  const isUser = !(isOwner || isAdmin || isEditor || isReviewer);
 
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
@@ -398,28 +393,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         )}
         <VStack spacing={2} align="flex-start" pt={4}>
           <Text>Members</Text>
-          {Object.entries(members).map(
-            ([address, { isAdmin, isEditor, isReviewer }]) => (
-              <HStack key={address} spacing={2}>
-                <UserDisplay address={address} color="white" />
-                {isReviewer && (
-                  <Tag fontSize="sm" color="neutral">
-                    Reviewer
-                  </Tag>
-                )}
-                {isEditor && (
-                  <Tag fontSize="sm" color="rejected">
-                    Editor
-                  </Tag>
-                )}
-                {isAdmin && (
-                  <Tag fontSize="sm" color="pending">
-                    Admin
-                  </Tag>
-                )}
-              </HStack>
-            ),
-          )}
+          {Object.entries(members).map(([address, role]) => (
+            <HStack key={address} spacing={2}>
+              <UserDisplay address={address} color="white" />
+              <RoleTag role={role} />
+            </HStack>
+          ))}
         </VStack>
 
         <ConfirmationModal
