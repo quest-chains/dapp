@@ -27,7 +27,6 @@ abstract contract Context {
     }
 }
 
-
 // File @openzeppelin/contracts/access/Ownable.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)
@@ -49,7 +48,10 @@ pragma solidity ^0.8.0;
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
@@ -89,7 +91,10 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
         _transferOwnership(newOwner);
     }
 
@@ -103,7 +108,6 @@ abstract contract Ownable is Context {
         emit OwnershipTransferred(oldOwner, newOwner);
     }
 }
-
 
 // File @openzeppelin/contracts/proxy/Clones.sol@v4.6.0
 
@@ -133,9 +137,15 @@ library Clones {
     function clone(address implementation) internal returns (address instance) {
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(
+                ptr,
+                0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000
+            )
             mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
+            mstore(
+                add(ptr, 0x28),
+                0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000
+            )
             instance := create(0, ptr, 0x37)
         }
         require(instance != address(0), "ERC1167: create failed");
@@ -148,12 +158,21 @@ library Clones {
      * the clone. Using the same `implementation` and `salt` multiple time will revert, since
      * the clones cannot be deployed twice at the same address.
      */
-    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
+    function cloneDeterministic(address implementation, bytes32 salt)
+        internal
+        returns (address instance)
+    {
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(
+                ptr,
+                0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000
+            )
             mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
+            mstore(
+                add(ptr, 0x28),
+                0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000
+            )
             instance := create2(0, ptr, 0x37, salt)
         }
         require(instance != address(0), "ERC1167: create2 failed");
@@ -169,9 +188,15 @@ library Clones {
     ) internal pure returns (address predicted) {
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(
+                ptr,
+                0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000
+            )
             mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf3ff00000000000000000000000000000000)
+            mstore(
+                add(ptr, 0x28),
+                0x5af43d82803e903d91602b57fd5bf3ff00000000000000000000000000000000
+            )
             mstore(add(ptr, 0x38), shl(0x60, deployer))
             mstore(add(ptr, 0x4c), salt)
             mstore(add(ptr, 0x6c), keccak256(ptr, 0x37))
@@ -191,9 +216,7 @@ library Clones {
     }
 }
 
-
 // File contracts/interfaces/IQuestChain.sol
-
 
 pragma solidity ^0.8.11;
 
@@ -236,9 +259,7 @@ interface IQuestChain {
         returns (Status);
 }
 
-
 // File contracts/interfaces/IQuestChainFactory.sol
-
 
 pragma solidity ^0.8.0;
 
@@ -261,13 +282,9 @@ interface IQuestChainFactory {
         returns (address);
 }
 
-
 // File contracts/QuestChainFactory.sol
 
-
 pragma solidity ^0.8.0;
-
-
 
 contract QuestChainFactory is IQuestChainFactory, Ownable {
     uint256 public questChainCount = 0;
