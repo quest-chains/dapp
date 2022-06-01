@@ -225,7 +225,7 @@ const Review: React.FC<Props> = ({
             details,
           );
           toast.dismiss(tid);
-          tid = handleTxLoading(tx.hash);
+          tid = handleTxLoading(tx.hash, chainId);
           const receipt = await tx.wait(1);
           toast.dismiss(tid);
           tid = toast.loading(

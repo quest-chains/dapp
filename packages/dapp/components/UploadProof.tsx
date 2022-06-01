@@ -102,7 +102,7 @@ export const UploadProof: React.FC<{
         );
         const tx = await contract.submitProof(questId, details);
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(

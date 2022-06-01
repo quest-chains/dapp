@@ -107,7 +107,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           reviewerAddresses,
         );
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(
