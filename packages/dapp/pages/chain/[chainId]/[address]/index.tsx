@@ -568,6 +568,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         userStatus[quest.questId]?.status === 'init' ||
                         userStatus[quest.questId]?.status === 'fail' ? (
                           <UploadProof
+                            // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
                             address={address}
                             questId={quest.questId}
                             questChainId={questChain.chainId}
