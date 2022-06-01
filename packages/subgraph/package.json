@@ -15,7 +15,7 @@
     "create-local": "graph create --node http://localhost:8020/ test/quest-chains",
     "remove-local": "graph remove --node http://localhost:8020/ test/quest-chains",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 test/quest-chains",
-    "prepare-mumbai": "mustache src/config/mumbai.json subgraph.template.yaml > subgraph.yaml",
+    "prepare-mumbai": "mustache src/config/polygonMumbai.json subgraph.template.yaml > subgraph.yaml",
     "deploy-only-mumbai": "graph deploy dan13ram/quest-chains-mumbai --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "deploy-mumbai": "yarn prepare-mumbai && yarn codegen && yarn build && yarn deploy-only-mumbai",
     "prepare-rinkeby": "mustache src/config/rinkeby.json subgraph.template.yaml > subgraph.yaml",

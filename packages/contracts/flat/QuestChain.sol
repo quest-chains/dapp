@@ -1,101 +1,8 @@
 // Sources flattened with hardhat v2.9.3 https://hardhat.org
 
-// File @openzeppelin/contracts/security/ReentrancyGuard.sol@v4.5.0
+// File @openzeppelin/contracts/access/IAccessControl.sol@v4.6.0
 
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts v4.4.1 (security/ReentrancyGuard.sol)
-
-pragma solidity ^0.8.0;
-
-/**
- * @dev Contract module that helps prevent reentrant calls to a function.
- *
- * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
- * available, which can be applied to functions to make sure there are no nested
- * (reentrant) calls to them.
- *
- * Note that because there is a single `nonReentrant` guard, functions marked as
- * `nonReentrant` may not call one another. This can be worked around by making
- * those functions `private`, and then adding `external` `nonReentrant` entry
- * points to them.
- *
- * TIP: If you would like to learn more about reentrancy and alternative ways
- * to protect against it, check out our blog post
- * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
- */
-abstract contract ReentrancyGuard {
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
-
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
-    uint256 private constant _NOT_ENTERED = 1;
-    uint256 private constant _ENTERED = 2;
-
-    uint256 private _status;
-
-    constructor() {
-        _status = _NOT_ENTERED;
-    }
-
-    /**
-     * @dev Prevents a contract from calling itself, directly or indirectly.
-     * Calling a `nonReentrant` function from another `nonReentrant`
-     * function is not supported. It is possible to prevent this from happening
-     * by making the `nonReentrant` function external, and making it call a
-     * `private` function that does the actual work.
-     */
-    modifier nonReentrant() {
-        // On the first call to nonReentrant, _notEntered will be true
-        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
-
-        // Any calls to nonReentrant after this point will fail
-        _status = _ENTERED;
-
-        _;
-
-        // By storing the original value once again, a refund is triggered (see
-        // https://eips.ethereum.org/EIPS/eip-2200)
-        _status = _NOT_ENTERED;
-    }
-}
-
-
-// File @openzeppelin/contracts/utils/Context.sol@v4.5.0
-
-// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
-
-pragma solidity ^0.8.0;
-
-/**
- * @dev Provides information about the current execution context, including the
- * sender of the transaction and its data. While these are generally available
- * via msg.sender and msg.data, they should not be accessed in such a direct
- * manner, since when dealing with meta-transactions the account sending and
- * paying for execution may not be the actual sender (as far as an application
- * is concerned).
- *
- * This contract is only required for intermediate, library-like contracts.
- */
-abstract contract Context {
-    function _msgSender() internal view virtual returns (address) {
-        return msg.sender;
-    }
-
-    function _msgData() internal view virtual returns (bytes calldata) {
-        return msg.data;
-    }
-}
-
-
-// File @openzeppelin/contracts/access/IAccessControl.sol@v4.5.0
-
 // OpenZeppelin Contracts v4.4.1 (access/IAccessControl.sol)
 
 pragma solidity ^0.8.0;
@@ -185,7 +92,34 @@ interface IAccessControl {
 }
 
 
-// File @openzeppelin/contracts/utils/Strings.sol@v4.5.0
+// File @openzeppelin/contracts/utils/Context.sol@v4.6.0
+
+// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Provides information about the current execution context, including the
+ * sender of the transaction and its data. While these are generally available
+ * via msg.sender and msg.data, they should not be accessed in such a direct
+ * manner, since when dealing with meta-transactions the account sending and
+ * paying for execution may not be the actual sender (as far as an application
+ * is concerned).
+ *
+ * This contract is only required for intermediate, library-like contracts.
+ */
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
+    function _msgData() internal view virtual returns (bytes calldata) {
+        return msg.data;
+    }
+}
+
+
+// File @openzeppelin/contracts/utils/Strings.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (utils/Strings.sol)
 
@@ -255,7 +189,7 @@ library Strings {
 }
 
 
-// File @openzeppelin/contracts/utils/introspection/IERC165.sol@v4.5.0
+// File @openzeppelin/contracts/utils/introspection/IERC165.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)
 
@@ -283,7 +217,7 @@ interface IERC165 {
 }
 
 
-// File @openzeppelin/contracts/utils/introspection/ERC165.sol@v4.5.0
+// File @openzeppelin/contracts/utils/introspection/ERC165.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/ERC165.sol)
 
@@ -313,9 +247,9 @@ abstract contract ERC165 is IERC165 {
 }
 
 
-// File @openzeppelin/contracts/access/AccessControl.sol@v4.5.0
+// File @openzeppelin/contracts/access/AccessControl.sol@v4.6.0
 
-// OpenZeppelin Contracts (last updated v4.5.0) (access/AccessControl.sol)
+// OpenZeppelin Contracts (last updated v4.6.0) (access/AccessControl.sol)
 
 pragma solidity ^0.8.0;
 
@@ -381,7 +315,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      * _Available since v4.1._
      */
     modifier onlyRole(bytes32 role) {
-        _checkRole(role, _msgSender());
+        _checkRole(role);
         _;
     }
 
@@ -397,6 +331,18 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      */
     function hasRole(bytes32 role, address account) public view virtual override returns (bool) {
         return _roles[role].members[account];
+    }
+
+    /**
+     * @dev Revert with a standard message if `_msgSender()` is missing `role`.
+     * Overriding this function changes the behavior of the {onlyRole} modifier.
+     *
+     * Format of the revert message is described in {_checkRole}.
+     *
+     * _Available since v4.6._
+     */
+    function _checkRole(bytes32 role) internal view virtual {
+        _checkRole(role, _msgSender());
     }
 
     /**
@@ -537,7 +483,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
 }
 
 
-// File @openzeppelin/contracts/utils/Address.sol@v4.5.0
+// File @openzeppelin/contracts/utils/Address.sol@v4.6.0
 
 // OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)
 
@@ -762,17 +708,37 @@ library Address {
 }
 
 
-// File @openzeppelin/contracts/proxy/utils/Initializable.sol@v4.5.0
+// File @openzeppelin/contracts/proxy/utils/Initializable.sol@v4.6.0
 
-// OpenZeppelin Contracts (last updated v4.5.0) (proxy/utils/Initializable.sol)
+// OpenZeppelin Contracts (last updated v4.6.0) (proxy/utils/Initializable.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.2;
 
 /**
  * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
  * behind a proxy. Since proxied contracts do not make use of a constructor, it's common to move constructor logic to an
  * external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer
  * function so it can only be called once. The {initializer} modifier provided by this contract will have this effect.
+ *
+ * The initialization functions use a version number. Once a version number is used, it is consumed and cannot be
+ * reused. This mechanism prevents re-execution of each "step" but allows the creation of new initialization steps in
+ * case an upgrade adds a module that needs to be initialized.
+ *
+ * For example:
+ *
+ * [.hljs-theme-light.nopadding]
+ * ```
+ * contract MyToken is ERC20Upgradeable {
+ *     function initialize() initializer public {
+ *         __ERC20_init("MyToken", "MTK");
+ *     }
+ * }
+ * contract MyTokenV2 is MyToken, ERC20PermitUpgradeable {
+ *     function initializeV2() reinitializer(2) public {
+ *         __ERC20Permit_init("MyToken");
+ *     }
+ * }
+ * ```
  *
  * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as
  * possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}.
@@ -785,21 +751,24 @@ pragma solidity ^0.8.0;
  * Avoid leaving a contract uninitialized.
  *
  * An uninitialized contract can be taken over by an attacker. This applies to both a proxy and its implementation
- * contract, which may impact the proxy. To initialize the implementation contract, you can either invoke the
- * initializer manually, or you can include a constructor to automatically mark it as initialized when it is deployed:
+ * contract, which may impact the proxy. To prevent the implementation contract from being used, you should invoke
+ * the {_disableInitializers} function in the constructor to automatically lock it when it is deployed:
  *
  * [.hljs-theme-light.nopadding]
  * ```
  * /// @custom:oz-upgrades-unsafe-allow constructor
- * constructor() initializer {}
+ * constructor() {
+ *     _disableInitializers();
+ * }
  * ```
  * ====
  */
 abstract contract Initializable {
     /**
      * @dev Indicates that the contract has been initialized.
+     * @custom:oz-retyped-from bool
      */
-    bool private _initialized;
+    uint8 private _initialized;
 
     /**
      * @dev Indicates that the contract is in the process of being initialized.
@@ -807,38 +776,242 @@ abstract contract Initializable {
     bool private _initializing;
 
     /**
-     * @dev Modifier to protect an initializer function from being invoked twice.
+     * @dev Triggered when the contract has been initialized or reinitialized.
+     */
+    event Initialized(uint8 version);
+
+    /**
+     * @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
+     * `onlyInitializing` functions can be used to initialize parent contracts. Equivalent to `reinitializer(1)`.
      */
     modifier initializer() {
-        // If the contract is initializing we ignore whether _initialized is set in order to support multiple
-        // inheritance patterns, but we only do this in the context of a constructor, because in other contexts the
-        // contract may have been reentered.
-        require(_initializing ? _isConstructor() : !_initialized, "Initializable: contract is already initialized");
-
-        bool isTopLevelCall = !_initializing;
+        bool isTopLevelCall = _setInitializedVersion(1);
         if (isTopLevelCall) {
             _initializing = true;
-            _initialized = true;
         }
-
         _;
-
         if (isTopLevelCall) {
             _initializing = false;
+            emit Initialized(1);
+        }
+    }
+
+    /**
+     * @dev A modifier that defines a protected reinitializer function that can be invoked at most once, and only if the
+     * contract hasn't been initialized to a greater version before. In its scope, `onlyInitializing` functions can be
+     * used to initialize parent contracts.
+     *
+     * `initializer` is equivalent to `reinitializer(1)`, so a reinitializer may be used after the original
+     * initialization step. This is essential to configure modules that are added through upgrades and that require
+     * initialization.
+     *
+     * Note that versions can jump in increments greater than 1; this implies that if multiple reinitializers coexist in
+     * a contract, executing them in the right order is up to the developer or operator.
+     */
+    modifier reinitializer(uint8 version) {
+        bool isTopLevelCall = _setInitializedVersion(version);
+        if (isTopLevelCall) {
+            _initializing = true;
+        }
+        _;
+        if (isTopLevelCall) {
+            _initializing = false;
+            emit Initialized(version);
         }
     }
 
     /**
      * @dev Modifier to protect an initialization function so that it can only be invoked by functions with the
-     * {initializer} modifier, directly or indirectly.
+     * {initializer} and {reinitializer} modifiers, directly or indirectly.
      */
     modifier onlyInitializing() {
         require(_initializing, "Initializable: contract is not initializing");
         _;
     }
 
-    function _isConstructor() private view returns (bool) {
-        return !Address.isContract(address(this));
+    /**
+     * @dev Locks the contract, preventing any future reinitialization. This cannot be part of an initializer call.
+     * Calling this in the constructor of a contract will prevent that contract from being initialized or reinitialized
+     * to any version. It is recommended to use this to lock implementation contracts that are designed to be called
+     * through proxies.
+     */
+    function _disableInitializers() internal virtual {
+        _setInitializedVersion(type(uint8).max);
+    }
+
+    function _setInitializedVersion(uint8 version) private returns (bool) {
+        // If the contract is initializing we ignore whether _initialized is set in order to support multiple
+        // inheritance patterns, but we only do this in the context of a constructor, and for the lowest level
+        // of initializers, because in other contexts the contract may have been reentered.
+        if (_initializing) {
+            require(
+                version == 1 && !Address.isContract(address(this)),
+                "Initializable: contract is already initialized"
+            );
+            return false;
+        } else {
+            require(_initialized < version, "Initializable: contract is already initialized");
+            _initialized = version;
+            return true;
+        }
+    }
+}
+
+
+// File @openzeppelin/contracts/security/Pausable.sol@v4.6.0
+
+// OpenZeppelin Contracts v4.4.1 (security/Pausable.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Contract module which allows children to implement an emergency stop
+ * mechanism that can be triggered by an authorized account.
+ *
+ * This module is used through inheritance. It will make available the
+ * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
+ * the functions of your contract. Note that they will not be pausable by
+ * simply including this module, only once the modifiers are put in place.
+ */
+abstract contract Pausable is Context {
+    /**
+     * @dev Emitted when the pause is triggered by `account`.
+     */
+    event Paused(address account);
+
+    /**
+     * @dev Emitted when the pause is lifted by `account`.
+     */
+    event Unpaused(address account);
+
+    bool private _paused;
+
+    /**
+     * @dev Initializes the contract in unpaused state.
+     */
+    constructor() {
+        _paused = false;
+    }
+
+    /**
+     * @dev Returns true if the contract is paused, and false otherwise.
+     */
+    function paused() public view virtual returns (bool) {
+        return _paused;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is not paused.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    modifier whenNotPaused() {
+        require(!paused(), "Pausable: paused");
+        _;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is paused.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    modifier whenPaused() {
+        require(paused(), "Pausable: not paused");
+        _;
+    }
+
+    /**
+     * @dev Triggers stopped state.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    function _pause() internal virtual whenNotPaused {
+        _paused = true;
+        emit Paused(_msgSender());
+    }
+
+    /**
+     * @dev Returns to normal state.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    function _unpause() internal virtual whenPaused {
+        _paused = false;
+        emit Unpaused(_msgSender());
+    }
+}
+
+
+// File @openzeppelin/contracts/security/ReentrancyGuard.sol@v4.6.0
+
+// OpenZeppelin Contracts v4.4.1 (security/ReentrancyGuard.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Contract module that helps prevent reentrant calls to a function.
+ *
+ * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+ * available, which can be applied to functions to make sure there are no nested
+ * (reentrant) calls to them.
+ *
+ * Note that because there is a single `nonReentrant` guard, functions marked as
+ * `nonReentrant` may not call one another. This can be worked around by making
+ * those functions `private`, and then adding `external` `nonReentrant` entry
+ * points to them.
+ *
+ * TIP: If you would like to learn more about reentrancy and alternative ways
+ * to protect against it, check out our blog post
+ * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+ */
+abstract contract ReentrancyGuard {
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    constructor() {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and making it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        // On the first call to nonReentrant, _notEntered will be true
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _status = _ENTERED;
+
+        _;
+
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
     }
 }
 
@@ -856,11 +1029,12 @@ interface IQuestChain {
         fail
     }
 
-    function init(address _admin, string calldata _details) external;
+    function init(address _owner, string calldata _details) external;
 
     function initWithRoles(
-        address _admin,
+        address _owner,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external;
@@ -880,7 +1054,7 @@ interface IQuestChain {
         string calldata _details
     ) external;
 
-    function getStatus(address _quester, uint256 _questId)
+    function questStatus(address _quester, uint256 _questId)
         external
         view
         returns (Status);
@@ -899,18 +1073,20 @@ pragma solidity ^0.8.11;
 
 contract QuestChain is
     IQuestChain,
-    Initializable,
-    Context,
     ReentrancyGuard,
-    AccessControl
+    Initializable,
+    AccessControl,
+    Pausable
 {
+    bytes32 public constant OWNER_ROLE = bytes32(0);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant EDITOR_ROLE = keccak256("EDITOR_ROLE");
     bytes32 public constant REVIEWER_ROLE = keccak256("REVIEWER_ROLE");
 
+    mapping(uint256 => bool) public questPaused;
     uint256 public questCount;
 
-    mapping(address => mapping(uint256 => Status)) public completions;
+    mapping(address => mapping(uint256 => Status)) private _questStatus;
 
     event QuestChainCreated(address indexed creator, string details);
     event QuestChainEdited(address indexed editor, string details);
@@ -936,49 +1112,131 @@ contract QuestChain is
         bool success,
         string details
     );
+    event QuestPaused(address indexed editor, uint256 indexed questId);
+    event QuestUnpaused(address indexed editor, uint256 indexed questId);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}
 
-    function init(address _admin, string calldata _details)
+    function _initRoleAdmins(address _owner) private {
+        _setRoleAdmin(ADMIN_ROLE, OWNER_ROLE);
+        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+
+        _grantRole(OWNER_ROLE, _owner);
+        _grantRole(ADMIN_ROLE, _owner);
+        _grantRole(EDITOR_ROLE, _owner);
+        _grantRole(REVIEWER_ROLE, _owner);
+    }
+
+    function init(address _owner, string calldata _details)
         external
         override
         initializer
     {
-        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+        _initRoleAdmins(_owner);
 
-        _setupRole(ADMIN_ROLE, _admin);
-        _setupRole(EDITOR_ROLE, _admin);
-        _setupRole(REVIEWER_ROLE, _admin);
-
-        emit QuestChainCreated(_admin, _details);
+        emit QuestChainCreated(_owner, _details);
     }
 
     function initWithRoles(
-        address _admin,
+        address _owner,
         string calldata _details,
+        address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override initializer {
-        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
+        _initRoleAdmins(_owner);
 
-        _setupRole(ADMIN_ROLE, _admin);
-        _setupRole(EDITOR_ROLE, _admin);
-        _setupRole(REVIEWER_ROLE, _admin);
+        for (uint256 i = 0; i < _admins.length; i = i + 1) {
+            _grantRole(ADMIN_ROLE, _admins[i]);
+            _grantRole(EDITOR_ROLE, _admins[i]);
+            _grantRole(REVIEWER_ROLE, _admins[i]);
+        }
 
         for (uint256 i = 0; i < _editors.length; i = i + 1) {
-            _setupRole(EDITOR_ROLE, _editors[i]);
+            _grantRole(EDITOR_ROLE, _editors[i]);
+            _grantRole(REVIEWER_ROLE, _editors[i]);
         }
 
         for (uint256 i = 0; i < _reviewers.length; i = i + 1) {
-            _setupRole(REVIEWER_ROLE, _reviewers[i]);
+            _grantRole(REVIEWER_ROLE, _reviewers[i]);
         }
 
-        emit QuestChainCreated(_admin, _details);
+        emit QuestChainCreated(_owner, _details);
+    }
+
+    function grantRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _grantRole(role, account);
+        if (role == OWNER_ROLE) {
+            grantRole(ADMIN_ROLE, account);
+        } else if (role == ADMIN_ROLE) {
+            grantRole(EDITOR_ROLE, account);
+        } else if (role == EDITOR_ROLE) {
+            grantRole(REVIEWER_ROLE, account);
+        }
+    }
+
+    function revokeRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _revokeRole(role, account);
+        if (role == REVIEWER_ROLE) {
+            revokeRole(EDITOR_ROLE, account);
+        } else if (role == EDITOR_ROLE) {
+            revokeRole(ADMIN_ROLE, account);
+        } else if (role == ADMIN_ROLE) {
+            revokeRole(OWNER_ROLE, account);
+        }
+    }
+
+    function pause() external onlyRole(OWNER_ROLE) {
+        _pause();
+    }
+
+    function unpause() external onlyRole(OWNER_ROLE) {
+        _unpause();
+    }
+
+    modifier whenQuestNotPaused(uint256 _questId) {
+        require(!questPaused[_questId], "QuestChain: quest paused");
+        _;
+    }
+
+    modifier whenQuestPaused(uint256 _questId) {
+        require(questPaused[_questId], "QuestChain: quest not paused");
+        _;
+    }
+
+    modifier validQuest(uint256 _questId) {
+        require(_questId < questCount, "QuestChain: quest not found");
+        _;
+    }
+
+    function pauseQuest(uint256 _questId)
+        external
+        onlyRole(EDITOR_ROLE)
+        validQuest(_questId)
+        whenQuestNotPaused(_questId)
+    {
+        questPaused[_questId] = true;
+        emit QuestPaused(_msgSender(), _questId);
+    }
+
+    function unpauseQuest(uint256 _questId)
+        external
+        onlyRole(EDITOR_ROLE)
+        validQuest(_questId)
+        whenQuestPaused(_questId)
+    {
+        questPaused[_questId] = true;
+        emit QuestUnpaused(_msgSender(), _questId);
     }
 
     function edit(string calldata _details)
@@ -986,15 +1244,16 @@ contract QuestChain is
         override
         onlyRole(ADMIN_ROLE)
     {
-        emit QuestChainEdited(msg.sender, _details);
+        emit QuestChainEdited(_msgSender(), _details);
     }
 
     function createQuest(string calldata _details)
         external
         override
         onlyRole(EDITOR_ROLE)
+        whenNotPaused
     {
-        emit QuestCreated(msg.sender, questCount, _details);
+        emit QuestCreated(_msgSender(), questCount, _details);
 
         questCount += 1;
     }
@@ -1003,26 +1262,28 @@ contract QuestChain is
         external
         override
         onlyRole(EDITOR_ROLE)
+        whenNotPaused
+        validQuest(_questId)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-
-        emit QuestEdited(msg.sender, _questId, _details);
+        emit QuestEdited(_msgSender(), _questId, _details);
     }
 
     function submitProof(uint256 _questId, string calldata _proof)
         external
         override
+        whenNotPaused
+        whenQuestNotPaused(_questId)
+        validQuest(_questId)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-        Status status = completions[msg.sender][_questId];
+        Status status = _questStatus[_msgSender()][_questId];
         require(
             status == Status.init || status == Status.fail,
             "QuestChain: in review or passed"
         );
 
-        completions[msg.sender][_questId] = Status.review;
+        _questStatus[_msgSender()][_questId] = Status.review;
 
-        emit QuestProofSubmitted(msg.sender, _questId, _proof);
+        emit QuestProofSubmitted(_msgSender(), _questId, _proof);
     }
 
     function reviewProof(
@@ -1030,14 +1291,13 @@ contract QuestChain is
         uint256 _questId,
         bool _success,
         string calldata _details
-    ) external override onlyRole(REVIEWER_ROLE) {
-        require(_questId < questCount, "QuestChain: quest not found");
-        Status status = completions[_quester][_questId];
+    ) external override onlyRole(REVIEWER_ROLE) validQuest(_questId) {
+        Status status = _questStatus[_quester][_questId];
         require(status == Status.review, "QuestChain: quest not in review");
-        completions[_quester][_questId] = _success ? Status.pass : Status.fail;
+        _questStatus[_quester][_questId] = _success ? Status.pass : Status.fail;
 
         emit QuestProofReviewed(
-            msg.sender,
+            _msgSender(),
             _quester,
             _questId,
             _success,
@@ -1045,13 +1305,13 @@ contract QuestChain is
         );
     }
 
-    function getStatus(address _quester, uint256 _questId)
+    function questStatus(address _quester, uint256 _questId)
         external
         view
         override
+        validQuest(_questId)
         returns (Status status)
     {
-        require(_questId < questCount, "QuestChain: quest not found");
-        status = completions[_quester][_questId];
+        status = _questStatus[_quester][_questId];
     }
 }

@@ -7,16 +7,17 @@ import {
 } from '@/graphql/types';
 
 export type UserRoles = {
-  adminOf?: QuestChainInfoFragment[];
-  editorOf?: QuestChainInfoFragment[];
-  reviewerOf?: QuestChainInfoFragment[];
+  ownerOf: QuestChainInfoFragment[];
+  adminOf: QuestChainInfoFragment[];
+  editorOf: QuestChainInfoFragment[];
+  reviewerOf: QuestChainInfoFragment[];
   chainId: string;
 };
 
 export const getRolesForUser = async (
   chainId: string,
   address: string,
-): Promise<UserRoles | undefined | null> => {
+): Promise<UserRoles | null> => {
   const { data, error } = await clients[chainId]
     .query<RolesForUserQuery, RolesForUserQueryVariables>(
       RolesForUserDocument,
@@ -25,11 +26,11 @@ export const getRolesForUser = async (
       },
     )
     .toPromise();
-  if (!data) {
+  if (!data?.user) {
     if (error) {
       throw error;
     }
-    return undefined;
+    return null;
   }
 
   const { user } = data;
