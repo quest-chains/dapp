@@ -40,7 +40,7 @@ import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { isSupportedNetwork, useWallet } from '@/web3';
 
 interface FormValues {
   name: string;
@@ -60,15 +60,16 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const router = useRouter();
   const [refreshCount] = useRefresh();
 
-  const { provider, chainId } = useWallet();
-  const factoryContract: QuestChainFactory = useMemo(
-    () =>
-      QuestChainFactory__factory.connect(
-        globalInfo[chainId as string],
-        provider?.getSigner() as Signer,
-      ),
-    [provider, chainId, globalInfo],
-  );
+  const { provider, chainId, isConnected, connectWallet } = useWallet();
+
+  const factoryContract: QuestChainFactory | undefined = useMemo(() => {
+    if (!isSupportedNetwork(chainId)) return;
+
+    return QuestChainFactory__factory.connect(
+      globalInfo[chainId as string],
+      provider?.getSigner() as Signer,
+    );
+  }, [provider, chainId, globalInfo]);
 
   const { questChains, fetching, refresh } =
     useLatestCreatedQuestChainsDataForAllChains();
@@ -82,7 +83,12 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       { name, editorAddresses, reviewerAddresses }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
-      if (!chainId) return;
+      if (!isConnected) connectWallet();
+
+      // checking for existence of chainId, because waitUntilBlock(chainId, receipt.blockNumber);
+      // doesn't understand the implications of if (!isSupportedNetwork(chainId))
+      if (!chainId || !isSupportedNetwork(chainId) || !factoryContract) return;
+
       const metadata: Metadata = {
         name,
         description,
@@ -101,7 +107,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           reviewerAddresses,
         );
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(
@@ -123,7 +129,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
       setSubmitting(false);
     },
-    [chainId, description, factoryContract, router],
+    [chainId, connectWallet, description, factoryContract, isConnected, router],
   );
 
   return (
@@ -203,7 +209,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                         ))}
                         <Button
                           borderRadius="full"
-                          onClick={() => arrayHelpers.push('')}
+                          onClick={() =>
+                            isConnected
+                              ? arrayHelpers.push('')
+                              : connectWallet()
+                          }
                         >
                           Add address
                         </Button>
@@ -244,7 +254,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                         ))}
                         <Button
                           borderRadius="full"
-                          onClick={() => arrayHelpers.push('')}
+                          onClick={() =>
+                            isConnected
+                              ? arrayHelpers.push('')
+                              : connectWallet()
+                          }
                         >
                           Add address
                         </Button>
@@ -286,12 +300,20 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             </Text>
           )}
           <VStack w="full" gap={4} flex={1}>
-            {questChains.map(({ address, chainId, name, description }) => (
-              <QuestChainTile
-                {...{ address, name, description, chainId }}
-                key={address}
-              />
-            ))}
+            {questChains.map(
+              ({ address, chainId, name, description, quests }) => (
+                <QuestChainTile
+                  {...{
+                    address,
+                    name,
+                    description,
+                    chainId,
+                    quests: quests.length,
+                  }}
+                  key={address}
+                />
+              ),
+            )}
           </VStack>
         </>
       )}

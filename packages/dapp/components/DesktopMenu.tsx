@@ -14,10 +14,14 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 
+import { ConnectWallet } from '@/components/ConnectWallet';
+import { useWallet } from '@/web3';
+
 import SearchQuestChains from './SearchQuestChains';
 import { WalletDisplay } from './WalletDisplay';
 
 export const DesktopMenu: React.FC = () => {
+  const { isConnected } = useWallet();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -93,20 +97,9 @@ export const DesktopMenu: React.FC = () => {
             </Text>
           </ChakraLink>
         </NextLink>
-        <NextLink href="/overview" passHref>
-          <ChakraLink display="block" _hover={{}}>
-            <Text
-              borderBottomWidth={router.pathname === '/overview' ? 1 : 0}
-              borderBottomColor="main"
-              color={router.pathname === '/overview' ? 'main' : 'inherit'}
-            >
-              OVERVIEW
-            </Text>
-          </ChakraLink>
-        </NextLink>
       </HStack>
 
-      <WalletDisplay />
+      {isConnected ? <WalletDisplay /> : <ConnectWallet />}
     </>
   );
 };

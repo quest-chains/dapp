@@ -17,6 +17,16 @@ export const ConnectWallet: React.FC = () => {
       role="group"
       isLoading={isConnecting}
       onClick={isConnected ? disconnect : connectWallet}
+      px={4}
+      background="rgba(255, 255, 255, 0.05)"
+      fontWeight="bold"
+      backdropFilter="blur(40px)"
+      borderRadius="full"
+      boxShadow="inset 0px 0px 0px 1px #AD90FF"
+      letterSpacing={2}
+      color="main"
+      fontSize={14}
+      height={10}
     >
       {!isConnected || !address ? (
         'connect'

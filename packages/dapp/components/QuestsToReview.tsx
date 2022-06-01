@@ -12,12 +12,15 @@ import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllCh
 
 import { NetworkDisplay } from './NetworkDisplay';
 
-export const QuestsToReview = () => {
-  const { results: chainsToReview, fetching } = useQuestsToReviewForAllChains();
+export const QuestsToReview: React.FC<{
+  address: string;
+}> = ({ address }) => {
+  const { results: chainsToReview, fetching } =
+    useQuestsToReviewForAllChains(address);
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="center" mb={2} color="main" fontSize={20}>
+      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
         SUBMISSIONS TO REVIEW
       </Text>
       {fetching ? (
@@ -27,9 +30,7 @@ export const QuestsToReview = () => {
       ) : (
         <>
           {chainsToReview.length === 0 && (
-            <VStack w="100%">
-              <Text color="white">No submissions found</Text>
-            </VStack>
+            <Text color="white">No submissions found</Text>
           )}
           {chainsToReview.map(chain => (
             <NextLink

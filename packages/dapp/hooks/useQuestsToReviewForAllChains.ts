@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 
 import { getQuestChainsToReview } from '@/graphql/questReviews';
 import { QuestChainReviewInfoFragment } from '@/graphql/types';
-import { NETWORK_INFO, useWallet } from '@/web3';
+import { NETWORK_INFO } from '@/web3';
 
 const chainIds = Object.keys(NETWORK_INFO);
 
-export const useQuestsToReviewForAllChains = (): {
+export const useQuestsToReviewForAllChains = (
+  address: string,
+): {
   error: unknown;
   fetching: boolean;
   results: QuestChainReviewInfoFragment[];
@@ -15,8 +17,6 @@ export const useQuestsToReviewForAllChains = (): {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
   const [results, setResults] = useState<QuestChainReviewInfoFragment[]>([]);
-
-  const { address } = useWallet();
 
   useEffect(() => {
     let isMounted = true;

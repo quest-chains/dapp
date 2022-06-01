@@ -72,7 +72,7 @@ export const AddQuestBlock: React.FC<{
       { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
-      if (!chainId || questChain.chainId !== chainId) return;
+      if (!chainId || !provider || questChain.chainId !== chainId) return;
 
       // close the dialog
       onClose();
@@ -125,7 +125,7 @@ export const AddQuestBlock: React.FC<{
         );
         const tx = await contract.createQuest(details);
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(
@@ -144,8 +144,16 @@ export const AddQuestBlock: React.FC<{
 
       setSubmitting(false);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contract, refresh, onOpen, questChain, description, chainId],
+    [
+      contract,
+      refresh,
+      onOpen,
+      questChain,
+      description,
+      chainId,
+      onClose,
+      provider,
+    ],
   );
 
   if (!isEditor) return null;

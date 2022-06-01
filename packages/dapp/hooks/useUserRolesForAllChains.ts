@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import { getStatusForUser, UserStatus } from '@/graphql/statusForUser';
+import { getRolesForUser, UserRoles } from '@/graphql/rolesForUser';
 import { NETWORK_INFO } from '@/web3';
 
 const chainIds = Object.keys(NETWORK_INFO);
 
-export const useUserProgressForAllChains = (
+export const useUserRolesForAllChains = (
   address: string,
 ): {
   error: unknown;
   fetching: boolean;
-  results: UserStatus[];
+  results: (UserRoles | undefined | null)[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<UserStatus[]>([]);
+  const [results, setResults] = useState<(UserRoles | undefined | null)[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,19 +23,12 @@ export const useUserProgressForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           chainIds.map(async chainId =>
-            getStatusForUser(chainId, address ?? ''),
+            getRolesForUser(chainId, address ?? ''),
           ),
         );
         if (!isMounted) return;
 
-        setResults(
-          allResults
-            .reduce((t, a) => {
-              t.push(...a);
-              return t;
-            }, [])
-            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt)),
-        );
+        setResults(allResults);
       } catch (err) {
         setError(err);
         setResults([]);

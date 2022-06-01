@@ -17,6 +17,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
+import NextLink from 'next/link';
 import React from 'react';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
@@ -152,9 +153,23 @@ export const WalletDisplay: React.FC = () => {
                 })}
             </VStack>
             <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />
-            <SubmitButton onClick={disconnect} px={4} fontSize="md" height={10}>
-              Disconnect
-            </SubmitButton>
+            <HStack justify="space-between" w="100%">
+              <NextLink href={`/profile/${address}`} passHref>
+                <Link display="block" _hover={{}}>
+                  <SubmitButton px={4} fontSize="md" height={10} width="full">
+                    View Profile
+                  </SubmitButton>
+                </Link>
+              </NextLink>
+              <SubmitButton
+                onClick={disconnect}
+                px={4}
+                fontSize="md"
+                height={10}
+              >
+                Disconnect
+              </SubmitButton>
+            </HStack>
           </VStack>
         </PopoverBody>
       </PopoverContent>

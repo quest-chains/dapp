@@ -151,10 +151,10 @@ const Review: React.FC<Props> = ({
     provider?.getSigner() as Signer,
   );
 
-  const reviews = useMemo(
-    () => questStatuses.filter(q => q.status === 'review'),
-    [questStatuses],
-  );
+  const reviews = useMemo(() => {
+    if (questStatuses) return questStatuses.filter(q => q.status === 'review');
+    return [];
+  }, [questStatuses]);
 
   const [reviewDescription, setReviewDescription] = useState('');
   const [myFiles, setMyFiles] = useState<File[]>([]);
@@ -225,7 +225,7 @@ const Review: React.FC<Props> = ({
             details,
           );
           toast.dismiss(tid);
-          tid = handleTxLoading(tx.hash);
+          tid = handleTxLoading(tx.hash, chainId);
           const receipt = await tx.wait(1);
           toast.dismiss(tid);
           tid = toast.loading(

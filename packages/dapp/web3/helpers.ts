@@ -16,26 +16,32 @@ export const formatAddress = (
   } else return '';
 };
 
-export const isSupportedNetwork = (chainId: string): boolean =>
-  Object.keys(NETWORK_INFO).includes(chainId);
+export const isSupportedNetwork = (
+  chainId: string | null | undefined,
+): boolean => {
+  if (!chainId) return false;
+  return Object.keys(NETWORK_INFO).includes(chainId);
+};
 
 export const getTxUrl = (
   txHash: string,
-  chainId: string = CHAIN_ID,
+  chainId: string | null | undefined,
 ): string => {
-  const { explorer } = NETWORK_INFO[chainId];
+  const { explorer } = NETWORK_INFO[chainId ?? CHAIN_ID];
   return `${explorer}/tx/${txHash}`;
 };
 
 export const getAddressUrl = (
   address: string,
-  chainId: string = CHAIN_ID,
+  chainId: string | null | undefined,
 ): string => {
-  const { explorer } = NETWORK_INFO[chainId];
+  const { explorer } = NETWORK_INFO[chainId ?? CHAIN_ID];
   return `${explorer}/address/${address}`;
 };
 
-export const getExplorerLabel = (chainId: string = CHAIN_ID): string => {
-  const { explorerLabel } = NETWORK_INFO[chainId];
+export const getExplorerLabel = (
+  chainId: string | null | undefined,
+): string => {
+  const { explorerLabel } = NETWORK_INFO[chainId ?? CHAIN_ID];
   return explorerLabel;
 };

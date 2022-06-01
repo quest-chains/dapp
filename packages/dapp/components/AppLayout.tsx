@@ -11,7 +11,6 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-import { ConnectWallet } from '@/components/ConnectWallet';
 import { useWallet } from '@/web3';
 
 import { DesktopMenu } from './DesktopMenu';
@@ -36,15 +35,16 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       fontFamily="body"
       minH="100vh"
     >
-      <VStack
-        p={{ base: 6, lg: 8 }}
-        alignItems="center"
-        borderBottomRadius="md"
-        w="100%"
-        mx="auto"
-        maxW="9xl"
-      >
-        {isConnected && router.pathname !== '/' && (
+      {router.pathname !== '/' && (
+        <VStack
+          p={{ base: 6, lg: 8 }}
+          alignItems="center"
+          borderBottomRadius="md"
+          w="100%"
+          mx="auto"
+          maxW="9xl"
+          mb={{ base: 6, md: 8, lg: 12 }}
+        >
           <HStack w="100%" justify="space-between" pos="relative">
             <NextLink href="/" passHref>
               <ChakraLink display="block" _hover={{}} zIndex={1500}>
@@ -67,12 +67,11 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
               <DesktopMenu />
             )}
           </HStack>
-        )}
-      </VStack>
+        </VStack>
+      )}
       <Flex
         direction="column"
         w="100%"
-        pt={{ base: 6, md: 8, lg: 12 }}
         px={8}
         pb={20}
         maxW="8xl"
@@ -85,21 +84,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
         transition="opacity 0.25s"
       >
-        {isConnected ? (
-          children
-        ) : (
-          <Flex
-            flex={1}
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-          >
-            <Heading color="main" fontSize={87} pb={10} fontWeight="normal">
-              Quest Chains
-            </Heading>
-            <ConnectWallet />
-          </Flex>
-        )}
+        {children}
       </Flex>
     </Stack>
   );

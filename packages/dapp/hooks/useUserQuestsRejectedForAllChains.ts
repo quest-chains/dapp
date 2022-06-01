@@ -1,20 +1,25 @@
 import { useEffect, useState } from 'react';
 
-import { getStatusForUser, UserStatus } from '@/graphql/statusForUser';
+import { getQuestsRejectedForUserAndChain } from '@/graphql/questStatuses';
+import { QuestStatusInfoFragment } from '@/graphql/types';
 import { NETWORK_INFO } from '@/web3';
+
+import { useRefresh } from './useRefresh';
 
 const chainIds = Object.keys(NETWORK_INFO);
 
-export const useUserProgressForAllChains = (
+export const useUserQuestsRejectedForAllChains = (
   address: string,
 ): {
   error: unknown;
   fetching: boolean;
-  results: UserStatus[];
+  results: QuestStatusInfoFragment[];
+  refresh: () => void;
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<UserStatus[]>([]);
+  const [results, setResults] = useState<QuestStatusInfoFragment[]>([]);
+  const [refreshCount, refresh] = useRefresh();
 
   useEffect(() => {
     let isMounted = true;
@@ -23,19 +28,12 @@ export const useUserProgressForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           chainIds.map(async chainId =>
-            getStatusForUser(chainId, address ?? ''),
+            getQuestsRejectedForUserAndChain(chainId, address ?? ''),
           ),
         );
         if (!isMounted) return;
 
-        setResults(
-          allResults
-            .reduce((t, a) => {
-              t.push(...a);
-              return t;
-            }, [])
-            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt)),
-        );
+        setResults(allResults.flat());
       } catch (err) {
         setError(err);
         setResults([]);
@@ -47,11 +45,12 @@ export const useUserProgressForAllChains = (
     return () => {
       isMounted = false;
     };
-  }, [address]);
+  }, [refreshCount, address]);
 
   return {
     fetching,
     error,
     results,
+    refresh,
   };
 };

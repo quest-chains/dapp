@@ -1,15 +1,8 @@
-import {
-  CheckIcon,
-  CloseIcon,
-  EditIcon,
-  SmallCloseIcon,
-} from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   HStack,
   IconButton,
   Input,
@@ -17,14 +10,12 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
   Spinner,
   Tag,
   Text,
-  Textarea,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -33,7 +24,6 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import { AddQuestBlock } from '@/components/AddQuestBlock';
@@ -41,7 +31,8 @@ import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
-import { SubmitButton } from '@/components/SubmitButton';
+import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { UploadProof } from '@/components/UploadProof';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
   getQuestChainAddresses,
@@ -54,11 +45,7 @@ import { QuestChain, QuestChain__factory } from '@/types';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
@@ -85,7 +72,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address, chainId, provider } = useWallet();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isUpdateQuestConfirmationOpen,
     onOpen: onUpdateQuestConfirmationOpen,
@@ -104,20 +90,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
   const [isEditingQuest, setEditingQuest] = useState(false);
-  const [quest, setQuest] = useState<{
-    questId: string;
-    name: string | null | undefined;
-    description: string | null | undefined;
-  } | null>(null);
-  const [proofDescription, setProofDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
 
   const {
     questChain,
@@ -239,80 +211,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     provider?.getSigner() as Signer,
   );
 
-  const { getRootProps, getInputProps, open } = useDropzone({
-    // Disable click and keydown behavior
-    noClick: true,
-    noKeyboard: true,
-    onDrop,
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
-
-  const onModalClose = useCallback(() => {
-    setProofDescription('');
-    setMyFiles([]);
-    setQuest(null);
-    onClose();
-  }, [onClose]);
-
-  const [isSubmitting, setSubmitting] = useState(false);
   const [isSubmittingQuest, setSubmittingQuest] = useState(false);
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
-
-  const onSubmit = useCallback(async () => {
-    if (!chainId || chainId !== questChain?.chainId) return;
-    if (quest && proofDescription && myFiles.length > 0) {
-      setSubmitting(true);
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      try {
-        let hash = await uploadFilesViaAPI(myFiles);
-        const metadata: Metadata = {
-          name: `Submission - Quest - ${quest.name} - User - ${address}`,
-          description: proofDescription,
-          external_url: `ipfs://${hash}`,
-        };
-
-        hash = await uploadMetadataViaAPI(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const tx = await contract.submitProof(quest.questId, details);
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success('Successfully submitted proof');
-        refresh();
-        onModalClose();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      }
-
-      setSubmitting(false);
-    }
-  }, [
-    proofDescription,
-    myFiles,
-    quest,
-    address,
-    contract,
-    refresh,
-    onModalClose,
-    chainId,
-    questChain,
-  ]);
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
@@ -332,7 +232,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         );
         const tx = await contract.edit(details);
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(
@@ -379,7 +279,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         );
         const tx = await contract.editQuest(questId, details);
         toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash);
+        tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
         toast.dismiss(tid);
         tid = toast.loading(
@@ -433,9 +333,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         <Flex justifyContent="space-between" w="full">
           {!isEditingQuestChain && (
             <>
-              <Text fontSize="2xl" fontWeight="bold" mb={3}>
-                {questChain.name}
-              </Text>
+              <Flex gap={3}>
+                <Text fontSize="2xl" fontWeight="bold" mb={3}>
+                  {questChain.name}
+                </Text>
+                <NetworkDisplay asTag chainId={questChain.chainId} />
+              </Flex>
               {isAdmin && chainId === questChain.chainId && (
                 <IconButton
                   borderRadius="full"
@@ -664,21 +567,15 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         !userStatus[quest.questId]?.status ||
                         userStatus[quest.questId]?.status === 'init' ||
                         userStatus[quest.questId]?.status === 'fail' ? (
-                          <Box>
-                            <Button
-                              onClick={() => {
-                                setQuest({
-                                  questId: quest.questId,
-                                  name: quest.name,
-                                  description: quest.description,
-                                });
-                                onOpen();
-                              }}
-                              isDisabled={chainId !== questChain.chainId}
-                            >
-                              Upload Proof
-                            </Button>
-                          </Box>
+                          <UploadProof
+                            // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
+                            address={address}
+                            questId={quest.questId}
+                            questChainId={questChain.chainId}
+                            questChainAddress={questChain.address}
+                            name={quest.name}
+                            refresh={refresh}
+                          />
                         ) : (
                           <Box>
                             <Button
@@ -712,80 +609,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           )}
         </VStack>
       </SimpleGrid>
-
-      <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Upload Proof - {quest?.name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl isRequired>
-              <FormLabel color="main" htmlFor="proofDescription">
-                Description
-              </FormLabel>
-              <Textarea
-                id="proofDescription"
-                value={proofDescription}
-                onChange={e => setProofDescription(e.target.value)}
-                mb={4}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel color="main" htmlFor="file">
-                Upload file
-              </FormLabel>
-              <Flex
-                {...getRootProps({ className: 'dropzone' })}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                mb={4}
-                onClick={open}
-              >
-                <input {...getInputProps()} color="white" />
-                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
-              </Flex>
-            </FormControl>
-            <Text mb={1}>Files:</Text>
-            {myFiles.map((file: File) => (
-              <Flex key={file.name} w="100%" mb={1}>
-                <IconButton
-                  size="xs"
-                  borderRadius="full"
-                  onClick={removeFile(file)}
-                  icon={<SmallCloseIcon boxSize="1rem" />}
-                  aria-label={''}
-                />
-                <Text ml={1} alignSelf="center">
-                  {file.name} - {file.size} bytes
-                </Text>
-              </Flex>
-            ))}
-          </ModalBody>
-
-          <ModalFooter alignItems="baseline">
-            <Button
-              variant="ghost"
-              mr={3}
-              onClick={onModalClose}
-              borderRadius="full"
-            >
-              Close
-            </Button>
-            <SubmitButton
-              mt={4}
-              type="submit"
-              onClick={onSubmit}
-              isDisabled={!myFiles.length || !proofDescription}
-              isLoading={isSubmitting}
-            >
-              Submit
-            </SubmitButton>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </VStack>
   );
 };

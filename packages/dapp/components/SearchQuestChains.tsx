@@ -56,9 +56,15 @@ const SearchQuestChains: React.FC = () => {
         {!fetching &&
           !error &&
           results.length > 0 &&
-          results.map(({ address, name, description, chainId }) => (
+          results.map(({ address, name, description, chainId, quests }) => (
             <QuestChainTile
-              {...{ address, name, description, chainId }}
+              {...{
+                address,
+                name,
+                description,
+                chainId,
+                quests: quests.length,
+              }}
               key={address}
             />
           ))}
