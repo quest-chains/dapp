@@ -19,7 +19,7 @@ export const ConnectWallet: React.FC = () => {
       onClick={isConnected ? disconnect : connectWallet}
       px={4}
       background="rgba(255, 255, 255, 0.05)"
-      fontWeight="400"
+      fontWeight="bold"
       backdropFilter="blur(40px)"
       borderRadius="full"
       boxShadow="inset 0px 0px 0px 1px #AD90FF"

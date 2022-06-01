@@ -88,13 +88,6 @@ export const WalletDisplay: React.FC = () => {
         <PopoverBody>
           <VStack w="100%" p={4} spacing={4}>
             <VStack w="100%" spacing={0} align="stretch">
-              <NextLink href={`/profile/${address}`} passHref>
-                <Link display="block" _hover={{}}>
-                  <SubmitButton px={4} fontSize="md" height={10} width="full">
-                    Profile
-                  </SubmitButton>
-                </Link>
-              </NextLink>
               <Flex p={2} justify="space-between" align="center">
                 <NetworkDisplay chainId={chainId} fontSize="xl" />
                 <Box bg="main" borderRadius="50%" h={2} w={2} />
@@ -160,9 +153,23 @@ export const WalletDisplay: React.FC = () => {
                 })}
             </VStack>
             <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />
-            <SubmitButton onClick={disconnect} px={4} fontSize="md" height={10}>
-              Disconnect
-            </SubmitButton>
+            <HStack justify="space-between" w="100%">
+              <NextLink href={`/profile/${address}`} passHref>
+                <Link display="block" _hover={{}}>
+                  <SubmitButton px={4} fontSize="md" height={10} width="full">
+                    View Profile
+                  </SubmitButton>
+                </Link>
+              </NextLink>
+              <SubmitButton
+                onClick={disconnect}
+                px={4}
+                fontSize="md"
+                height={10}
+              >
+                Disconnect
+              </SubmitButton>
+            </HStack>
           </VStack>
         </PopoverBody>
       </PopoverContent>
