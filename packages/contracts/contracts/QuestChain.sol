@@ -28,20 +28,32 @@ contract QuestChain is
 
     mapping(address => mapping(uint256 => Status)) private _questStatus;
 
-    event QuestChainCreated(address creator, string details);
-    event QuestChainEdited(address editor, string details);
-    event QuestCreated(address creator, uint256 questId, string details);
-    event QuestEdited(address editor, uint256 questId, string details);
-    event QuestProofSubmitted(address quester, uint256 questId, string proof);
+    event QuestChainCreated(address indexed creator, string details);
+    event QuestChainEdited(address indexed editor, string details);
+    event QuestCreated(
+        address indexed creator,
+        uint256 indexed questId,
+        string details
+    );
+    event QuestEdited(
+        address indexed editor,
+        uint256 indexed questId,
+        string details
+    );
+    event QuestProofSubmitted(
+        address indexed quester,
+        uint256 indexed questId,
+        string proof
+    );
     event QuestProofReviewed(
-        address reviewer,
-        address quester,
-        uint256 questId,
+        address indexed reviewer,
+        address indexed quester,
+        uint256 indexed questId,
         bool success,
         string details
     );
-    event QuestPaused(address editor, uint256 questId);
-    event QuestUnpaused(address editor, uint256 questId);
+    event QuestPaused(address indexed editor, uint256 indexed questId);
+    event QuestUnpaused(address indexed editor, uint256 indexed questId);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}

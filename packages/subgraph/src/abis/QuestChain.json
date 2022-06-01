@@ -10,6 +10,32 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "creator",
@@ -100,6 +126,25 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "editor",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questId",
+          "type": "uint256"
+        }
+      ],
+      "name": "QuestPaused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "reviewer",
           "type": "address"
         },
@@ -154,6 +199,25 @@
         }
       ],
       "name": "QuestProofSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "editor",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questId",
+          "type": "uint256"
+        }
+      ],
+      "name": "QuestUnpaused",
       "type": "event"
     },
     {
@@ -232,6 +296,19 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
       "inputs": [],
       "name": "ADMIN_ROLE",
       "outputs": [
@@ -272,7 +349,7 @@
     },
     {
       "inputs": [],
-      "name": "REVIEWER_ROLE",
+      "name": "OWNER_ROLE",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -284,24 +361,13 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "completions",
+      "inputs": [],
+      "name": "REVIEWER_ROLE",
       "outputs": [
         {
-          "internalType": "enum IQuestChain.Status",
+          "internalType": "bytes32",
           "name": "",
-          "type": "uint8"
+          "type": "bytes32"
         }
       ],
       "stateMutability": "view",
@@ -373,30 +439,6 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_quester",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_questId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getStatus",
-      "outputs": [
-        {
-          "internalType": "enum IQuestChain.Status",
-          "name": "status",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
@@ -440,7 +482,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_admin",
+          "name": "_owner",
           "type": "address"
         },
         {
@@ -455,6 +497,72 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_admins",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_editors",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_reviewers",
+          "type": "address[]"
+        }
+      ],
+      "name": "initWithRoles",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_questId",
+          "type": "uint256"
+        }
+      ],
+      "name": "pauseQuest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "questCount",
       "outputs": [
@@ -462,6 +570,49 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "questPaused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_quester",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_questId",
+          "type": "uint256"
+        }
+      ],
+      "name": "questStatus",
+      "outputs": [
+        {
+          "internalType": "enum IQuestChain.Status",
+          "name": "status",
+          "type": "uint8"
         }
       ],
       "stateMutability": "view",
@@ -566,6 +717,26 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_questId",
+          "type": "uint256"
+        }
+      ],
+      "name": "unpauseQuest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
