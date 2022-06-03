@@ -86,7 +86,7 @@ const AVAILABLE_NETWORK_INFO: NetworkInfo = {
   },
 };
 
-const getNetworkInfo = (networks: string[]): NetworkInfo => {
+const getNetworkInfo = (networks: string[] | undefined): NetworkInfo => {
   if (networks && networks.length > 0 && AVAILABLE_NETWORK_INFO) {
     return networks
       .filter(n => !Number.isNaN(Number(n)))
