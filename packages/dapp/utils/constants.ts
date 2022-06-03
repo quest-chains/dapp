@@ -2,7 +2,7 @@
 export const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID!;
 
 export const SUPPORTED_NETWORKS =
-  process.env.NEXT_PUBLIC_SUPPORTED_NETWORKS!.split(' ');
+  process.env.NEXT_PUBLIC_SUPPORTED_NETWORKS?.split(' ');
 
 export const GRAPH_HEALTH_ENDPOINT =
   'https://api.thegraph.com/index-node/graphql';
