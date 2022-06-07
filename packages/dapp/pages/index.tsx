@@ -8,14 +8,7 @@ import { Who } from '@/components/Landing/Who';
 
 const Index: React.FC = () => {
   return (
-    <Flex
-      w="100%"
-      h="100%"
-      direction="column"
-      align="center"
-      pos="relative"
-      marginEnd={0}
-    >
+    <Flex w="100%" h="100%" direction="column" align="center" pos="relative">
       <Head>
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />

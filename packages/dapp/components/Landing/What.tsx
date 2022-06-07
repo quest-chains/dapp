@@ -10,7 +10,7 @@ export const What: React.FC = () => {
   return (
     <HStack
       w="full"
-      align="start"
+      align="center"
       justify="center"
       spacing={[6, 8]}
       minH="69vh"
@@ -18,7 +18,6 @@ export const What: React.FC = () => {
       bgPosition="center"
       bgAttachment="fixed"
       bgSize="cover"
-      p={{ base: 4, md: 8, lg: 12 }}
       sx={{
         scrollSnapAlign: 'start',
         scrollSnapStop: 'normal',
@@ -36,13 +35,13 @@ export const What: React.FC = () => {
         zIndex={100}
         transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
         opacity={onScreen ? 1 : 0}
-        transition="transform 0.3s 0.1s ease-in-out, opacity 0.3s 0.2s ease-in"
+        transition="transform 0.2s 0.1s ease-in-out, opacity 0.2s 0.2s ease-in"
         fontWeight="normal"
         color="white"
       >
         <Heading
           color="main"
-          fontSize={79}
+          fontSize={70}
           pb={10}
           fontWeight="normal"
           display="flex"
@@ -52,7 +51,7 @@ export const What: React.FC = () => {
           </Text>
           are we building?
         </Heading>
-        <Text fontSize={{ base: 'lg', md: '4xl' }} fontWeight="light">
+        <Text fontSize={{ base: 'lg', md: '3xl' }}>
           We are building a gamified learning / web3 onboarding platform which
           through questing structures rewards users upon completion. Quest
           makers would create quest chains with quests, while questors would

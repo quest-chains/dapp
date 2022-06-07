@@ -72,8 +72,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       <Flex
         direction="column"
         w="100%"
-        px={8}
-        pb={20}
         flex={1}
         overflowX="hidden"
         visibility={
