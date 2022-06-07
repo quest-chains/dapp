@@ -6,15 +6,15 @@ import { QuestChains } from '@/components/Landing/QuestChains';
 import { What } from '@/components/Landing/What';
 import { Who } from '@/components/Landing/Who';
 
-const Explore: React.FC = () => {
+const Index: React.FC = () => {
   return (
     <Flex
       w="100%"
       h="100%"
-      p={{ base: 3, sm: 8, lg: 12 }}
       direction="column"
       align="center"
       pos="relative"
+      marginEnd={0}
     >
       <Head>
         <title>Quest Chains</title>
@@ -28,4 +28,4 @@ const Explore: React.FC = () => {
   );
 };
 
-export default Explore;
+export default Index;

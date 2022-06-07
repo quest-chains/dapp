@@ -13,7 +13,7 @@ export const How: React.FC = () => {
       align="center"
       justify="center"
       spacing={[6, 8]}
-      minH="100vh"
+      minH="69vh"
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
