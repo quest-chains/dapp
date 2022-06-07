@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import Head from 'next/head';
 
+import { Creators } from '@/components/Landing/Creators';
 import { How } from '@/components/Landing/How';
 import { QuestChains } from '@/components/Landing/QuestChains';
 import { What } from '@/components/Landing/What';
@@ -17,6 +18,7 @@ const Index: React.FC = () => {
       <What />
       <Who />
       <How />
+      <Creators />
     </Flex>
   );
 };
