@@ -23,6 +23,7 @@ export const QuestChains: React.FC = () => {
       bgPosition="center"
       bgSize="contain"
       backgroundRepeat="no-repeat"
+      id="quest-chains"
     >
       <Container
         d="flex"

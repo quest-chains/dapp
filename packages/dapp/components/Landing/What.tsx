@@ -8,7 +8,7 @@ export const What: React.FC = () => {
   const onScreen = useOnScreen(ref);
 
   return (
-    <HStack w="full" align="center" justify="center" minH="69vh">
+    <HStack w="full" align="center" justify="center" minH="100vh" id="what">
       <Image src="/Circles.svg" alt="circles" />
       <Flex
         ref={ref}

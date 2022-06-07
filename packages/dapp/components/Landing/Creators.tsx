@@ -22,6 +22,8 @@ export const Creators: React.FC = () => {
       justify="center"
       minH="100vh"
       pos="relative"
+      id="creators"
+      py={20}
     >
       <Box
         position="absolute"

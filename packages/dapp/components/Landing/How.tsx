@@ -18,6 +18,7 @@ export const How: React.FC = () => {
       bgAttachment="fixed"
       bgSize="cover"
       position="relative"
+      id="how"
     >
       <Box
         position="absolute"

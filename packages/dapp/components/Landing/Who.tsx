@@ -8,7 +8,14 @@ export const Who: React.FC = () => {
   const onScreen = useOnScreen(ref);
 
   return (
-    <HStack w="full" h="full" align="center" justify="center" minH="69vh">
+    <HStack
+      w="full"
+      h="full"
+      align="center"
+      justify="center"
+      minH="100vh"
+      id="who"
+    >
       <Image src="/Circles2.svg" alt="circles2" />
       <Flex
         ref={ref}
