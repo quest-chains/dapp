@@ -48,7 +48,7 @@ export const How: React.FC = () => {
         color="white"
       >
         <Flex align="center" mb={10}>
-          <Image src="/Circles3.svg" alt="circles3" mr={10} />
+          <Image src="Landing/Circles3.svg" alt="circles3" mr={10} />
           <Heading
             color="main"
             fontSize={79}
@@ -73,7 +73,7 @@ export const How: React.FC = () => {
               Show the world the NFTs you have collected!
             </Text>
           </Flex>
-          <Image src="/Circles4.svg" alt="circles3" mr={10} />
+          <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
         </Flex>
       </Flex>
     </HStack>

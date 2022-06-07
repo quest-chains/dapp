@@ -16,7 +16,7 @@ export const Who: React.FC = () => {
       minH="100vh"
       id="who"
     >
-      <Image src="/Circles2.svg" alt="circles2" />
+      <Image src="Landing/Circles2.svg" alt="circles2" />
       <Flex
         ref={ref}
         gap={8}
@@ -46,7 +46,7 @@ export const Who: React.FC = () => {
 
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/RectangleBG1.svg)"
+          bgImage="url(/Landing/RectangleBG1.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"
@@ -63,7 +63,7 @@ export const Who: React.FC = () => {
 
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/RectangleBG2.svg)"
+          bgImage="url(/Landing/RectangleBG2.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"

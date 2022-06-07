@@ -19,7 +19,7 @@ export const QuestChains: React.FC = () => {
       align="center"
       justify="center"
       minH="100vh"
-      bgImage="url(/Hero-Background1.svg)"
+      bgImage="url(/Landing/Hero-Background1.svg)"
       bgPosition="center"
       bgSize="contain"
       backgroundRepeat="no-repeat"
@@ -75,12 +75,12 @@ export const QuestChains: React.FC = () => {
           <Heading fontSize={148} pb={10} fontWeight="normal" color="white">
             <VStack>
               <Flex>
-                <Image src="/Star1.svg" alt="star1" />
+                <Image src="Landing/Star1.svg" alt="star1" />
                 Quest
               </Flex>
               <Flex>
                 Chains
-                <Image src="/Star2.svg" alt="star2" />
+                <Image src="Landing/Star2.svg" alt="star2" />
               </Flex>
             </VStack>
           </Heading>

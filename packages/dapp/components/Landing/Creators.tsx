@@ -3,9 +3,9 @@ import {
   Flex,
   Grid,
   Heading,
-  HStack,
   Image,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
@@ -16,7 +16,7 @@ export const Creators: React.FC = () => {
   const onScreen = useOnScreen(ref);
 
   return (
-    <HStack
+    <VStack
       w="full"
       align="center"
       justify="center"
@@ -24,6 +24,7 @@ export const Creators: React.FC = () => {
       pos="relative"
       id="creators"
       py={20}
+      gap={40}
     >
       <Box
         position="absolute"
@@ -62,7 +63,7 @@ export const Creators: React.FC = () => {
         </Box>
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/Card4.svg)"
+          bgImage="url(/Landing/Card4.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"
@@ -81,7 +82,7 @@ export const Creators: React.FC = () => {
 
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/Card1.svg)"
+          bgImage="url(/Landing/Card1.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"
@@ -104,11 +105,11 @@ export const Creators: React.FC = () => {
           h="338px"
           gridArea="q"
         >
-          <Image src="/Q.svg" alt="circles3" mr={10} />
+          <Image src="Landing/Q.svg" alt="circles3" mr={10} />
         </Flex>
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/Card3.svg)"
+          bgImage="url(/Landing/Card3.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"
@@ -130,7 +131,7 @@ export const Creators: React.FC = () => {
         <Box gridArea="empty1" />
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          bgImage="url(/Card2.svg)"
+          bgImage="url(/Landing/Card2.svg)"
           bgPosition="center"
           bgSize="contain"
           backgroundRepeat="no-repeat"
@@ -150,6 +151,38 @@ export const Creators: React.FC = () => {
         </Box>
         <Box gridArea="empty2" />
       </Grid>
-    </HStack>
+      <Flex w="full" pos="relative" justifyContent="center" mt={40}>
+        <Image
+          src="Landing/Turbine.svg"
+          position="absolute"
+          left="0"
+          top="-400px"
+          alt="turbine"
+        />
+
+        <Box
+          background="radial-gradient(100% 100% at 100% 71%, rgba(255, 255, 255, 0.14) 17%, rgba(255, 255, 255, 0) 100%)"
+          backdropFilter="blur(20px)"
+          border="1px solid #2DF8C7"
+          borderRadius="29.8157px"
+          w="80%"
+          h="428px"
+          textAlign="center"
+          p={24}
+        >
+          <Heading fontSize={70} mb={12}>
+            QUESTORS
+          </Heading>
+          <Text mb={6} fontSize={21}>
+            ♢ can complete quest chains by submitting proof of completion for
+            quests
+          </Text>
+          <Text fontSize={21}>
+            ♢ able to mint an NFT after successfully completing all of the
+            quests of a quest chain
+          </Text>
+        </Box>
+      </Flex>
+    </VStack>
   );
 };

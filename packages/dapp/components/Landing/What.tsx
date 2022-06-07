@@ -9,7 +9,7 @@ export const What: React.FC = () => {
 
   return (
     <HStack w="full" align="center" justify="center" minH="100vh" id="what">
-      <Image src="/Circles.svg" alt="circles" />
+      <Image src="Landing/Circles.svg" alt="circles" />
       <Flex
         ref={ref}
         display="flex"
