@@ -22,7 +22,6 @@ export const Creators: React.FC = () => {
       justify="center"
       minH="100vh"
       pos="relative"
-      id="creators"
       py={20}
       gap={40}
     >
@@ -38,6 +37,7 @@ export const Creators: React.FC = () => {
         zIndex={-3}
       />
       <Grid
+        id="creators"
         templateColumns="265px 265px 265px 265px"
         templateRows="auto"
         templateAreas={`
@@ -161,6 +161,7 @@ export const Creators: React.FC = () => {
         />
 
         <Box
+          id="questors"
           background="radial-gradient(100% 100% at 100% 71%, rgba(255, 255, 255, 0.14) 17%, rgba(255, 255, 255, 0) 100%)"
           backdropFilter="blur(20px)"
           border="1px solid #2DF8C7"

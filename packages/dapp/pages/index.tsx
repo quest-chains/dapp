@@ -10,6 +10,7 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import { Link } from 'react-scroll';
 
+import { BuiltWith } from '@/components/Landing/BuiltWith';
 import { Creators } from '@/components/Landing/Creators';
 import { How } from '@/components/Landing/How';
 import { QuestChains } from '@/components/Landing/QuestChains';
@@ -86,9 +87,22 @@ const Index: React.FC = () => {
             spy={true}
             smooth={true}
             duration={500}
+            offset={-120}
           >
             <Text fontSize={20} ml={3} cursor="pointer">
               creators
+            </Text>
+          </Link>
+          <Link
+            activeClass="active"
+            to="questors"
+            spy={true}
+            smooth={true}
+            duration={500}
+            offset={-110}
+          >
+            <Text fontSize={20} ml={3} cursor="pointer">
+              questors
             </Text>
           </Link>
         </HStack>
@@ -98,6 +112,7 @@ const Index: React.FC = () => {
       <Who />
       <How />
       <Creators />
+      <BuiltWith />
     </Flex>
   );
 };
