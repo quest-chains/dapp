@@ -46,17 +46,16 @@ export const What: React.FC = () => {
           fontWeight="normal"
           display="flex"
         >
-          <Text color="white" mr={6}>
-            What
+          What
+          <Text color="white" ml={6}>
+            are we building?
           </Text>
-          are we building?
         </Heading>
         <Text fontSize={{ base: 'lg', md: '3xl' }}>
           We are building a gamified learning / web3 onboarding platform which
-          through questing structures rewards users upon completion. Quest
-          makers would create quest chains with quests, while questors would
-          then complete these quests and get rewarded with NFTs, which would
-          showcase their newly acquired skills in profiles.
+          rewards users through questing. Quest makers create quest chains,
+          while questors would then complete the quests and get rewarded with
+          NFTs, which would showcase their newly acquired skills in profiles.
         </Text>
       </Flex>
     </HStack>

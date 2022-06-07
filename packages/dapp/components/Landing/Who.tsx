@@ -45,10 +45,8 @@ export const Who: React.FC = () => {
           flexDir="column"
           alignSelf="center"
         >
-          <Text color="white" mr={4}>
-            Who
-          </Text>
-          is it for?
+          Who
+          <Text color="white">is it for?</Text>
         </Heading>
 
         <Box

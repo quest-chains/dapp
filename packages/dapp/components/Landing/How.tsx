@@ -60,20 +60,23 @@ export const How: React.FC = () => {
             fontWeight="normal"
             display="flex"
           >
-            <Text color="white" mr={6}>
-              How
+            How
+            <Text color="white" ml={6}>
+              does it work?
             </Text>
-            does it work?
           </Heading>
         </Flex>
         <Flex align="center" mb={10}>
-          <Text fontSize={{ base: 'lg', md: '3xl' }} ml={20}>
-            Learning & engaging will become rewarding, as people will receive
-            rewards for their completed quests. It will become accumulative.
-            They will build their digital identity and become proud of the
-            things they accomplish, wanting to show the world the NFT’s they’ve
-            collected.
-          </Text>
+          <Flex flexDir="column" fontSize={{ base: 'lg', md: '3xl' }} ml={20}>
+            <Text>
+              Learning & engaging becomes rewarding, as questors receive rewards
+              for completed quests. It becomes accumulative. Build your digital
+              identity and become proud of the things you accomplish.
+            </Text>
+            <Text color="main">
+              Show the world the NFTs you have collected!
+            </Text>
+          </Flex>
           <Image src="/Circles4.svg" alt="circles3" mr={10} />
         </Flex>
       </Flex>
