@@ -8,7 +8,7 @@ export const What: React.FC = () => {
   const onScreen = useOnScreen(ref);
 
   return (
-    <HStack w="full" align="center" justify="center" minH="100vh" id="what">
+    <HStack w="full" align="center" justify="center" minH="70vh" id="what">
       <Image src="Landing/Circles.svg" alt="circles" />
       <Flex
         ref={ref}
@@ -21,7 +21,7 @@ export const What: React.FC = () => {
         zIndex={100}
         transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
         opacity={onScreen ? 1 : 0}
-        transition="transform 0.2s 0.1s ease-in-out, opacity 0.2s 0.2s ease-in"
+        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
         fontWeight="normal"
         color="white"
       >

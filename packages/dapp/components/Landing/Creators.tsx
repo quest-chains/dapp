@@ -22,8 +22,8 @@ export const Creators: React.FC = () => {
       justify="center"
       minH="100vh"
       pos="relative"
-      py={20}
-      gap={40}
+      pt={20}
+      gap={60}
     >
       <Box
         position="absolute"
@@ -54,7 +54,7 @@ export const Creators: React.FC = () => {
         ref={ref}
         transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
         opacity={onScreen ? 1 : 0}
-        transition="transform 0.2s 0.1s ease-in-out, opacity 0.2s 0.2s ease-in"
+        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
       >
         <Box h="338px" gridArea="creators">
           <Heading color="white" fontSize={70} mb={6}>

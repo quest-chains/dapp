@@ -13,7 +13,7 @@ export const Who: React.FC = () => {
       h="full"
       align="center"
       justify="center"
-      minH="100vh"
+      minH="70vh"
       id="who"
     >
       <Image src="Landing/Circles2.svg" alt="circles2" />
@@ -27,14 +27,14 @@ export const Who: React.FC = () => {
         zIndex={100}
         transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
         opacity={onScreen ? 1 : 0}
-        transition="transform 0.2s 0.1s ease-in-out, opacity 0.2s 0.2s ease-in"
+        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
         fontWeight="normal"
         color="white"
         height="340px"
       >
         <Heading
           color="main"
-          fontSize={50}
+          fontSize={58}
           fontWeight="normal"
           display="flex"
           flexDir="column"

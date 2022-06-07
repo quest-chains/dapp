@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   Heading,
   HStack,
@@ -113,6 +114,13 @@ const Index: React.FC = () => {
       <How />
       <Creators />
       <BuiltWith />
+      <Flex fontSize={36} alignItems="baseline" mb={10}>
+        2022
+        <Heading mx={4} color="main">
+          quest chains.
+        </Heading>{' '}
+        All right reserved.
+      </Flex>
     </Flex>
   );
 };
