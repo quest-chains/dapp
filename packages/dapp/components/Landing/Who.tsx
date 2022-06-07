@@ -8,19 +8,7 @@ export const Who: React.FC = () => {
   const onScreen = useOnScreen(ref);
 
   return (
-    <HStack
-      w="full"
-      h="full"
-      align="center"
-      justify="center"
-      spacing={[6, 8]}
-      minH="69vh"
-      bg="dark"
-      sx={{
-        scrollSnapAlign: 'start',
-        scrollSnapStop: 'normal',
-      }}
-    >
+    <HStack w="full" h="full" align="center" justify="center" minH="69vh">
       <Image src="/Circles2.svg" alt="circles2" />
       <Flex
         ref={ref}

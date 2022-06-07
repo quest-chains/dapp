@@ -18,12 +18,7 @@ export const QuestChains: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      spacing={[6, 8]}
       minH="100vh"
-      sx={{
-        scrollSnapAlign: 'start',
-        scrollSnapStop: 'normal',
-      }}
       bgImage="url(/Hero-Background1.svg)"
       bgPosition="center"
       bgSize="contain"

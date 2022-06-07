@@ -20,16 +20,7 @@ export const Creators: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      spacing={[6, 8]}
       minH="100vh"
-      bg="dark"
-      bgPosition="center"
-      bgAttachment="fixed"
-      bgSize="cover"
-      sx={{
-        scrollSnapAlign: 'start',
-        scrollSnapStop: 'normal',
-      }}
       pos="relative"
     >
       <Box
