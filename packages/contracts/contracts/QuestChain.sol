@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/utils/Context.sol";
 
 import "./interfaces/IQuestChain.sol";
 
+// author: @dan13ram
+
 contract QuestChain is
     IQuestChain,
     ReentrancyGuard,
@@ -25,40 +27,18 @@ contract QuestChain is
 
     mapping(uint256 => bool) public questPaused;
     uint256 public questCount;
+    IQuestChainFactory public override questChainFactory;
+    uint256 public override questChainId;
 
     mapping(address => mapping(uint256 => Status)) private _questStatus;
-
-    event QuestChainCreated(address indexed creator, string details);
-    event QuestChainEdited(address indexed editor, string details);
-    event QuestCreated(
-        address indexed creator,
-        uint256 indexed questId,
-        string details
-    );
-    event QuestEdited(
-        address indexed editor,
-        uint256 indexed questId,
-        string details
-    );
-    event QuestProofSubmitted(
-        address indexed quester,
-        uint256 indexed questId,
-        string proof
-    );
-    event QuestProofReviewed(
-        address indexed reviewer,
-        address indexed quester,
-        uint256 indexed questId,
-        bool success,
-        string details
-    );
-    event QuestPaused(address indexed editor, uint256 indexed questId);
-    event QuestUnpaused(address indexed editor, uint256 indexed questId);
 
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}
 
-    function _initRoleAdmins(address _owner) private {
+    function _init(address _owner, string memory _tokenURI) private {
+        questChainFactory = IQuestChainFactory(msg.sender);
+        questChainId = questChainFactory.questChainCount();
+
         _setRoleAdmin(ADMIN_ROLE, OWNER_ROLE);
         _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
@@ -67,14 +47,20 @@ contract QuestChain is
         _grantRole(ADMIN_ROLE, _owner);
         _grantRole(EDITOR_ROLE, _owner);
         _grantRole(REVIEWER_ROLE, _owner);
+
+        setTokenURI(_tokenURI);
     }
 
-    function init(address _owner, string calldata _details)
-        external
-        override
-        initializer
-    {
-        _initRoleAdmins(_owner);
+    function questChainToken() public view override returns (IQuestChainToken) {
+        return IQuestChainToken(questChainFactory.questChainToken());
+    }
+
+    function init(
+        address _owner,
+        string calldata _details,
+        string memory _tokenURI
+    ) external override initializer {
+        _init(_owner, _tokenURI);
 
         emit QuestChainCreated(_owner, _details);
     }
@@ -82,11 +68,12 @@ contract QuestChain is
     function initWithRoles(
         address _owner,
         string calldata _details,
+        string memory _tokenURI,
         address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override initializer {
-        _initRoleAdmins(_owner);
+        _init(_owner, _tokenURI);
 
         for (uint256 i = 0; i < _admins.length; i = i + 1) {
             _grantRole(ADMIN_ROLE, _admins[i]);
@@ -157,6 +144,19 @@ contract QuestChain is
     modifier validQuest(uint256 _questId) {
         require(_questId < questCount, "QuestChain: quest not found");
         _;
+    }
+
+    function setTokenURI(string memory _tokenURI)
+        public
+        override
+        onlyRole(OWNER_ROLE)
+    {
+        questChainToken().setTokenURI(questChainId, _tokenURI);
+        emit QuestChainTokenURIUpdated(_tokenURI);
+    }
+
+    function getTokenURI() public view override returns (string memory) {
+        return questChainToken().uri(questChainId);
     }
 
     function pauseQuest(uint256 _questId)
@@ -250,5 +250,20 @@ contract QuestChain is
         returns (Status status)
     {
         status = _questStatus[_quester][_questId];
+    }
+
+    function mintToken(address _quester) public override {
+        for (uint256 questId = 0; questId < questCount; questId = questId + 1) {
+            require(
+                questPaused[questId] ||
+                    _questStatus[_quester][questId] == Status.pass,
+                "QuestChain: chain incomplete"
+            );
+        }
+        questChainToken().mint(_quester, questChainId);
+    }
+
+    function burnToken(address _quester) public override onlyRole(OWNER_ROLE) {
+        questChainToken().burn(_quester, questChainId);
     }
 }
