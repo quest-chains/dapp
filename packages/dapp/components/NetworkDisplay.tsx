@@ -8,7 +8,7 @@ import {
   TextProps,
 } from '@chakra-ui/react';
 
-import { NETWORK_INFO } from '@/web3';
+import { AVAILABLE_NETWORK_INFO } from '@/web3';
 
 export const NetworkDisplay: React.FC<
   {
@@ -18,7 +18,7 @@ export const NetworkDisplay: React.FC<
     textProps?: TextProps;
   } & StackProps
 > = ({ chainId, imageProps, asTag = false, textProps, ...props }) => {
-  const networkInfo = NETWORK_INFO[chainId];
+  const networkInfo = AVAILABLE_NETWORK_INFO[chainId];
   if (!networkInfo) return null;
   const { image, label, name } = networkInfo;
   const inner = (

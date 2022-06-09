@@ -46,7 +46,7 @@ import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
-import { NETWORK_INFO, useWallet } from '@/web3';
+import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -319,7 +319,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     >
       <Head>
         <title>
-          {questChain.name} - {NETWORK_INFO[questChain.chainId].name}
+          {questChain.name} - {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
         </title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
@@ -598,7 +598,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    Object.keys(NETWORK_INFO).map(async chainId => {
+    Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(

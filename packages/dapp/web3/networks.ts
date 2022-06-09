@@ -18,7 +18,7 @@ export type NetworkInfo = {
   };
 };
 
-const AVAILABLE_NETWORK_INFO: NetworkInfo = {
+export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
   '0x1': {
     chainId: '0x1',
     name: 'Ethereum Mainnet',
@@ -88,19 +88,16 @@ const AVAILABLE_NETWORK_INFO: NetworkInfo = {
 
 const getNetworkInfo = (networks: string[] | undefined): NetworkInfo => {
   if (networks && networks.length > 0 && AVAILABLE_NETWORK_INFO) {
-    return networks
-      .filter(n => !Number.isNaN(Number(n)))
-      .sort((a, b) => (Number(a) > Number(b) ? 1 : -1))
-      .reduce((t, n) => {
-        if (AVAILABLE_NETWORK_INFO[n]) {
-          return { ...t, [n]: AVAILABLE_NETWORK_INFO[n] };
-        }
-        return t;
-      }, {});
+    return networks.reduce((t, n) => {
+      if (AVAILABLE_NETWORK_INFO[n]) {
+        return { ...t, [n]: AVAILABLE_NETWORK_INFO[n] };
+      }
+      return t;
+    }, {});
   }
   return AVAILABLE_NETWORK_INFO;
 };
 
-export const NETWORK_INFO = getNetworkInfo(SUPPORTED_NETWORKS);
+export const SUPPORTED_NETWORK_INFO = getNetworkInfo(SUPPORTED_NETWORKS);
 
-export const CHAIN_ID = Object.keys(NETWORK_INFO)[0];
+export const CHAIN_ID = SUPPORTED_NETWORKS[0];

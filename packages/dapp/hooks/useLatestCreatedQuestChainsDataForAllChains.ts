@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { getCreatedQuestChains } from '@/graphql/questChains';
 import { QuestChainInfoFragment } from '@/graphql/types';
-import { NETWORK_INFO, useWallet } from '@/web3';
-
-const chainIds = Object.keys(NETWORK_INFO);
-
-import { useRefresh } from './useRefresh';
+import { useRefresh } from '@/hooks/useRefresh';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { useWallet } from '@/web3';
 
 export const useLatestCreatedQuestChainsDataForAllChains = (): {
   questChains: QuestChainInfoFragment[];
@@ -28,7 +26,7 @@ export const useLatestCreatedQuestChainsDataForAllChains = (): {
       try {
         setFetching(true);
         const allResults = await Promise.all(
-          chainIds.map(async chainId =>
+          SUPPORTED_NETWORKS.map(async chainId =>
             getCreatedQuestChains(chainId, address),
           ),
         );

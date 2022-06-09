@@ -216,10 +216,7 @@ contract QuestChain is
         validQuest(_questId)
     {
         Status status = _questStatus[_msgSender()][_questId];
-        require(
-            status == Status.init || status == Status.fail,
-            "QuestChain: in review or passed"
-        );
+        require(status != Status.pass, "QuestChain: already passed");
 
         _questStatus[_msgSender()][_questId] = Status.review;
 

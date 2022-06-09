@@ -24,7 +24,7 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { useENS } from '@/hooks/useENS';
 import {
   formatAddress,
-  NETWORK_INFO,
+  SUPPORTED_NETWORK_INFO,
   switchChainOnMetaMask,
   useWallet,
 } from '@/web3';
@@ -95,7 +95,7 @@ export const WalletDisplay: React.FC = () => {
               <Tooltip label="View in Block Explorer">
                 <Link
                   w="100%"
-                  href={`${NETWORK_INFO[chainId].explorer}/address/${address}`}
+                  href={`${SUPPORTED_NETWORK_INFO[chainId].explorer}/address/${address}`}
                   _hover={{
                     textDecor: 'none',
                     bg: 'whiteAlpha.200',
@@ -111,7 +111,7 @@ export const WalletDisplay: React.FC = () => {
                     align="center"
                     borderRadius="full"
                   >
-                    {NETWORK_INFO[chainId].explorerLabel}
+                    {SUPPORTED_NETWORK_INFO[chainId].explorerLabel}
                     <ExternalLinkIcon />
                   </Flex>
                 </Link>
@@ -120,7 +120,7 @@ export const WalletDisplay: React.FC = () => {
             <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />
             <VStack w="100%" spacing={2} align="stretch">
               <Text fontSize="lg">Supported Networks</Text>
-              {Object.keys(NETWORK_INFO)
+              {Object.keys(SUPPORTED_NETWORK_INFO)
                 .filter(c => c !== chainId)
                 .map(c => {
                   const inner = (
@@ -142,7 +142,7 @@ export const WalletDisplay: React.FC = () => {
                   );
                   return isMetaMask ? (
                     <Tooltip
-                      label={`Switch to ${NETWORK_INFO[c].name}`}
+                      label={`Switch to ${SUPPORTED_NETWORK_INFO[c].name}`}
                       key={c}
                     >
                       {inner}

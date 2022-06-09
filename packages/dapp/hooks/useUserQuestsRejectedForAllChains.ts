@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { getQuestsRejectedForUserAndChain } from '@/graphql/questStatuses';
 import { QuestStatusInfoFragment } from '@/graphql/types';
-import { NETWORK_INFO } from '@/web3';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 import { useRefresh } from './useRefresh';
-
-const chainIds = Object.keys(NETWORK_INFO);
 
 export const useUserQuestsRejectedForAllChains = (
   address: string,
@@ -27,7 +25,7 @@ export const useUserQuestsRejectedForAllChains = (
       try {
         setFetching(true);
         const allResults = await Promise.all(
-          chainIds.map(async chainId =>
+          SUPPORTED_NETWORKS.map(async chainId =>
             getQuestsRejectedForUserAndChain(chainId, address ?? ''),
           ),
         );

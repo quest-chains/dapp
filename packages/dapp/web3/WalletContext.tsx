@@ -11,7 +11,7 @@ import Web3Modal from 'web3modal';
 
 import { isSupportedNetwork } from './helpers';
 import { switchChainOnMetaMask } from './metamask';
-import { CHAIN_ID, NETWORK_INFO } from './networks';
+import { CHAIN_ID, SUPPORTED_NETWORK_INFO } from './networks';
 import { WEB3_MODAL_OPTIONS } from './options';
 
 export type WalletContextType = {
@@ -118,7 +118,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
             }
             if (!success) {
               toast.error(
-                `Network not supported, please switch to ${NETWORK_INFO[CHAIN_ID].name}`,
+                `Network not supported, please switch to ${SUPPORTED_NETWORK_INFO[CHAIN_ID].name}`,
               );
               disconnect();
             }
@@ -126,7 +126,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         });
       } else {
         toast.error(
-          `Network not supported, please switch to ${NETWORK_INFO[CHAIN_ID].name}`,
+          `Network not supported, please switch to ${SUPPORTED_NETWORK_INFO[CHAIN_ID].name}`,
         );
         disconnect();
       }

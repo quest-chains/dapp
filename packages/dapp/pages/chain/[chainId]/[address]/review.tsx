@@ -49,7 +49,7 @@ import {
   uploadFilesViaAPI,
   uploadMetadataViaAPI,
 } from '@/utils/metadata';
-import { formatAddress, NETWORK_INFO, useWallet } from '@/web3';
+import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -279,7 +279,8 @@ const Review: React.FC<Props> = ({
     <VStack px={{ base: 0, lg: 40 }} spacing={8}>
       <Head>
         <title>
-          Review - {questChain.name} - {NETWORK_INFO[questChain.chainId].name}
+          Review - {questChain.name} -{' '}
+          {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
         </title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
@@ -411,7 +412,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    Object.keys(NETWORK_INFO).map(async chainId => {
+    Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(

@@ -327,6 +327,18 @@ export function handleQuestProofSubmitted(
         let usersFailed = quest.usersFailed;
         newArray = removeFromArray(usersFailed, questStatusId);
         quest.usersFailed = newArray;
+
+        let usersInReview = quest.usersInReview;
+        newArray = removeFromArray(usersInReview, questStatusId);
+        quest.usersInReview = newArray;
+
+        let questsInReview = user.questsInReview;
+        newArray = removeFromArray(questsInReview, questStatusId);
+        user.questsInReview = newArray;
+
+        questsInReview = questChain.questsInReview;
+        newArray = removeFromArray(questsInReview, questStatusId);
+        questChain.questsInReview = newArray;
       }
 
       let usersInReview = quest.usersInReview;

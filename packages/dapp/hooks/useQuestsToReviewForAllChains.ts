@@ -3,9 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { getQuestChainsToReview } from '@/graphql/questReviews';
 import { QuestChainReviewInfoFragment } from '@/graphql/types';
-import { NETWORK_INFO } from '@/web3';
-
-const chainIds = Object.keys(NETWORK_INFO);
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestsToReviewForAllChains = (
   address: string,
@@ -25,7 +23,7 @@ export const useQuestsToReviewForAllChains = (
       try {
         setFetching(true);
         const allResults = await Promise.all(
-          chainIds.map(async chainId =>
+          SUPPORTED_NETWORKS.map(async chainId =>
             getQuestChainsToReview(chainId, address),
           ),
         );

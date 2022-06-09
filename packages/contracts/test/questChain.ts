@@ -407,10 +407,12 @@ describe('QuestChain', () => {
       await expect(tx).to.be.revertedWith('QuestChain: quest not found');
     });
 
-    it('Should revert submitProof if already in review', async () => {
-      const tx = chain.submitProof(0, DETAILS_STRING);
+    it('Should submitProof event if already in review', async () => {
+      const tx = await chain.submitProof(0, DETAILS_STRING);
 
-      await expect(tx).to.be.revertedWith('QuestChain: in review or passed');
+      await expect(tx)
+        .to.emit(chain, 'QuestProofSubmitted')
+        .withArgs(owner.address, 0, DETAILS_STRING);
     });
 
     it('Should revert submitProof if already accepted', async () => {
@@ -420,7 +422,7 @@ describe('QuestChain', () => {
 
       const tx = chain.submitProof(0, DETAILS_STRING);
 
-      await expect(tx).to.be.revertedWith('QuestChain: in review or passed');
+      await expect(tx).to.be.revertedWith('QuestChain: already passed');
     });
 
     it('Should submitProof for a quest if already failed', async () => {
