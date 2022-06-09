@@ -1,6 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ContractFactory } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { QuestChain, QuestChainFactory } from '../types';
@@ -10,11 +9,11 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const ZERO_BYTES32 =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
 const DETAILS_STRING = 'ipfs://details';
+const URI_STRING = 'ipfs://uri';
 
 describe('QuestChainFactory', () => {
-  let questChain: QuestChain;
+  let questChainImpl: QuestChain;
   let chainFactory: QuestChainFactory;
-  let QuestChainFactory: ContractFactory;
   let signers: SignerWithAddress[];
   let chainAddress: string;
   let OWNER_ROLE: string;
@@ -27,26 +26,28 @@ describe('QuestChainFactory', () => {
     signers = await ethers.getSigners();
     owner = signers[0].address;
 
-    questChain = await deploy<QuestChain>('QuestChain', {});
+    questChainImpl = await deploy<QuestChain>('QuestChain', {});
 
     [OWNER_ROLE, ADMIN_ROLE, EDITOR_ROLE, REVIEWER_ROLE] = await Promise.all([
-      questChain.OWNER_ROLE(),
-      questChain.ADMIN_ROLE(),
-      questChain.EDITOR_ROLE(),
-      questChain.REVIEWER_ROLE(),
+      questChainImpl.OWNER_ROLE(),
+      questChainImpl.ADMIN_ROLE(),
+      questChainImpl.EDITOR_ROLE(),
+      questChainImpl.REVIEWER_ROLE(),
     ]);
 
-    QuestChainFactory = await ethers.getContractFactory('QuestChainFactory');
+    const QuestChainFactoryFactory = await ethers.getContractFactory(
+      'QuestChainFactory',
+    );
 
-    chainFactory = (await QuestChainFactory.deploy(
-      questChain.address,
+    chainFactory = (await QuestChainFactoryFactory.deploy(
+      questChainImpl.address,
     )) as QuestChainFactory;
 
     await chainFactory.deployed();
 
-    expect(chainFactory.deployTransaction)
-      .to.emit(chainFactory, 'QuestChainRootChanged')
-      .withArgs(ZERO_ADDRESS, questChain.address);
+    await expect(chainFactory.deployTransaction)
+      .to.emit(chainFactory, 'QuestChainImplUpdated')
+      .withArgs(ZERO_ADDRESS, questChainImpl.address);
 
     expect(OWNER_ROLE).to.equal(ZERO_BYTES32);
   });
@@ -54,41 +55,43 @@ describe('QuestChainFactory', () => {
   it('Should be initialized properly', async () => {
     expect(await chainFactory.questChainCount()).to.equal(0);
     expect(await chainFactory.owner()).to.equal(owner);
-    expect(await chainFactory.cloneRoot()).to.equal(questChain.address);
+    expect(await chainFactory.questChainImpl()).to.equal(
+      questChainImpl.address,
+    );
   });
 
-  it('Should revert change cloneRoot if zero address', async () => {
-    const tx = chainFactory.updateCloneRoot(ZERO_ADDRESS);
-    await expect(tx).to.revertedWith('QuestChainFactory: invalid cloneRoot');
+  it('Should revert change questChainImpl if zero address', async () => {
+    const tx = chainFactory.updateChainImpl(ZERO_ADDRESS);
+    await expect(tx).to.revertedWith('QuestChainFactory: invalid impl');
   });
 
-  it('Should revert change cloneRoot if not owner', async () => {
+  it('Should revert change questChainImpl if not owner', async () => {
     const newQuestChain = await deploy<QuestChain>('QuestChain', {});
     const tx = chainFactory
       .connect(signers[1])
-      .updateCloneRoot(newQuestChain.address);
+      .updateChainImpl(newQuestChain.address);
     await expect(tx).to.revertedWith('Ownable: caller is not the owner');
   });
 
-  it('Should change cloneRoot', async () => {
+  it('Should change questChainImpl', async () => {
     const newQuestChain = await deploy<QuestChain>('QuestChain', {});
-    const tx = await chainFactory.updateCloneRoot(newQuestChain.address);
+    const tx = await chainFactory.updateChainImpl(newQuestChain.address);
     await tx.wait();
     await expect(tx)
-      .to.emit(chainFactory, 'QuestChainRootChanged')
-      .withArgs(questChain.address, newQuestChain.address);
-    expect(await chainFactory.cloneRoot()).to.equal(newQuestChain.address);
+      .to.emit(chainFactory, 'QuestChainImplUpdated')
+      .withArgs(questChainImpl.address, newQuestChain.address);
+    expect(await chainFactory.questChainImpl()).to.equal(newQuestChain.address);
   });
 
-  it('Should revert init for cloneRoot', async () => {
-    const tx = questChain.init(owner, DETAILS_STRING);
+  it('Should revert init for questChainImpl', async () => {
+    const tx = questChainImpl.init(owner, DETAILS_STRING, URI_STRING);
     await expect(tx).to.revertedWith(
       'Initializable: contract is already initialized',
     );
   });
 
   it('Should deploy a QuestChain', async () => {
-    const tx = await chainFactory.create(DETAILS_STRING);
+    const tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
       .to.emit(chainFactory, 'NewQuestChain')
@@ -118,6 +121,7 @@ describe('QuestChainFactory', () => {
     const reviewers = [signers[3].address, signers[4].address];
     const tx = await chainFactory.createWithRoles(
       DETAILS_STRING,
+      URI_STRING,
       admins,
       editors,
       reviewers,
@@ -175,6 +179,7 @@ describe('QuestChainFactory', () => {
 
     const tx = await chainFactory.createDeterministic(
       DETAILS_STRING,
+      URI_STRING,
       ZERO_BYTES32,
     );
 
@@ -189,10 +194,10 @@ describe('QuestChainFactory', () => {
 
   it('Should update questChainCount', async () => {
     expect(await chainFactory.questChainCount()).to.equal(3);
-    let tx = await chainFactory.create(DETAILS_STRING);
+    let tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     const chain0 = await awaitQuestChainAddress(await tx.wait());
     expect(await chainFactory.questChainCount()).to.equal(4);
-    tx = await chainFactory.create(DETAILS_STRING);
+    tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     const chain1 = await awaitQuestChainAddress(await tx.wait());
     expect(await chainFactory.questChainCount()).to.equal(5);
 

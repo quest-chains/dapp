@@ -48,7 +48,7 @@ contract QuestChain is
         _grantRole(EDITOR_ROLE, _owner);
         _grantRole(REVIEWER_ROLE, _owner);
 
-        setTokenURI(_tokenURI);
+        _setTokenURI(_tokenURI);
     }
 
     function questChainToken() public view override returns (IQuestChainToken) {
@@ -146,13 +146,17 @@ contract QuestChain is
         _;
     }
 
+    function _setTokenURI(string memory _tokenURI) internal {
+        questChainToken().setTokenURI(questChainId, _tokenURI);
+        emit QuestChainTokenURIUpdated(_tokenURI);
+    }
+
     function setTokenURI(string memory _tokenURI)
         public
         override
         onlyRole(OWNER_ROLE)
     {
-        questChainToken().setTokenURI(questChainId, _tokenURI);
-        emit QuestChainTokenURIUpdated(_tokenURI);
+        _setTokenURI(_tokenURI);
     }
 
     function getTokenURI() public view override returns (string memory) {

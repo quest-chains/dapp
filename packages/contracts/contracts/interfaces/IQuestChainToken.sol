@@ -8,8 +8,6 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
 interface IQuestChainToken is IERC1155MetadataURI {
     function questChainFactory() external view returns (IQuestChainFactory);
 
-    function setQuestChainFactory(address _factory) external;
-
     function setTokenOwner(uint256 _tokenId, address _questChain) external;
 
     function setTokenURI(uint256 _tokenId, string memory _tokenURI) external;

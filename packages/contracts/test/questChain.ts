@@ -1,6 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ContractFactory } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { QuestChain, QuestChainFactory } from '../types';
@@ -12,6 +11,7 @@ import {
 } from './utils/helpers';
 
 const DETAILS_STRING = 'ipfs://details';
+const URI_STRING = 'ipfs://uri';
 
 describe('QuestChain', () => {
   let chain: QuestChain;
@@ -36,17 +36,17 @@ describe('QuestChain', () => {
       questChainImpl.REVIEWER_ROLE(),
     ]);
 
-    const QuestChainFactory: ContractFactory = await ethers.getContractFactory(
+    const QuestChainFactoryFactory = await ethers.getContractFactory(
       'QuestChainFactory',
     );
 
-    chainFactory = (await QuestChainFactory.deploy(
+    chainFactory = (await QuestChainFactoryFactory.deploy(
       questChainImpl.address,
     )) as QuestChainFactory;
 
     await chainFactory.deployed();
 
-    const tx = await chainFactory.create(DETAILS_STRING);
+    const tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
       .to.emit(chainFactory, 'NewQuestChain')

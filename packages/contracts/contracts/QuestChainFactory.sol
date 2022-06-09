@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./interfaces/IQuestChain.sol";
-import "./interfaces/IQuestChainToken.sol";
 import "./interfaces/IQuestChainFactory.sol";
+import "./QuestChainToken.sol";
 
 // author: @dan13ram
 
@@ -19,29 +19,19 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
     address public override questChainImpl;
     address public override questChainToken;
 
-    constructor(address _questChainImpl, address _questChainToken) {
+    constructor(address _questChainImpl) {
         updateChainImpl(_questChainImpl);
-        updateChainToken(_questChainToken);
+        questChainToken = address(new QuestChainToken());
     }
 
     function updateChainImpl(address _questChainImpl) public onlyOwner {
         require(
             Address.isContract(_questChainImpl),
-            "QuestChainFactory: invalid questChainImpl"
+            "QuestChainFactory: invalid impl"
         );
         address oldImpl = questChainImpl;
         questChainImpl = _questChainImpl;
         emit QuestChainImplUpdated(oldImpl, _questChainImpl);
-    }
-
-    function updateChainToken(address _questChainToken) public onlyOwner {
-        require(
-            Address.isContract(_questChainToken),
-            "QuestChainFactory: invalid questChainToken"
-        );
-        address oldToken = questChainToken;
-        questChainToken = _questChainToken;
-        emit QuestChainTokenUpdated(oldToken, _questChainToken);
     }
 
     function _newQuestChain(
@@ -71,6 +61,11 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
         address[] calldata _editors,
         address[] calldata _reviewers
     ) internal {
+        IQuestChainToken(questChainToken).setTokenOwner(
+            questChainCount,
+            _questChainAddress
+        );
+
         IQuestChain(_questChainAddress).initWithRoles(
             _msgSender(),
             _details,

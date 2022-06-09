@@ -18,7 +18,9 @@ contract QuestChainToken is IQuestChainToken, ERC1155, Ownable {
 
     mapping(uint256 => address) private _tokenOwners;
 
-    constructor() ERC1155("") {}
+    constructor() ERC1155("") {
+        questChainFactory = IQuestChainFactory(msg.sender);
+    }
 
     modifier onlyChainFactory() {
         require(
@@ -34,14 +36,6 @@ contract QuestChainToken is IQuestChainToken, ERC1155, Ownable {
             "QuestChainToken: not token owner"
         );
         _;
-    }
-
-    function setQuestChainFactory(address _factory) public override onlyOwner {
-        require(
-            Address.isContract(_factory),
-            "QuestChainFactory: invalid questChainFactory"
-        );
-        questChainFactory = IQuestChainFactory(_factory);
     }
 
     function setTokenOwner(uint256 _tokenId, address _questChain)

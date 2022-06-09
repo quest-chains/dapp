@@ -8,10 +8,6 @@ interface IQuestChainFactory {
         address indexed oldImpl,
         address indexed newImpl
     );
-    event QuestChainTokenUpdated(
-        address indexed oldToken,
-        address indexed newToken
-    );
 
     function questChainCount() external view returns (uint256);
 
