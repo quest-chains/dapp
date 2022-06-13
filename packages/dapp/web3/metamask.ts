@@ -1,17 +1,17 @@
 import { utils } from 'ethers';
 
-import { NETWORK_INFO } from './networks';
+import { SUPPORTED_NETWORK_INFO } from './networks';
 
 export const switchChainOnMetaMask = async (
   chainId: string,
 ): Promise<boolean> => {
-  if (!NETWORK_INFO[chainId]) {
+  if (!SUPPORTED_NETWORK_INFO[chainId]) {
     // eslint-disable-next-line no-console
     console.error(`No network configuration found for chainId ${chainId}`);
     return false;
   }
 
-  const { name, symbol, explorer, rpc } = NETWORK_INFO[chainId];
+  const { name, symbol, explorer, rpc } = SUPPORTED_NETWORK_INFO[chainId];
 
   if (!(name && symbol && rpc && explorer && window.ethereum?.isMetaMask)) {
     // eslint-disable-next-line no-console

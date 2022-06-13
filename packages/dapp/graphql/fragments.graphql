@@ -23,6 +23,14 @@ fragment QuestChainInfo on QuestChain {
   reviewers {
     address: id
   }
+  token {
+    name
+    description
+    imageUrl
+    owners {
+      id
+    }
+  }
 }
 
 fragment QuestStatusInfo on QuestStatus {

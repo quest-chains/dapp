@@ -1,23 +1,18 @@
 import { useEffect, useState } from 'react';
 
-import { getQuestsRejectedForUserAndChain } from '@/graphql/questStatuses';
-import { QuestStatusInfoFragment } from '@/graphql/types';
+import { getBadgesForUser, UserBadges } from '@/graphql/badgesForUser';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
-import { useRefresh } from './useRefresh';
-
-export const useUserQuestsRejectedForAllChains = (
+export const useUserBadgesForAllChains = (
   address: string,
 ): {
   error: unknown;
   fetching: boolean;
-  results: QuestStatusInfoFragment[];
-  refresh: () => void;
+  results: (UserBadges | undefined | null)[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<QuestStatusInfoFragment[]>([]);
-  const [refreshCount, refresh] = useRefresh();
+  const [results, setResults] = useState<(UserBadges | undefined | null)[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -26,12 +21,12 @@ export const useUserQuestsRejectedForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            getQuestsRejectedForUserAndChain(chainId, address ?? ''),
+            getBadgesForUser(chainId, address ?? ''),
           ),
         );
         if (!isMounted) return;
 
-        setResults(allResults.flat());
+        setResults(allResults);
       } catch (err) {
         setError(err);
         setResults([]);
@@ -43,12 +38,11 @@ export const useUserQuestsRejectedForAllChains = (
     return () => {
       isMounted = false;
     };
-  }, [refreshCount, address]);
+  }, [address]);
 
   return {
     fetching,
     error,
     results,
-    refresh,
   };
 };

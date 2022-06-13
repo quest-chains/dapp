@@ -2,10 +2,10 @@
 import { gql, request } from 'graphql-request';
 
 import { GRAPH_HEALTH_ENDPOINT } from '@/utils/constants';
-import { NETWORK_INFO } from '@/web3/networks';
+import { SUPPORTED_NETWORK_INFO } from '@/web3/networks';
 
 const subgraphs: string[] = [];
-Object.values(NETWORK_INFO).forEach(info => {
+Object.values(SUPPORTED_NETWORK_INFO).forEach(info => {
   subgraphs.push(info.subgraphName);
 });
 
@@ -39,7 +39,7 @@ class GraphHealthStore {
 
   public async updateGraphHealth() {
     await Promise.all(
-      Object.values(NETWORK_INFO).map(async info => {
+      Object.values(SUPPORTED_NETWORK_INFO).map(async info => {
         this.graphHealth[info.chainId] = await getLatestBlock(
           info.subgraphName,
         );

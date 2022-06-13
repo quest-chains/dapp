@@ -1,6 +1,22 @@
 type Global @entity {
   id: ID!
   factoryAddress: Bytes!
+  implAddress: Bytes!
+  tokenAddress: Bytes!
+}
+
+type QuestChainToken @entity {
+  id: ID!
+  questChain: QuestChain!
+  tokenId: BigInt!
+  details: String!
+  name: String
+  description: String
+  imageUrl: String
+  animationUrl: String
+  mimeType: String
+  externalUrl: String
+  owners: [User!]!
 }
 
 type QuestChainEdit @entity {
@@ -46,6 +62,7 @@ type QuestChain @entity {
   status: [QuestStatus!]! @derivedFrom(field: "questChain")
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "questChain")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "questChain")
+  token: QuestChainToken! @derivedFrom(field: "questChain")
 }
 
 type QuestEdit @entity {
@@ -100,6 +117,7 @@ type User @entity {
   status: [QuestStatus!]! @derivedFrom(field: "user")
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "user")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "reviewer")
+  tokens: [QuestChainToken!]! @derivedFrom(field: "owners")
 }
 
 enum Status {

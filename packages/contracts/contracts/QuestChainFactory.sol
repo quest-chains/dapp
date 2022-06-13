@@ -4,44 +4,51 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./interfaces/IQuestChain.sol";
 import "./interfaces/IQuestChainFactory.sol";
+import "./QuestChainToken.sol";
+
+// author: @dan13ram
 
 contract QuestChainFactory is IQuestChainFactory, Ownable {
     uint256 public questChainCount = 0;
     mapping(uint256 => address) private _questChains;
 
-    event NewQuestChain(uint256 indexed index, address questChain);
-    event QuestChainRootChanged(
-        address indexed oldRoot,
-        address indexed newRoot
-    );
+    address public override questChainImpl;
+    address public override questChainToken;
 
-    address public cloneRoot;
-
-    constructor(address _cloneRoot) {
-        updateCloneRoot(_cloneRoot);
+    constructor(address _questChainImpl) {
+        questChainToken = address(new QuestChainToken());
+        updateChainImpl(_questChainImpl);
     }
 
-    function updateCloneRoot(address _cloneRoot) public onlyOwner {
+    function updateChainImpl(address _questChainImpl) public onlyOwner {
         require(
-            _cloneRoot != address(0),
-            "QuestChainFactory: invalid cloneRoot"
+            Address.isContract(_questChainImpl),
+            "QuestChainFactory: invalid impl"
         );
-        address oldRoot = cloneRoot;
-        cloneRoot = _cloneRoot;
-        emit QuestChainRootChanged(oldRoot, _cloneRoot);
+        address oldImpl = questChainImpl;
+        questChainImpl = _questChainImpl;
+        emit QuestChainImplUpdated(oldImpl, _questChainImpl);
     }
 
     function _newQuestChain(
         address _questChainAddress,
-        string calldata _details
+        string calldata _details,
+        string memory _tokenURI
     ) internal {
-        IQuestChain(_questChainAddress).init(_msgSender(), _details);
+        IQuestChainToken(questChainToken).setTokenOwner(
+            questChainCount,
+            _questChainAddress
+        );
+
+        IQuestChain(_questChainAddress).init(_msgSender(), _details, _tokenURI);
 
         _questChains[questChainCount] = _questChainAddress;
-        emit NewQuestChain(questChainCount, _questChainAddress);
+
+        emit QuestChainCreated(questChainCount, _questChainAddress);
 
         questChainCount++;
     }
@@ -49,47 +56,56 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
     function _newQuestChainWithRoles(
         address _questChainAddress,
         string calldata _details,
+        string memory _tokenURI,
         address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) internal {
+        IQuestChainToken(questChainToken).setTokenOwner(
+            questChainCount,
+            _questChainAddress
+        );
+
         IQuestChain(_questChainAddress).initWithRoles(
             _msgSender(),
             _details,
+            _tokenURI,
             _admins,
             _editors,
             _reviewers
         );
 
         _questChains[questChainCount] = _questChainAddress;
-        emit NewQuestChain(questChainCount, _questChainAddress);
+        emit QuestChainCreated(questChainCount, _questChainAddress);
 
         questChainCount++;
     }
 
-    function create(string calldata _details)
+    function create(string calldata _details, string memory _tokenURI)
         external
         override
         returns (address)
     {
-        address questChainAddress = Clones.clone(cloneRoot);
+        address questChainAddress = Clones.clone(questChainImpl);
 
-        _newQuestChain(questChainAddress, _details);
+        _newQuestChain(questChainAddress, _details, _tokenURI);
 
         return questChainAddress;
     }
 
     function createWithRoles(
         string calldata _details,
+        string memory _tokenURI,
         address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override returns (address) {
-        address questChainAddress = Clones.clone(cloneRoot);
+        address questChainAddress = Clones.clone(questChainImpl);
 
         _newQuestChainWithRoles(
             questChainAddress,
             _details,
+            _tokenURI,
             _admins,
             _editors,
             _reviewers
@@ -104,17 +120,45 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
         override
         returns (address)
     {
-        return Clones.predictDeterministicAddress(cloneRoot, _salt);
+        return Clones.predictDeterministicAddress(questChainImpl, _salt);
     }
 
-    function createDeterministic(string calldata _details, bytes32 _salt)
-        external
-        override
-        returns (address)
-    {
-        address questChainAddress = Clones.cloneDeterministic(cloneRoot, _salt);
+    function createDeterministic(
+        string calldata _details,
+        string memory _tokenURI,
+        bytes32 _salt
+    ) external override returns (address) {
+        address questChainAddress = Clones.cloneDeterministic(
+            questChainImpl,
+            _salt
+        );
 
-        _newQuestChain(questChainAddress, _details);
+        _newQuestChain(questChainAddress, _details, _tokenURI);
+
+        return questChainAddress;
+    }
+
+    function createDeterministicWithRoles(
+        string calldata _details,
+        string memory _tokenURI,
+        address[] calldata _admins,
+        address[] calldata _editors,
+        address[] calldata _reviewers,
+        bytes32 _salt
+    ) external override returns (address) {
+        address questChainAddress = Clones.cloneDeterministic(
+            questChainImpl,
+            _salt
+        );
+
+        _newQuestChainWithRoles(
+            questChainAddress,
+            _details,
+            _tokenURI,
+            _admins,
+            _editors,
+            _reviewers
+        );
 
         return questChainAddress;
     }
@@ -122,6 +166,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
     function getQuestChainAddress(uint256 _index)
         public
         view
+        override
         returns (address)
     {
         return _questChains[_index];

@@ -1,6 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ContractFactory } from 'ethers';
 import { ethers } from 'hardhat';
 
 import { QuestChain, QuestChainFactory } from '../types';
@@ -12,6 +11,7 @@ import {
 } from './utils/helpers';
 
 const DETAILS_STRING = 'ipfs://details';
+const URI_STRING = 'ipfs://uri';
 
 describe('QuestChain', () => {
   let chain: QuestChain;
@@ -36,17 +36,17 @@ describe('QuestChain', () => {
       questChainImpl.REVIEWER_ROLE(),
     ]);
 
-    const QuestChainFactory: ContractFactory = await ethers.getContractFactory(
+    const QuestChainFactoryFactory = await ethers.getContractFactory(
       'QuestChainFactory',
     );
 
-    chainFactory = (await QuestChainFactory.deploy(
+    chainFactory = (await QuestChainFactoryFactory.deploy(
       questChainImpl.address,
     )) as QuestChainFactory;
 
     await chainFactory.deployed();
 
-    const tx = await chainFactory.create(DETAILS_STRING);
+    const tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
       .to.emit(chainFactory, 'NewQuestChain')
@@ -407,10 +407,12 @@ describe('QuestChain', () => {
       await expect(tx).to.be.revertedWith('QuestChain: quest not found');
     });
 
-    it('Should revert submitProof if already in review', async () => {
-      const tx = chain.submitProof(0, DETAILS_STRING);
+    it('Should submitProof event if already in review', async () => {
+      const tx = await chain.submitProof(0, DETAILS_STRING);
 
-      await expect(tx).to.be.revertedWith('QuestChain: in review or passed');
+      await expect(tx)
+        .to.emit(chain, 'QuestProofSubmitted')
+        .withArgs(owner.address, 0, DETAILS_STRING);
     });
 
     it('Should revert submitProof if already accepted', async () => {
@@ -420,7 +422,7 @@ describe('QuestChain', () => {
 
       const tx = chain.submitProof(0, DETAILS_STRING);
 
-      await expect(tx).to.be.revertedWith('QuestChain: in review or passed');
+      await expect(tx).to.be.revertedWith('QuestChain: already passed');
     });
 
     it('Should submitProof for a quest if already failed', async () => {

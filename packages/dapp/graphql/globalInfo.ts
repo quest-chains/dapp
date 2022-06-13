@@ -4,7 +4,7 @@ import {
   GlobalInfoQuery,
   GlobalInfoQueryVariables,
 } from '@/graphql/types';
-import { NETWORK_INFO } from '@/web3';
+import { SUPPORTED_NETWORK_INFO } from '@/web3';
 
 export const getFactoryAddress = async (
   chainId: string,
@@ -25,7 +25,7 @@ export const getGlobalInfo = async (): Promise<Record<string, string>> => {
   const globalInfo: Record<string, string> = {};
 
   await Promise.all(
-    Object.keys(NETWORK_INFO).map(async chainId => {
+    Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
       const address = await getFactoryAddress(chainId);
       if (address) {
         globalInfo[chainId] = address;

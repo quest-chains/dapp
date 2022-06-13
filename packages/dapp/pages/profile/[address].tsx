@@ -2,36 +2,21 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { Grid, HStack, Link, Stack, Text, VStack } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
+import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 import { QuestsRejected } from '@/components/QuestsRejected';
 import { QuestsToReview } from '@/components/QuestsToReview';
+import { UserBadges } from '@/components/UserBadges';
 import { UserProgress } from '@/components/UserProgress';
 import { UserRoles } from '@/components/UserRoles';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
-const Profile: React.FC = () => {
-  const {
-    push,
-    query: { address: addressQuery },
-  } = useRouter();
+type Props = InferGetStaticPropsType<typeof getServerSideProps>;
+
+const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const { address, chainId } = useWallet();
-  const addressURL: string =
-    typeof addressQuery === 'object' ? addressQuery[0] : addressQuery ?? '';
   const isLoggedInUser = addressURL === address;
-
-  const isValidAddress = utils.isAddress(addressURL);
-  useEffect(() => {
-    if (!isValidAddress) {
-      push('/');
-    }
-  }, [isValidAddress, push]);
-
-  if (!isValidAddress) {
-    return null;
-  }
 
   return (
     <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
@@ -63,6 +48,7 @@ const Profile: React.FC = () => {
         </Link>
       </Stack>
 
+      <UserBadges address={addressURL} />
       <Grid templateColumns="repeat(2, 1fr)" gap={6}>
         <UserRoles address={addressURL} />
         <UserProgress address={addressURL} />
@@ -72,6 +58,24 @@ const Profile: React.FC = () => {
       </Grid>
     </VStack>
   );
+};
+
+type QueryParams = { address: string };
+
+export const getServerSideProps = async (
+  context: GetStaticPropsContext<QueryParams>,
+) => {
+  const address = context.params?.address ?? '';
+  const isValidAddress = !!address && utils.isAddress(address);
+
+  if (!isValidAddress) {
+    return { notFound: true };
+  }
+  return {
+    props: {
+      address,
+    },
+  };
 };
 
 export default Profile;

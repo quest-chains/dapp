@@ -13,13 +13,17 @@ class Metadata {
   name: string | null;
   description: string | null;
   imageUrl: string | null;
+  animationUrl: string | null;
   externalUrl: string | null;
+  mimeType: string | null;
 
   constructor() {
     this.name = null;
     this.description = null;
     this.imageUrl = null;
+    this.animationUrl = null;
     this.externalUrl = null;
+    this.mimeType = null;
   }
 }
 
@@ -68,9 +72,17 @@ export function fetchMetadata(details: string): Metadata {
       if (imageUrl != null && !imageUrl.isNull()) {
         metadata.imageUrl = imageUrl.toString();
       }
+      let animationUrl = data.get('animation_url');
+      if (animationUrl != null && !animationUrl.isNull()) {
+        metadata.animationUrl = animationUrl.toString();
+      }
       let externalUrl = data.get('external_url');
       if (externalUrl != null && !externalUrl.isNull()) {
         metadata.externalUrl = externalUrl.toString();
+      }
+      let mimeType = data.get('mime_type');
+      if (mimeType != null && !mimeType.isNull()) {
+        metadata.mimeType = mimeType.toString();
       }
     } else {
       log.warning('could not get IPFS details from hash {}', [hash]);

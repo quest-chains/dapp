@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getStatusForUser, UserStatus } from '@/graphql/statusForUser';
-import { NETWORK_INFO } from '@/web3';
-
-const chainIds = Object.keys(NETWORK_INFO);
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useUserProgressForAllChains = (
   address: string,
@@ -22,7 +20,7 @@ export const useUserProgressForAllChains = (
       try {
         setFetching(true);
         const allResults = await Promise.all(
-          chainIds.map(async chainId =>
+          SUPPORTED_NETWORKS.map(async chainId =>
             getStatusForUser(chainId, address ?? ''),
           ),
         );
