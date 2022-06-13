@@ -58,7 +58,7 @@ export const Who: React.FC = () => {
             PLAYERS
           </Heading>
           <Text mb={4}>♢ DAO newcomers</Text>
-          <Text mb={4}>♢ Curious, knowledge hungry peopled</Text>
+          <Text mb={4}>♢ Curious, knowledge hungry people</Text>
         </Box>
 
         <Box
