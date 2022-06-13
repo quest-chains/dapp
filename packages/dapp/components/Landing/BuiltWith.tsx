@@ -25,9 +25,9 @@ export const BuiltWith: React.FC = () => {
         borderRadius="full"
         right="-300px"
         top="-300px"
-        height="600px"
+        height="400px"
         filter="blur(484px)"
-        width="600px"
+        width="400px"
         background="#2DF8C7"
         zIndex={-3}
       />

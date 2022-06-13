@@ -353,7 +353,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }
 
   return (
-    <VStack w="100%" align="flex-start" color="main" px={{ base: 8, lg: 40 }}>
+    <VStack w="100%" align="flex-start" color="main" px={{ base: 0, lg: 40 }}>
       <Head>
         <title>
           {questChain.name} - {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
