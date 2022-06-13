@@ -76,7 +76,7 @@ async function main() {
   console.log('Ready to create your Quest Chain!');
   prompt('Press any key to continue...');
 
-  const tx = await factory.create(details);
+  const tx = await factory.create(details, details);
   const receipt = await tx.wait();
 
   const address = await awaitQuestChainAddress(receipt);

@@ -42,6 +42,9 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
+const SAMPLE_NFT_DETAILS =
+  'ipfs://bafybeihjhlukoewftfuw6jt3sdd62y5mz4jwpdka2zyjhmouju2qw4xo54';
+
 interface FormValues {
   name: string;
   adminAddresses: string[];
@@ -105,6 +108,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         const tx = await factoryContract.createWithRoles(
           details,
+          SAMPLE_NFT_DETAILS,
           adminAddresses,
           editorAddresses,
           reviewerAddresses,
