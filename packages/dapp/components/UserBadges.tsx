@@ -43,7 +43,7 @@ export const UserBadges: React.FC<{
           <Spinner color="main" />
         </VStack>
       ) : (
-        <>
+        <HStack spacing={4} align="stretch">
           {badges.length === 0 && <Text color="white">No badges found</Text>}
           {badges?.map(({ chainId, name, imageUrl }) => (
             <VStack
@@ -61,7 +61,7 @@ export const UserBadges: React.FC<{
               </HStack>
             </VStack>
           ))}
-        </>
+        </HStack>
       )}
     </VStack>
   );
