@@ -95,7 +95,8 @@ export const Creators: React.FC = () => {
             owner
           </Heading>
           <Text mb={4} fontSize={21}>
-            ♢ creator of the quest chain, sole owner, has all permissions
+            ♢ creator of the quest chain, has all permissions, can add other
+            owners.
           </Text>
         </Box>
         <Flex
