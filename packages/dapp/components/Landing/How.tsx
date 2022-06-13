@@ -65,7 +65,7 @@ export const How: React.FC = () => {
         <Flex align="center" mb={10}>
           <Flex flexDir="column" fontSize={{ base: 'lg', md: '3xl' }} ml={20}>
             <Text>
-              Learning & engaging becomes rewarding, as questors receive rewards
+              Learning & engaging becomes rewarding, as questers receive rewards
               for completed quests. It becomes accumulative. Build your digital
               identity and become proud of the things you accomplish.
             </Text>

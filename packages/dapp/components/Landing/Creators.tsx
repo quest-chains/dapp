@@ -161,7 +161,7 @@ export const Creators: React.FC = () => {
         />
 
         <Box
-          id="questors"
+          id="questers"
           background="radial-gradient(100% 100% at 100% 71%, rgba(255, 255, 255, 0.14) 17%, rgba(255, 255, 255, 0) 100%)"
           backdropFilter="blur(20px)"
           border="1px solid #2DF8C7"
@@ -172,7 +172,7 @@ export const Creators: React.FC = () => {
           p={24}
         >
           <Heading fontSize={70} mb={12}>
-            QUESTORS
+            QUESTERS
           </Heading>
           <Text mb={6} fontSize={21}>
             ♢ can complete quest chains by submitting proof of completion for

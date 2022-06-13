@@ -40,7 +40,7 @@ export const What: React.FC = () => {
         <Text fontSize={{ base: 'lg', md: '3xl' }}>
           We are building a gamified learning / web3 onboarding platform which
           rewards users through questing. Quest makers create quest chains,
-          while questors would then complete the quests and get rewarded with
+          while questers would then complete the quests and get rewarded with
           NFTs, which would showcase their newly acquired skills in profiles.
         </Text>
       </Flex>

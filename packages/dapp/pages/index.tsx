@@ -95,14 +95,14 @@ const Index: React.FC = () => {
           </Link>
           <Link
             activeClass="active"
-            to="questors"
+            to="questers"
             spy={true}
             smooth={true}
             duration={500}
             offset={-110}
           >
             <Text fontSize={20} ml={3} cursor="pointer">
-              questors
+              questers
             </Text>
           </Link>
         </HStack>
