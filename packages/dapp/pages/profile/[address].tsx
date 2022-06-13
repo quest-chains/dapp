@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 
 import { QuestsRejected } from '@/components/QuestsRejected';
 import { QuestsToReview } from '@/components/QuestsToReview';
+import { UserBadges } from '@/components/UserBadges';
 import { UserProgress } from '@/components/UserProgress';
 import { UserRoles } from '@/components/UserRoles';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
@@ -63,6 +64,7 @@ const Profile: React.FC = () => {
         </Link>
       </Stack>
 
+      <UserBadges address={addressURL} />
       <Grid templateColumns="repeat(2, 1fr)" gap={6}>
         <UserRoles address={addressURL} />
         <UserProgress address={addressURL} />

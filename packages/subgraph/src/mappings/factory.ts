@@ -1,12 +1,15 @@
 import { log } from '@graphprotocol/graph-ts';
-import { QuestChain, Global } from '../types/schema';
+import { QuestChainToken, QuestChain, Global } from '../types/schema';
 
 import {
   QuestChainCreated as QuestChainCreatedEvent,
   QuestChainImplUpdated as QuestChainImplUpdatedEvent,
   QuestChainFactory,
 } from '../types/QuestChainFactory/QuestChainFactory';
-import { QuestChain as QuestChainTemplate } from '../types/templates';
+import {
+  QuestChain as QuestChainTemplate,
+  QuestChainToken as QuestChainTokenTemplate,
+} from '../types/templates';
 
 import { getUser, getNetwork } from './helpers';
 
@@ -19,8 +22,12 @@ export function handleQuestChainImplUpdated(
     globalNode = new Global(network);
     globalNode.factoryAddress = event.address;
     let contract = QuestChainFactory.bind(event.address);
-    globalNode.tokenAddress = contract.questChainToken();
+    let tokenAddress = contract.questChainToken();
+    globalNode.tokenAddress = tokenAddress;
+
+    QuestChainTokenTemplate.create(tokenAddress);
   }
+
   globalNode.implAddress = event.params.newImpl;
   globalNode.save();
 }

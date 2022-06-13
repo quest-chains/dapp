@@ -110,7 +110,6 @@ export function getUser(address: Address): User {
   let user = User.load(address.toHexString());
   if (user == null) {
     user = new User(address.toHexString());
-    user.tokens = new Array<string>();
   }
   return user as User;
 }

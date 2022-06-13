@@ -62,7 +62,7 @@ type QuestChain @entity {
   status: [QuestStatus!]! @derivedFrom(field: "questChain")
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "questChain")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "questChain")
-  token: QuestChainToken!
+  token: QuestChainToken! @derivedFrom(field: "questChain")
 }
 
 type QuestEdit @entity {
@@ -117,7 +117,7 @@ type User @entity {
   status: [QuestStatus!]! @derivedFrom(field: "user")
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "user")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "reviewer")
-  tokens: [QuestChainToken!]!
+  tokens: [QuestChainToken!]! @derivedFrom(field: "owners")
 }
 
 enum Status {

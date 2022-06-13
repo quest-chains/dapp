@@ -104,3 +104,13 @@ query QuestsRejected($address: ID!) {
     }
   }
 }
+
+query BadgesForUser($address: ID!) {
+  user(id: $address) {
+    tokens {
+      name
+      description
+      imageUrl
+    }
+  }
+}

@@ -194,6 +194,19 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     return userStat;
   }, [questStatuses]);
 
+  const canMint = useMemo(
+    () =>
+      !!address &&
+      questChain?.token &&
+      !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
+      Object.values(userStatus).length > 0 &&
+      Object.values(userStatus).reduce(
+        (t, v) => t && v.status === Status.Pass,
+        true,
+      ),
+    [questChain, address, userStatus],
+  );
+
   const fetching = fetchingStatus || fetchingQuests;
 
   const refresh = useCallback(() => {
@@ -295,6 +308,35 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [contract, refresh, chainId, questChain],
   );
 
+  const [minting, setMinting] = useState(false);
+
+  const onMint = useCallback(async () => {
+    if (!chainId || chainId !== questChain?.chainId || !address) return;
+    setMinting(true);
+    let tid = toast.loading(
+      'Waiting for Confirmation - Confirm the transaction in your Wallet',
+    );
+    try {
+      const tx = await contract.mintToken(address);
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
+      toast.success(`Successfully minted your NFT`);
+      refresh();
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
+    }
+
+    setMinting(false);
+  }, [contract, refresh, chainId, questChain, address]);
+
   if (isFallback) {
     return (
       <VStack>
@@ -311,12 +353,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }
 
   return (
-    <VStack
-      w="100%"
-      align="flex-start"
-      color="main"
-      px={isUser ? { base: 0, lg: 40 } : 0}
-    >
+    <VStack w="100%" align="flex-start" color="main" px={{ base: 8, lg: 40 }}>
       <Head>
         <title>
           {questChain.name} - {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
@@ -415,6 +452,27 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           onClose={onUpdateQuestChainConfirmationClose}
         />
       </Flex>
+
+      {canMint && (
+        <VStack pt={6}>
+          <Button
+            isLoading={minting}
+            onClick={onMint}
+            background="whiteAlpha.50"
+            fontWeight="400"
+            borderRadius="full"
+            backdropFilter="blur(40px)"
+            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            color="main"
+            _hover={{
+              background: 'whiteAlpha.200',
+            }}
+            size="lg"
+          >
+            Mint NFT
+          </Button>
+        </VStack>
+      )}
 
       <SimpleGrid
         columns={isUser ? 1 : { base: 1, lg: 2 }}
