@@ -1,4 +1,4 @@
-// Sources flattened with hardhat v2.9.3 https://hardhat.org
+// Sources flattened with hardhat v2.9.9 https://hardhat.org
 
 // File @openzeppelin/contracts/access/IAccessControl.sol@v4.6.0
 
@@ -19,11 +19,7 @@ interface IAccessControl {
      *
      * _Available since v3.1._
      */
-    event RoleAdminChanged(
-        bytes32 indexed role,
-        bytes32 indexed previousAdminRole,
-        bytes32 indexed newAdminRole
-    );
+    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
 
     /**
      * @dev Emitted when `account` is granted `role`.
@@ -31,11 +27,7 @@ interface IAccessControl {
      * `sender` is the account that originated the contract call, an admin role
      * bearer except when using {AccessControl-_setupRole}.
      */
-    event RoleGranted(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Emitted when `account` is revoked `role`.
@@ -44,19 +36,12 @@ interface IAccessControl {
      *   - if using `revokeRole`, it is the admin role bearer
      *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
      */
-    event RoleRevoked(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(bytes32 role, address account)
-        external
-        view
-        returns (bool);
+    function hasRole(bytes32 role, address account) external view returns (bool);
 
     /**
      * @dev Returns the admin role that controls `role`. See {grantRole} and
@@ -106,6 +91,7 @@ interface IAccessControl {
     function renounceRole(bytes32 role, address account) external;
 }
 
+
 // File @openzeppelin/contracts/utils/Context.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
@@ -131,6 +117,7 @@ abstract contract Context {
         return msg.data;
     }
 }
+
 
 // File @openzeppelin/contracts/utils/Strings.sol@v4.6.0
 
@@ -188,11 +175,7 @@ library Strings {
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
-    function toHexString(uint256 value, uint256 length)
-        internal
-        pure
-        returns (string memory)
-    {
+    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
         bytes memory buffer = new bytes(2 * length + 2);
         buffer[0] = "0";
         buffer[1] = "x";
@@ -204,6 +187,7 @@ library Strings {
         return string(buffer);
     }
 }
+
 
 // File @openzeppelin/contracts/utils/introspection/IERC165.sol@v4.6.0
 
@@ -232,6 +216,7 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
+
 // File @openzeppelin/contracts/utils/introspection/ERC165.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/ERC165.sol)
@@ -256,22 +241,20 @@ abstract contract ERC165 is IERC165 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC165).interfaceId;
     }
 }
+
 
 // File @openzeppelin/contracts/access/AccessControl.sol@v4.6.0
 
 // OpenZeppelin Contracts (last updated v4.6.0) (access/AccessControl.sol)
 
 pragma solidity ^0.8.0;
+
+
+
 
 /**
  * @dev Contract module that allows children to implement role-based access
@@ -339,28 +322,14 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            interfaceId == type(IAccessControl).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(bytes32 role, address account)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function hasRole(bytes32 role, address account) public view virtual override returns (bool) {
         return _roles[role].members[account];
     }
 
@@ -404,13 +373,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * To change a role's admin, use {_setRoleAdmin}.
      */
-    function getRoleAdmin(bytes32 role)
-        public
-        view
-        virtual
-        override
-        returns (bytes32)
-    {
+    function getRoleAdmin(bytes32 role) public view virtual override returns (bytes32) {
         return _roles[role].adminRole;
     }
 
@@ -424,12 +387,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * - the caller must have ``role``'s admin role.
      */
-    function grantRole(bytes32 role, address account)
-        public
-        virtual
-        override
-        onlyRole(getRoleAdmin(role))
-    {
+    function grantRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
     }
 
@@ -442,12 +400,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * - the caller must have ``role``'s admin role.
      */
-    function revokeRole(bytes32 role, address account)
-        public
-        virtual
-        override
-        onlyRole(getRoleAdmin(role))
-    {
+    function revokeRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {
         _revokeRole(role, account);
     }
 
@@ -465,15 +418,8 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * - the caller must be `account`.
      */
-    function renounceRole(bytes32 role, address account)
-        public
-        virtual
-        override
-    {
-        require(
-            account == _msgSender(),
-            "AccessControl: can only renounce roles for self"
-        );
+    function renounceRole(bytes32 role, address account) public virtual override {
+        require(account == _msgSender(), "AccessControl: can only renounce roles for self");
 
         _revokeRole(role, account);
     }
@@ -536,6 +482,7 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
     }
 }
 
+
 // File @openzeppelin/contracts/utils/Address.sol@v4.6.0
 
 // OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)
@@ -597,16 +544,10 @@ library Address {
      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(
-            address(this).balance >= amount,
-            "Address: insufficient balance"
-        );
+        require(address(this).balance >= amount, "Address: insufficient balance");
 
         (bool success, ) = recipient.call{value: amount}("");
-        require(
-            success,
-            "Address: unable to send value, recipient may have reverted"
-        );
+        require(success, "Address: unable to send value, recipient may have reverted");
     }
 
     /**
@@ -627,10 +568,7 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data)
-        internal
-        returns (bytes memory)
-    {
+    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
         return functionCall(target, data, "Address: low-level call failed");
     }
 
@@ -664,13 +602,7 @@ library Address {
         bytes memory data,
         uint256 value
     ) internal returns (bytes memory) {
-        return
-            functionCallWithValue(
-                target,
-                data,
-                value,
-                "Address: low-level call with value failed"
-            );
+        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
     }
 
     /**
@@ -685,15 +617,10 @@ library Address {
         uint256 value,
         string memory errorMessage
     ) internal returns (bytes memory) {
-        require(
-            address(this).balance >= value,
-            "Address: insufficient balance for call"
-        );
+        require(address(this).balance >= value, "Address: insufficient balance for call");
         require(isContract(target), "Address: call to non-contract");
 
-        (bool success, bytes memory returndata) = target.call{value: value}(
-            data
-        );
+        (bool success, bytes memory returndata) = target.call{value: value}(data);
         return verifyCallResult(success, returndata, errorMessage);
     }
 
@@ -703,17 +630,8 @@ library Address {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(address target, bytes memory data)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            functionStaticCall(
-                target,
-                data,
-                "Address: low-level static call failed"
-            );
+    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+        return functionStaticCall(target, data, "Address: low-level static call failed");
     }
 
     /**
@@ -739,16 +657,8 @@ library Address {
      *
      * _Available since v3.4._
      */
-    function functionDelegateCall(address target, bytes memory data)
-        internal
-        returns (bytes memory)
-    {
-        return
-            functionDelegateCall(
-                target,
-                data,
-                "Address: low-level delegate call failed"
-            );
+    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
     }
 
     /**
@@ -796,6 +706,7 @@ library Address {
         }
     }
 }
+
 
 // File @openzeppelin/contracts/proxy/utils/Initializable.sol@v4.6.0
 
@@ -939,15 +850,13 @@ abstract contract Initializable {
             );
             return false;
         } else {
-            require(
-                _initialized < version,
-                "Initializable: contract is already initialized"
-            );
+            require(_initialized < version, "Initializable: contract is already initialized");
             _initialized = version;
             return true;
         }
     }
 }
+
 
 // File @openzeppelin/contracts/security/Pausable.sol@v4.6.0
 
@@ -1040,6 +949,7 @@ abstract contract Pausable is Context {
     }
 }
 
+
 // File @openzeppelin/contracts/security/ReentrancyGuard.sol@v4.6.0
 
 // OpenZeppelin Contracts v4.4.1 (security/ReentrancyGuard.sol)
@@ -1105,72 +1015,239 @@ abstract contract ReentrancyGuard {
     }
 }
 
+
+// File contracts/interfaces/IQuestChainFactory.sol
+
+
+pragma solidity ^0.8.0;
+
+interface IQuestChainFactory {
+    event QuestChainCreated(uint256 indexed index, address questChain);
+    event QuestChainImplUpdated(
+        address indexed oldImpl,
+        address indexed newImpl
+    );
+
+    function questChainCount() external view returns (uint256);
+
+    function questChainImpl() external view returns (address);
+
+    function questChainToken() external view returns (address);
+
+    function create(string calldata _details, string memory _tokenURI)
+        external
+        returns (address);
+
+    function createWithRoles(
+        string calldata _details,
+        string memory _tokenURI,
+        address[] calldata _admins,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) external returns (address);
+
+    function createDeterministic(
+        string calldata _details,
+        string memory _tokenURI,
+        bytes32 _salt
+    ) external returns (address);
+
+    function createDeterministicWithRoles(
+        string calldata _details,
+        string memory _tokenURI,
+        address[] calldata _admins,
+        address[] calldata _editors,
+        address[] calldata _reviewers,
+        bytes32 _salt
+    ) external returns (address);
+
+    function predictDeterministicAddress(bytes32 _salt)
+        external
+        returns (address);
+
+    function getQuestChainAddress(uint256 _index)
+        external
+        view
+        returns (address);
+}
+
+
+// File @openzeppelin/contracts/token/ERC1155/IERC1155.sol@v4.6.0
+
+// OpenZeppelin Contracts v4.4.1 (token/ERC1155/IERC1155.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Required interface of an ERC1155 compliant contract, as defined in the
+ * https://eips.ethereum.org/EIPS/eip-1155[EIP].
+ *
+ * _Available since v3.1._
+ */
+interface IERC1155 is IERC165 {
+    /**
+     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.
+     */
+    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
+
+    /**
+     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all
+     * transfers.
+     */
+    event TransferBatch(
+        address indexed operator,
+        address indexed from,
+        address indexed to,
+        uint256[] ids,
+        uint256[] values
+    );
+
+    /**
+     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to
+     * `approved`.
+     */
+    event ApprovalForAll(address indexed account, address indexed operator, bool approved);
+
+    /**
+     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.
+     *
+     * If an {URI} event was emitted for `id`, the standard
+     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value
+     * returned by {IERC1155MetadataURI-uri}.
+     */
+    event URI(string value, uint256 indexed id);
+
+    /**
+     * @dev Returns the amount of tokens of token type `id` owned by `account`.
+     *
+     * Requirements:
+     *
+     * - `account` cannot be the zero address.
+     */
+    function balanceOf(address account, uint256 id) external view returns (uint256);
+
+    /**
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.
+     *
+     * Requirements:
+     *
+     * - `accounts` and `ids` must have the same length.
+     */
+    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)
+        external
+        view
+        returns (uint256[] memory);
+
+    /**
+     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,
+     *
+     * Emits an {ApprovalForAll} event.
+     *
+     * Requirements:
+     *
+     * - `operator` cannot be the caller.
+     */
+    function setApprovalForAll(address operator, bool approved) external;
+
+    /**
+     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.
+     *
+     * See {setApprovalForAll}.
+     */
+    function isApprovedForAll(address account, address operator) external view returns (bool);
+
+    /**
+     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.
+     *
+     * Emits a {TransferSingle} event.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - If the caller is not `from`, it must be have been approved to spend ``from``'s tokens via {setApprovalForAll}.
+     * - `from` must have a balance of tokens of type `id` of at least `amount`.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
+     * acceptance magic value.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes calldata data
+    ) external;
+
+    /**
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.
+     *
+     * Emits a {TransferBatch} event.
+     *
+     * Requirements:
+     *
+     * - `ids` and `amounts` must have the same length.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
+     * acceptance magic value.
+     */
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) external;
+}
+
+
+// File @openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol@v4.6.0
+
+// OpenZeppelin Contracts v4.4.1 (token/ERC1155/extensions/IERC1155MetadataURI.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Interface of the optional ERC1155MetadataExtension interface, as defined
+ * in the https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[EIP].
+ *
+ * _Available since v3.1._
+ */
+interface IERC1155MetadataURI is IERC1155 {
+    /**
+     * @dev Returns the URI for token type `id`.
+     *
+     * If the `\{id\}` substring is present in the URI, it must be replaced by
+     * clients with the actual token type ID.
+     */
+    function uri(uint256 id) external view returns (string memory);
+}
+
+
+// File contracts/interfaces/IQuestChainToken.sol
+
+
+pragma solidity ^0.8.11;
+
+
+interface IQuestChainToken is IERC1155MetadataURI {
+    function questChainFactory() external view returns (IQuestChainFactory);
+
+    function setTokenOwner(uint256 _tokenId, address _questChain) external;
+
+    function tokenOwner(uint256 _tokenId) external view returns (address);
+
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external;
+
+    function mint(address _user, uint256 _tokenId) external;
+
+    function burn(address _user, uint256 _tokenId) external;
+}
+
+
 // File contracts/interfaces/IQuestChain.sol
+
 
 pragma solidity ^0.8.11;
 
 interface IQuestChain {
-    enum Status {
-        init,
-        review,
-        pass,
-        fail
-    }
-
-    function init(address _owner, string calldata _details) external;
-
-    function initWithRoles(
-        address _owner,
-        string calldata _details,
-        address[] calldata _admins,
-        address[] calldata _editors,
-        address[] calldata _reviewers
-    ) external;
-
-    function edit(string calldata _details) external;
-
-    function createQuest(string calldata _details) external;
-
-    function editQuest(uint256 _questId, string calldata _details) external;
-
-    function submitProof(uint256 _questId, string calldata _proof) external;
-
-    function reviewProof(
-        address _quester,
-        uint256 _questId,
-        bool _success,
-        string calldata _details
-    ) external;
-
-    function questStatus(address _quester, uint256 _questId)
-        external
-        view
-        returns (Status);
-}
-
-// File contracts/QuestChain.sol
-
-// solhint-disable max-states-count
-
-pragma solidity ^0.8.11;
-
-contract QuestChain is
-    IQuestChain,
-    ReentrancyGuard,
-    Initializable,
-    AccessControl,
-    Pausable
-{
-    bytes32 public constant OWNER_ROLE = bytes32(0);
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant EDITOR_ROLE = keccak256("EDITOR_ROLE");
-    bytes32 public constant REVIEWER_ROLE = keccak256("REVIEWER_ROLE");
-
-    mapping(uint256 => bool) public questPaused;
-    uint256 public questCount;
-
-    mapping(address => mapping(uint256 => Status)) private _questStatus;
-
     event QuestChainCreated(address indexed creator, string details);
     event QuestChainEdited(address indexed editor, string details);
     event QuestCreated(
@@ -1197,11 +1274,104 @@ contract QuestChain is
     );
     event QuestPaused(address indexed editor, uint256 indexed questId);
     event QuestUnpaused(address indexed editor, uint256 indexed questId);
+    event QuestChainTokenURIUpdated(string tokenURI);
+
+    enum Status {
+        init,
+        review,
+        pass,
+        fail
+    }
+
+    function questChainFactory() external view returns (IQuestChainFactory);
+
+    function questChainToken() external view returns (IQuestChainToken);
+
+    function questChainId() external view returns (uint256);
+
+    function init(
+        address _owner,
+        string calldata _details,
+        string memory _tokenURI
+    ) external;
+
+    function initWithRoles(
+        address _owner,
+        string calldata _details,
+        string memory _tokenURI,
+        address[] calldata _admins,
+        address[] calldata _editors,
+        address[] calldata _reviewers
+    ) external;
+
+    function setTokenURI(string memory _tokenURI) external;
+
+    function getTokenURI() external view returns (string memory);
+
+    function edit(string calldata _details) external;
+
+    function createQuest(string calldata _details) external;
+
+    function editQuest(uint256 _questId, string calldata _details) external;
+
+    function submitProof(uint256 _questId, string calldata _proof) external;
+
+    function reviewProof(
+        address _quester,
+        uint256 _questId,
+        bool _success,
+        string calldata _details
+    ) external;
+
+    function questStatus(address _quester, uint256 _questId)
+        external
+        view
+        returns (Status);
+
+    function mintToken(address _quester) external;
+
+    function burnToken(address _quester) external;
+}
+
+
+// File contracts/QuestChain.sol
+
+// solhint-disable max-states-count
+
+pragma solidity ^0.8.11;
+
+
+
+
+
+// author: @dan13ram
+
+contract QuestChain is
+    IQuestChain,
+    ReentrancyGuard,
+    Initializable,
+    AccessControl,
+    Pausable
+{
+    bytes32 public constant OWNER_ROLE = bytes32(0);
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant EDITOR_ROLE = keccak256("EDITOR_ROLE");
+    bytes32 public constant REVIEWER_ROLE = keccak256("REVIEWER_ROLE");
+
+    mapping(uint256 => bool) public questPaused;
+    uint256 public questCount;
+    IQuestChainFactory public override questChainFactory;
+    uint256 public override questChainId;
+
+    mapping(address => mapping(uint256 => Status)) private _questStatus;
 
     // solhint-disable-next-line no-empty-blocks
     constructor() initializer {}
 
-    function _initRoleAdmins(address _owner) private {
+    function _init(address _owner, string memory _tokenURI) private {
+        questChainFactory = IQuestChainFactory(msg.sender);
+        questChainId = questChainFactory.questChainCount();
+
         _setRoleAdmin(ADMIN_ROLE, OWNER_ROLE);
         _setRoleAdmin(EDITOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(REVIEWER_ROLE, ADMIN_ROLE);
@@ -1210,14 +1380,20 @@ contract QuestChain is
         _grantRole(ADMIN_ROLE, _owner);
         _grantRole(EDITOR_ROLE, _owner);
         _grantRole(REVIEWER_ROLE, _owner);
+
+        _setTokenURI(_tokenURI);
     }
 
-    function init(address _owner, string calldata _details)
-        external
-        override
-        initializer
-    {
-        _initRoleAdmins(_owner);
+    function questChainToken() public view override returns (IQuestChainToken) {
+        return IQuestChainToken(questChainFactory.questChainToken());
+    }
+
+    function init(
+        address _owner,
+        string calldata _details,
+        string memory _tokenURI
+    ) external override initializer {
+        _init(_owner, _tokenURI);
 
         emit QuestChainCreated(_owner, _details);
     }
@@ -1225,11 +1401,12 @@ contract QuestChain is
     function initWithRoles(
         address _owner,
         string calldata _details,
+        string memory _tokenURI,
         address[] calldata _admins,
         address[] calldata _editors,
         address[] calldata _reviewers
     ) external override initializer {
-        _initRoleAdmins(_owner);
+        _init(_owner, _tokenURI);
 
         for (uint256 i = 0; i < _admins.length; i = i + 1) {
             _grantRole(ADMIN_ROLE, _admins[i]);
@@ -1302,6 +1479,23 @@ contract QuestChain is
         _;
     }
 
+    function _setTokenURI(string memory _tokenURI) internal {
+        questChainToken().setTokenURI(questChainId, _tokenURI);
+        emit QuestChainTokenURIUpdated(_tokenURI);
+    }
+
+    function setTokenURI(string memory _tokenURI)
+        public
+        override
+        onlyRole(OWNER_ROLE)
+    {
+        _setTokenURI(_tokenURI);
+    }
+
+    function getTokenURI() public view override returns (string memory) {
+        return questChainToken().uri(questChainId);
+    }
+
     function pauseQuest(uint256 _questId)
         external
         onlyRole(EDITOR_ROLE)
@@ -1359,10 +1553,7 @@ contract QuestChain is
         validQuest(_questId)
     {
         Status status = _questStatus[_msgSender()][_questId];
-        require(
-            status == Status.init || status == Status.fail,
-            "QuestChain: in review or passed"
-        );
+        require(status != Status.pass, "QuestChain: already passed");
 
         _questStatus[_msgSender()][_questId] = Status.review;
 
@@ -1396,5 +1587,20 @@ contract QuestChain is
         returns (Status status)
     {
         status = _questStatus[_quester][_questId];
+    }
+
+    function mintToken(address _quester) public override {
+        for (uint256 questId = 0; questId < questCount; questId = questId + 1) {
+            require(
+                questPaused[questId] ||
+                    _questStatus[_quester][questId] == Status.pass,
+                "QuestChain: chain incomplete"
+            );
+        }
+        questChainToken().mint(_quester, questChainId);
+    }
+
+    function burnToken(address _quester) public override onlyRole(OWNER_ROLE) {
+        questChainToken().burn(_quester, questChainId);
     }
 }

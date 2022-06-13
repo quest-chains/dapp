@@ -46,6 +46,15 @@ contract QuestChainToken is IQuestChainToken, ERC1155, Ownable {
         _tokenOwners[_tokenId] = _questChain;
     }
 
+    function tokenOwner(uint256 _tokenId)
+        public
+        view
+        override
+        returns (address)
+    {
+        return _tokenOwners[_tokenId];
+    }
+
     function setTokenURI(uint256 _tokenId, string memory _tokenURI)
         public
         override

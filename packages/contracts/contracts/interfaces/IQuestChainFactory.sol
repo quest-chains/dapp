@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 interface IQuestChainFactory {
-    event NewQuestChain(uint256 indexed index, address questChain);
+    event QuestChainCreated(uint256 indexed index, address questChain);
     event QuestChainImplUpdated(
         address indexed oldImpl,
         address indexed newImpl

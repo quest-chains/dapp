@@ -5,31 +5,12 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_cloneRoot",
+          "name": "_questChainImpl",
           "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "questChain",
-          "type": "address"
-        }
-      ],
-      "name": "NewQuestChain",
-      "type": "event"
     },
     {
       "anonymous": false,
@@ -55,38 +36,49 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
           "internalType": "address",
-          "name": "oldRoot",
+          "name": "questChain",
+          "type": "address"
+        }
+      ],
+      "name": "QuestChainCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldImpl",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "newRoot",
+          "name": "newImpl",
           "type": "address"
         }
       ],
-      "name": "QuestChainRootChanged",
+      "name": "QuestChainImplUpdated",
       "type": "event"
-    },
-    {
-      "inputs": [],
-      "name": "cloneRoot",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
     },
     {
       "inputs": [
         {
           "internalType": "string",
           "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
           "type": "string"
         }
       ],
@@ -106,6 +98,11 @@
         {
           "internalType": "string",
           "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
           "type": "string"
         },
         {
@@ -130,6 +127,55 @@
         {
           "internalType": "string",
           "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_admins",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_editors",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_reviewers",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_salt",
+          "type": "bytes32"
+        }
+      ],
+      "name": "createDeterministicWithRoles",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_details",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
           "type": "string"
         },
         {
@@ -225,6 +271,32 @@
     },
     {
       "inputs": [],
+      "name": "questChainImpl",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "questChainToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -247,11 +319,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_cloneRoot",
+          "name": "_questChainImpl",
           "type": "address"
         }
       ],
-      "name": "updateCloneRoot",
+      "name": "updateChainImpl",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

@@ -74,6 +74,19 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "string",
+          "name": "tokenURI",
+          "type": "string"
+        }
+      ],
+      "name": "QuestChainTokenURIUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "creator",
@@ -376,6 +389,19 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_quester",
+          "type": "address"
+        }
+      ],
+      "name": "burnToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "string",
           "name": "_details",
           "type": "string"
@@ -437,6 +463,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getTokenURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "bytes32",
@@ -489,6 +528,11 @@
           "internalType": "string",
           "name": "_details",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
         }
       ],
       "name": "init",
@@ -509,6 +553,11 @@
           "type": "string"
         },
         {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        },
+        {
           "internalType": "address[]",
           "name": "_admins",
           "type": "address[]"
@@ -525,6 +574,19 @@
         }
       ],
       "name": "initWithRoles",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_quester",
+          "type": "address"
+        }
+      ],
+      "name": "mintToken",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -557,6 +619,45 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "questChainFactory",
+      "outputs": [
+        {
+          "internalType": "contract IQuestChainFactory",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "questChainId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "questChainToken",
+      "outputs": [
+        {
+          "internalType": "contract IQuestChainToken",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -678,6 +779,19 @@
         }
       ],
       "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        }
+      ],
+      "name": "setTokenURI",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

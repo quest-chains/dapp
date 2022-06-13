@@ -2,31 +2,37 @@ import { log } from '@graphprotocol/graph-ts';
 import { QuestChain, Global } from '../types/schema';
 
 import {
-  NewQuestChain as NewQuestChainEvent,
-  QuestChainRootChanged as QuestChainRootChangedEvent,
+  QuestChainCreated as QuestChainCreatedEvent,
+  QuestChainImplUpdated as QuestChainImplUpdatedEvent,
+  QuestChainFactory,
 } from '../types/QuestChainFactory/QuestChainFactory';
 import { QuestChain as QuestChainTemplate } from '../types/templates';
 
 import { getUser, getNetwork } from './helpers';
 
-export function handleQuestChainRootChanged(
-  event: QuestChainRootChangedEvent,
+export function handleQuestChainImplUpdated(
+  event: QuestChainImplUpdatedEvent,
 ): void {
   let network = getNetwork();
   let globalNode = Global.load(network);
   if (globalNode == null) {
     globalNode = new Global(network);
     globalNode.factoryAddress = event.address;
-    globalNode.save();
+    let contract = QuestChainFactory.bind(event.address);
+    globalNode.tokenAddress = contract.questChainToken();
   }
+  globalNode.implAddress = event.params.newImpl;
+  globalNode.save();
 }
 
-export function handleNewQuestChain(event: NewQuestChainEvent): void {
+export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   let network = getNetwork();
 
   let questChain = new QuestChain(event.params.questChain.toHexString());
 
-  log.info('handleNewQuestChain {}', [event.params.questChain.toHexString()]);
+  log.info('handleQuestChainCreated {}', [
+    event.params.questChain.toHexString(),
+  ]);
 
   let user = getUser(event.transaction.from);
 

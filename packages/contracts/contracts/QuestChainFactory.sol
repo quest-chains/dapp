@@ -20,8 +20,8 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
     address public override questChainToken;
 
     constructor(address _questChainImpl) {
-        updateChainImpl(_questChainImpl);
         questChainToken = address(new QuestChainToken());
+        updateChainImpl(_questChainImpl);
     }
 
     function updateChainImpl(address _questChainImpl) public onlyOwner {
@@ -48,7 +48,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
 
         _questChains[questChainCount] = _questChainAddress;
 
-        emit NewQuestChain(questChainCount, _questChainAddress);
+        emit QuestChainCreated(questChainCount, _questChainAddress);
 
         questChainCount++;
     }
@@ -76,7 +76,7 @@ contract QuestChainFactory is IQuestChainFactory, Ownable {
         );
 
         _questChains[questChainCount] = _questChainAddress;
-        emit NewQuestChain(questChainCount, _questChainAddress);
+        emit QuestChainCreated(questChainCount, _questChainAddress);
 
         questChainCount++;
     }
