@@ -29,8 +29,8 @@ export const theme = extendTheme({
     '10xl': '120em',
   },
   fonts: {
-    heading: `'Nineties Display', sans-serif`,
-    body: `'Baumans Regular', sans-serif`,
+    heading: `'Museo Moderno', sans-serif`,
+    // body: `'Baumans Regular', sans-serif`,
   },
   colors: {
     main: '#2DF8C7',

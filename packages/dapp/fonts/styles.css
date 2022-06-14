@@ -1,13 +1,6 @@
 @font-face {
-  font-family: 'Nineties Display';
+  font-family: 'Museo Moderno';
   font-style: normal;
-  font-weight: normal;
-  src: url('./NinetiesDisplay.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'Baumans Regular';
-  font-style: normal;
-  font-weight: normal;
-  src: url('./Baumans-Regular.ttf') format('truetype');
+  font-weight: 600;
+  src: url('./MuseoModerno.ttf') format('truetype');
 }

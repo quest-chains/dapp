@@ -55,7 +55,7 @@ export const Who: React.FC = () => {
           textAlign="center"
         >
           <Heading color="white" fontSize={40} mb={6}>
-            PLAYERS
+            Questers
           </Heading>
           <Text mb={4}>♢ DAO newcomers</Text>
           <Text mb={4}>♢ Curious, knowledge hungry people</Text>
@@ -72,7 +72,7 @@ export const Who: React.FC = () => {
           textAlign="center"
         >
           <Heading color="white" fontSize={40} mb={6}>
-            CONTENT CREATORS
+            Creators
           </Heading>
           <Text mb={4}>♢ DAOs</Text>
           <Text mb={4}>♢ Organisations that want to create courses</Text>

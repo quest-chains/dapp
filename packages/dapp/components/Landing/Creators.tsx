@@ -58,7 +58,7 @@ export const Creators: React.FC = () => {
       >
         <Box h="338px" gridArea="creators" pr={12}>
           <Heading color="white" fontSize={70} mb={6}>
-            CREATORS
+            Creators
           </Heading>
           <Text display="flex">
             The permissions of creator roles are{' '}
@@ -109,7 +109,7 @@ export const Creators: React.FC = () => {
           gridArea="owner"
         >
           <Heading color="white" fontSize={40} mb={3}>
-            owner
+            Owner/s
           </Heading>
           <Text mb={4} fontSize={21}>
             ♢ creator of the quest chain,{' '}
@@ -137,7 +137,7 @@ export const Creators: React.FC = () => {
           gridArea="editors"
         >
           <Heading color="white" fontSize={40} mb={3}>
-            editors
+            Editors
           </Heading>
           <Text mb={4} fontSize={21}>
             ♢ can <span style={{ color: '#2DF8C7' }}>edit the contents</span> of
@@ -159,7 +159,7 @@ export const Creators: React.FC = () => {
           gridArea="admins"
         >
           <Heading color="white" fontSize={40} mb={3}>
-            admins
+            Admins
           </Heading>
           <Text mb={4} fontSize={21}>
             ♢ can <span style={{ color: '#2DF8C7' }}> create and edit</span>{' '}
@@ -189,7 +189,7 @@ export const Creators: React.FC = () => {
           p={24}
         >
           <Heading fontSize={70} mb={12}>
-            QUESTERS
+            Questers
           </Heading>
           <Text mb={6} fontSize={21}>
             ♢ can complete quest chains by submitting proof of completion for

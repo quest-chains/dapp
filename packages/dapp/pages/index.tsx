@@ -116,7 +116,7 @@ const Index: React.FC = () => {
       <Flex fontSize={36} alignItems="baseline" mb={10}>
         2022
         <Heading mx={4} color="main">
-          quest chains.
+          Quest Chains.
         </Heading>{' '}
         All right reserved.
       </Flex>
