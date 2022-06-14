@@ -66,11 +66,45 @@ export const BuiltWith: React.FC = () => {
               <Image
                 src="Landing/Logos/thegraph.svg"
                 alt="thegraph"
+                title="TheGraph"
                 height={20}
               />
-              <Image src="Landing/Logos/ipfs.png" alt="ipfs" height={20} />
-              <Image src="Landing/Logos/next.png" alt="next" height={20} />
-              <Image src="Landing/Logos/chakra.png" alt="chakra" height={20} />
+              <Image
+                src="Landing/Logos/ipfs.png"
+                alt="ipfs"
+                title="IPFS"
+                height={20}
+              />
+              <Image
+                src="Landing/Logos/next.png"
+                alt="next"
+                title="NextJS"
+                height={20}
+              />
+              <Image
+                src="Landing/Logos/chakra.png"
+                alt="chakra"
+                title="ChakraUI"
+                height={20}
+              />
+              <Image
+                src="Landing/Logos/ethereum.png"
+                alt="ethereum"
+                title="Ethereum"
+                height={20}
+              />
+              <Image
+                src="Landing/Logos/web3storage.svg"
+                alt="web3storage"
+                title="Web3 Storage"
+                height={20}
+              />
+              <Image
+                src="Landing/Logos/filecoin.png"
+                alt="filecoin"
+                title="Filecoin"
+                height={20}
+              />
             </Flex>
           </Flex>
         </Flex>

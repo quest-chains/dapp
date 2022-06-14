@@ -1,4 +1,12 @@
-import { Box, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Link,
+  Text,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
 
 import { useOnScreen } from '@/hooks/useOnScreen';
@@ -69,8 +77,24 @@ export const How: React.FC = () => {
               for completed quests. It becomes accumulative. Build your digital
               identity and become proud of the things you accomplish.
             </Text>
-            <Text color="main">
-              Show the world the NFTs you have collected!
+            <Text>
+              Show the world the
+              <Link
+                w="100%"
+                href="https://vitalik.ca/general/2022/01/26/soulbound.html"
+                _hover={{
+                  textDecor: 'none',
+                  bg: 'whiteAlpha.200',
+                }}
+                isExternal
+                borderRadius="full"
+                px={2}
+              >
+                <span style={{ color: '#2DF8C7', marginLeft: 4 }}>
+                  soulbound NFTs
+                </span>
+              </Link>
+              you have collected!
             </Text>
           </Flex>
           <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
@@ -79,3 +103,5 @@ export const How: React.FC = () => {
     </HStack>
   );
 };
+
+// https://vitalik.ca/general/2022/01/26/soulbound.html

@@ -56,10 +56,23 @@ export const Creators: React.FC = () => {
         opacity={onScreen ? 1 : 0}
         transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
       >
-        <Box h="338px" gridArea="creators">
+        <Box h="338px" gridArea="creators" pr={12}>
           <Heading color="white" fontSize={70} mb={6}>
             CREATORS
           </Heading>
+          <Text display="flex">
+            The permissions of creator roles are{' '}
+            <span style={{ color: '#2DF8C7', marginLeft: 4 }}>cascading</span>.
+          </Text>
+          <Text>
+            This means the owners have all permissions of admins, admins have
+            all permissions of editors and editors have all permissions of
+            reviewers.
+          </Text>
+          <Text>
+            Owners can add and remove other owners, admins, editors and
+            reviewers. Admins can add and remove editors and reviewers.
+          </Text>
         </Box>
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
@@ -76,7 +89,11 @@ export const Creators: React.FC = () => {
             Reviewers
           </Heading>
           <Text mb={4} fontSize={21}>
-            ♢ can accept or reject submitted proof of quest completion
+            ♢ can{' '}
+            <span style={{ color: '#2DF8C7' }}>
+              accept or reject submitted proof
+            </span>{' '}
+            of quest completion
           </Text>
         </Box>
 
@@ -95,8 +112,8 @@ export const Creators: React.FC = () => {
             owner
           </Heading>
           <Text mb={4} fontSize={21}>
-            ♢ creator of the quest chain, has all permissions, can add other
-            owners.
+            ♢ creator of the quest chain,{' '}
+            <span style={{ color: '#2DF8C7' }}>has all permissions</span>
           </Text>
         </Box>
         <Flex
@@ -123,8 +140,8 @@ export const Creators: React.FC = () => {
             editors
           </Heading>
           <Text mb={4} fontSize={21}>
-            ♢ can edit the content of the quest chain along with its quests,
-            apart from modifying the admins or owners
+            ♢ can <span style={{ color: '#2DF8C7' }}>edit the contents</span> of
+            the quest chain along with its quests
           </Text>
         </Box>
         <Box gridArea="empty" />
@@ -145,9 +162,8 @@ export const Creators: React.FC = () => {
             admins
           </Heading>
           <Text mb={4} fontSize={21}>
-            ♢ can modify any aspect of the quest chain, apart from modifying the
-            owner, can add other editors and reviewers, can create and edit
-            quests
+            ♢ can <span style={{ color: '#2DF8C7' }}> create and edit</span>{' '}
+            quest chains and quests
           </Text>
         </Box>
         <Box gridArea="empty2" />
