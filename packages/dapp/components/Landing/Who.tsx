@@ -1,11 +1,8 @@
 import { Box, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-import { useOnScreen } from '@/hooks/useOnScreen';
-
 export const Who: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const onScreen = useOnScreen(ref);
 
   return (
     <HStack
@@ -25,9 +22,6 @@ export const Who: React.FC = () => {
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
         pl={{ base: 0, md: 0 }}
         zIndex={100}
-        transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
-        opacity={onScreen ? 1 : 0}
-        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
         fontWeight="normal"
         color="white"
         height="340px"

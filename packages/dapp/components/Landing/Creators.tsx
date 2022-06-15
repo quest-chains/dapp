@@ -9,11 +9,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-import { useOnScreen } from '@/hooks/useOnScreen';
-
 export const Creators: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const onScreen = useOnScreen(ref);
 
   return (
     <VStack
@@ -52,9 +49,6 @@ export const Creators: React.FC = () => {
         // `}
         // gap={6}
         ref={ref}
-        transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
-        opacity={onScreen ? 1 : 0}
-        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
       >
         <Box h="338px" gridArea="creators" pr={12}>
           <Heading color="white" fontSize={70} mb={6}>

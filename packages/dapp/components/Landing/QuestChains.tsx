@@ -18,7 +18,7 @@ export const QuestChains: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="100vh"
+      minH="80vh"
       bgImage="url(/Landing/Hero-Background1.svg)"
       bgPosition="center"
       bgSize="contain"
@@ -37,7 +37,6 @@ export const QuestChains: React.FC = () => {
         // background="radial-gradient(transparent 13%, #0d1117 80%)"
         bgPosition="center"
         bgSize="contain"
-        minH="100vh"
         px={{ base: 'inherit', lg: 14 }}
         height="100%"
         alignItems="center"

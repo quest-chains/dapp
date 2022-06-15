@@ -10,11 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-import { useOnScreen } from '@/hooks/useOnScreen';
-
 export const Team: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const onScreen = useOnScreen(ref);
 
   return (
     <HStack
@@ -37,9 +34,6 @@ export const Team: React.FC = () => {
         marginInlineStart="0 !important"
         zIndex={100}
         w="full"
-        transform={`translate3d(0, ${onScreen ? '0' : '50px'}, 0)`}
-        opacity={onScreen ? 1 : 0}
-        transition="transform 0.1s 0.1s ease-in-out, opacity 0.1s 0.1s ease-in"
         fontWeight="normal"
         color="white"
       >
