@@ -64,43 +64,43 @@ export const BuiltWith: React.FC = () => {
             </Heading>
             <Flex align="center" gap={8} alignSelf="center">
               <Image
-                src="Landing/Logos/thegraph.svg"
+                src="landing/logos/thegraph.svg"
                 alt="thegraph"
                 title="TheGraph"
                 height={20}
               />
               <Image
-                src="Landing/Logos/ipfs.png"
+                src="landing/logos/ipfs.png"
                 alt="ipfs"
                 title="IPFS"
                 height={20}
               />
               <Image
-                src="Landing/Logos/next.png"
+                src="landing/logos/next.png"
                 alt="next"
                 title="NextJS"
                 height={20}
               />
               <Image
-                src="Landing/Logos/chakra.png"
+                src="landing/logos/chakra.png"
                 alt="chakra"
                 title="ChakraUI"
                 height={20}
               />
               <Image
-                src="Landing/Logos/ethereum.png"
+                src="landing/logos/ethereum.png"
                 alt="ethereum"
                 title="Ethereum"
                 height={20}
               />
               <Image
-                src="Landing/Logos/web3storage.svg"
+                src="landing/logos/web3storage.svg"
                 alt="web3storage"
                 title="Web3 Storage"
                 height={20}
               />
               <Image
-                src="Landing/Logos/filecoin.png"
+                src="landing/logos/filecoin.png"
                 alt="filecoin"
                 title="Filecoin"
                 height={20}

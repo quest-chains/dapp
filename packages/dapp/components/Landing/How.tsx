@@ -44,7 +44,6 @@ export const How: React.FC = () => {
         display="flex"
         flexDirection="column"
         justifyContent="center"
-        // maxWidth="full"
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
         pl={{ base: 0, md: 0 }}
         marginInlineStart="0 !important"
@@ -75,7 +74,8 @@ export const How: React.FC = () => {
             <Text>
               Learning & engaging becomes rewarding, as questers receive rewards
               for completed quests. It becomes accumulative. Build your digital
-              identity and become proud of the things you accomplish.
+              identity and become proud of the things you accomplish or create
+              quest chains and spread the knowledge.
             </Text>
             <Text>
               Show the world the

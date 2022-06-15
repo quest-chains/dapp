@@ -81,8 +81,9 @@ export const DesktopMenu: React.FC = () => {
               borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
               borderBottomColor="main"
               color={router.pathname === '/explore' ? 'main' : 'inherit'}
+              fontFamily="headingLight"
             >
-              EXPLORE
+              Explore
             </Text>
           </ChakraLink>
         </NextLink>
@@ -92,8 +93,9 @@ export const DesktopMenu: React.FC = () => {
               borderBottomWidth={router.pathname === '/create' ? 1 : 0}
               borderBottomColor="main"
               color={router.pathname === '/create' ? 'main' : 'inherit'}
+              fontFamily="headingLight"
             >
-              CREATE
+              Create
             </Text>
           </ChakraLink>
         </NextLink>

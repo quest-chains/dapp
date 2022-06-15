@@ -14,6 +14,7 @@ import { BuiltWith } from '@/components/Landing/BuiltWith';
 import { Creators } from '@/components/Landing/Creators';
 import { How } from '@/components/Landing/How';
 import { QuestChains } from '@/components/Landing/QuestChains';
+import { Team } from '@/components/Landing/Team';
 import { What } from '@/components/Landing/What';
 import { Who } from '@/components/Landing/Who';
 
@@ -55,8 +56,13 @@ const Index: React.FC = () => {
             smooth={true}
             duration={500}
           >
-            <Text fontSize={20} ml={3} cursor="pointer">
-              what
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              What
             </Text>
           </Link>
           <Link
@@ -66,8 +72,13 @@ const Index: React.FC = () => {
             smooth={true}
             duration={500}
           >
-            <Text fontSize={20} ml={3} cursor="pointer">
-              who
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              Who
             </Text>
           </Link>
           <Link
@@ -77,8 +88,13 @@ const Index: React.FC = () => {
             smooth={true}
             duration={500}
           >
-            <Text fontSize={20} ml={3} cursor="pointer">
-              how
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              How
             </Text>
           </Link>
           <Link
@@ -89,8 +105,13 @@ const Index: React.FC = () => {
             duration={500}
             offset={-120}
           >
-            <Text fontSize={20} ml={3} cursor="pointer">
-              creators
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              Creators
             </Text>
           </Link>
           <Link
@@ -101,8 +122,29 @@ const Index: React.FC = () => {
             duration={500}
             offset={-110}
           >
-            <Text fontSize={20} ml={3} cursor="pointer">
-              questers
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              Questers
+            </Text>
+          </Link>
+          <Link
+            activeClass="active"
+            to="team"
+            spy={true}
+            smooth={true}
+            duration={500}
+          >
+            <Text
+              fontSize={20}
+              ml={3}
+              cursor="pointer"
+              fontFamily="headingLight"
+            >
+              Team
             </Text>
           </Link>
         </HStack>
@@ -112,6 +154,7 @@ const Index: React.FC = () => {
       <Who />
       <How />
       <Creators />
+      <Team />
       <BuiltWith />
       <Flex fontSize={36} alignItems="baseline" mb={10}>
         2022
