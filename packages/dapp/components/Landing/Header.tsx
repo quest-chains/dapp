@@ -41,7 +41,6 @@ export const Header: React.FC = () => {
       <HStack>
         <NextLink href="/explore" passHref>
           <ChakraLink display="block" _hover={{}} zIndex={1500}>
-            {/* <PrimaryButton px={12}>Explore Quests</PrimaryButton> */}
             <Button
               fontSize={20}
               ml={3}
