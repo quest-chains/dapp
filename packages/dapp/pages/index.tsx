@@ -103,7 +103,7 @@ const Index: React.FC = () => {
             spy={true}
             smooth={true}
             duration={500}
-            offset={-120}
+            offset={-70}
           >
             <Text
               fontSize={20}
