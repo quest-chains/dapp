@@ -24,6 +24,8 @@ export const QuestChains: React.FC = () => {
       bgSize="contain"
       backgroundRepeat="no-repeat"
       id="quest-chains"
+      pos="relative"
+      top={20}
     >
       <Container
         d="flex"
@@ -86,7 +88,7 @@ export const QuestChains: React.FC = () => {
           <Flex gap={3}>
             <NextLink href="/explore" passHref>
               <ChakraLink display="block" _hover={{}} zIndex={1500}>
-                <PrimaryButton>explore</PrimaryButton>
+                <PrimaryButton px={12}>Explore Quests</PrimaryButton>
               </ChakraLink>
             </NextLink>
           </Flex>
