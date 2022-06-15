@@ -36,7 +36,6 @@ export const QuestChains: React.FC = () => {
           '2xl': 'full',
           '4xl': '90%',
         }}
-        // background="radial-gradient(transparent 13%, #0d1117 80%)"
         bgPosition="center"
         bgSize="contain"
         px={{ base: 'inherit', lg: 14 }}

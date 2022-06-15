@@ -135,7 +135,7 @@ export const Team: React.FC = () => {
                 dan13ram
               </Text>
               <Text marginBottom="auto" fontSize="sm">
-                Web3 Full-Stack Developer
+                Full-Stack Developer
               </Text>
 
               <Flex alignItems="center" justifyContent="center">
