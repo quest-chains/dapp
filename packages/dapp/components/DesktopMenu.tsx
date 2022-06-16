@@ -55,12 +55,12 @@ export const DesktopMenu: React.FC = () => {
         zIndex={2}
       >
         <Button
-          backdropFilter="blur(40px)"
-          color="whiteAlpha.300"
-          bgColor="transparent"
+          color="whiteAlpha.800"
+          bgColor="rgba(0, 0, 0, 0.3)"
           border="none"
           borderRadius="full"
           boxShadow="inset 0px 0px 0px 1px #AD90FF"
+          fontWeight="light"
           onClick={onOpen}
         >
           <SearchIcon color="main" mr={3} />

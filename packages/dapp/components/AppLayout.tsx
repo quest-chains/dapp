@@ -1,16 +1,8 @@
-import {
-  Flex,
-  Heading,
-  HStack,
-  Link as ChakraLink,
-  Stack,
-  useBreakpointValue,
-  VStack,
-} from '@chakra-ui/react';
-import NextLink from 'next/link';
+import { Flex, Stack, useBreakpointValue, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
+import { Header as HeaderComponent } from '@/components/Header';
 import { useWallet } from '@/web3';
 
 import { DesktopMenu } from './DesktopMenu';
@@ -37,27 +29,13 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
     >
       {router.pathname !== '/' && (
         <VStack
-          p={{ base: 6, lg: 8 }}
           alignItems="center"
           borderBottomRadius="md"
           w="100%"
           mx="auto"
-          maxW="9xl"
           mb={{ base: 6, md: 8, lg: 12 }}
         >
-          <HStack w="100%" justify="space-between" pos="relative">
-            <NextLink href="/" passHref>
-              <ChakraLink display="block" _hover={{}} zIndex={1500}>
-                <Heading
-                  color="main"
-                  fontSize={isSmallScreen ? '5xl' : '3xl'}
-                  fontWeight="normal"
-                  lineHeight="1rem"
-                >
-                  {isSmallScreen ? 'Q' : 'Quest Chains'}
-                </Heading>
-              </ChakraLink>
-            </NextLink>
+          <HeaderComponent>
             {isSmallScreen ? (
               <>
                 <NavToggle isOpen={isOpen} onClick={toggleOpen} zIndex={1500} />
@@ -66,7 +44,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
             ) : (
               <DesktopMenu />
             )}
-          </HStack>
+          </HeaderComponent>
         </VStack>
       )}
       <Flex
