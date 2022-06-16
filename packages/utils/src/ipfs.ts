@@ -1,14 +1,11 @@
 import IPFSClient from 'ipfs-http-client';
 import { Web3Storage } from 'web3.storage';
-import schema from './schema.json';
 import { createReadStream } from 'fs';
 import { mkdtemp, rmdir, unlink, writeFile } from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
-const validate = ajv.compile(schema);
+import { Metadata } from './metadata';
+import { validateSchema } from './validate';
 
 const ipfsTheGraph = new IPFSClient({
   protocol: 'https',
@@ -16,15 +13,6 @@ const ipfsTheGraph = new IPFSClient({
   port: 443,
   'api-path': '/ipfs/api/v0/',
 });
-
-export type Metadata = {
-  name: string;
-  description: string;
-  editors?: { id: string }[];
-  reviewers?: { id: string }[];
-  image_url?: string;
-  external_url?: string;
-};
 
 const uploadToIPFSTheGraph = async (jsonString: string) => {
   const node = await ipfsTheGraph.add(Buffer.from(jsonString));
@@ -37,7 +25,7 @@ export const uploadMetadata = async (
   metadata: Metadata,
   token: string = '',
 ): Promise<string> => {
-  const valid = validate(metadata);
+  const valid = validateSchema(metadata);
   if (!valid) throw new Error('Invalid metadata: schema validation failed');
   if (!token) throw new Error('Invalid web3.storage token');
   const web3Storage = new Web3Storage({ token });
@@ -50,9 +38,7 @@ export const uploadMetadata = async (
   );
   await writeFile(name, jsonString);
 
-  const readable = (createReadStream(name) as unknown) as ReadableStream<
-    string
-  >;
+  const readable = createReadStream(name) as unknown as ReadableStream<string>;
 
   const tmpFile = {
     name: 'metadata.json',

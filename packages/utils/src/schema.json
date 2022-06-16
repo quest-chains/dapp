@@ -38,6 +38,14 @@
       "default": "",
       "examples": ["ipfs://QmZTzK8YAsPcLoKENzWmXv519pDmX1XgNQ6h9RtnSjwksn"]
     },
+    "animation_url": {
+      "$id": "#/properties/animation_url",
+      "type": "string",
+      "title": "The animation_url schema",
+      "description": "This property defines an optional animation URL that can reference a multi-media attachment of the item",
+      "default": "",
+      "examples": ["ipfs://QmZTzK8YAsPcLoKENzWmXv519pDmX1XgNQ6h9RtnSjwksn"]
+    },
     "external_url": {
       "$id": "#/properties/external_url",
       "type": "string",
@@ -45,6 +53,67 @@
       "description": "This property defines an optional external URL that can reference a webpage or external asset of the item",
       "default": "",
       "examples": ["ipfs://QmZTzK8YAsPcLoKENzWmXv519pDmX1XgNQ6h9RtnSjwksn"]
+    },
+    "attributes": {
+      "$id": "#/properties/attributes",
+      "type": "array",
+      "title": "Attributes",
+      "description": "OpenSea NFT attributes",
+      "default": [],
+      "examples": [
+        [
+          {
+            "trait_type": "Base",
+            "value": "narwhal"
+          }
+        ]
+      ],
+      "items": {
+        "$id": "#/properties/attributes/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/attributes/items/anyOf/0",
+            "type": "object",
+            "title": "Attributes Item",
+            "description": "OpenSea NFT attribute",
+            "default": {},
+            "examples": [
+              {
+                "trait_type": "Base",
+                "value": "narwhal"
+              }
+            ],
+            "required": ["trait_type", "value"],
+            "properties": {
+              "display_type": {
+                "$id": "#/properties/attributes/items/anyOf/0/properties/display_type",
+                "type": "string",
+                "enum": ["number", "boost_number", "boost_percentage"],
+                "title": "Display Type",
+                "description": "OpenSea NFT attribute display type",
+                "default": "",
+                "examples": ["number"]
+              },
+              "trait_type": {
+                "$id": "#/properties/attributes/items/anyOf/0/properties/trait_type",
+                "type": "string",
+                "title": "Trait Type",
+                "description": "OpenSea NFT attribute trait type",
+                "default": "",
+                "examples": ["Base"]
+              },
+              "value": {
+                "$id": "#/properties/attributes/items/anyOf/0/properties/value",
+                "type": ["string", "number"],
+                "title": "Trait Value",
+                "description": "OpenSea NFT attribute value type",
+                "default": "",
+                "examples": ["narwhal", 5]
+              }
+            }
+          }
+        ]
+      }
     }
   },
   "additionalProperties": false
