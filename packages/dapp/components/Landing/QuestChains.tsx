@@ -86,7 +86,7 @@ export const QuestChains: React.FC = () => {
           </Heading>
           <Flex gap={3}>
             <NextLink href="/explore" passHref>
-              <ChakraLink display="block" _hover={{}} zIndex={1500}>
+              <ChakraLink display="block" _hover={{}}>
                 <PrimaryButton px={12}>Explore Quests</PrimaryButton>
               </ChakraLink>
             </NextLink>
