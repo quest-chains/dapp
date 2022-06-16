@@ -6,10 +6,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
-export const Header: React.FC<{ children: JSX.Element; landing?: boolean }> = ({
-  children,
-  landing,
-}) => {
+export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
@@ -23,7 +20,7 @@ export const Header: React.FC<{ children: JSX.Element; landing?: boolean }> = ({
       boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
       backdropFilter="blur(5px)"
       borderBottom="1px solid rgba(255, 255, 255, 0.01)"
-      pos={landing ? 'fixed' : 'relative'}
+      pos="fixed"
     >
       <NextLink href="/" passHref>
         <ChakraLink display="block" _hover={{}}>

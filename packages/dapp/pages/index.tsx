@@ -3,7 +3,6 @@ import Head from 'next/head';
 
 import { BuiltWith } from '@/components/Landing/BuiltWith';
 import { Creators } from '@/components/Landing/Creators';
-import { Header } from '@/components/Landing/Header';
 import { How } from '@/components/Landing/How';
 import { QuestChains } from '@/components/Landing/QuestChains';
 import { Team } from '@/components/Landing/Team';
@@ -17,7 +16,6 @@ const Index: React.FC = () => {
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Header />
       <QuestChains />
       <What />
       <Who />
