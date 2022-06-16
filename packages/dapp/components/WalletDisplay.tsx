@@ -82,7 +82,7 @@ export const WalletDisplay: React.FC = () => {
       <PopoverContent
         backdropFilter="blur(40px)"
         boxShadow="inset 0px 0px 0px 1px #AD90FF"
-        background="whiteAlpha.50"
+        background="rgba(45, 56, 72, 1)"
         borderRadius="xl"
       >
         <PopoverBody>

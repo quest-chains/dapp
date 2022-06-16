@@ -2,10 +2,10 @@ import { Button, HStack, Link as ChakraLink, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { Link } from 'react-scroll';
 
-import { Header as HeaderComponent } from '@/components/Header';
+import { Header } from '@/components/Header';
 
-export const Header: React.FC = () => (
-  <HeaderComponent landing>
+export const HeaderLanding: React.FC = () => (
+  <Header>
     <HStack>
       <NextLink href="/explore" passHref>
         <ChakraLink display="block" _hover={{}}>
@@ -89,5 +89,5 @@ export const Header: React.FC = () => (
         </Text>
       </Link>
     </HStack>
-  </HeaderComponent>
+  </Header>
 );
