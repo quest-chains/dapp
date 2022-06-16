@@ -1,10 +1,13 @@
-import { Metadata as MetadataType } from '@/../utils/dist';
+import { Metadata as MetadataType } from '@/../utils/dist/metadata';
+import { validateSchema } from '@/../utils/dist/validate';
 
 export type Metadata = MetadataType;
 
 export const uploadMetadataViaAPI = async (
   metadata: MetadataType,
 ): Promise<string> => {
+  const valid = validateSchema(metadata);
+  if (!valid) throw new Error('Invalid Metadata Schema');
   const res = await fetch('/api/metadata', {
     method: 'POST',
     headers: {
