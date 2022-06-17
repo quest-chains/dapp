@@ -1,5 +1,4 @@
 import {
-  Heading,
   HStack,
   Link as ChakraLink,
   SimpleGrid,
@@ -21,9 +20,6 @@ export const QuestsToReview: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-        Submissions to review
-      </Heading>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />

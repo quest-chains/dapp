@@ -1,6 +1,7 @@
 import {
   Box,
   Flex,
+  Grid,
   Heading,
   HStack,
   Link as ChakraLink,
@@ -35,61 +36,63 @@ export const UserProgress: React.FC<{
           {userStatuses.length === 0 && (
             <Text color="white">No progress found</Text>
           )}
-          {userStatuses.map(us => (
-            <NextLink
-              as={`/chain/${us.chain.chainId}/${us.chain.address}`}
-              href={`/chain/[chainId]/[address]`}
-              passHref
-              key={us.chain.address}
-            >
-              <ChakraLink display="block" _hover={{}}>
-                <Flex maxW="30rem" flexDirection="column" alignItems="center">
-                  <VStack
-                    w="full"
-                    boxShadow="inset 0px 0px 0px 1px white"
-                    p={8}
-                    background="#171F2B"
-                    _hover={{
-                      background: 'whiteAlpha.100',
-                    }}
-                    align="stretch"
-                    spacing={4}
-                    justify="space-between"
-                  >
-                    <HStack justify="space-between" w="100%">
-                      <Heading fontSize="xl" fontWeight="bold">
-                        {us.chain.name}
-                      </Heading>
-                    </HStack>
-                    <Flex justifyContent="space-between" alignItems="center">
-                      <Progress
-                        value={(us.completed / us.total) * 100 || 1}
-                        size="xs"
-                        w="85%"
-                      />
-                      <Text>{(us.completed / us.total) * 100} %</Text>
-                    </Flex>
-                    <Text>{us.chain.description}</Text>
+          <Grid gap={8} templateColumns="repeat(2, 1fr)">
+            {userStatuses.slice(0, 2).map(us => (
+              <NextLink
+                as={`/chain/${us.chain.chainId}/${us.chain.address}`}
+                href={`/chain/[chainId]/[address]`}
+                passHref
+                key={us.chain.address}
+              >
+                <ChakraLink display="block" _hover={{}}>
+                  <Flex flexDirection="column" alignItems="center">
+                    <VStack
+                      w="full"
+                      boxShadow="inset 0px 0px 0px 1px white"
+                      p={8}
+                      background="#171F2B"
+                      _hover={{
+                        background: 'whiteAlpha.100',
+                      }}
+                      align="stretch"
+                      spacing={4}
+                      justify="space-between"
+                    >
+                      <HStack justify="space-between" w="100%">
+                        <Heading fontSize="xl" fontWeight="bold">
+                          {us.chain.name}
+                        </Heading>
+                      </HStack>
+                      <Flex justifyContent="space-between" alignItems="center">
+                        <Progress
+                          value={(us.completed / us.total) * 100 || 1}
+                          size="xs"
+                          w="85%"
+                        />
+                        <Text>{(us.completed / us.total) * 100} %</Text>
+                      </Flex>
+                      <Text>{us.chain.description}</Text>
 
-                    <Flex justifyContent="space-between">
-                      <Text># quests: {us.total}</Text>
-                      <NetworkDisplay asTag chainId={us.chain.chainId} />
-                    </Flex>
-                  </VStack>
-                  <Box
-                    boxShadow="inset 0px 0px 0px 1px white"
-                    w="95%"
-                    h="0.5rem"
-                  ></Box>
-                  <Box
-                    boxShadow="inset 0px 0px 0px 1px white"
-                    w="90%"
-                    h="0.5rem"
-                  ></Box>
-                </Flex>
-              </ChakraLink>
-            </NextLink>
-          ))}
+                      <Flex justifyContent="space-between">
+                        <Text># quests: {us.total}</Text>
+                        <NetworkDisplay asTag chainId={us.chain.chainId} />
+                      </Flex>
+                    </VStack>
+                    <Box
+                      boxShadow="inset 0px 0px 0px 1px white"
+                      w="95%"
+                      h="0.5rem"
+                    ></Box>
+                    <Box
+                      boxShadow="inset 0px 0px 0px 1px white"
+                      w="90%"
+                      h="0.5rem"
+                    ></Box>
+                  </Flex>
+                </ChakraLink>
+              </NextLink>
+            ))}
+          </Grid>
         </>
       )}
     </VStack>

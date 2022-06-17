@@ -47,7 +47,7 @@ export const UserBadges: React.FC<{
             chainId: a.chainId,
             imageUrl: b.imageUrl ?? '',
           })) ?? [];
-        t.push(...badges, ...badges, ...badges, ...badges);
+        t.push(...badges);
         return t;
       }, new Array<QuestChainBadgeInfo>()) ?? [],
     [userBadges],

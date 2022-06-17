@@ -43,7 +43,16 @@ export const UploadProof: React.FC<{
   questChainId: string;
   questChainAddress: string;
   name: string | null | undefined;
-}> = ({ address, refresh, questId, questChainId, questChainAddress, name }) => {
+  profile?: boolean;
+}> = ({
+  address,
+  refresh,
+  questId,
+  questChainId,
+  questChainAddress,
+  name,
+  profile,
+}) => {
   const { chainId, provider } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -140,12 +149,24 @@ export const UploadProof: React.FC<{
         label="Please connect or switch to the correct chain"
         isDisabled={chainId === questChainId}
       >
-        <Button
-          onClick={onOpen}
-          isDisabled={chainId !== questChainId || !address}
-        >
-          Upload Proof
-        </Button>
+        {!profile && (
+          <Button
+            onClick={onOpen}
+            isDisabled={chainId !== questChainId || !address}
+          >
+            Upload Proof
+          </Button>
+        )}
+        {profile && (
+          <Button
+            w="full"
+            onClick={onOpen}
+            isDisabled={chainId !== questChainId || !address}
+            variant="outline"
+          >
+            Re-submit Proof
+          </Button>
+        )}
       </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onModalClose} size="xl">

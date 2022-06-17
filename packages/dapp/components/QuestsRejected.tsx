@@ -1,4 +1,5 @@
-import { Box, Heading, Spinner, Text, VStack } from '@chakra-ui/react';
+import { WarningTwoIcon } from '@chakra-ui/icons';
+import { Box, Flex, Grid, Spinner, Text, VStack } from '@chakra-ui/react';
 
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
 
@@ -15,9 +16,6 @@ export const QuestsRejected: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-        Rejected Quests
-      </Heading>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />
@@ -27,21 +25,40 @@ export const QuestsRejected: React.FC<{
           {questsRejected.length === 0 && (
             <Text color="white">No rejected quests</Text>
           )}
-          {questsRejected.map(quest => (
-            <Box key={quest.id}>
-              <Text>
-                {quest.quest.name} ({quest.questChain.name})
-              </Text>
-              <UploadProof
-                address={address}
-                questId={quest.quest.questId}
-                questChainId={quest.questChain.chainId}
-                questChainAddress={quest.questChain.address}
-                name={quest.quest.name}
-                refresh={refresh}
-              />
-            </Box>
-          ))}
+          <Grid gap={8} templateColumns="repeat(2, 1fr)">
+            {questsRejected.slice(0, 2).map(quest => (
+              <Box
+                key={quest.id}
+                background="rgba(180, 83, 9, 0.3)"
+                p={8}
+                maxW="32rem"
+              >
+                <Flex alignItems="center" mb={3}>
+                  <WarningTwoIcon color="#F59E0B" mr={3} />
+
+                  <Text fontWeight="bold" fontSize={16}>
+                    Submission in {quest.questChain.name} rejected
+                  </Text>
+                </Flex>
+                <Text>
+                  Your submission of proof for {quest.quest.name} was rejected,
+                  with the following explanation:{' '}
+                </Text>
+                <Text fontWeight="bold" mb={3}>
+                  {quest.reviews.slice(-1)[0].description}
+                </Text>
+                <UploadProof
+                  address={address}
+                  questId={quest.quest.questId}
+                  questChainId={quest.questChain.chainId}
+                  questChainAddress={quest.questChain.address}
+                  name={quest.quest.name}
+                  refresh={refresh}
+                  profile
+                />
+              </Box>
+            ))}
+          </Grid>
         </>
       )}
     </VStack>
