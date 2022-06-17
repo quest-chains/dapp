@@ -70,7 +70,7 @@ export const UserBadges: React.FC<{
         </VStack>
       ) : (
         <HStack spacing={4} align="stretch">
-          {badges.length === 0 && <Text color="white">No badges found</Text>}
+          {badges.length === 0 && <Text color="white">No badges found.</Text>}
           {badges?.map(({ chainId, name, imageUrl }) => (
             <VStack
               key={address}
@@ -86,7 +86,7 @@ export const UserBadges: React.FC<{
               }}
               cursor="pointer"
             >
-              <TokenImageOrVideo uri={imageUrl} w="20rem" height="20rem" />
+              <TokenImageOrVideo uri={imageUrl} w="16rem" height="16rem" />
             </VStack>
           ))}
         </HStack>

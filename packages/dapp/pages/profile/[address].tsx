@@ -64,7 +64,7 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
         </Link>
       </Stack>
 
-      <Grid templateColumns="repeat(1, 1fr)" gap={6}>
+      <Grid templateColumns="repeat(1, 1fr)" gap={20}>
         <UserBadges address={addressURL} />
         <UserProgress address={addressURL} />
         <UserRoles address={addressURL} />

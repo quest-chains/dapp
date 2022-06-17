@@ -13,7 +13,7 @@ import { useMemo } from 'react';
 import { useUserRolesForAllChains } from '@/hooks/useUserRolesForAllChains';
 
 import { NetworkDisplay } from './NetworkDisplay';
-import { Role, RoleTag } from './RoleTag';
+import { Role } from './RoleTag';
 
 type QuestChainRoleInfo = {
   address: string;
@@ -89,7 +89,15 @@ export const UserRoles: React.FC<{
         <>
           {roles.length === 0 && <Text color="white">No roles found</Text>}
           {roles?.map(({ address, chainId, name, role }) => (
-            <Flex key={address} gap={3} alignItems="center">
+            <Flex
+              key={address}
+              gap={3}
+              alignItems="center"
+              w="full"
+              background="whiteAlpha.50"
+              p={4}
+              justifyContent="space-between"
+            >
               <Box>
                 <NextLink
                   key={address}
@@ -103,12 +111,18 @@ export const UserRoles: React.FC<{
                     w="full"
                     borderRadius="3xl"
                   >
-                    {name}
+                    <Text fontSize={20} fontWeight="bold">
+                      {name}
+                    </Text>
                   </ChakraLink>
                 </NextLink>
               </Box>
-              <NetworkDisplay asTag chainId={chainId} />
-              <RoleTag role={role} />
+              <Flex gap={4} alignItems="center">
+                <Text fontSize={16} fontWeight="bold">
+                  {role.toUpperCase()}
+                </Text>
+                <NetworkDisplay asTag chainId={chainId} />
+              </Flex>
             </Flex>
           ))}
         </>
