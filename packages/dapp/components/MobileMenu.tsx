@@ -19,7 +19,7 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   onClose,
 }) => {
   const router = useRouter();
-  const { isConnected } = useWallet();
+  const { isConnected, address } = useWallet();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -35,7 +35,7 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   color={router.pathname === '/explore' ? 'main' : 'inherit'}
                   fontFamily="headingLight"
                 >
-                  Explore
+                  Explore Quests
                 </Text>
               </ChakraLink>
             </NextLink>
@@ -47,7 +47,19 @@ export const MobileMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   color={router.pathname === '/create' ? 'main' : 'inherit'}
                   fontFamily="headingLight"
                 >
-                  Create
+                  Create Quest Chain
+                </Text>
+              </ChakraLink>
+            </NextLink>
+            <NextLink href={`/profile/${address}`} passHref>
+              <ChakraLink display="block" _hover={{}}>
+                <Text
+                  borderBottomWidth={router.query.address === address ? 1 : 0}
+                  borderBottomColor="main"
+                  color={router.query.address === address ? 'main' : 'inherit'}
+                  fontFamily="headingLight"
+                >
+                  My Profile
                 </Text>
               </ChakraLink>
             </NextLink>

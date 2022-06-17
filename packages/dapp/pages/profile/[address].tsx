@@ -1,5 +1,13 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Grid, HStack, Link, Stack, Text, VStack } from '@chakra-ui/react';
+import {
+  Grid,
+  Heading,
+  HStack,
+  Link,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
@@ -19,39 +27,47 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const isLoggedInUser = addressURL === address;
 
   return (
-    <VStack px={{ base: 0, lg: 40 }} alignItems="flex-start" gap={4}>
+    <VStack px={{ base: 0, lg: 40 }} gap={4} alignItems="center">
       <Head>
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Stack spacing={6}>
-        <Text
-          w="100%"
-          textAlign="left"
-          color="main"
-          fontSize={20}
-          textTransform="uppercase"
+      <Stack spacing={6} alignItems="center">
+        <Heading w="100%" color="white" fontSize={50}>
+          Profile
+        </Heading>
+
+        <Davatar
+          address={addressURL}
+          size={150}
+          generatedAvatarType="jazzicon"
+        />
+        <Link
+          isExternal
+          href={getAddressUrl(addressURL, chainId)}
+          _hover={{
+            textDecor: 'none',
+          }}
         >
-          User
-        </Text>
-        <Link isExternal href={getAddressUrl(addressURL, chainId)}>
-          <HStack spacing={2} position="relative">
-            <Davatar
-              address={addressURL}
-              size={20}
-              generatedAvatarType="jazzicon"
-              style={{ display: 'inline-block' }}
-            />
-            <Text as="span">{formatAddress(addressURL)}</Text>
+          <HStack
+            spacing={2}
+            position="relative"
+            color="main"
+            fontSize={20}
+            fontWeight="bold"
+          >
+            <Text as="span" borderBottom="1px">
+              {formatAddress(addressURL)}
+            </Text>
             <ExternalLinkIcon mb={'0.375rem'} />
           </HStack>
         </Link>
       </Stack>
 
-      <UserBadges address={addressURL} />
-      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-        <UserRoles address={addressURL} />
+      <Grid templateColumns="repeat(1, 1fr)" gap={6}>
+        <UserBadges address={addressURL} />
         <UserProgress address={addressURL} />
+        <UserRoles address={addressURL} />
 
         {isLoggedInUser && <QuestsToReview address={addressURL} />}
         {isLoggedInUser && <QuestsRejected address={addressURL} />}

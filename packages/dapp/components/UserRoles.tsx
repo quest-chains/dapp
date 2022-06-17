@@ -1,6 +1,7 @@
 import {
   Box,
   Flex,
+  Heading,
   Link as ChakraLink,
   Spinner,
   Text,
@@ -77,9 +78,9 @@ export const UserRoles: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
-        ROLES
-      </Text>
+      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
+        Roles
+      </Heading>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />

@@ -21,7 +21,7 @@ import SearchQuestChains from './SearchQuestChains';
 import { WalletDisplay } from './WalletDisplay';
 
 export const DesktopMenu: React.FC = () => {
-  const { isConnected } = useWallet();
+  const { address, isConnected } = useWallet();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -83,7 +83,7 @@ export const DesktopMenu: React.FC = () => {
               color={router.pathname === '/explore' ? 'main' : 'inherit'}
               fontFamily="headingLight"
             >
-              Explore
+              Explore Quests
             </Text>
           </ChakraLink>
         </NextLink>
@@ -95,7 +95,19 @@ export const DesktopMenu: React.FC = () => {
               color={router.pathname === '/create' ? 'main' : 'inherit'}
               fontFamily="headingLight"
             >
-              Create
+              Create Quest Chain
+            </Text>
+          </ChakraLink>
+        </NextLink>
+        <NextLink href={`/profile/${address}`} passHref>
+          <ChakraLink display="block" _hover={{}}>
+            <Text
+              borderBottomWidth={router.query.address === address ? 1 : 0}
+              borderBottomColor="main"
+              color={router.query.address === address ? 'main' : 'inherit'}
+              fontFamily="headingLight"
+            >
+              My Profile
             </Text>
           </ChakraLink>
         </NextLink>

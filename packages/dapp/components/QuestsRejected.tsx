@@ -1,4 +1,4 @@
-import { Box, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Box, Heading, Spinner, Text, VStack } from '@chakra-ui/react';
 
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
 
@@ -15,9 +15,9 @@ export const QuestsRejected: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
-        REJECTED QUESTS
-      </Text>
+      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
+        Rejected Quests
+      </Heading>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />

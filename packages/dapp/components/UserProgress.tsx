@@ -1,6 +1,10 @@
 import {
+  Box,
+  Flex,
+  Heading,
   HStack,
   Link as ChakraLink,
+  Progress,
   Spinner,
   Text,
   VStack,
@@ -19,9 +23,9 @@ export const UserProgress: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Text w="100%" textAlign="left" mb={2} color="main" fontSize={20}>
-        MY PROGRESS
-      </Text>
+      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
+        My Progress
+      </Heading>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />
@@ -40,10 +44,11 @@ export const UserProgress: React.FC<{
             >
               <ChakraLink display="block" _hover={{}}>
                 <VStack
+                  maxW="30rem"
                   mb={2}
-                  boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                  boxShadow="inset 0px 0px 0px 1px white"
                   p={8}
-                  borderRadius={20}
+                  background="#171F2B"
                   _hover={{
                     background: 'whiteAlpha.100',
                   }}
@@ -52,19 +57,24 @@ export const UserProgress: React.FC<{
                   justify="space-between"
                 >
                   <HStack justify="space-between" w="100%">
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color="main"
-                      letterSpacing={4}
-                    >
+                    <Heading fontSize="xl" fontWeight="bold">
                       {us.chain.name}
-                    </Text>
-                    <NetworkDisplay asTag chainId={us.chain.chainId} />
+                    </Heading>
                   </HStack>
-                  <Text>
-                    {us.completed} / {us.total} completed
-                  </Text>
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Progress
+                      value={(us.completed / us.total) * 100 || 1}
+                      size="xs"
+                      w="85%"
+                    />
+                    <Text>{(us.completed / us.total) * 100} %</Text>
+                  </Flex>
+                  <Text>{us.chain.description}</Text>
+
+                  <Flex justifyContent="space-between">
+                    <Text># quests: {us.total}</Text>
+                    <NetworkDisplay asTag chainId={us.chain.chainId} />
+                  </Flex>
                 </VStack>
               </ChakraLink>
             </NextLink>
