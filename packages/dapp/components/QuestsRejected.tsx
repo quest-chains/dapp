@@ -1,5 +1,20 @@
 import { WarningTwoIcon } from '@chakra-ui/icons';
-import { Box, Flex, Grid, Spinner, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
 
@@ -14,6 +29,12 @@ export const QuestsRejected: React.FC<{
     refresh,
   } = useUserQuestsRejectedForAllChains(address);
 
+  const {
+    isOpen: isOpenSeeAll,
+    onOpen: onOpenSeeAll,
+    onClose: onCloseSeeAll,
+  } = useDisclosure();
+
   return (
     <VStack spacing={4} align="stretch">
       {fetching ? (
@@ -24,6 +45,18 @@ export const QuestsRejected: React.FC<{
         <>
           {questsRejected.length === 0 && (
             <Text color="white">No rejected quests</Text>
+          )}
+          {questsRejected.length > 2 && (
+            <Button
+              variant="ghost"
+              whiteSpace="nowrap"
+              fontWeight="bold"
+              color="main"
+              borderRadius="3xl"
+              onClick={onOpenSeeAll}
+            >
+              SEE ALL
+            </Button>
           )}
           <Grid gap={8} templateColumns="repeat(2, 1fr)">
             {questsRejected.slice(0, 2).map(quest => (
@@ -61,6 +94,50 @@ export const QuestsRejected: React.FC<{
           </Grid>
         </>
       )}
+
+      <Modal isOpen={isOpenSeeAll} onClose={onCloseSeeAll}>
+        <ModalOverlay />
+        <ModalContent maxW="72rem">
+          <ModalHeader>My Submissions</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Grid gap={8} templateColumns="repeat(2, 1fr)">
+              {questsRejected.slice(0, 2).map(quest => (
+                <Box
+                  key={quest.id}
+                  background="rgba(180, 83, 9, 0.3)"
+                  p={8}
+                  maxW="32rem"
+                >
+                  <Flex alignItems="center" mb={3}>
+                    <WarningTwoIcon color="#F59E0B" mr={3} />
+
+                    <Text fontWeight="bold" fontSize={16}>
+                      Submission in {quest.questChain.name} rejected
+                    </Text>
+                  </Flex>
+                  <Text>
+                    Your submission of proof for {quest.quest.name} was
+                    rejected, with the following explanation:{' '}
+                  </Text>
+                  <Text fontWeight="bold" mb={3}>
+                    {quest.reviews.slice(-1)[0].description}
+                  </Text>
+                  <UploadProof
+                    address={address}
+                    questId={quest.quest.questId}
+                    questChainId={quest.questChain.chainId}
+                    questChainAddress={quest.questChain.address}
+                    name={quest.quest.name}
+                    refresh={refresh}
+                    profile
+                  />
+                </Box>
+              ))}
+            </Grid>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };

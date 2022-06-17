@@ -94,9 +94,11 @@ export const UserProgress: React.FC<{
                         <Progress
                           value={(us.completed / us.total) * 100 || 1}
                           size="xs"
-                          w="85%"
+                          w="80%"
                         />
-                        <Text>{(us.completed / us.total) * 100} %</Text>
+                        <Text whiteSpace="nowrap">
+                          {(us.completed / us.total) * 100} %
+                        </Text>
                       </Flex>
                       <Text>{us.chain.description}</Text>
 
@@ -163,9 +165,11 @@ export const UserProgress: React.FC<{
                           <Progress
                             value={(us.completed / us.total) * 100 || 1}
                             size="xs"
-                            w="85%"
+                            w="80%"
                           />
-                          <Text>{(us.completed / us.total) * 100} %</Text>
+                          <Text whiteSpace="nowrap">
+                            {(us.completed / us.total) * 100} %
+                          </Text>
                         </Flex>
                         <Text>{us.chain.description}</Text>
 
