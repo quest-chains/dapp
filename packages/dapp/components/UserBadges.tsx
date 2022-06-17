@@ -1,4 +1,7 @@
 import {
+  Button,
+  Flex,
+  Grid,
   Heading,
   HStack,
   Modal,
@@ -37,6 +40,11 @@ export const UserBadges: React.FC<{
 }> = ({ address }) => {
   const { fetching, results: userBadges } = useUserBadgesForAllChains(address);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenSeeAll,
+    onOpen: onOpenSeeAll,
+    onClose: onCloseSeeAll,
+  } = useDisclosure();
 
   const badges: QuestChainBadgeInfo[] = useMemo(
     () =>
@@ -61,9 +69,23 @@ export const UserBadges: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-        NFT Gallery
-      </Heading>
+      <Flex justifyContent="space-between" alignItems="baseline">
+        <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
+          NFT Gallery
+        </Heading>
+        {badges?.length > 4 && (
+          <Button
+            variant="ghost"
+            whiteSpace="nowrap"
+            fontWeight="bold"
+            color="main"
+            borderRadius="3xl"
+            onClick={onOpenSeeAll}
+          >
+            SEE ALL
+          </Button>
+        )}
+      </Flex>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />
@@ -71,7 +93,7 @@ export const UserBadges: React.FC<{
       ) : (
         <HStack spacing={4} align="stretch">
           {badges.length === 0 && <Text color="white">No badges found.</Text>}
-          {badges?.map(({ chainId, name, imageUrl }) => (
+          {badges?.slice(0, 4).map(({ chainId, name, imageUrl }) => (
             <VStack
               key={address}
               gap={3}
@@ -91,6 +113,37 @@ export const UserBadges: React.FC<{
           ))}
         </HStack>
       )}
+
+      <Modal isOpen={isOpenSeeAll} onClose={onCloseSeeAll}>
+        <ModalOverlay />
+        <ModalContent maxW="72rem">
+          <ModalHeader>NFT Gallery</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Grid templateColumns="repeat(4, 1fr)">
+              {badges.map(({ chainId, name, imageUrl }) => (
+                <VStack
+                  key={address}
+                  gap={3}
+                  alignItems="center"
+                  onClick={() => {
+                    onOpen();
+                    setSelectedNFT({
+                      imageUrl,
+                      chainId,
+                      name,
+                    });
+                  }}
+                  cursor="pointer"
+                >
+                  <TokenImageOrVideo uri={imageUrl} w="16rem" height="16rem" />
+                </VStack>
+              ))}
+            </Grid>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent maxW="36rem">

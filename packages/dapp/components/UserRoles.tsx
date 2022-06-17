@@ -1,10 +1,18 @@
 import {
   Box,
+  Button,
   Flex,
   Heading,
   Link as ChakraLink,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Spinner,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
@@ -26,6 +34,11 @@ export const UserRoles: React.FC<{
   address: string;
 }> = ({ address }) => {
   const { fetching, results: userRoles } = useUserRolesForAllChains(address);
+  const {
+    isOpen: isOpenSeeAll,
+    onOpen: onOpenSeeAll,
+    onClose: onCloseSeeAll,
+  } = useDisclosure();
 
   const roles: QuestChainRoleInfo[] = useMemo(() => {
     const questRoles: { [addressChainId: string]: QuestChainRoleInfo } = {};
@@ -78,9 +91,23 @@ export const UserRoles: React.FC<{
 
   return (
     <VStack spacing={4} align="stretch">
-      <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-        Roles
-      </Heading>
+      <Flex justifyContent="space-between" alignItems="baseline">
+        <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
+          Roles
+        </Heading>
+        {roles?.length > 4 && (
+          <Button
+            variant="ghost"
+            whiteSpace="nowrap"
+            fontWeight="bold"
+            color="main"
+            borderRadius="3xl"
+            onClick={onOpenSeeAll}
+          >
+            SEE ALL
+          </Button>
+        )}
+      </Flex>
       {fetching ? (
         <VStack w="100%">
           <Spinner color="main" />
@@ -88,7 +115,7 @@ export const UserRoles: React.FC<{
       ) : (
         <>
           {roles.length === 0 && <Text color="white">No roles found</Text>}
-          {roles?.map(({ address, chainId, name, role }) => (
+          {roles?.slice(0, 2).map(({ address, chainId, name, role }) => (
             <Flex
               key={address}
               gap={3}
@@ -127,6 +154,53 @@ export const UserRoles: React.FC<{
           ))}
         </>
       )}
+
+      <Modal isOpen={isOpenSeeAll} onClose={onCloseSeeAll}>
+        <ModalOverlay />
+        <ModalContent maxW="72rem">
+          <ModalHeader>Roles</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {roles?.map(({ address, chainId, name, role }) => (
+              <Flex
+                key={address}
+                gap={3}
+                alignItems="center"
+                w="full"
+                background="whiteAlpha.50"
+                p={4}
+                justifyContent="space-between"
+              >
+                <Box>
+                  <NextLink
+                    key={address}
+                    as={`/chain/${chainId}/${address}`}
+                    href={`/chain/[chainId]/[address]`}
+                    passHref
+                  >
+                    <ChakraLink
+                      display="block"
+                      _hover={{}}
+                      w="full"
+                      borderRadius="3xl"
+                    >
+                      <Text fontSize={20} fontWeight="bold">
+                        {name}
+                      </Text>
+                    </ChakraLink>
+                  </NextLink>
+                </Box>
+                <Flex gap={4} alignItems="center">
+                  <Text fontSize={16} fontWeight="bold">
+                    {role.toUpperCase()}
+                  </Text>
+                  <NetworkDisplay asTag chainId={chainId} />
+                </Flex>
+              </Flex>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };
