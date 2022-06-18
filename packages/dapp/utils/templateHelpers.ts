@@ -30,15 +30,7 @@ export const stars = [Star01.src, Star02.src, Star03.src];
 
 export const backgroundNames = ['Circle', 'Square'];
 
-export const gemNames = [
-  'Gem 01',
-  'Gem 02',
-  'Gem 03',
-  'Gem 04',
-  'Gem 05',
-  'Gem 06',
-  'Gem 07',
-];
+export const gemNames = ['Jaka', 'Ines', 'Nina', 'Mojca', 'Nace', 'Eva', 'Lan'];
 
 export const componentToPNG = async (node: RefObject<HTMLDivElement>) => {
   if (!node.current) return '';

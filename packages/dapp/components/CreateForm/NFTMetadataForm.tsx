@@ -1,12 +1,20 @@
 import {
+  Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
   HStack,
+  Image,
   Input,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
   Text,
   Textarea,
+  Tooltip,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
@@ -120,17 +128,100 @@ const NFTMetadataForm: React.FC<{
           ref={componentRef}
         />
       </Flex>
-      <Button onClick={() => setBgIndex(i => (i + 1) % backgrounds.length)}>
-        Change Background
-      </Button>
-      <Button onClick={() => setGemIndex(i => (i + 1) % gems.length)}>
-        Change Gem
-      </Button>
-      <Button onClick={() => setStarLength(i => (i % stars.length) + 1)}>
-        Change Stars
-      </Button>
       <form>
         <VStack spacing={4} align="flex-start" w="100%">
+          <FormControl isRequired>
+            <FormLabel color="main" htmlFor="description">
+              Background Shape
+            </FormLabel>
+            <HStack>
+              {backgrounds.map((bg, bgId) => (
+                <Tooltip label={`${backgroundNames[bgId]} Background`} key={bg}>
+                  <Button
+                    w="6rem"
+                    h="6rem"
+                    isDisabled={bgId === bgIndex}
+                    _disabled={{
+                      boxShadow: 'inset 0px 0px 0px 1px #AD90FF',
+                      cursor: 'not-allowed',
+                      opacity: 0.8,
+                    }}
+                    onClick={() => setBgIndex(bgId)}
+                    px={2}
+                  >
+                    <Image
+                      w="100%"
+                      h="100%"
+                      src={backgrounds[bgId]}
+                      alt={`${backgroundNames[bgId]} Background`}
+                    />
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel color="main" htmlFor="description">
+              Gem
+            </FormLabel>
+            <HStack>
+              {gems.map((gem, gemId) => (
+                <Tooltip label={`${gemNames[gemId]} Gem`} key={gem}>
+                  <Button
+                    w="6rem"
+                    h="6rem"
+                    isDisabled={gemId === gemIndex}
+                    _disabled={{
+                      boxShadow: 'inset 0px 0px 0px 1px #AD90FF',
+                      cursor: 'not-allowed',
+                      opacity: 0.8,
+                    }}
+                    onClick={() => setGemIndex(gemId)}
+                    px={0}
+                  >
+                    <Flex
+                      w="100%"
+                      h="100%"
+                      bgImage={gems[gemId]}
+                      bgSize="175%"
+                      bgPos="center center"
+                    />
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel color="main" htmlFor="description">
+              Number of Stars
+            </FormLabel>
+            <Slider
+              value={starLength}
+              onChange={v => setStarLength(v)}
+              min={1}
+              max={3}
+              step={1}
+              w="100%"
+              maxW="20rem"
+              ml={1}
+              mb={2}
+            >
+              <SliderMark value={1} ml={-1} mt={3} fontSize="sm">
+                1
+              </SliderMark>
+              <SliderMark value={2} ml={-1} mt={3} fontSize="sm">
+                2
+              </SliderMark>
+              <SliderMark value={3} ml={-1} mt={3} fontSize="sm">
+                3
+              </SliderMark>
+              <SliderTrack bg="#AD90FF">
+                <Box position="relative" right={10} />
+                <SliderFilledTrack bg="#AD90FF" opacity="0.2" />
+              </SliderTrack>
+              <SliderThumb boxSize={6} />
+            </Slider>
+          </FormControl>
           <Wrap minW="20rem">
             <FormControl isRequired>
               <FormLabel color="main" htmlFor="name">
