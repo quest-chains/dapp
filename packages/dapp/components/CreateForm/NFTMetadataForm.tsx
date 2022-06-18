@@ -118,7 +118,7 @@ const NFTMetadataForm: React.FC<{
           QUEST CHAIN NFT
         </Text>
       </HStack>
-      <Flex justify="center" align="center" w="100%" p={8}>
+      <Flex justify="center" align="center" w="100%" p={{ base: 0, md: 8 }}>
         <ImageTemplate
           bgIndex={bgIndex}
           gemIndex={gemIndex}

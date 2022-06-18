@@ -93,7 +93,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         if (address) {
           router.push(`/chain/${chainId}/${address}`);
         } else {
-          router.push(`/create`);
+          router.push('/create');
         }
       } catch (error) {
         toast.dismiss(tid);

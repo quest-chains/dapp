@@ -13,7 +13,7 @@ import { QuestChainTile } from '@/components/QuestChainTile';
 import { useDelay } from '@/hooks/useDelay';
 import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
-const SearchQuestChains: React.FC = () => {
+const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [value, setValue] = useState('');
   const delayedSetValue = useDelay(setValue);
 
@@ -64,6 +64,7 @@ const SearchQuestChains: React.FC = () => {
                 description,
                 chainId,
                 quests: quests.length,
+                onClick: onClose,
               }}
               key={address}
             />

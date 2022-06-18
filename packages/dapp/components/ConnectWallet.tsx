@@ -23,13 +23,13 @@ export const ConnectWallet: React.FC = () => {
       backdropFilter="blur(40px)"
       borderRadius="full"
       boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      letterSpacing={2}
+      letterSpacing={1}
       color="main"
       fontSize={14}
       height={10}
     >
       {!isConnected || !address ? (
-        'connect'
+        'Connect Wallet'
       ) : (
         <HStack spacing={2} position="relative">
           <Davatar

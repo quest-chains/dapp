@@ -3,46 +3,24 @@ import {
   Button,
   HStack,
   Link as ChakraLink,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
   Text,
-  useDisclosure,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect } from 'react';
 
 import { ConnectWallet } from '@/components/ConnectWallet';
 import { useWallet } from '@/web3';
 
-import SearchQuestChains from './SearchQuestChains';
 import { WalletDisplay } from './WalletDisplay';
 
-export const DesktopMenu: React.FC = () => {
+export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
+  onSearchOpen,
+}) => {
   const { address, isConnected } = useWallet();
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleUserKeyPress = useCallback(
-    (event: { key: string; metaKey: boolean }) => {
-      const { key, metaKey } = event;
-      if (metaKey && key === 'k') {
-        if (isOpen) onClose();
-        else onOpen();
-      }
-    },
-    [isOpen, onClose, onOpen],
-  );
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleUserKeyPress);
-
-    return () => {
-      window.removeEventListener('keydown', handleUserKeyPress);
-    };
-  }, [handleUserKeyPress]);
+  const isSmallerScreen = useBreakpointValue({ base: true, xl: false });
 
   return (
     <>
@@ -61,20 +39,14 @@ export const DesktopMenu: React.FC = () => {
           borderRadius="full"
           boxShadow="inset 0px 0px 0px 1px #AD90FF"
           fontWeight="light"
-          onClick={onOpen}
+          onClick={onSearchOpen}
+          minW="7.5rem"
+          justifyContent="flex-start"
         >
           <SearchIcon color="main" mr={3} />
-          Search by name or description
+          {isSmallerScreen ? 'Search' : 'Search by name or description'}
         </Button>
 
-        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
-          <ModalOverlay />
-          <ModalContent maxW="2xl">
-            <ModalBody py={6}>
-              <SearchQuestChains />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
         <NextLink href="/explore" passHref>
           <ChakraLink display="block" _hover={{}}>
             <Text
@@ -83,7 +55,7 @@ export const DesktopMenu: React.FC = () => {
               color={router.pathname === '/explore' ? 'main' : 'inherit'}
               fontFamily="headingLight"
             >
-              Explore Quests
+              {isSmallerScreen ? 'Explore' : 'Explore Quests'}
             </Text>
           </ChakraLink>
         </NextLink>
@@ -95,22 +67,24 @@ export const DesktopMenu: React.FC = () => {
               color={router.pathname === '/create' ? 'main' : 'inherit'}
               fontFamily="headingLight"
             >
-              Create Quest Chain
+              {isSmallerScreen ? 'Create' : 'Create Quest Chain'}
             </Text>
           </ChakraLink>
         </NextLink>
-        <NextLink href={`/profile/${address}`} passHref>
-          <ChakraLink display="block" _hover={{}}>
-            <Text
-              borderBottomWidth={router.query.address === address ? 1 : 0}
-              borderBottomColor="main"
-              color={router.query.address === address ? 'main' : 'inherit'}
-              fontFamily="headingLight"
-            >
-              My Profile
-            </Text>
-          </ChakraLink>
-        </NextLink>
+        {isConnected && (
+          <NextLink href={`/profile/${address}`} passHref>
+            <ChakraLink display="block" _hover={{}}>
+              <Text
+                borderBottomWidth={router.query.address === address ? 1 : 0}
+                borderBottomColor="main"
+                color={router.query.address === address ? 'main' : 'inherit'}
+                fontFamily="headingLight"
+              >
+                {isSmallerScreen ? 'Profile' : 'My Profile'}
+              </Text>
+            </ChakraLink>
+          </NextLink>
+        )}
       </HStack>
 
       {isConnected ? <WalletDisplay /> : <ConnectWallet />}

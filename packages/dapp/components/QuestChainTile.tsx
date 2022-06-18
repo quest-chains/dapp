@@ -16,6 +16,7 @@ type QuestChainTileProps = {
   name?: string | undefined | null;
   description?: string | undefined | null;
   quests: number;
+  onClick?: () => void;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -24,13 +25,20 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   description,
   chainId,
   quests,
+  onClick = () => undefined,
 }) => (
   <NextLink
     as={`/chain/${chainId}/${address}`}
     href="/chain/[chainId]/[address]"
     passHref
   >
-    <ChakraLink display="block" _hover={{}} w="full" borderRadius="3xl">
+    <ChakraLink
+      display="block"
+      _hover={{}}
+      w="full"
+      borderRadius="3xl"
+      onClick={onClick}
+    >
       <VStack
         cursor="pointer"
         align="stretch"
