@@ -1,7 +1,13 @@
 import { AspectRatio, Flex, Image, Text } from '@chakra-ui/react';
 import { ForwardedRef, forwardRef } from 'react';
 
-import { backgrounds, gems, stars } from '@/utils/templateHelpers';
+import {
+  backgroundNames,
+  backgrounds,
+  gemNames,
+  gems,
+  stars,
+} from '@/utils/templateHelpers';
 
 export type TemplateProps = {
   bgIndex: number;
@@ -28,7 +34,7 @@ export const ImageTemplate = forwardRef(
       >
         <Image
           src={backgrounds[bgIndex]}
-          alt=""
+          alt={backgroundNames[bgIndex]}
           pos="absolute"
           left="50%"
           top="50%"
@@ -36,7 +42,7 @@ export const ImageTemplate = forwardRef(
         />
         <Image
           src={gems[gemIndex]}
-          alt=""
+          alt={`Gem ${gemNames[gemIndex]}`}
           pos="absolute"
           left="53.5%"
           top="43%"
