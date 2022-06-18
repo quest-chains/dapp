@@ -34,7 +34,7 @@ export const ImageTemplate = forwardRef(
       >
         <Image
           src={backgrounds[bgIndex]}
-          alt={backgroundNames[bgIndex]}
+          alt={`${backgroundNames[bgIndex]} Background`}
           pos="absolute"
           left="50%"
           top="50%"
@@ -42,7 +42,7 @@ export const ImageTemplate = forwardRef(
         />
         <Image
           src={gems[gemIndex]}
-          alt={`Gem ${gemNames[gemIndex]}`}
+          alt={`${gemNames[gemIndex]} Gem`}
           pos="absolute"
           left="53.5%"
           top="43%"
