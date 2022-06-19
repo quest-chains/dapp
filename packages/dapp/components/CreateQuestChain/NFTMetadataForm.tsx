@@ -34,7 +34,6 @@ import {
   dataURItoFile,
   gemNames,
   gems,
-  stars,
 } from '@/utils/templateHelpers';
 
 import { SubmitButton } from '../SubmitButton';

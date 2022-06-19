@@ -21,6 +21,8 @@ import NextLink from 'next/link';
 import React from 'react';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { PrimaryButton } from '@/components/PrimaryButton';
+import { SubmitButton } from '@/components/SubmitButton';
 import { useENS } from '@/hooks/useENS';
 import {
   formatAddress,
@@ -28,9 +30,6 @@ import {
   switchChainOnMetaMask,
   useWallet,
 } from '@/web3';
-
-import { PrimaryButton } from './PrimaryButton';
-import { SubmitButton } from './SubmitButton';
 
 export const WalletDisplay: React.FC = () => {
   const { address, chainId, isMetaMask, disconnect } = useWallet();
@@ -118,41 +117,47 @@ export const WalletDisplay: React.FC = () => {
               </Tooltip>
             </VStack>
             <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />
-            <VStack w="100%" spacing={2} align="stretch">
-              <Text fontSize="lg">Supported Networks</Text>
-              {Object.keys(SUPPORTED_NETWORK_INFO)
-                .filter(c => c !== chainId)
-                .map(c => {
-                  const inner = (
-                    <Button
-                      w="100%"
-                      p={2}
-                      as={isMetaMask ? 'button' : 'div'}
-                      background="transparent"
-                      onClick={
-                        isMetaMask ? () => switchChainOnMetaMask(c) : undefined
-                      }
-                      _hover={{ bg: 'whiteAlpha.200' }}
-                      borderRadius="full"
-                      key={c}
-                      justifyContent="flex-start"
-                    >
-                      <NetworkDisplay chainId={c} fontWeight="normal" />
-                    </Button>
-                  );
-                  return isMetaMask ? (
-                    <Tooltip
-                      label={`Switch to ${SUPPORTED_NETWORK_INFO[c].name}`}
-                      key={c}
-                    >
-                      {inner}
-                    </Tooltip>
-                  ) : (
-                    inner
-                  );
-                })}
-            </VStack>
-            <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />
+            {Object.keys(SUPPORTED_NETWORK_INFO).length > 1 && (
+              <>
+                <VStack w="100%" spacing={2} align="stretch">
+                  <Text fontSize="lg">Supported Networks</Text>
+                  {Object.keys(SUPPORTED_NETWORK_INFO)
+                    .filter(c => c !== chainId)
+                    .map(c => {
+                      const inner = (
+                        <Button
+                          w="100%"
+                          p={2}
+                          as={isMetaMask ? 'button' : 'div'}
+                          background="transparent"
+                          onClick={
+                            isMetaMask
+                              ? () => switchChainOnMetaMask(c)
+                              : undefined
+                          }
+                          _hover={{ bg: 'whiteAlpha.200' }}
+                          borderRadius="full"
+                          key={c}
+                          justifyContent="flex-start"
+                        >
+                          <NetworkDisplay chainId={c} fontWeight="normal" />
+                        </Button>
+                      );
+                      return isMetaMask ? (
+                        <Tooltip
+                          label={`Switch to ${SUPPORTED_NETWORK_INFO[c].name}`}
+                          key={c}
+                        >
+                          {inner}
+                        </Tooltip>
+                      ) : (
+                        inner
+                      );
+                    })}
+                </VStack>
+                <Divider borderColor="ceruleanBlue" borderBottomWidth="1px" />{' '}
+              </>
+            )}
             <HStack justify="space-between" w="100%">
               <NextLink href={`/profile/${address}`} passHref>
                 <Link display="block" _hover={{}}>

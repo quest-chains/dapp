@@ -28,6 +28,8 @@ import {
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { SubmitButton } from '@/components/SubmitButton';
 import { QuestChainInfoFragment } from '@/graphql/types';
 import { QuestChain, QuestChain__factory } from '@/types';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
@@ -37,8 +39,6 @@ import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 import { CreateFlow } from './CreateFlow';
-import { MarkdownEditor } from './MarkdownEditor';
-import { SubmitButton } from './SubmitButton';
 
 interface FormValues {
   name: string;

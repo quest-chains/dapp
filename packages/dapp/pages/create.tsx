@@ -6,12 +6,12 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { ChainMetadataForm } from '@/components/CreateForm/ChainMetadataForm';
+import { ChainMetadataForm } from '@/components/CreateQuestChain/ChainMetadataForm';
 import {
   ChainRolesForm,
   RolesFormValues,
-} from '@/components/CreateForm/ChainRolesForm';
-import NFTMetadataForm from '@/components/CreateForm/NFTMetadataForm';
+} from '@/components/CreateQuestChain/ChainRolesForm';
+import NFTMetadataForm from '@/components/CreateQuestChain/NFTMetadataForm';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';

@@ -9,7 +9,7 @@ import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { Toaster } from 'react-hot-toast';
 
-import { AppLayout } from '@/components/AppLayout';
+import { AppLayout } from '@/components/Layout/AppLayout';
 import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 

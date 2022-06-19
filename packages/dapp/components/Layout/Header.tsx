@@ -18,7 +18,7 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
       px={10}
       background="linear-gradient(rgba(255, 255, 255, 0.2), transparent)"
       boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
-      backdropFilter="blur(5px)"
+      backdropFilter="blur(8px)"
       borderBottom="1px solid rgba(255, 255, 255, 0.01)"
       pos="fixed"
     >

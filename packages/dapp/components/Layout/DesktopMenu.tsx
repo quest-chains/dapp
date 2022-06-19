@@ -9,10 +9,9 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import { ConnectWallet } from '@/components/ConnectWallet';
+import { ConnectWallet } from '@/components/Layout/ConnectWallet';
+import { WalletDisplay } from '@/components/Layout/WalletDisplay';
 import { useWallet } from '@/web3';
-
-import { WalletDisplay } from './WalletDisplay';
 
 export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
   onSearchOpen,

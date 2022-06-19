@@ -22,5 +22,10 @@ export const MarkdownEditor: React.FC<{
     renderHTML={text => <MarkdownViewer markdown={text} />}
     onChange={({ text }) => onChange(text)}
     htmlClass="nonexistant-class"
+    view={{
+      menu: true,
+      md: true,
+      html: false,
+    }}
   />
 );

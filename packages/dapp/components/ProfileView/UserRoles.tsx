@@ -18,10 +18,10 @@ import {
 import NextLink from 'next/link';
 import { useMemo } from 'react';
 
+import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { Role } from '@/components/RoleTag';
 import { useUserRolesForAllChains } from '@/hooks/useUserRolesForAllChains';
-
-import { NetworkDisplay } from './NetworkDisplay';
-import { Role } from './RoleTag';
+import { useWallet } from '@/web3';
 
 type QuestChainRoleInfo = {
   address: string;
@@ -33,6 +33,9 @@ type QuestChainRoleInfo = {
 export const UserRoles: React.FC<{
   address: string;
 }> = ({ address }) => {
+  const { address: userAddress } = useWallet();
+  const isLoggedInUser = address === userAddress?.toLowerCase();
+
   const { fetching, results: userRoles } = useUserRolesForAllChains(address);
   const {
     isOpen: isOpenSeeAll,
@@ -93,7 +96,7 @@ export const UserRoles: React.FC<{
     <VStack spacing={4} align="stretch">
       <Flex justifyContent="space-between" alignItems="baseline">
         <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-          Roles
+          {isLoggedInUser ? 'My ' : ''}Roles
         </Heading>
         {roles?.length > 4 && (
           <Button

@@ -16,29 +16,29 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 
-import { QuestsRejected } from '@/components/QuestsRejected';
-import { QuestsToReview } from '@/components/QuestsToReview';
-import { UserBadges } from '@/components/UserBadges';
-import { UserProgress } from '@/components/UserProgress';
-import { UserRoles } from '@/components/UserRoles';
+import { QuestsRejected } from '@/components/ProfileView/QuestsRejected';
+import { QuestsToReview } from '@/components/ProfileView/QuestsToReview';
+import { UserBadges } from '@/components/ProfileView/UserBadges';
+import { UserProgress } from '@/components/ProfileView/UserProgress';
+import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getServerSideProps>;
 
 const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const { address, chainId } = useWallet();
-  const isLoggedInUser = addressURL === address;
+  const isLoggedInUser = addressURL === address?.toLowerCase();
 
   const [tab, setTab] = useState('submissions');
 
   return (
-    <VStack px={{ base: 0, lg: 40 }} gap={4} alignItems="center">
+    <VStack px={{ base: 0, lg: 40 }} gap={4} align="stretch" w="100%">
       <Head>
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Stack spacing={6} alignItems="center">
-        <Heading w="100%" color="white" fontSize={50}>
+      <Stack spacing={6} alignItems="center" pb={8}>
+        <Heading w="100%" color="white" fontSize={50} textAlign="center">
           Profile
         </Heading>
 
@@ -109,7 +109,7 @@ type QueryParams = { address: string };
 export const getServerSideProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
-  const address = context.params?.address ?? '';
+  const address = (context.params?.address ?? '').toLowerCase();
   const isValidAddress = !!address && utils.isAddress(address);
 
   if (!isValidAddress) {

@@ -2,7 +2,7 @@ import { Button, HStack, Link as ChakraLink, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { Link } from 'react-scroll';
 
-import { Header } from '@/components/Header';
+import { Header } from '@/components/Layout/Header';
 
 export const HeaderLanding: React.FC = () => (
   <Header>

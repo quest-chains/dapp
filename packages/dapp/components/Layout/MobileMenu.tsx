@@ -12,7 +12,7 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import { ConnectWallet } from '@/components/ConnectWallet';
+import { ConnectWallet } from '@/components/Layout/ConnectWallet';
 import { useWallet } from '@/web3';
 
 import { NavToggle } from './NavToggle';
