@@ -11,6 +11,8 @@ import {
 import { useRef } from 'react';
 import { Link } from 'react-scroll';
 
+import { SUPPORTED_NETWORK_INFO } from '@/web3/networks';
+
 export const BuiltWith: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
@@ -20,7 +22,7 @@ export const BuiltWith: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="80vh"
+      minH={{ base: '120vh', md: '80vh' }}
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -51,11 +53,14 @@ export const BuiltWith: React.FC = () => {
         fontWeight="normal"
         color="white"
       >
-        <Flex align="center" mb={10} flexDir={{ base: 'column', md: 'row' }}>
+        <Grid
+          mb={20}
+          templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
           {!isSmallScreen && (
             <Image src="/Landing/Circles5.svg" alt="circles3" mr={10} />
           )}
-          <Flex flexDir="column">
+          <Flex flexDir="column" mr={{ base: 0, md: 20 }}>
             <Heading
               color="main"
               fontSize={{ base: 36, md: 79 }}
@@ -120,7 +125,40 @@ export const BuiltWith: React.FC = () => {
               />
             </Grid>
           </Flex>
-        </Flex>
+          <Flex flexDir="column">
+            <Heading
+              color="main"
+              fontSize={{ base: 36, md: 79 }}
+              pb={10}
+              pt={{ base: 10, md: 0 }}
+              fontWeight="normal"
+              display="flex"
+              flexDir="column"
+              alignSelf="center"
+            >
+              <Text color="white">Supported</Text>
+              Networks
+            </Heading>
+            <Grid
+              gap={8}
+              alignSelf="center"
+              display={{ base: 'grid' }}
+              templateColumns="repeat(4, 1fr)"
+            >
+              {Object.keys(SUPPORTED_NETWORK_INFO).map(chainId => (
+                <Box textAlign="center" key={chainId}>
+                  <Text mb={3}>{SUPPORTED_NETWORK_INFO[chainId].label}</Text>
+                  <Image
+                    src={SUPPORTED_NETWORK_INFO[chainId].image}
+                    alt={SUPPORTED_NETWORK_INFO[chainId].name}
+                    title={SUPPORTED_NETWORK_INFO[chainId].name}
+                    height={{ base: 16, md: 20 }}
+                  />
+                </Box>
+              ))}
+            </Grid>
+          </Flex>
+        </Grid>
       </Flex>
       <Link to="quest-chains" spy={true} smooth={true} duration={800}>
         <Image
