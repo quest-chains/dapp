@@ -1,7 +1,5 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  Button,
-  Flex,
   Grid,
   Heading,
   HStack,
@@ -14,10 +12,8 @@ import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
 
-import { QuestsRejected } from '@/components/ProfileView/QuestsRejected';
-import { QuestsToReview } from '@/components/ProfileView/QuestsToReview';
+import { UserActionsNeeded } from '@/components/ProfileView/UserActionsNeeded';
 import { UserBadges } from '@/components/ProfileView/UserBadges';
 import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
@@ -28,8 +24,6 @@ type Props = InferGetStaticPropsType<typeof getServerSideProps>;
 const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const { address, chainId } = useWallet();
   const isLoggedInUser = addressURL === address?.toLowerCase();
-
-  const [tab, setTab] = useState('submissions');
 
   return (
     <VStack px={{ base: 0, lg: 40 }} gap={4} align="stretch" w="100%">
@@ -71,32 +65,7 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
 
       <Grid templateColumns="repeat(1, 1fr)" gap={20}>
         <UserBadges address={addressURL} />
-        {isLoggedInUser && (
-          <Flex align="stretch" flexDirection="column">
-            <Heading w="100%" textAlign="left" mb={6} fontSize={28}>
-              Actions needed
-            </Heading>
-            <Flex mb={6}>
-              <Button
-                onClick={() => setTab('submissions')}
-                mr={3}
-                variant={tab === 'submissions' ? 'outline' : 'ghost'}
-                borderRadius="3xl"
-              >
-                My submissions
-              </Button>
-              <Button
-                onClick={() => setTab('review')}
-                variant={tab === 'review' ? 'outline' : 'ghost'}
-                borderRadius="3xl"
-              >
-                To be reviewed
-              </Button>
-            </Flex>
-            {tab === 'review' && <QuestsToReview address={addressURL} />}
-            {tab === 'submissions' && <QuestsRejected address={addressURL} />}
-          </Flex>
-        )}
+        {isLoggedInUser && <UserActionsNeeded />}
         <UserProgress address={addressURL} />
         <UserRoles address={addressURL} />
       </Grid>

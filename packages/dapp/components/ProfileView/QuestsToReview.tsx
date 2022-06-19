@@ -82,13 +82,13 @@ export const QuestsToReview: React.FC<{
   return (
     <VStack spacing={4} align="stretch">
       {fetching ? (
-        <VStack w="100%">
-          <Spinner color="main" />
-        </VStack>
+        <Spinner color="main" ml={4} />
       ) : (
         <>
           {chainsToReview.length === 0 && (
-            <Text color="white">No submissions found</Text>
+            <Text color="white" ml={4}>
+              No submissions found
+            </Text>
           )}
           {chainsToReview.length > 2 && (
             <Button

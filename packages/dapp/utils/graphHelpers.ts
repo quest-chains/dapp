@@ -27,7 +27,7 @@ export const waitUntilBlock = async (
 export const awaitQuestChainAddress = async (receipt: TransactionReceipt) => {
   if (!receipt || !receipt.logs) return '';
   const abi = new ethers.utils.Interface([
-    'event NewQuestChain(uint256 indexed id, address questChain)',
+    'event QuestChainCreated(uint256 indexed id, address questChain)',
   ]);
   const eventFragment = abi.events[Object.keys(abi.events)[0]];
   const eventTopic = abi.getEventTopic(eventFragment);

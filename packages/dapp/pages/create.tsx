@@ -152,7 +152,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           )}
           <VStack w="full" gap={4} flex={1}>
             {questChains.map(
-              ({ address, chainId, name, description, quests }) => (
+              ({ address, chainId, name, description, quests, imageUrl }) => (
                 <QuestChainTile
                   {...{
                     address,
@@ -160,6 +160,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                     description,
                     chainId,
                     quests: quests.length,
+                    imageUrl,
                   }}
                   key={address}
                 />

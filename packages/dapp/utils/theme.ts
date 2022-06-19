@@ -35,6 +35,7 @@ export const theme = extendTheme({
   },
   colors: {
     main: '#2DF8C7',
+    darkMain: '#1f7165',
     pending: '#EFFF8F',
     rejected: '#FD86FF',
     neutral: '#BCBCBC',

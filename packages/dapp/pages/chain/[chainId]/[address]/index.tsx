@@ -29,6 +29,7 @@ import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { Role, RoleTag } from '@/components/RoleTag';
 import { UploadProof } from '@/components/UploadProof';
@@ -307,35 +308,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     [contract, refresh, chainId, questChain],
   );
 
-  const [minting, setMinting] = useState(false);
-
-  const onMint = useCallback(async () => {
-    if (!chainId || chainId !== questChain?.chainId || !address) return;
-    setMinting(true);
-    let tid = toast.loading(
-      'Waiting for Confirmation - Confirm the transaction in your Wallet',
-    );
-    try {
-      const tx = await contract.mintToken(address);
-      toast.dismiss(tid);
-      tid = handleTxLoading(tx.hash, chainId);
-      const receipt = await tx.wait(1);
-      toast.dismiss(tid);
-      tid = toast.loading(
-        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-      );
-      await waitUntilBlock(chainId, receipt.blockNumber);
-      toast.dismiss(tid);
-      toast.success(`Successfully minted your NFT`);
-      refresh();
-    } catch (error) {
-      toast.dismiss(tid);
-      handleError(error);
-    }
-
-    setMinting(false);
-  }, [contract, refresh, chainId, questChain, address]);
-
   if (isFallback) {
     return (
       <VStack>
@@ -453,24 +425,17 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       </Flex>
 
       {canMint && (
-        <VStack pt={6}>
-          <Button
-            isLoading={minting}
-            onClick={onMint}
-            background="whiteAlpha.50"
-            fontWeight="400"
-            borderRadius="full"
-            backdropFilter="blur(40px)"
-            boxShadow="inset 0px 0px 0px 1px #AD90FF"
-            color="main"
-            _hover={{
-              background: 'whiteAlpha.200',
+        <Flex pt={6} w="100%">
+          <MintNFTTile
+            {...{
+              address: questChain.address,
+              chainId: questChain.chainId,
+              name: questChain.name,
+              onSuccess: refresh,
+              completed: questChain.quests.filter(q => !q.paused).length,
             }}
-            size="lg"
-          >
-            Mint NFT
-          </Button>
-        </VStack>
+          />
+        </Flex>
       )}
 
       <VStack spacing={6} w="100%" pt={8}>

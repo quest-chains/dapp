@@ -94,7 +94,7 @@ describe('QuestChainFactory', () => {
     const tx = await chainFactory.create(DETAILS_STRING, URI_STRING);
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
-      .to.emit(chainFactory, 'NewQuestChain')
+      .to.emit(chainFactory, 'QuestChainCreated')
       .withArgs(0, chainAddress);
 
     const chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
@@ -128,7 +128,7 @@ describe('QuestChainFactory', () => {
     );
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
-      .to.emit(chainFactory, 'NewQuestChain')
+      .to.emit(chainFactory, 'QuestChainCreated')
       .withArgs(1, chainAddress);
 
     const chain = await getContractAt<QuestChain>('QuestChain', chainAddress);
@@ -185,7 +185,7 @@ describe('QuestChainFactory', () => {
 
     chainAddress = await awaitQuestChainAddress(await tx.wait());
     await expect(tx)
-      .to.emit(chainFactory, 'NewQuestChain')
+      .to.emit(chainFactory, 'QuestChainCreated')
       .withArgs(2, chainAddress);
 
     expect(chainAddress).to.equal(predictedAddress);

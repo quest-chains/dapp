@@ -44,15 +44,13 @@ export const getStatusForUser = async (
     .filter(value => value.length !== 0)
     .map(value => {
       const chain = value[0].questChain;
-      const total = chain.quests.length;
-      const completed = value.reduce(
-        (t, a) => t + (a.status === 'pass' ? 1 : 0),
-        0,
-      );
-      const updatedAt = value.reduce(
-        (t, a) => (t > a.updatedAt ? t : a.updatedAt),
-        '0',
-      );
+      const total = chain.quests.filter(q => !q.paused).length;
+      const completed = value
+        .filter(a => !a.quest.paused)
+        .reduce((t, a) => t + (a.status === 'pass' ? 1 : 0), 0);
+      const updatedAt = value
+        .filter(a => !a.quest.paused)
+        .reduce((t, a) => (t > a.updatedAt ? t : a.updatedAt), '0');
       return { chain, completed, total, updatedAt: new Date(updatedAt) };
     });
 };
