@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Modal,
   ModalBody,
@@ -8,51 +7,68 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Spinner,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 
-import { UserNFTStatus } from '@/hooks/useNFTsToMintForAllChains';
+import {
+  useNFTsToMintForAllChains,
+  UserNFTStatus,
+} from '@/hooks/useNFTsToMintForAllChains';
 
 import { MintNFTTile } from '../MintNFTTile';
 
 export const NFTsToMint: React.FC<{
-  nftsToMint: UserNFTStatus[];
-  refresh: () => void;
-}> = ({ nftsToMint, refresh }) => {
+  address: string;
+}> = ({ address }) => {
   const {
     isOpen: isOpenSeeAll,
     onOpen: onOpenSeeAll,
     onClose: onCloseSeeAll,
   } = useDisclosure();
 
+  const {
+    results: nftsToMint,
+    fetching,
+    refresh,
+  } = useNFTsToMintForAllChains(address ?? '');
+
   return (
     <VStack spacing={4} align="stretch">
-      {nftsToMint.length === 0 && (
-        <Text color="white">No NFTs to mint found</Text>
+      {fetching ? (
+        <Spinner color="main" ml={4} />
+      ) : (
+        <>
+          {nftsToMint.length === 0 && (
+            <Text color="white" ml={4}>
+              No NFTs to mint
+            </Text>
+          )}
+          {nftsToMint.length > 2 && (
+            <Button
+              variant="ghost"
+              whiteSpace="nowrap"
+              fontWeight="bold"
+              color="main"
+              borderRadius="3xl"
+              onClick={onOpenSeeAll}
+            >
+              SEE ALL
+            </Button>
+          )}
+          <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
+            {nftsToMint.slice(0, 2).map(ns => (
+              <MintNFTTile
+                {...ns}
+                key={ns.address + ns.chainId}
+                onSuccess={refresh}
+              />
+            ))}
+          </SimpleGrid>
+        </>
       )}
-      {nftsToMint.length > 2 && (
-        <Button
-          variant="ghost"
-          whiteSpace="nowrap"
-          fontWeight="bold"
-          color="main"
-          borderRadius="3xl"
-          onClick={onOpenSeeAll}
-        >
-          SEE ALL
-        </Button>
-      )}
-      <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
-        {nftsToMint.slice(0, 2).map(ns => (
-          <MintNFTTile
-            {...ns}
-            key={ns.address + ns.chainId}
-            onSuccess={refresh}
-          />
-        ))}
-      </SimpleGrid>
 
       <Modal isOpen={isOpenSeeAll} onClose={onCloseSeeAll}>
         <ModalOverlay />
