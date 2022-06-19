@@ -20,13 +20,16 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
+import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains';
-
-import { NetworkDisplay } from './NetworkDisplay';
+import { useWallet } from '@/web3';
 
 export const UserProgress: React.FC<{
   address: string;
 }> = ({ address }) => {
+  const { address: userAddress } = useWallet();
+  const isLoggedInUser = address === userAddress?.toLowerCase();
+
   const { fetching, results: userStatuses } =
     useUserProgressForAllChains(address);
   const {
@@ -39,7 +42,7 @@ export const UserProgress: React.FC<{
     <VStack spacing={4} align="stretch">
       <Flex justifyContent="space-between" alignItems="baseline">
         <Heading w="100%" textAlign="left" mb={2} fontSize={28}>
-          My Progress
+          {isLoggedInUser ? 'My ' : ''}Progress
         </Heading>
         {userStatuses.length > 2 && (
           <Button

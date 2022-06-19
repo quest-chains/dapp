@@ -42,7 +42,7 @@ export const BuiltWith: React.FC = () => {
         color="white"
       >
         <Flex align="center" mb={10}>
-          <Image src="Landing/Circles5.svg" alt="circles3" mr={10} />
+          <Image src="/Landing/Circles5.svg" alt="circles3" mr={10} />
           <Flex flexDir="column">
             <Heading
               color="main"
@@ -58,43 +58,43 @@ export const BuiltWith: React.FC = () => {
             </Heading>
             <Flex align="center" gap={8} alignSelf="center">
               <Image
-                src="landing/logos/thegraph.svg"
+                src="/Landing/Logos/thegraph.svg"
                 alt="thegraph"
                 title="TheGraph"
                 height={20}
               />
               <Image
-                src="landing/logos/ipfs.png"
+                src="/Landing/Logos/ipfs.png"
                 alt="ipfs"
                 title="IPFS"
                 height={20}
               />
               <Image
-                src="landing/logos/next.png"
+                src="/Landing/Logos/next.png"
                 alt="next"
                 title="NextJS"
                 height={20}
               />
               <Image
-                src="landing/logos/chakra.png"
+                src="/Landing/Logos/chakra.png"
                 alt="chakra"
                 title="ChakraUI"
                 height={20}
               />
               <Image
-                src="landing/logos/ethereum.png"
+                src="/Landing/Logos/ethereum.png"
                 alt="ethereum"
                 title="Ethereum"
                 height={20}
               />
-              <Image
-                src="landing/logos/web3storage.svg"
+              {/* <Image
+                src="/Landing/Logos/web3storage.svg"
                 alt="web3storage"
                 title="Web3 Storage"
                 height={20}
-              />
+              /> */}
               <Image
-                src="landing/logos/filecoin.png"
+                src="/Landing/Logos/filecoin.png"
                 alt="filecoin"
                 title="Filecoin"
                 height={20}
@@ -105,7 +105,7 @@ export const BuiltWith: React.FC = () => {
       </Flex>
       <Link to="quest-chains" spy={true} smooth={true} duration={800}>
         <Image
-          src="Landing/Up.svg"
+          src="/Landing/Up.svg"
           alt="up"
           mr={10}
           pos="absolute"

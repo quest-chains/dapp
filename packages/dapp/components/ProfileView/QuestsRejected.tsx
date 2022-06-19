@@ -3,22 +3,21 @@ import {
   Box,
   Button,
   Flex,
-  Grid,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
   Spinner,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 
+import { UploadProof } from '@/components/UploadProof';
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
-
-import { UploadProof } from './UploadProof';
 
 export const QuestsRejected: React.FC<{
   address: string;
@@ -58,7 +57,7 @@ export const QuestsRejected: React.FC<{
               SEE ALL
             </Button>
           )}
-          <Grid gap={8} templateColumns="repeat(2, 1fr)">
+          <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
             {questsRejected.slice(0, 2).map(quest => (
               <Box
                 key={quest.id}
@@ -91,7 +90,7 @@ export const QuestsRejected: React.FC<{
                 />
               </Box>
             ))}
-          </Grid>
+          </SimpleGrid>
         </>
       )}
 
@@ -101,7 +100,7 @@ export const QuestsRejected: React.FC<{
           <ModalHeader>My Submissions</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Grid gap={8} templateColumns="repeat(2, 1fr)">
+            <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
               {questsRejected.slice(0, 2).map(quest => (
                 <Box
                   key={quest.id}
@@ -134,7 +133,7 @@ export const QuestsRejected: React.FC<{
                   />
                 </Box>
               ))}
-            </Grid>
+            </SimpleGrid>
           </ModalBody>
         </ModalContent>
       </Modal>

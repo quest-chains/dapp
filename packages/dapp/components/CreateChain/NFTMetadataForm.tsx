@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   Box,
   Button,
   Flex,
@@ -12,6 +13,7 @@ import {
   SliderMark,
   SliderThumb,
   SliderTrack,
+  Stack,
   Text,
   Textarea,
   Tooltip,
@@ -34,7 +36,6 @@ import {
   dataURItoFile,
   gemNames,
   gems,
-  stars,
 } from '@/utils/templateHelpers';
 
 import { SubmitButton } from '../SubmitButton';
@@ -111,25 +112,42 @@ const NFTMetadataForm: React.FC<{
       spacing={8}
       boxShadow="inset 0px 0px 0px 1px #AD90FF"
       borderRadius={30}
-      p={8}
+      px={{ base: 4, md: 8 }}
+      py={8}
     >
       <HStack justify="space-between" w="100%">
         <Text color="main" fontSize={20}>
           QUEST CHAIN NFT
         </Text>
       </HStack>
-      <Flex justify="center" align="center" w="100%" p={{ base: 0, md: 8 }}>
-        <ImageTemplate
-          bgIndex={bgIndex}
-          gemIndex={gemIndex}
-          starLength={starLength}
-          name={name}
-          description={description}
-          ref={componentRef}
-        />
-      </Flex>
-      <form>
-        <VStack spacing={4} align="flex-start" w="100%">
+      <Stack
+        w="100%"
+        direction={{ base: 'column', lg: 'row-reverse' }}
+        spacing={{ base: 8, lg: 0 }}
+      >
+        <Flex
+          justify="center"
+          align="center"
+          flex={1}
+          backdropFilter="blur(8px)"
+          zIndex={2}
+          borderRadius="md"
+        >
+          <ImageTemplate
+            bgIndex={bgIndex}
+            gemIndex={gemIndex}
+            starLength={starLength}
+            name={name}
+            description={description}
+            ref={componentRef}
+          />
+        </Flex>
+        <VStack
+          spacing={4}
+          align="flex-start"
+          w="100%"
+          maxW={{ base: '100%', lg: '60%' }}
+        >
           <FormControl isRequired>
             <FormLabel color="main" htmlFor="description">
               Background Shape
@@ -165,30 +183,37 @@ const NFTMetadataForm: React.FC<{
               Gem
             </FormLabel>
             <HStack>
-              {gems.map((gem, gemId) => (
-                <Tooltip label={`${gemNames[gemId]} Gem`} key={gem}>
-                  <Button
-                    w="6rem"
-                    h="6rem"
-                    isDisabled={gemId === gemIndex}
-                    _disabled={{
-                      boxShadow: 'inset 0px 0px 0px 1px #AD90FF',
-                      cursor: 'not-allowed',
-                      opacity: 0.8,
-                    }}
-                    onClick={() => setGemIndex(gemId)}
-                    px={0}
-                  >
-                    <Flex
-                      w="100%"
-                      h="100%"
-                      bgImage={gems[gemId]}
-                      bgSize="175%"
-                      bgPos="center center"
-                    />
-                  </Button>
-                </Tooltip>
-              ))}
+              <Wrap maxW="45rem">
+                {gems.map((gem, gemId) => (
+                  <Tooltip label={`${gemNames[gemId]} Gem`} key={gem}>
+                    <AspectRatio
+                      ratio={1}
+                      w={{ base: '3rem', md: '5rem', xl: '6rem' }}
+                    >
+                      <Button
+                        w="100%"
+                        h="100%"
+                        isDisabled={gemId === gemIndex}
+                        _disabled={{
+                          boxShadow: 'inset 0px 0px 0px 1px #AD90FF',
+                          cursor: 'not-allowed',
+                          opacity: 0.8,
+                        }}
+                        onClick={() => setGemIndex(gemId)}
+                        px={0}
+                      >
+                        <Flex
+                          w="100%"
+                          h="100%"
+                          bgImage={gems[gemId]}
+                          bgSize="175%"
+                          bgPos="center center"
+                        />
+                      </Button>
+                    </AspectRatio>
+                  </Tooltip>
+                ))}
+              </Wrap>
             </HStack>
           </FormControl>
           <FormControl isRequired>
@@ -203,26 +228,24 @@ const NFTMetadataForm: React.FC<{
               step={1}
               w="100%"
               maxW="20rem"
-              ml={1}
               mb={2}
             >
-              <SliderMark value={1} ml={-1} mt={3} fontSize="sm">
+              <SliderMark value={1} mt={3} fontSize="sm">
                 1
               </SliderMark>
-              <SliderMark value={2} ml={-1} mt={3} fontSize="sm">
+              <SliderMark value={2} mt={3} fontSize="sm">
                 2
               </SliderMark>
-              <SliderMark value={3} ml={-1} mt={3} fontSize="sm">
+              <SliderMark value={3} mt={3} fontSize="sm">
                 3
               </SliderMark>
-              <SliderTrack bg="#AD90FF">
-                <Box position="relative" right={10} />
-                <SliderFilledTrack bg="#AD90FF" opacity="0.2" />
+              <SliderTrack bg="#444444" h={2} borderRadius="full">
+                <SliderFilledTrack bg="#AD90FF" opacity="1" />
               </SliderTrack>
-              <SliderThumb boxSize={6} />
+              <SliderThumb boxSize={4} ml={2} />
             </Slider>
           </FormControl>
-          <Wrap minW="20rem">
+          <Wrap>
             <FormControl isRequired>
               <FormLabel color="main" htmlFor="name">
                 Name
@@ -250,7 +273,7 @@ const NFTMetadataForm: React.FC<{
             />
           </FormControl>
         </VStack>
-      </form>
+      </Stack>
       <Flex
         mt={4}
         w="100%"

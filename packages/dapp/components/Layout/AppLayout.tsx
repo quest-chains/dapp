@@ -12,13 +12,13 @@ import {
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Header } from '@/components/Header';
 import { HeaderLanding } from '@/components/Landing/HeaderLanding';
+import { Header } from '@/components/Layout/Header';
+import SearchQuestChains from '@/components/SearchQuestChains';
 import { useWallet } from '@/web3';
 
 import { DesktopMenu } from './DesktopMenu';
 import { MobileMenu } from './MobileMenu';
-import SearchQuestChains from './SearchQuestChains';
 
 export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   children,
@@ -77,7 +77,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           direction="column"
           w="100%"
           flex={1}
-          overflowX="hidden"
           visibility={
             isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
           }
@@ -86,7 +85,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           py="2.75rem !important"
           opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
           transition="opacity 0.25s"
-          p={{ base: 4, md: 8, lg: 0 }}
+          p={{ base: 4, sm: 8, lg: 0 }}
+          maxW="8xl"
         >
           {children}
         </Flex>
@@ -98,7 +98,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           direction="column"
           w="100%"
           flex={1}
-          overflowX="hidden"
           visibility={
             isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
           }
@@ -114,8 +113,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent maxW="2xl">
-          <ModalBody py={6}>
+        <ModalContent maxW="44rem">
+          <ModalBody py={2} m={4}>
             <SearchQuestChains onClose={onSearchClose} />
           </ModalBody>
         </ModalContent>

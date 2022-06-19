@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  Textarea,
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -34,6 +33,7 @@ import {
 } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
+import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
 
 export const UploadProof: React.FC<{
@@ -92,15 +92,15 @@ export const UploadProof: React.FC<{
 
   const onSubmit = useCallback(async () => {
     if (!chainId || chainId !== questChainId) return;
-    if (proofDescription && myFiles.length > 0) {
+    if (proofDescription) {
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
-        let hash = await uploadFilesViaAPI(myFiles);
+        let hash = myFiles.length ? await uploadFilesViaAPI(myFiles) : '';
         const metadata: Metadata = {
           name: `Submission - Quest - ${name} - User - ${address}`,
           description: proofDescription,
-          external_url: `ipfs://${hash}`,
+          external_url: hash ? `ipfs://${hash}` : undefined,
         };
 
         hash = await uploadMetadataViaAPI(metadata);
@@ -171,7 +171,7 @@ export const UploadProof: React.FC<{
 
       <Modal isOpen={isOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="40rem">
           <ModalHeader>Upload Proof - {name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -179,14 +179,14 @@ export const UploadProof: React.FC<{
               <FormLabel color="main" htmlFor="proofDescription">
                 Description
               </FormLabel>
-              <Textarea
-                id="proofDescription"
-                value={proofDescription}
-                onChange={e => setProofDescription(e.target.value)}
-                mb={4}
-              />
+              <Flex w="100%" pb={4}>
+                <MarkdownEditor
+                  value={proofDescription}
+                  onChange={value => setProofDescription(value)}
+                />
+              </Flex>
             </FormControl>
-            <FormControl isRequired>
+            <FormControl>
               <FormLabel color="main" htmlFor="file">
                 Upload file
               </FormLabel>
@@ -234,7 +234,7 @@ export const UploadProof: React.FC<{
               mt={4}
               type="submit"
               onClick={onSubmit}
-              isDisabled={!myFiles.length || !proofDescription}
+              isDisabled={!proofDescription}
               isLoading={isSubmitting}
             >
               Submit

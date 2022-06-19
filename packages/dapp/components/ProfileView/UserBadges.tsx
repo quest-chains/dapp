@@ -17,10 +17,9 @@ import {
 } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 
+import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { TokenImageOrVideo } from '@/components/TokenImage/TokenImageOrVideo';
 import { useUserBadgesForAllChains } from '@/hooks/useUserBadgesForAllChains';
-
-import { NetworkDisplay } from './NetworkDisplay';
-import { TokenImageOrVideo } from './TokenImage/TokenImageOrVideo';
 
 type QuestChainBadgeInfo = {
   chainId: string;

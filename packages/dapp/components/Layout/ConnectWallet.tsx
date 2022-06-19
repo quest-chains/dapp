@@ -2,11 +2,10 @@ import { HStack, Text } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { useENS } from '@/hooks/useENS';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { formatAddress, useWallet } from '@/web3';
-
-import { PrimaryButton } from './PrimaryButton';
 
 export const ConnectWallet: React.FC = () => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =

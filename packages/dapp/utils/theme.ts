@@ -52,7 +52,33 @@ export const theme = extendTheme({
 });
 
 export const globalStyles = css`
+  /* width */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #444444;
+    border-radius: 2.5px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #ad90ff;
+    border-radius: 2.5px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #874dfe;
+  }
   body {
+    scrollbar-color: #ad90ff #444444;
+    ::-webkit-scrollbar-track {
+      background: #444444;
+      border-radius: 0px;
+    }
     background: #0d1117;
     overflow-x: hidden;
   }

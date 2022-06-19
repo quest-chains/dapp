@@ -17,7 +17,7 @@ import {
   ModalOverlay,
   Spinner,
   Text,
-  Textarea,
+  useBreakpointValue,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -30,6 +30,8 @@ import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -63,7 +65,9 @@ const StatusDisplay: React.FC<{
   const { description, externalUrl } = submissions[submissions.length - 1];
 
   const hash = externalUrl?.split('/').pop();
-  const url = `https://${hash}.ipfs.infura-ipfs.io`;
+  const url = hash ? `https://${hash}.ipfs.infura-ipfs.io` : '';
+
+  const isSmallerScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <VStack
@@ -78,13 +82,19 @@ const StatusDisplay: React.FC<{
         <CollapsableQuestDisplay {...quest} />
         <UserDisplay address={user.id} />
       </HStack>
-      <Text fontSize="lg">{description}</Text>
+      <Flex w="100%" fontSize="lg">
+        <MarkdownViewer markdown={description ?? ''} />
+      </Flex>
       <HStack justify="space-between" w="100%" pt={4}>
-        <Link isExternal href={url} _hover={{}}>
-          <SubmitButton color="white" rightIcon={<ExternalLinkIcon />}>
-            View proof
-          </SubmitButton>
-        </Link>
+        {url ? (
+          <Link isExternal href={url} _hover={{}}>
+            <SubmitButton color="white" rightIcon={<ExternalLinkIcon />}>
+              {isSmallerScreen ? 'Attachments' : 'View Attachments'}
+            </SubmitButton>
+          </Link>
+        ) : (
+          <Box />
+        )}
         <SubmitButton
           borderColor="rejected"
           color="rejected"
@@ -98,7 +108,7 @@ const StatusDisplay: React.FC<{
             })
           }
         >
-          Review Submission
+          {isSmallerScreen ? 'Review' : 'Review Submission'}
         </SubmitButton>
       </HStack>
     </VStack>
@@ -317,7 +327,7 @@ const Review: React.FC<Props> = ({
       </VStack>
       <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="40rem">
           <ModalHeader>
             Review Proof - {quest?.name} -{' '}
             {formatAddress(quest?.userId).toUpperCase()}
@@ -328,12 +338,12 @@ const Review: React.FC<Props> = ({
               <FormLabel color="main" htmlFor="reviewDescription">
                 Description
               </FormLabel>
-              <Textarea
-                id="reviewDescription"
-                value={reviewDescription}
-                onChange={e => setReviewDescription(e.target.value)}
-                mb={4}
-              />
+              <Flex pb={4} w="100%">
+                <MarkdownEditor
+                  value={reviewDescription}
+                  onChange={v => setReviewDescription(v)}
+                />
+              </Flex>
             </FormControl>
             <FormControl>
               <FormLabel color="main" htmlFor="file">

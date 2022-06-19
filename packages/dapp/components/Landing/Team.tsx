@@ -57,7 +57,7 @@ export const Team: React.FC = () => {
             >
               <Avatar
                 name="vid"
-                src="landing/profile/vid.png"
+                src="/Landing/profile/vid.png"
                 size="2xl"
                 showBorder
                 borderColor="main"
@@ -82,7 +82,7 @@ export const Team: React.FC = () => {
                   borderRadius="full"
                 >
                   <Image
-                    src="landing/contact/github.png"
+                    src="/Landing/contact/github.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -93,7 +93,7 @@ export const Team: React.FC = () => {
                   borderRadius="full"
                 >
                   <Image
-                    src="landing/contact/linkedin.png"
+                    src="/Landing/contact/linkedin.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -104,7 +104,7 @@ export const Team: React.FC = () => {
                   borderRadius="full"
                 >
                   <Image
-                    src="landing/contact/twitter.png"
+                    src="/Landing/contact/twitter.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -120,7 +120,7 @@ export const Team: React.FC = () => {
             >
               <Avatar
                 name="dan13ram"
-                src="landing/profile/dan.jpeg"
+                src="/Landing/profile/dan.jpeg"
                 size="2xl"
                 showBorder
                 borderColor="main"
@@ -146,7 +146,7 @@ export const Team: React.FC = () => {
                   mr={2}
                 >
                   <Image
-                    src="landing/contact/github.png"
+                    src="/Landing/contact/github.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -157,7 +157,7 @@ export const Team: React.FC = () => {
                   borderRadius="full"
                 >
                   <Image
-                    src="landing/contact/twitter.png"
+                    src="/Landing/contact/twitter.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -173,7 +173,7 @@ export const Team: React.FC = () => {
             >
               <Avatar
                 name="Dave"
-                src="landing/profile/dave.jpg"
+                src="/Landing/profile/dave.jpg"
                 size="2xl"
                 showBorder
                 borderColor="main"
@@ -198,7 +198,7 @@ export const Team: React.FC = () => {
                   borderRadius="full"
                 >
                   <Image
-                    src="landing/contact/linkedin.png"
+                    src="/Landing/contact/linkedin.png"
                     alt="ipfs"
                     height={6}
                   />
@@ -228,7 +228,7 @@ export const Team: React.FC = () => {
             >
               <Avatar
                 name="Beti"
-                src="landing/profile/beti.png"
+                src="/Landing/profile/beti.png"
                 size="2xl"
                 showBorder
                 borderColor="main"

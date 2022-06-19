@@ -8,9 +8,8 @@ import { ethers } from 'ethers';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { SubmitButton } from '@/components/SubmitButton';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
-
-import { SubmitButton } from './SubmitButton';
 // let account;
 
 //where the Superfluid logic takes place
