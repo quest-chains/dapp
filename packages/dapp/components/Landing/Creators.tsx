@@ -231,7 +231,7 @@ export const Creators: React.FC = () => {
           border={{ base: 'none', md: '1px solid #2DF8C7' }}
           borderRadius={{ base: 'none', md: '29.8157px' }}
           w="80%"
-          h={{ base: 'initial', md: '428px' }}
+          h={{ base: 'initial', md: '528px' }}
           textAlign="center"
           p={{ base: 0, md: 24 }}
           mb={{ base: 24, md: 0 }}
