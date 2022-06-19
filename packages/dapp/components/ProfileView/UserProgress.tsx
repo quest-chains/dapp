@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Flex,
-  Grid,
   Heading,
   HStack,
   Link as ChakraLink,
@@ -13,16 +12,43 @@ import {
   ModalHeader,
   ModalOverlay,
   Progress,
+  SimpleGrid,
   Spinner,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import React from 'react';
+import removeMd from 'remove-markdown';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { UserStatus } from '@/graphql/statusForUser';
 import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains';
 import { useWallet } from '@/web3';
+
+import { QuestChainTile } from '../QuestChainTile';
+
+const QuestChainWithProgress: React.FC<{ userStatus: UserStatus }> = ({
+  userStatus: {
+    chain: { chainId, address, name, description, imageUrl },
+    completed,
+    total,
+  },
+}) => (
+  <QuestChainTile
+    {...{
+      address,
+      name,
+      description,
+      chainId,
+      quests: total,
+      completed,
+      imageUrl,
+    }}
+    key={address}
+  />
+);
 
 export const UserProgress: React.FC<{
   address: string;
@@ -66,65 +92,11 @@ export const UserProgress: React.FC<{
           {userStatuses.length === 0 && (
             <Text color="white">No progress found</Text>
           )}
-          <Grid gap={8} templateColumns="repeat(2, 1fr)">
+          <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
             {userStatuses.slice(0, 2).map(us => (
-              <NextLink
-                as={`/chain/${us.chain.chainId}/${us.chain.address}`}
-                href={`/chain/[chainId]/[address]`}
-                passHref
-                key={us.chain.address}
-              >
-                <ChakraLink display="block" _hover={{}}>
-                  <Flex flexDirection="column" alignItems="center">
-                    <VStack
-                      w="full"
-                      boxShadow="inset 0px 0px 0px 1px white"
-                      p={8}
-                      background="#171F2B"
-                      _hover={{
-                        background: 'whiteAlpha.100',
-                      }}
-                      align="stretch"
-                      spacing={4}
-                      justify="space-between"
-                    >
-                      <HStack justify="space-between" w="100%">
-                        <Heading fontSize="xl" fontWeight="bold">
-                          {us.chain.name}
-                        </Heading>
-                      </HStack>
-                      <Flex justifyContent="space-between" alignItems="center">
-                        <Progress
-                          value={(us.completed / us.total) * 100 || 1}
-                          size="xs"
-                          w="80%"
-                        />
-                        <Text whiteSpace="nowrap">
-                          {(us.completed / us.total) * 100} %
-                        </Text>
-                      </Flex>
-                      <Text>{us.chain.description}</Text>
-
-                      <Flex justifyContent="space-between">
-                        <Text># quests: {us.total}</Text>
-                        <NetworkDisplay asTag chainId={us.chain.chainId} />
-                      </Flex>
-                    </VStack>
-                    <Box
-                      boxShadow="inset 0px 0px 0px 1px white"
-                      w="95%"
-                      h="0.5rem"
-                    ></Box>
-                    <Box
-                      boxShadow="inset 0px 0px 0px 1px white"
-                      w="90%"
-                      h="0.5rem"
-                    ></Box>
-                  </Flex>
-                </ChakraLink>
-              </NextLink>
+              <QuestChainWithProgress userStatus={us} key={us.chain.address} />
             ))}
-          </Grid>
+          </SimpleGrid>
         </>
       )}
 
@@ -134,68 +106,14 @@ export const UserProgress: React.FC<{
           <ModalHeader>My Progress</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Grid gap={8} templateColumns="repeat(2, 1fr)">
+            <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
               {userStatuses.map(us => (
-                <NextLink
-                  as={`/chain/${us.chain.chainId}/${us.chain.address}`}
-                  href={`/chain/[chainId]/[address]`}
-                  passHref
+                <QuestChainWithProgress
+                  userStatus={us}
                   key={us.chain.address}
-                >
-                  <ChakraLink display="block" _hover={{}}>
-                    <Flex flexDirection="column" alignItems="center">
-                      <VStack
-                        w="full"
-                        boxShadow="inset 0px 0px 0px 1px white"
-                        p={8}
-                        background="#171F2B"
-                        _hover={{
-                          background: 'whiteAlpha.100',
-                        }}
-                        align="stretch"
-                        spacing={4}
-                        justify="space-between"
-                      >
-                        <HStack justify="space-between" w="100%">
-                          <Heading fontSize="xl" fontWeight="bold">
-                            {us.chain.name}
-                          </Heading>
-                        </HStack>
-                        <Flex
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Progress
-                            value={(us.completed / us.total) * 100 || 1}
-                            size="xs"
-                            w="80%"
-                          />
-                          <Text whiteSpace="nowrap">
-                            {(us.completed / us.total) * 100} %
-                          </Text>
-                        </Flex>
-                        <Text>{us.chain.description}</Text>
-
-                        <Flex justifyContent="space-between">
-                          <Text># quests: {us.total}</Text>
-                          <NetworkDisplay asTag chainId={us.chain.chainId} />
-                        </Flex>
-                      </VStack>
-                      <Box
-                        boxShadow="inset 0px 0px 0px 1px white"
-                        w="95%"
-                        h="0.5rem"
-                      ></Box>
-                      <Box
-                        boxShadow="inset 0px 0px 0px 1px white"
-                        w="90%"
-                        h="0.5rem"
-                      ></Box>
-                    </Flex>
-                  </ChakraLink>
-                </NextLink>
+                />
               ))}
-            </Grid>
+            </SimpleGrid>
           </ModalBody>
         </ModalContent>
       </Modal>

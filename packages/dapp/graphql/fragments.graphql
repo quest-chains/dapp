@@ -5,6 +5,7 @@ fragment QuestChainInfo on QuestChain {
   updatedAt
   name
   description
+  imageUrl
   quests {
     questId
     paused

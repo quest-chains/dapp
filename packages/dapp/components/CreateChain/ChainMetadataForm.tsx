@@ -20,7 +20,11 @@ import toast from 'react-hot-toast';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { handleError } from '@/utils/helpers';
-import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
+import {
+  Metadata,
+  uploadFilesViaAPI,
+  uploadMetadataViaAPI,
+} from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 export const ChainMetadataForm: React.FC<{
@@ -62,14 +66,19 @@ export const ChainMetadataForm: React.FC<{
   const [isSubmitting, setSubmitting] = useState(false);
 
   const exportMetadata = useCallback(async () => {
-    const metadata: Metadata = {
-      name,
-      description,
-    };
-    const tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+    let tid = toast.loading('Uploading image to IPFS via web3.storage');
     try {
       setSubmitting(true);
-      const hash = await uploadMetadataViaAPI(metadata);
+      const file = myFiles[0];
+      let hash = await uploadFilesViaAPI([file]);
+      const metadata: Metadata = {
+        name,
+        description,
+        image_url: `ipfs://${hash}`,
+      };
+      toast.dismiss(tid);
+      tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      hash = await uploadMetadataViaAPI(metadata);
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 
@@ -80,7 +89,7 @@ export const ChainMetadataForm: React.FC<{
     } finally {
       setSubmitting(false);
     }
-  }, [name, description, onSubmit]);
+  }, [name, description, onSubmit, myFiles]);
 
   return (
     <VStack

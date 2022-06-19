@@ -65,16 +65,16 @@ export const globalStyles = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #ad90ff;
+    background: #2df8c7;
     border-radius: 2.5px;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: #874dfe;
+    background: #1f7165;
   }
   body {
-    scrollbar-color: #ad90ff #444444;
+    scrollbar-color: #2df8c7 #444444;
     ::-webkit-scrollbar-track {
       background: #444444;
       border-radius: 0px;

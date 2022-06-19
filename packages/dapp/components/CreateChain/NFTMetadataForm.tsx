@@ -73,7 +73,7 @@ const NFTMetadataForm: React.FC<{
       const metadata: Metadata = {
         name,
         description,
-        image_url: `ipfs://${hash}/badge.png`,
+        image_url: `ipfs://${hash}`,
         attributes: [
           {
             trait_type: 'Background',
@@ -242,7 +242,7 @@ const NFTMetadataForm: React.FC<{
               <SliderTrack bg="#444444" h={2} borderRadius="full">
                 <SliderFilledTrack bg="#AD90FF" opacity="1" />
               </SliderTrack>
-              <SliderThumb boxSize={4} ml={2} />
+              <SliderThumb boxSize={5} ml={-1} />
             </Slider>
           </FormControl>
           <Wrap>

@@ -48,7 +48,7 @@ export const ImageTemplate = forwardRef(
       return () => {
         window.removeEventListener('resize', getSize);
       };
-    }, [ref]);
+    }, [ref, name]);
 
     const titleFontSize = useMemo(() => `${0.045 * width}px`, [width]);
     const titleLineHeight = useMemo(() => `${0.05 * width}px`, [width]);

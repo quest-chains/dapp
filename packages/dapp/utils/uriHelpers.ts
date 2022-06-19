@@ -60,3 +60,10 @@ export const uriToHttpAsArray = (uri: string): string[] => {
       return [];
   }
 };
+
+export const ipfsUriToHttp = (uri: string | null | undefined): string => {
+  if (!uri) return '';
+  const { protocol, hash } = parseUri(uri);
+  if (protocol !== 'ipfs' || !hash) return '';
+  return `https://${hash}.ipfs.infura-ipfs.io`;
+};

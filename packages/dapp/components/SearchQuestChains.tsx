@@ -56,19 +56,22 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         {!fetching &&
           !error &&
           results.length > 0 &&
-          results.map(({ address, name, description, chainId, quests }) => (
-            <QuestChainTile
-              {...{
-                address,
-                name,
-                description,
-                chainId,
-                quests: quests.length,
-                onClick: onClose,
-              }}
-              key={address}
-            />
-          ))}
+          results.map(
+            ({ address, name, description, chainId, quests, imageUrl }) => (
+              <QuestChainTile
+                {...{
+                  address,
+                  name,
+                  description,
+                  chainId,
+                  quests: quests.length,
+                  imageUrl,
+                  onClick: onClose,
+                }}
+                key={address}
+              />
+            ),
+          )}
       </VStack>
     </VStack>
   );

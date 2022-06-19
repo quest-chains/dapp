@@ -83,7 +83,7 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
                 variant={tab === 'submissions' ? 'outline' : 'ghost'}
                 borderRadius="3xl"
               >
-                My Submissions
+                My submissions
               </Button>
               <Button
                 onClick={() => setTab('review')}

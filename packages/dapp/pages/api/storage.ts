@@ -41,7 +41,13 @@ export const handler: (
         stream: () =>
           fs.createReadStream(name) as unknown as ReadableStream<string>,
       }));
-      const cid = await storage.put(tmpFiles);
+      let cid = '';
+      if (tmpFiles.length > 1) {
+        cid = await storage.put(tmpFiles);
+      } else {
+        // single files are uploaded directly
+        cid = await storage.put(tmpFiles, { wrapWithDirectory: false });
+      }
 
       await Promise.all(
         files.map(async ({ name }) => {

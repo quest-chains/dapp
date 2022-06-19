@@ -43,6 +43,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [step, setStep] = useState(0);
+  const [showForm, setShowForm] = useState(true);
 
   const onSubmitChainMeta = (name: string, metadataUri: string) => {
     setChainName(name);
@@ -82,7 +83,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain, redirecting...');
+        toast.success('Successfully created a new Quest Chain');
 
         setChainName('');
         setChainUri('');
@@ -93,7 +94,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         if (address) {
           router.push(`/chain/${chainId}/${address}`);
         } else {
-          router.push('/create');
+          setShowForm(false);
+          setTimeout(() => setShowForm(true), 50);
         }
       } catch (error) {
         toast.dismiss(tid);
@@ -114,19 +116,26 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           CREATE NEW QUEST CHAIN
         </Text>
       </HStack>
-      <Flex w="100%" display={step === 0 ? 'flex' : 'none'}>
-        <ChainMetadataForm onSubmit={onSubmitChainMeta} />
-      </Flex>
-      <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
-        <NFTMetadataForm
-          chainName={chainName}
-          onSubmit={onSubmitNFTMeta}
-          onBack={() => setStep(0)}
-        />
-      </Flex>
-      <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
-        <ChainRolesForm onSubmit={onSubmitRoles} onBack={() => setStep(1)} />
-      </Flex>
+      {showForm && (
+        <>
+          <Flex w="100%" display={step === 0 ? 'flex' : 'none'}>
+            <ChainMetadataForm onSubmit={onSubmitChainMeta} />
+          </Flex>
+          <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
+            <NFTMetadataForm
+              chainName={chainName}
+              onSubmit={onSubmitNFTMeta}
+              onBack={() => setStep(0)}
+            />
+          </Flex>
+          <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
+            <ChainRolesForm
+              onSubmit={onSubmitRoles}
+              onBack={() => setStep(1)}
+            />
+          </Flex>
+        </>
+      )}
 
       {fetching ? (
         <VStack w="100%">
