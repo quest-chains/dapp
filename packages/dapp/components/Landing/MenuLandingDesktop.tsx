@@ -6,7 +6,7 @@ export const MenuLandingDesktop: React.FC = () => (
   <HStack>
     <NextLink href="/explore" passHref>
       <ChakraLink display="block" _hover={{}}>
-        <Button fontSize={20} ml={3} cursor="pointer" fontFamily="headingLight">
+        <Button fontSize={20} cursor="pointer" fontFamily="headingLight">
           Explore Quests
         </Button>
       </ChakraLink>

@@ -45,7 +45,6 @@ export const MenuLandingMobile: React.FC = () => {
                 <ChakraLink display="block" _hover={{}}>
                   <Button
                     fontSize={20}
-                    ml={3}
                     cursor="pointer"
                     fontFamily="headingLight"
                     onClick={toggleOpen}
