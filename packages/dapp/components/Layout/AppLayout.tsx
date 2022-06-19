@@ -77,7 +77,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           direction="column"
           w="100%"
           flex={1}
-          overflowX="hidden"
           visibility={
             isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
           }
@@ -99,7 +98,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           direction="column"
           w="100%"
           flex={1}
-          overflowX="hidden"
           visibility={
             isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
           }

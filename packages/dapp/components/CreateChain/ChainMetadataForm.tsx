@@ -89,7 +89,8 @@ export const ChainMetadataForm: React.FC<{
       spacing={8}
       boxShadow="inset 0px 0px 0px 1px #AD90FF"
       borderRadius={30}
-      p={8}
+      px={{ base: 4, md: 8 }}
+      py={8}
     >
       <HStack justify="space-between" w="100%">
         <Text color="main" fontSize={20}>

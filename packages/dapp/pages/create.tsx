@@ -6,12 +6,12 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { ChainMetadataForm } from '@/components/CreateQuestChain/ChainMetadataForm';
+import { ChainMetadataForm } from '@/components/CreateChain/ChainMetadataForm';
 import {
   ChainRolesForm,
   RolesFormValues,
-} from '@/components/CreateQuestChain/ChainRolesForm';
-import NFTMetadataForm from '@/components/CreateQuestChain/NFTMetadataForm';
+} from '@/components/CreateChain/ChainRolesForm';
+import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
@@ -104,7 +104,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   );
 
   return (
-    <VStack w="100%" align="stretch" px={{ base: 0, lg: 40 }} spacing={8}>
+    <VStack w="100%" align="stretch" px={{ base: 0, lg: 12 }} spacing={8}>
       <Head>
         <title>Create</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />

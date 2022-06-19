@@ -5,7 +5,14 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { ForwardedRef, forwardRef } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  RefObject,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import {
   backgroundNames,
@@ -28,29 +35,26 @@ export const ImageTemplate = forwardRef(
     { bgIndex, gemIndex, starLength, name, description }: TemplateProps,
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
-    const titleFontSize = useBreakpointValue({
-      base: '3vw',
-      sm: 'lg',
-      md: 'xl',
-    });
+    const [width, setWidth] = useState<number>(0);
+    useEffect(() => {
+      const getSize = () => {
+        const node = (ref as RefObject<HTMLDivElement>)?.current;
+        if (node) {
+          setWidth(node.clientWidth);
+        }
+      };
+      getSize();
+      window.addEventListener('resize', getSize);
+      return () => {
+        window.removeEventListener('resize', getSize);
+      };
+    }, [ref]);
 
-    const descriptionFontSize = useBreakpointValue({
-      base: '1.5vw',
-      sm: '2vw',
-      md: 'xs',
-    });
-
-    const logoFontSize = useBreakpointValue({
-      base: '1.5vw',
-      sm: '1.5vw',
-      md: 'sm',
-    });
-
-    const starSize = useBreakpointValue({
-      base: '4vw',
-      sm: '4.5vw',
-      md: '2rem',
-    });
+    const titleFontSize = useMemo(() => `${0.045 * width}px`, [width]);
+    const titleLineHeight = useMemo(() => `${0.05 * width}px`, [width]);
+    const descriptionFontSize = useMemo(() => `${0.025 * width}px`, [width]);
+    const logoFontSize = useMemo(() => `${0.03 * width}px`, [width]);
+    const starSize = useMemo(() => `${0.06 * width}px`, [width]);
 
     return (
       <AspectRatio w="100%" maxW="30rem" ratio={1}>
@@ -84,18 +88,19 @@ export const ImageTemplate = forwardRef(
             color="white"
             pos="absolute"
             top="20%"
-            left="30%"
+            left="29%"
             maxW="50%"
             fontSize={titleFontSize}
+            lineHeight={titleLineHeight}
           >
             {name}
           </Text>
           <Flex
             h="1px"
-            w="53%"
+            w="54%"
             bg="white"
             pos="absolute"
-            left="31%"
+            left="30%"
             bottom="37%"
             borderRadius="full"
             opacity="0.5"
@@ -106,7 +111,7 @@ export const ImageTemplate = forwardRef(
             fontWeight="normal"
             pos="absolute"
             bottom="38%"
-            left="31%"
+            left="30%"
             fontSize={logoFontSize}
           >
             Quest Chains
