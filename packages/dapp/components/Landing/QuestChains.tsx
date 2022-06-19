@@ -51,7 +51,7 @@ export const QuestChains: React.FC = () => {
           top="-300px"
           height="600px"
           filter="blur(484px)"
-          width="600px"
+          width={{ base: '300px', md: '600px' }}
           background="#2DF8C7"
           zIndex={-3}
         />
@@ -62,7 +62,7 @@ export const QuestChains: React.FC = () => {
           bottom="-300px"
           height="600px"
           filter="blur(484px)"
-          width="600px"
+          width={{ base: '300px', md: '600px' }}
           background="#2DF8C7"
           zIndex={-3}
         />
@@ -72,15 +72,28 @@ export const QuestChains: React.FC = () => {
           alignItems="center"
           flexDirection="column"
         >
-          <Heading fontSize={148} pb={10} fontWeight="normal" color="white">
+          <Heading
+            fontSize={{ base: 70, md: 148 }}
+            pb={10}
+            fontWeight="normal"
+            color="white"
+          >
             <VStack>
               <Flex>
-                <Image src="Landing/Star1.svg" alt="star1" />
+                <Image
+                  src="Landing/Star1.svg"
+                  alt="star1"
+                  width={{ base: 12, md: 20 }}
+                />
                 Quest
               </Flex>
               <Flex>
                 Chains
-                <Image src="Landing/Star2.svg" alt="star2" />
+                <Image
+                  src="Landing/Star2.svg"
+                  alt="star2"
+                  width={{ base: 20, md: 30 }}
+                />
               </Flex>
             </VStack>
           </Heading>

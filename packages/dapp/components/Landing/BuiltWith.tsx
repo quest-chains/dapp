@@ -1,4 +1,12 @@
-import { Box, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Grid,
+  Heading,
+  HStack,
+  Image,
+  Text,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
 import { Link } from 'react-scroll';
 
@@ -10,7 +18,7 @@ export const BuiltWith: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="80vh"
+      minH={{ base: '100vh', md: '80vh' }}
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -41,22 +49,29 @@ export const BuiltWith: React.FC = () => {
         fontWeight="normal"
         color="white"
       >
-        <Flex align="center" mb={10}>
+        <Flex align="center" mb={10} flexDir={{ base: 'column', md: 'row' }}>
           <Image src="/Landing/Circles5.svg" alt="circles3" mr={10} />
           <Flex flexDir="column">
             <Heading
               color="main"
-              fontSize={79}
+              fontSize={{ base: 50, md: 79 }}
               pb={10}
+              pt={{ base: 10, md: 0 }}
               fontWeight="normal"
               display="flex"
+              alignSelf="center"
             >
               Built
               <Text color="white" ml={6}>
                 with
               </Text>
             </Heading>
-            <Flex align="center" gap={8} alignSelf="center">
+            <Grid
+              gap={8}
+              alignSelf="center"
+              display={{ base: 'grid' }}
+              templateColumns="repeat(3, 1fr)"
+            >
               <Image
                 src="/Landing/Logos/thegraph.svg"
                 alt="thegraph"
@@ -99,7 +114,7 @@ export const BuiltWith: React.FC = () => {
                 title="Filecoin"
                 height={20}
               />
-            </Flex>
+            </Grid>
           </Flex>
         </Flex>
       </Flex>
@@ -109,8 +124,8 @@ export const BuiltWith: React.FC = () => {
           alt="up"
           mr={10}
           pos="absolute"
-          right={50}
-          bottom={20}
+          right={{ base: 4, md: 50 }}
+          bottom={{ base: 5, md: 20 }}
           cursor="pointer"
         />
       </Link>

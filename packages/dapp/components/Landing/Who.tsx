@@ -1,8 +1,17 @@
-import { Box, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
 
 export const Who: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
     <HStack
@@ -13,26 +22,32 @@ export const Who: React.FC = () => {
       minH="70vh"
       id="who"
     >
-      <Image src="Landing/Circles2.svg" alt="circles2" />
+      {!isSmallScreen && <Image src="Landing/Circles2.svg" alt="circles" />}
       <Flex
         ref={ref}
         gap={8}
         justifyContent="center"
         maxWidth={{ base: '90%', md: '5xl' }}
+        flexDirection={{ base: 'column', md: 'row' }}
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
         pl={{ base: 0, md: 0 }}
         zIndex={100}
         fontWeight="normal"
         color="white"
-        height="340px"
+        height={{ base: '100%', md: '340px' }}
+        my={{ base: 24, md: 0 }}
       >
+        {isSmallScreen && (
+          <Image src="Landing/Circles2.svg" alt="circles" width={60} mb={8} />
+        )}
         <Heading
           color="main"
-          fontSize={58}
+          fontSize={{ base: 50, md: 58 }}
           fontWeight="normal"
           display="flex"
           flexDir="column"
           alignSelf="center"
+          alignItems={{ base: 'center', md: 'start' }}
         >
           Who
           <Text color="white">is it for?</Text>
@@ -41,8 +56,8 @@ export const Who: React.FC = () => {
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
           bgImage="url(/Landing/RectangleBG1.svg)"
-          bgPosition="center"
-          bgSize="contain"
+          bgPosition={{ base: 'bottom', md: 'center' }}
+          bgSize={{ base: 'cover', md: 'contain' }}
           backgroundRepeat="no-repeat"
           maxW="267px"
           p={6}
@@ -58,8 +73,8 @@ export const Who: React.FC = () => {
         <Box
           dropShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
           bgImage="url(/Landing/RectangleBG2.svg)"
-          bgPosition="center"
-          bgSize="contain"
+          bgPosition={{ base: 'bottom', md: 'center' }}
+          bgSize={{ base: 'cover', md: 'contain' }}
           backgroundRepeat="no-repeat"
           maxW="267px"
           p={6}

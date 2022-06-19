@@ -7,12 +7,12 @@ import {
   Stack,
   useBreakpointValue,
   useDisclosure,
-  VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
-import { HeaderLanding } from '@/components/Landing/HeaderLanding';
+import { MenuLandingDesktop } from '@/components/Landing/MenuLandingDesktop';
+import { MenuLandingMobile } from '@/components/Landing/MenuLandingMobile';
 import { Header } from '@/components/Layout/Header';
 import SearchQuestChains from '@/components/SearchQuestChains';
 import { useWallet } from '@/web3';
@@ -57,21 +57,25 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
 
   return (
     <Stack align="center" p={0} m={0} spacing={0} fontFamily="body">
-      {!isLanding && (
-        <VStack alignItems="center" borderBottomRadius="md" w="100%" mx="auto">
-          <Header>
-            {isSmallScreen ? (
-              <MobileMenu
-                isOpen={isOpen}
-                toggleOpen={toggleOpen}
-                onSearchOpen={onSearchOpen}
-              />
-            ) : (
-              <DesktopMenu onSearchOpen={onSearchOpen} />
-            )}
-          </Header>
-        </VStack>
-      )}
+      {/* {!isLanding && ( */}
+      <Header>
+        {isSmallScreen ? (
+          isLanding ? (
+            <MenuLandingMobile />
+          ) : (
+            <MobileMenu
+              isOpen={isOpen}
+              toggleOpen={toggleOpen}
+              onSearchOpen={onSearchOpen}
+            />
+          )
+        ) : isLanding ? (
+          <MenuLandingDesktop />
+        ) : (
+          <DesktopMenu onSearchOpen={onSearchOpen} />
+        )}
+      </Header>
+      {/* )} */}
       {!isLanding && (
         <Flex
           direction="column"
@@ -92,7 +96,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         </Flex>
       )}
 
-      {isLanding && <HeaderLanding />}
       {isLanding && (
         <Flex
           direction="column"
@@ -103,6 +106,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           }
           opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
           transition="opacity 0.25s"
+          overflowX="hidden"
         >
           {children}
         </Flex>

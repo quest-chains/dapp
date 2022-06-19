@@ -18,7 +18,7 @@ export const Team: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="80vh"
+      minH={{ base: 'full', md: '80vh' }}
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -40,14 +40,19 @@ export const Team: React.FC = () => {
         <Flex align="center" mb={10} flexDir="column">
           <Heading
             color="main"
-            fontSize={79}
+            fontSize={{ base: 50, md: 79 }}
             pb={10}
             fontWeight="normal"
             display="flex"
           >
             Team
           </Heading>
-          <Grid gap={8} templateColumns="repeat(4, 1fr)" height="20rem">
+          <Grid
+            gap={8}
+            // display={{ base: 'flex', md: 'grid' }}
+            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
+            height={{ base: 'initial', md: '20rem' }}
+          >
             <Flex
               flexDir="column"
               alignItems="center"

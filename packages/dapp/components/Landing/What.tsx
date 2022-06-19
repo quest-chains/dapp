@@ -1,8 +1,15 @@
-import { Flex, Heading, Image, Text } from '@chakra-ui/react';
+import {
+  Flex,
+  Heading,
+  Image,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
 
 export const What: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
     <Flex
@@ -14,7 +21,8 @@ export const What: React.FC = () => {
       gap={10}
       pt={20}
     >
-      <Image src="Landing/Circles.svg" alt="circles" />
+      {!isSmallScreen && <Image src="Landing/Circles.svg" alt="circles" />}
+
       <Flex
         ref={ref}
         display="flex"
@@ -26,20 +34,25 @@ export const What: React.FC = () => {
         zIndex={100}
         fontWeight="normal"
         color="white"
+        alignItems={{ base: 'center', md: 'initial' }}
       >
+        {isSmallScreen && (
+          <Image src="Landing/Circles.svg" alt="circles" width={60} mb={8} />
+        )}
         <Heading
-          color="main"
-          fontSize={70}
+          fontSize={{ base: 50, md: 70 }}
           pb={10}
           fontWeight="normal"
           display="flex"
+          color="white"
+          alignItems={{ base: 'center', md: 'initial' }}
+          textAlign={{ base: 'center', md: 'initial' }}
         >
-          What
-          <Text color="white" ml={6}>
-            are we building?
+          <Text>
+            <span style={{ color: '#2DF8C7' }}>What</span> are we building?
           </Text>
         </Heading>
-        <Text fontSize={{ base: 'lg', md: '3xl' }}>
+        <Text fontSize={{ base: 'lg', md: '3xl' }} px={{ base: 8, md: 0 }}>
           We are building a gamified learning / web3 onboarding platform which
           rewards users through questing. Quest makers create quest chains,
           while questers would then complete the quests and get rewarded with

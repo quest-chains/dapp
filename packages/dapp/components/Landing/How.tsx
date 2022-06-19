@@ -6,11 +6,13 @@ import {
   Image,
   Link,
   Text,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
 export const How: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
     <HStack
@@ -48,23 +50,33 @@ export const How: React.FC = () => {
         fontWeight="normal"
         color="white"
       >
-        <Flex align="center" mb={10}>
-          <Image src="Landing/Circles3.svg" alt="circles3" mr={10} />
+        <Flex
+          align="center"
+          mb={10}
+          flexDirection={{ base: 'column', md: 'row' }}
+        >
+          {!isSmallScreen && (
+            <Image src="Landing/Circles3.svg" alt="circles3" mr={10} />
+          )}
           <Heading
             color="main"
-            fontSize={79}
+            fontSize={{ base: 50, md: 79 }}
             pb={10}
             fontWeight="normal"
             display="flex"
+            flexDir="column"
+            textAlign={{ base: 'center', md: 'initial' }}
           >
-            How
-            <Text color="white" ml={6}>
-              does it work?
-            </Text>
+            How <Text color="white">does it work?</Text>
           </Heading>
         </Flex>
         <Flex align="center" mb={10}>
-          <Flex flexDir="column" fontSize={{ base: 'lg', md: '3xl' }} ml={20}>
+          <Flex
+            flexDir="column"
+            fontSize={{ base: 'lg', md: '3xl' }}
+            ml={{ base: 0, md: 20 }}
+            px={{ base: 12, md: 0 }}
+          >
             <Text>
               Learning & engaging becomes rewarding, as questers receive rewards
               for completed quests. It becomes accumulative. Build your digital
@@ -91,11 +103,11 @@ export const How: React.FC = () => {
               you have collected!
             </Text>
           </Flex>
-          <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
+          {!isSmallScreen && (
+            <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
+          )}
         </Flex>
       </Flex>
     </HStack>
   );
 };
-
-// https://vitalik.ca/general/2022/01/26/soulbound.html
