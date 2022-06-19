@@ -23,7 +23,10 @@
     "deploy-rinkeby": "yarn prepare-rinkeby && yarn codegen && yarn build && yarn deploy-only-rinkeby",
     "prepare-xdai": "mustache src/config/xdai.json subgraph.template.yaml > subgraph.yaml",
     "deploy-only-xdai": "graph deploy dan13ram/quest-chains-xdai --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
-    "deploy-xdai": "yarn prepare-xdai && yarn codegen && yarn build && yarn deploy-only-xdai"
+    "deploy-xdai": "yarn prepare-xdai && yarn codegen && yarn build && yarn deploy-only-xdai",
+    "prepare-polygon": "mustache src/config/polygon.json subgraph.template.yaml > subgraph.yaml",
+    "deploy-only-polygon": "graph deploy dan13ram/quest-chains-polygon --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
+    "deploy-polygon": "yarn prepare-polygon && yarn codegen && yarn build && yarn deploy-only-polygon"
   },
   "lint-staged": {
     "*.{json,ts}": [

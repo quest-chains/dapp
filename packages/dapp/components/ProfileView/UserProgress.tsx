@@ -1,28 +1,21 @@
 import {
-  Box,
   Button,
   Flex,
   Heading,
-  HStack,
-  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Progress,
   SimpleGrid,
   Spinner,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import React from 'react';
-import removeMd from 'remove-markdown';
 
-import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { UserStatus } from '@/graphql/statusForUser';
 import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains';
 import { useWallet } from '@/web3';

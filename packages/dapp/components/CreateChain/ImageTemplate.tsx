@@ -1,10 +1,4 @@
-import {
-  AspectRatio,
-  Flex,
-  Image,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { AspectRatio, Flex, Image, Text } from '@chakra-ui/react';
 import {
   ForwardedRef,
   forwardRef,

@@ -13,10 +13,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import {
-  useNFTsToMintForAllChains,
-  UserNFTStatus,
-} from '@/hooks/useNFTsToMintForAllChains';
+import { useNFTsToMintForAllChains } from '@/hooks/useNFTsToMintForAllChains';
 
 import { MintNFTTile } from '../MintNFTTile';
 

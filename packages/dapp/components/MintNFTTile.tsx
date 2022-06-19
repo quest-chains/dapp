@@ -69,7 +69,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
       textAlign="center"
       spacing={4}
     >
-      <Image src={VictoryCupImage.src} />
+      <Image src={VictoryCupImage.src} alt="Success" />
       <Text>
         {`You have successfully finished ${
           completed > 1 ? `all ${completed} quests` : 'all quests'

@@ -28,9 +28,10 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'Etherscan',
     rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
     image: EthereumImage.src,
-    // TODO: add subgraph details
-    subgraphName: '',
-    subgraphUrl: 'https://api.thegraph.com/subgraphs/name/',
+    // TODO: deploy contract & subgraph
+    subgraphName: 'dan13ram/quest-chains-mainnet',
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-mainnet',
   },
   '0x89': {
     chainId: '0x89',
@@ -41,9 +42,9 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'PolygonScan',
     rpc: `https://polygon-rpc.com`,
     image: PolygonImage.src,
-    // TODO: add subgraph details
-    subgraphName: '',
-    subgraphUrl: 'https://api.thegraph.com/subgraphs/name/',
+    subgraphName: 'dan13ram/quest-chains-polygon',
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-polygon',
   },
   '0x64': {
     chainId: '0x64',
@@ -73,7 +74,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
   },
   '0x13881': {
     chainId: '0x13881',
-    name: 'Polygon Mumbai',
+    name: 'Mumbai Testnet',
     label: 'Mumbai',
     symbol: 'MATIC',
     explorer: 'https://mumbai.polygonscan.com',

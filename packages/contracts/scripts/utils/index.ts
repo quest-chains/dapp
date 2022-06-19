@@ -19,6 +19,13 @@ export const networkCurrency: Record<number, string> = {
   31337: 'ETH',
 };
 
+export const SUBGRAPH_NETWORK_NAMES: Record<string, string> = {
+  polygonMumbai: 'mumbai',
+  polygon: 'matic',
+  rinkeby: 'rinkeby',
+  xdai: 'xdai',
+};
+
 export const BLOCKSCOUT_CHAIN_IDS = [77, 100];
 
 export type DeploymentInfo = {

@@ -4,11 +4,6 @@ import { gql, request } from 'graphql-request';
 import { GRAPH_HEALTH_ENDPOINT } from '@/utils/constants';
 import { SUPPORTED_NETWORK_INFO } from '@/web3/networks';
 
-const subgraphs: string[] = [];
-Object.values(SUPPORTED_NETWORK_INFO).forEach(info => {
-  subgraphs.push(info.subgraphName);
-});
-
 const statusQuery = gql`
   query getGraphStatus($subgraph: String!) {
     status: indexingStatusForCurrentVersion(subgraphName: $subgraph) {

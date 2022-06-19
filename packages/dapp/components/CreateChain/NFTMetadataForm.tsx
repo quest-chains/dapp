@@ -1,6 +1,5 @@
 import {
   AspectRatio,
-  Box,
   Button,
   Flex,
   FormControl,

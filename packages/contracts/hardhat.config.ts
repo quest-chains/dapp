@@ -32,13 +32,14 @@ const config: HardhatUserConfig = {
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     xdai: {
-      url: `https://rpc.xdaichain.com`,
+      url: `https://rpc.gnosischain.com`,
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     polygon: {
       url: 'https://rpc-mainnet.maticvigil.com',
-      accounts: [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     polygonMumbai: {
       url: 'https://rpc-mumbai.maticvigil.com',

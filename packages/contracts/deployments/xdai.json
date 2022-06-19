@@ -1,7 +1,8 @@
 {
   "network": "xdai",
-  "factory": "0xc4D511843F91897B4800541956D25Bd60d3A63b4",
-  "implemention": "0x88a0b031cEe4a939D35307BB339D15e1A653f017",
-  "txHash": "0xa84798c7be50bf288941c7f4a5d292d66f1b3ac5fb9ad6fcbbc36e5612240ea4",
-  "blockNumber": "21869640"
+  "version": "87fe24f",
+  "factory": "0x136F35AA2F5C8fceF987689b85e13842357DF1ab",
+  "implemention": "0x47e0F702A34Bd3aBEaCc7B994F4C0AD3446ee2AB",
+  "txHash": "0xd971bdfcae47cab0bcf690caebdd7784815639295b6dcc7538481b341ebea459",
+  "blockNumber": "22741851"
 }

@@ -2,7 +2,12 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import { ethers, network, run } from 'hardhat';
 
-import { BLOCKSCOUT_CHAIN_IDS, networkName, validateSetup } from './utils';
+import {
+  BLOCKSCOUT_CHAIN_IDS,
+  networkName,
+  SUBGRAPH_NETWORK_NAMES,
+  validateSetup,
+} from './utils';
 
 async function main() {
   const [chainId, deployer] = await validateSetup();
@@ -52,7 +57,7 @@ async function main() {
   );
 
   const subgraphInfo = {
-    network: network.name,
+    network: SUBGRAPH_NETWORK_NAMES[network.name] ?? network.name,
     factory: questChainFactory.address,
     blockNumber: receipt.blockNumber.toString(),
   };
