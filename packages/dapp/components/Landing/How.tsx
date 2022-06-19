@@ -96,12 +96,34 @@ export const How: React.FC = () => {
                 borderRadius="full"
                 px={2}
               >
-                <span style={{ color: '#2DF8C7', marginLeft: 4 }}>
-                  soulbound NFTs
-                </span>
+                <span style={{ color: '#2DF8C7' }}>soulbound NFTs</span>
               </Link>
               you have collected!
             </Text>
+            <Flex alignSelf={{ base: 'center', md: 'auto' }}>
+              {!isSmallScreen && (
+                <Image
+                  src="/Landing/NFTs/NFT1.png"
+                  alt="NFT1"
+                  title="NFT1"
+                  height="20rem"
+                />
+              )}
+              {!isSmallScreen && (
+                <Image
+                  src="/Landing/NFTs/NFT2.png"
+                  alt="NFT2"
+                  title="NFT2"
+                  height="20rem"
+                />
+              )}
+              <Image
+                src="/Landing/NFTs/NFT3.png"
+                alt="NFT3"
+                title="NFT3"
+                height="20rem"
+              />
+            </Flex>
           </Flex>
           {!isSmallScreen && (
             <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
