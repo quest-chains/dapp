@@ -10,8 +10,8 @@ export const PrimaryButton: React.FC<ButtonProps> = props => (
     boxShadow="inset 0px 0px 0px 1px #AD90FF"
     color="main"
     letterSpacing={4}
-    fontSize={30}
-    height={16}
+    fontSize={props.fontSize || 30}
+    height={props.height || 16}
     _hover={{
       background: 'whiteAlpha.200',
     }}

@@ -6,19 +6,21 @@ import {
   HStack,
   Image,
   Text,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { Link } from 'react-scroll';
 
 export const BuiltWith: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
     <HStack
       w="full"
       align="center"
       justify="center"
-      minH={{ base: '100vh', md: '80vh' }}
+      minH="80vh"
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -50,11 +52,13 @@ export const BuiltWith: React.FC = () => {
         color="white"
       >
         <Flex align="center" mb={10} flexDir={{ base: 'column', md: 'row' }}>
-          <Image src="/Landing/Circles5.svg" alt="circles3" mr={10} />
+          {!isSmallScreen && (
+            <Image src="/Landing/Circles5.svg" alt="circles3" mr={10} />
+          )}
           <Flex flexDir="column">
             <Heading
               color="main"
-              fontSize={{ base: 50, md: 79 }}
+              fontSize={{ base: 36, md: 79 }}
               pb={10}
               pt={{ base: 10, md: 0 }}
               fontWeight="normal"

@@ -39,24 +39,24 @@ export const Creators: React.FC = () => {
         <Box h="338px" gridArea="creators" px={12}>
           <Heading
             color="white"
-            fontSize={{ base: 50, md: 70 }}
-            mb={6}
+            fontSize={{ base: 36, md: 70 }}
+            mb={8}
             textAlign={{ base: 'center', md: 'initial' }}
           >
             Creators
           </Heading>
-          <Text display="flex">
-            The permissions of creator roles are cascading.
-          </Text>
-          <Text>
-            This means the owners have all permissions of admins, admins have
-            all permissions of editors and editors have all permissions of
-            reviewers.
-          </Text>
-          <Text>
-            Owners can add and remove other owners, admins, editors and
-            reviewers. Admins can add and remove editors and reviewers.
-          </Text>
+          <Box>
+            <Text>The permissions of creator roles are cascading.</Text>
+            <Text>
+              This means the owners have all permissions of admins, admins have
+              all permissions of editors and editors have all permissions of
+              reviewers.
+            </Text>
+            <Text>
+              Owners can add and remove other owners, admins, editors and
+              reviewers. Admins can add and remove editors and reviewers.
+            </Text>
+          </Box>
         </Box>
       )}
       <Grid
@@ -109,10 +109,14 @@ export const Creators: React.FC = () => {
           h="338px"
           gridArea="reviewers"
         >
-          <Heading color="white" fontSize={34} mb={6}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={6}>
             Reviewers
           </Heading>
-          <Text mb={4} fontSize={21} maxW={{ base: '220px', md: 'full' }}>
+          <Text
+            mb={4}
+            fontSize={{ base: 'lg', md: '3xl' }}
+            maxW={{ base: '220px', md: 'full' }}
+          >
             ♢ can{' '}
             <span style={{ color: '#2DF8C7' }}>
               accept or reject submitted proof
@@ -132,10 +136,14 @@ export const Creators: React.FC = () => {
           h="338px"
           gridArea="owner"
         >
-          <Heading color="white" fontSize={40} mb={3}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={3}>
             Owner/s
           </Heading>
-          <Text mb={4} fontSize={21} maxW={{ base: '220px', md: 'full' }}>
+          <Text
+            mb={4}
+            fontSize={{ base: 'lg', md: '3xl' }}
+            maxW={{ base: '220px', md: 'full' }}
+          >
             ♢ creator of the quest chain,{' '}
             <span style={{ color: '#2DF8C7' }}>has all permissions</span>
           </Text>
@@ -162,10 +170,14 @@ export const Creators: React.FC = () => {
           h="338px"
           gridArea="editors"
         >
-          <Heading color="white" fontSize={40} mb={3}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={3}>
             Editors
           </Heading>
-          <Text mb={4} fontSize={21} maxW={{ base: '220px', md: 'full' }}>
+          <Text
+            mb={4}
+            fontSize={{ base: 'lg', md: '3xl' }}
+            maxW={{ base: '220px', md: 'full' }}
+          >
             ♢ can <span style={{ color: '#2DF8C7' }}>edit the contents</span> of
             the quest chain along with its quests
           </Text>
@@ -184,10 +196,14 @@ export const Creators: React.FC = () => {
           h="338px"
           gridArea="admins"
         >
-          <Heading color="white" fontSize={40} mb={3}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={3}>
             Admins
           </Heading>
-          <Text mb={4} fontSize={21} maxW={{ base: '220px', md: 'full' }}>
+          <Text
+            mb={4}
+            fontSize={{ base: 'lg', md: '3xl' }}
+            maxW={{ base: '220px', md: 'full' }}
+          >
             ♢ can <span style={{ color: '#2DF8C7' }}> create and edit</span>{' '}
             quest chains and quests
           </Text>
@@ -220,14 +236,14 @@ export const Creators: React.FC = () => {
           p={{ base: 0, md: 24 }}
           mb={{ base: 24, md: 0 }}
         >
-          <Heading fontSize={{ base: 50, md: 70 }} mb={12}>
+          <Heading fontSize={{ base: 36, md: 70 }} mb={12}>
             Questers
           </Heading>
-          <Text mb={6} fontSize={21}>
+          <Text mb={6} fontSize={{ base: 'lg', md: '3xl' }}>
             ♢ can complete quest chains by submitting proof of completion for
             quests
           </Text>
-          <Text fontSize={21}>
+          <Text fontSize={{ base: 'lg', md: '3xl' }}>
             ♢ able to mint an NFT after successfully completing all of the
             quests of a quest chain
           </Text>

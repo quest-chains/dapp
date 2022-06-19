@@ -40,7 +40,7 @@ export const Team: React.FC = () => {
         <Flex align="center" mb={10} flexDir="column">
           <Heading
             color="main"
-            fontSize={{ base: 50, md: 79 }}
+            fontSize={{ base: 36, md: 79 }}
             pb={10}
             fontWeight="normal"
             display="flex"

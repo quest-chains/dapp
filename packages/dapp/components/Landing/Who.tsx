@@ -29,6 +29,7 @@ export const Who: React.FC = () => {
         justifyContent="center"
         maxWidth={{ base: '90%', md: '5xl' }}
         flexDirection={{ base: 'column', md: 'row' }}
+        alignItems={{ base: 'center', md: 'initial' }}
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
         pl={{ base: 0, md: 0 }}
         zIndex={100}
@@ -38,11 +39,16 @@ export const Who: React.FC = () => {
         my={{ base: 24, md: 0 }}
       >
         {isSmallScreen && (
-          <Image src="Landing/Circles2.svg" alt="circles" width={60} mb={8} />
+          <Image
+            src="Landing/Circles2.svg"
+            alt="circles"
+            width={20}
+            mb={{ base: 0, md: 8 }}
+          />
         )}
         <Heading
           color="main"
-          fontSize={{ base: 50, md: 58 }}
+          fontSize={{ base: 36, md: 58 }}
           fontWeight="normal"
           display="flex"
           flexDir="column"
@@ -63,7 +69,7 @@ export const Who: React.FC = () => {
           p={6}
           textAlign="center"
         >
-          <Heading color="white" fontSize={40} mb={6}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={6}>
             Questers
           </Heading>
           <Text mb={4}>♢ DAO newcomers</Text>
@@ -80,7 +86,7 @@ export const Who: React.FC = () => {
           p={6}
           textAlign="center"
         >
-          <Heading color="white" fontSize={40} mb={6}>
+          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={6}>
             Creators
           </Heading>
           <Text mb={4}>♢ DAOs</Text>

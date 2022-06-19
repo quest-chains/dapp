@@ -19,7 +19,7 @@ export const How: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="100vh"
+      minH={{ base: '70vh', md: '100vh' }}
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -44,7 +44,7 @@ export const How: React.FC = () => {
         flexDirection="column"
         justifyContent="center"
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
-        pl={{ base: 0, md: 0 }}
+        pl={0}
         marginInlineStart="0 !important"
         zIndex={100}
         fontWeight="normal"
@@ -52,7 +52,7 @@ export const How: React.FC = () => {
       >
         <Flex
           align="center"
-          mb={10}
+          mb={{ base: 0, md: 8 }}
           flexDirection={{ base: 'column', md: 'row' }}
         >
           {!isSmallScreen && (
@@ -60,7 +60,7 @@ export const How: React.FC = () => {
           )}
           <Heading
             color="main"
-            fontSize={{ base: 50, md: 79 }}
+            fontSize={{ base: 36, md: 79 }}
             pb={10}
             fontWeight="normal"
             display="flex"
@@ -73,7 +73,7 @@ export const How: React.FC = () => {
         <Flex align="center" mb={10}>
           <Flex
             flexDir="column"
-            fontSize={{ base: 'lg', md: '3xl' }}
+            fontSize={{ base: 'md', md: '3xl' }}
             ml={{ base: 0, md: 20 }}
             px={{ base: 12, md: 0 }}
           >

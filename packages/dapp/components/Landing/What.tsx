@@ -37,10 +37,10 @@ export const What: React.FC = () => {
         alignItems={{ base: 'center', md: 'initial' }}
       >
         {isSmallScreen && (
-          <Image src="Landing/Circles.svg" alt="circles" width={60} mb={8} />
+          <Image src="Landing/Circles.svg" alt="circles" width={20} mb={8} />
         )}
         <Heading
-          fontSize={{ base: 50, md: 70 }}
+          fontSize={{ base: 36, md: 70 }}
           pb={10}
           fontWeight="normal"
           display="flex"
@@ -52,7 +52,7 @@ export const What: React.FC = () => {
             <span style={{ color: '#2DF8C7' }}>What</span> are we building?
           </Text>
         </Heading>
-        <Text fontSize={{ base: 'lg', md: '3xl' }} px={{ base: 8, md: 0 }}>
+        <Text fontSize={{ base: 'md', md: '3xl' }} px={{ base: 8, md: 0 }}>
           We are building a gamified learning / web3 onboarding platform which
           rewards users through questing. Quest makers create quest chains,
           while questers would then complete the quests and get rewarded with
