@@ -104,8 +104,10 @@ export const QuestChains: React.FC = () => {
                   px={{ base: 8, md: 12 }}
                   fontSize={20}
                   height={12}
+                  borderColor="white"
+                  boxShadow="inset 0px 0px 0px 1px white"
                 >
-                  Explore Quests
+                  ENTER APP
                 </PrimaryButton>
               </ChakraLink>
             </NextLink>

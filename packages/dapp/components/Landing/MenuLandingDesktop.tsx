@@ -7,7 +7,7 @@ export const MenuLandingDesktop: React.FC = () => (
     <NextLink href="/explore" passHref>
       <ChakraLink display="block" _hover={{}}>
         <Button fontSize={20} cursor="pointer" fontFamily="headingLight">
-          Explore Quests
+          Enter App
         </Button>
       </ChakraLink>
     </NextLink>

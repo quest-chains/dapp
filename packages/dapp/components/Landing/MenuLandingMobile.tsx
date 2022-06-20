@@ -49,7 +49,7 @@ export const MenuLandingMobile: React.FC = () => {
                     fontFamily="headingLight"
                     onClick={toggleOpen}
                   >
-                    Explore Quests
+                    Enter App
                   </Button>
                 </ChakraLink>
               </NextLink>
