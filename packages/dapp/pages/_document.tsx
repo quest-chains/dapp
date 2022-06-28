@@ -30,7 +30,7 @@ class TSDocument extends Document {
             rel="shortcut icon"
             sizes="any"
             type="image/png"
-            href="/logo.png"
+            href="/logo.svg"
           />
           <link rel="manifest" href="/manifest.json" />
         </Head>

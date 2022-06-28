@@ -2,10 +2,10 @@
   "short_name": "DAO Quest",
   "name": "DAO Quest Chains",
   "description": "DAO Quest Chains Application",
-  "iconPath": "logo.png",
+  "iconPath": "logo.svg",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "logo.svg",
       "type": "image/png",
       "sizes": "512x512"
     }

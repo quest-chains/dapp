@@ -41,5 +41,6 @@ packages/subgraph/subgraph.yaml
 
 # yarn
 .yarn
+.yarnrc.yml
 .pnp.*
 package-lock.json
