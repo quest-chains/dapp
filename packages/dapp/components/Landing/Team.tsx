@@ -6,6 +6,7 @@ import {
   HStack,
   Image,
   Link as ChakraLink,
+  Link,
   Text,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
@@ -41,12 +42,38 @@ export const Team: React.FC = () => {
           <Heading
             color="main"
             fontSize={{ base: 36, md: 79 }}
-            pb={10}
+            pb={4}
             fontWeight="normal"
             display="flex"
           >
             Team
           </Heading>
+
+          <Flex mb={8}>
+            <Link
+              href="https://discord.gg/BxXykDnC"
+              isExternal
+              borderRadius="full"
+              mx={4}
+            >
+              <Image
+                src="/Landing/contact/discord.png"
+                alt="discord"
+                height={14}
+              />
+            </Link>
+            <Link
+              href="https://mobile.twitter.com/questchainz"
+              isExternal
+              borderRadius="full"
+            >
+              <Image
+                src="/Landing/contact/twitter.png"
+                alt="twitter"
+                height={14}
+              />
+            </Link>
+          </Flex>
           <Grid
             gap={8}
             // display={{ base: 'flex', md: 'grid' }}

@@ -25,14 +25,14 @@ const Index: React.FC = () => {
       <BuiltWith />
       <Flex
         fontSize={{ base: 18, md: 36 }}
-        alignItems="baseline"
         mb={{ base: 4, md: 10 }}
+        alignItems="center"
       >
         2022
         <Heading mx={4} color="main" fontSize={{ base: 18, md: 38 }}>
           Quest Chains.
         </Heading>{' '}
-        All right reserved.
+        All rights reserved.
       </Flex>
     </Flex>
   );
