@@ -722,13 +722,15 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Text>
               <Divider />
               <MemberSection role="OWNERS" addresses={owners} />
-              <Divider />
-              <MemberSection role="ADMINS" addresses={admins} />
-              <Divider />
-              <MemberSection role="EDITORS" addresses={editors} />
-              <Divider />
-              <MemberSection role="REVIEWERS" addresses={reviewers} />
-              <Divider />
+              {admins.length && (
+                <MemberSection role="ADMINS" addresses={admins} />
+              )}
+              {editors.length && (
+                <MemberSection role="EDITORS" addresses={editors} />
+              )}
+              {reviewers.length && (
+                <MemberSection role="REVIEWERS" addresses={reviewers} />
+              )}
             </Flex>
           </Flex>
         </Flex>
@@ -743,16 +745,19 @@ type RolesProps = {
 };
 
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
-  <Flex justify="space-between" alignItems="center" my={3} pl={4}>
-    <Text color="whiteAlpha.600">{role}</Text>
-    <Flex flexDir="column">
-      {addresses.map(address => (
-        <Box key={address}>
-          <UserDisplay address={address} />
-        </Box>
-      ))}
+  <>
+    <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+      <Text color="whiteAlpha.600">{role}</Text>
+      <Flex flexDir="column">
+        {addresses.map(address => (
+          <Box key={address}>
+            <UserDisplay address={address} />
+          </Box>
+        ))}
+      </Flex>
     </Flex>
-  </Flex>
+    <Divider />
+  </>
 );
 
 type QueryParams = { address: string; chainId: string };
