@@ -721,41 +721,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 Members
               </Text>
               <Divider />
-              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
-                <Text color="whiteAlpha.600">OWNERS</Text>
-                {owners.map(address => (
-                  <Box key={address}>
-                    <UserDisplay address={address} />
-                  </Box>
-                ))}
-              </Flex>
+              <MemberSection role="OWNERS" addresses={owners} />
               <Divider />
-              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
-                <Text color="whiteAlpha.600">ADMINS</Text>
-                {admins.map(address => (
-                  <Box key={address}>
-                    <UserDisplay address={address} />
-                  </Box>
-                ))}
-              </Flex>
+              <MemberSection role="ADMINS" addresses={admins} />
               <Divider />
-              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
-                <Text color="whiteAlpha.600">EDITORS</Text>
-                {editors.map(address => (
-                  <Box key={address}>
-                    <UserDisplay address={address} />
-                  </Box>
-                ))}
-              </Flex>
+              <MemberSection role="EDITORS" addresses={editors} />
               <Divider />
-              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
-                <Text color="whiteAlpha.600">REVIEWERS</Text>
-                {reviewers.map(address => (
-                  <Box key={address}>
-                    <UserDisplay address={address} />
-                  </Box>
-                ))}
-              </Flex>
+              <MemberSection role="REVIEWERS" addresses={reviewers} />
               <Divider />
             </Flex>
           </Flex>
@@ -764,6 +736,24 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     </VStack>
   );
 };
+
+type RolesProps = {
+  role: string;
+  addresses: string[];
+};
+
+const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
+  <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+    <Text color="whiteAlpha.600">{role}</Text>
+    <Flex flexDir="column">
+      {addresses.map(address => (
+        <Box key={address}>
+          <UserDisplay address={address} />
+        </Box>
+      ))}
+    </Flex>
+  </Flex>
+);
 
 type QueryParams = { address: string; chainId: string };
 
