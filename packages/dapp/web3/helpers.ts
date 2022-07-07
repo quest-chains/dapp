@@ -14,9 +14,7 @@ export const formatAddress = (
   if (ensName) return ensName;
   else if (address) {
     address = ethersUtils.getAddress(address); // eslint-disable-line no-param-reassign
-    return `${address.substring(0, chars)}...${address.substring(
-      address.length - chars,
-    )}`;
+    return `${address.substring(0, chars)}...`;
   } else return '';
 };
 

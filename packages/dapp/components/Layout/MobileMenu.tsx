@@ -1,5 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Button,
   Link as ChakraLink,
   Modal,
@@ -43,30 +44,6 @@ export const MobileMenu: React.FC<{
           <ModalBody h="100%">
             <VStack spacing={6} h="100%" w="100%" justify="center">
               {isConnected ? <WalletDisplay /> : <ConnectWallet />}
-              <NextLink href="/explore" passHref>
-                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
-                  <Text
-                    borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
-                    borderBottomColor="main"
-                    color={router.pathname === '/explore' ? 'main' : 'inherit'}
-                    fontFamily="headingLight"
-                  >
-                    Explore Quests
-                  </Text>
-                </ChakraLink>
-              </NextLink>
-              <NextLink href="/create" passHref>
-                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
-                  <Text
-                    borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-                    borderBottomColor="main"
-                    color={router.pathname === '/create' ? 'main' : 'inherit'}
-                    fontFamily="headingLight"
-                  >
-                    Create Quest Chain
-                  </Text>
-                </ChakraLink>
-              </NextLink>
               {isConnected && (
                 <NextLink href={`/profile/${address}`} passHref>
                   <ChakraLink display="block" _hover={{}}>
@@ -75,22 +52,48 @@ export const MobileMenu: React.FC<{
                         router.query.address === address ? 1 : 0
                       }
                       borderBottomColor="main"
-                      color={
-                        router.query.address === address ? 'main' : 'inherit'
-                      }
-                      fontFamily="headingLight"
+                      color="main"
                     >
                       My Profile
                     </Text>
                   </ChakraLink>
                 </NextLink>
               )}
+              <NextLink href="/explore" passHref>
+                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
+                  <Text
+                    borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
+                    borderBottomColor="main"
+                    color="main"
+                  >
+                    Explore
+                  </Text>
+                </ChakraLink>
+              </NextLink>
+              <NextLink href="/create" passHref>
+                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
+                  <Box
+                    borderWidth={1}
+                    borderColor="white"
+                    px={5}
+                    py={2}
+                    borderRadius="full"
+                  >
+                    <Text
+                      borderBottomWidth={router.pathname === '/create' ? 1 : 0}
+                      borderBottomColor="main"
+                      color="white"
+                    >
+                      Create a chain
+                    </Text>
+                  </Box>
+                </ChakraLink>
+              </NextLink>
               <Button
                 color="whiteAlpha.800"
                 bgColor="rgba(0, 0, 0, 0.3)"
                 border="none"
-                borderRadius="full"
-                boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                borderRadius="8px"
                 fontWeight="light"
                 onClick={() => {
                   toggleOpen();
@@ -99,7 +102,7 @@ export const MobileMenu: React.FC<{
                 minW="7.5rem"
                 justifyContent="flex-start"
               >
-                <SearchIcon color="main" mr={3} />
+                <SearchIcon color="white" mr={3} />
                 Search
               </Button>
             </VStack>

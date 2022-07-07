@@ -1,6 +1,8 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Button,
+  Flex,
   HStack,
   Link as ChakraLink,
   Text,
@@ -23,68 +25,75 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
 
   return (
     <>
-      <HStack
-        spacing={{ base: 2, lg: 6 }}
-        pos="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -50%)"
-        zIndex={2}
-      >
+      <Flex zIndex={2} justify="space-between" w="full" px={10}>
         <Button
           color="whiteAlpha.800"
-          bgColor="rgba(0, 0, 0, 0.3)"
+          bgColor="whiteAlpha.200"
           border="none"
-          borderRadius="full"
-          boxShadow="inset 0px 0px 0px 1px #AD90FF"
+          borderRadius="8px"
           fontWeight="light"
           onClick={onSearchOpen}
           minW="7.5rem"
           justifyContent="flex-start"
+          px={8}
         >
-          <SearchIcon color="main" mr={3} />
-          {isSmallerScreen ? 'Search' : 'Search by name or description'}
+          <SearchIcon color="white" mr={3} />
+          <Text fontSize="xs" fontWeight="700" color="whiteAlpha.600">
+            {isSmallerScreen
+              ? 'search'
+              : 'search chains by name or description'}
+          </Text>
         </Button>
 
-        <NextLink href="/explore" passHref>
-          <ChakraLink display="block" _hover={{}}>
-            <Text
-              borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
-              borderBottomColor="main"
-              color={router.pathname === '/explore' ? 'main' : 'inherit'}
-              fontFamily="headingLight"
-            >
-              {isSmallerScreen ? 'Explore' : 'Explore Quests'}
-            </Text>
-          </ChakraLink>
-        </NextLink>
-        <NextLink href="/create" passHref>
-          <ChakraLink display="block" _hover={{}}>
-            <Text
-              borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-              borderBottomColor="main"
-              color={router.pathname === '/create' ? 'main' : 'inherit'}
-              fontFamily="headingLight"
-            >
-              {isSmallerScreen ? 'Create' : 'Create Quest Chain'}
-            </Text>
-          </ChakraLink>
-        </NextLink>
-        {isConnected && (
-          <NextLink href={`/profile/${address}`} passHref>
+        <HStack gap={4}>
+          {isConnected && (
+            <NextLink href={`/profile/${address}`} passHref>
+              <ChakraLink display="block" _hover={{}}>
+                <Text
+                  borderBottomWidth={router.query.address === address ? 1 : 0}
+                  borderBottomColor="main"
+                  fontWeight="700"
+                  color="main"
+                >
+                  {isSmallerScreen ? 'Profile' : 'My Profile'}
+                </Text>
+              </ChakraLink>
+            </NextLink>
+          )}
+          <NextLink href="/explore" passHref>
             <ChakraLink display="block" _hover={{}}>
               <Text
-                borderBottomWidth={router.query.address === address ? 1 : 0}
+                borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
                 borderBottomColor="main"
-                color={router.query.address === address ? 'main' : 'inherit'}
-                fontFamily="headingLight"
+                color="main"
+                fontWeight="700"
               >
-                {isSmallerScreen ? 'Profile' : 'My Profile'}
+                {isSmallerScreen ? 'Explore' : 'Explore'}
               </Text>
             </ChakraLink>
           </NextLink>
-        )}
-      </HStack>
+          <NextLink href="/create" passHref>
+            <ChakraLink display="block" _hover={{}}>
+              <Box
+                borderWidth={1}
+                borderColor="white"
+                px={5}
+                py={2}
+                borderRadius="full"
+              >
+                <Text
+                  borderBottomWidth={router.pathname === '/create' ? 1 : 0}
+                  borderBottomColor="main"
+                  fontWeight="700"
+                  color="white"
+                >
+                  {isSmallerScreen ? 'Create' : 'Create a chain'}
+                </Text>
+              </Box>
+            </ChakraLink>
+          </NextLink>
+        </HStack>
+      </Flex>
 
       {isConnected ? <WalletDisplay /> : <ConnectWallet />}
     </>

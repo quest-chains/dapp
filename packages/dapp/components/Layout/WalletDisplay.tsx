@@ -61,6 +61,7 @@ export const WalletDisplay: React.FC = () => {
               fontSize={14}
               height={10}
               zIndex={1500}
+              width="max-content"
             >
               <HStack spacing={2}>
                 <Davatar
@@ -75,7 +76,7 @@ export const WalletDisplay: React.FC = () => {
                   chainId={chainId}
                   fontWeight="normal"
                   spacing={1}
-                  asTag
+                  asIcon
                 />
               </HStack>
             </PrimaryButton>

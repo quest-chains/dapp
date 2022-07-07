@@ -26,18 +26,18 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       <InputGroup maxW="2xl" size="lg">
         <InputLeftElement pointerEvents="none">
           {fetching ? (
-            <Spinner size="sm" color="main" />
+            <Spinner size="sm" color="white" />
           ) : (
-            <SearchIcon color="main" />
+            <SearchIcon color="white" />
           )}
         </InputLeftElement>
         <Input
           backdropFilter="blur(40px)"
           color="white"
           border="none"
-          borderRadius="full"
-          boxShadow="inset 0px 0px 0px 1px #AD90FF"
-          placeholder="Search by name or description"
+          borderRadius="8px"
+          boxShadow="inset 0px 0px 0px 1px gray"
+          placeholder="search chains by name or description"
           onChange={e => delayedSetValue(e.target.value)}
           mb={6}
         />

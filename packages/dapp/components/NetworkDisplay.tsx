@@ -14,10 +14,18 @@ export const NetworkDisplay: React.FC<
   {
     chainId: string;
     asTag?: boolean;
+    asIcon?: boolean;
     imageProps?: ImageProps;
     textProps?: TextProps;
   } & StackProps
-> = ({ chainId, imageProps, asTag = false, textProps, ...props }) => {
+> = ({
+  chainId,
+  imageProps,
+  asTag = false,
+  asIcon = false,
+  textProps,
+  ...props
+}) => {
   const networkInfo = AVAILABLE_NETWORK_INFO[chainId];
   if (!networkInfo) return null;
   const { image, label, name } = networkInfo;
@@ -34,9 +42,11 @@ export const NetworkDisplay: React.FC<
         boxSize={asTag ? '1.5rem' : '2rem'}
         {...imageProps}
       />
-      <Text as="span" fontWeight="bold" {...textProps}>
-        {asTag ? label : name}
-      </Text>
+      {!asIcon && (
+        <Text as="span" fontWeight="bold" {...textProps}>
+          {asTag ? label : name}
+        </Text>
+      )}
     </Stack>
   );
 
