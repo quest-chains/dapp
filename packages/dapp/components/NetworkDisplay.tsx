@@ -20,22 +20,18 @@ export const NetworkDisplay: React.FC<
 > = ({ chainId, imageProps, asTag = false, textProps, ...props }) => {
   const networkInfo = AVAILABLE_NETWORK_INFO[chainId];
   if (!networkInfo) return null;
-  const { image, label, name } = networkInfo;
+  const { image, label } = networkInfo;
   const inner = (
     <Stack
-      direction={asTag ? 'row-reverse' : 'row'}
+      direction="row"
       align="center"
       letterSpacing={0}
       {...props}
+      color="white"
     >
-      <Image
-        src={image}
-        alt={label}
-        boxSize={asTag ? '1.5rem' : '2rem'}
-        {...imageProps}
-      />
-      <Text as="span" fontWeight="bold" {...textProps}>
-        {asTag ? label : name}
+      <Image src={image} alt={label} boxSize="1.5rem" {...imageProps} />
+      <Text as="span" {...textProps}>
+        {label}
       </Text>
     </Stack>
   );

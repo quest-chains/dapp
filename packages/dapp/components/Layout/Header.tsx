@@ -29,7 +29,7 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
             fontWeight="normal"
             lineHeight="1rem"
           >
-            <Image src="logo.svg" alt="Quest Chains" height={9} />
+            <Image src="/logo.svg" alt="Quest Chains" height={9} />
           </Heading>
         </ChakraLink>
       </NextLink>

@@ -153,7 +153,7 @@ export const Creators: React.FC = () => {
             h="338px"
             gridArea="q"
           >
-            <Image src="Landing/Q.svg" alt="circles3" mr={10} />
+            <Image src="/Landing/Q.svg" alt="circles3" mr={10} />
           </Flex>
         )}
         <Box
@@ -210,7 +210,7 @@ export const Creators: React.FC = () => {
       <Flex w="full" pos="relative" justifyContent="center" mt={40}>
         {!isSmallScreen && (
           <Image
-            src="Landing/Turbine.svg"
+            src="/Landing/Turbine.svg"
             position="absolute"
             left="0"
             top="-400px"

@@ -5,9 +5,10 @@ import {
   AlertTitle,
   Box,
   Button,
+  Divider,
   Flex,
-  HStack,
   IconButton,
+  Image,
   Input,
   Modal,
   ModalBody,
@@ -35,7 +36,7 @@ import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
-import { Role, RoleTag } from '@/components/RoleTag';
+import { Role } from '@/components/RoleTag';
 import { UploadProof } from '@/components/UploadProof';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -50,6 +51,7 @@ import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
+import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
@@ -173,6 +175,19 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
     return memberRoles;
   }, [questChain]);
+
+  const owners = Object.entries(members)
+    .filter(([, role]) => role === 'Owner')
+    .map(([address]) => address);
+  const admins = Object.entries(members)
+    .filter(([, role]) => role === 'Admin')
+    .map(([address]) => address);
+  const editors = Object.entries(members)
+    .filter(([, role]) => role === 'Editor')
+    .map(([address]) => address);
+  const reviewers = Object.entries(members)
+    .filter(([, role]) => role === 'Reviewer')
+    .map(([address]) => address);
 
   const isUser = !(isOwner || isAdmin || isEditor || isReviewer);
 
@@ -329,8 +344,10 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     );
   }
 
+  // console.log('members', members);
+
   return (
-    <VStack w="100%" color="main" px={{ base: 0, lg: 40 }}>
+    <VStack w="100%" px={{ base: 0, lg: 40 }}>
       <Head>
         <title>
           {questChain.name} - {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
@@ -342,13 +359,14 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         {questChain.paused && (
           <Alert status="warning" borderRadius="md" mb={6}>
             <AlertIcon />
-            <AlertTitle color="white">Quest Chain is disabled!</AlertTitle>
+            <AlertTitle>Quest Chain is disabled!</AlertTitle>
           </Alert>
         )}
 
         {(isAdmin || isEditor) && (
           <Flex
             h={14}
+            mb={14}
             bgColor="whiteAlpha.100"
             borderRadius={8}
             alignItems="center"
@@ -390,22 +408,95 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           </Flex>
         )}
 
-        {/* Quest Chain Title */}
-        <Flex justifyContent="space-between" w="full">
-          {!isEditingQuestChain && (
-            <>
-              <Flex gap={3} align="center">
-                <Text fontSize="2xl" fontWeight="bold">
-                  {questChain.name}
-                </Text>
-                <NetworkDisplay asTag chainId={questChain.chainId} />
-                {isOwner && (
-                  <QuestChainPauseStatus
-                    questChain={questChain}
-                    refresh={refresh}
+        {/* Quest Chain */}
+        <Flex gap={10}>
+          {/* Left */}
+          <Flex flexDirection="column">
+            {/* Quest Chain Title */}
+            <Flex justifyContent="space-between" w="full">
+              {!isEditingQuestChain && (
+                <Flex flexDirection="column" mb={8}>
+                  <Text
+                    fontSize="6xl"
+                    fontWeight="bold"
+                    lineHeight="3.5rem"
+                    mb={3}
+                  >
+                    {questChain.name}
+                  </Text>
+                  <Box>
+                    <NetworkDisplay chainId={questChain.chainId} />
+                  </Box>
+                </Flex>
+              )}
+
+              {isEditingQuestChain && (
+                <>
+                  <Input
+                    fontSize="2xl"
+                    fontWeight="bold"
+                    mb={3}
+                    value={chainName}
+                    onChange={e => setChainName(e.target.value)}
                   />
-                )}
+                  <IconButton
+                    borderRadius="full"
+                    onClick={onUpdateQuestChainConfirmationOpen}
+                    isDisabled={isSubmittingQuestChain}
+                    icon={<CheckIcon boxSize="1rem" />}
+                    aria-label={''}
+                    mx={2}
+                  />
+                  <IconButton
+                    borderRadius="full"
+                    onClick={() => setEditingQuestChain(false)}
+                    isDisabled={isSubmittingQuestChain}
+                    icon={<CloseIcon boxSize="1rem" />}
+                    aria-label={''}
+                  />
+
+                  <ConfirmationModal
+                    onSubmit={() => {
+                      onUpdateQuestChainConfirmationClose();
+                      onSubmitQuestChain({
+                        name: chainName,
+                        description: chainDescription,
+                      });
+                    }}
+                    title="Update Quest Chain"
+                    content="Are you sure you want to update this quest chain?"
+                    isOpen={isUpdateQuestChainConfirmationOpen}
+                    onClose={onUpdateQuestChainConfirmationClose}
+                  />
+                </>
+              )}
+            </Flex>
+
+            {/* Quest Chain Description */}
+            {!isEditingQuestChain && questChain.description && (
+              <Flex w="100%">
+                <MarkdownViewer markdown={questChain.description} />
               </Flex>
+            )}
+            {isEditingQuestChain && (
+              <Flex w="100%">
+                <MarkdownEditor
+                  value={chainDescription}
+                  onChange={setChainDescription}
+                />
+              </Flex>
+            )}
+
+            {/* Actions */}
+            <Flex>
+              <Button>Start Playing</Button>
+
+              {isOwner && (
+                <QuestChainPauseStatus
+                  questChain={questChain}
+                  refresh={refresh}
+                />
+              )}
               {isAdmin && chainId === questChain.chainId && (
                 <IconButton
                   borderRadius="full"
@@ -418,264 +509,258 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   aria-label={''}
                 />
               )}
-            </>
-          )}
 
-          {isEditingQuestChain && (
-            <>
-              <Input
-                fontSize="2xl"
-                fontWeight="bold"
-                mb={3}
-                value={chainName}
-                onChange={e => setChainName(e.target.value)}
-              />
-              <IconButton
-                borderRadius="full"
-                onClick={onUpdateQuestChainConfirmationOpen}
-                isDisabled={isSubmittingQuestChain}
-                icon={<CheckIcon boxSize="1rem" />}
-                aria-label={''}
-                mx={2}
-              />
-              <IconButton
-                borderRadius="full"
-                onClick={() => setEditingQuestChain(false)}
-                isDisabled={isSubmittingQuestChain}
-                icon={<CloseIcon boxSize="1rem" />}
-                aria-label={''}
-              />
-
-              <ConfirmationModal
-                onSubmit={() => {
-                  onUpdateQuestChainConfirmationClose();
-                  onSubmitQuestChain({
-                    name: chainName,
-                    description: chainDescription,
-                  });
-                }}
-                title="Update Quest Chain"
-                content="Are you sure you want to update this quest chain?"
-                isOpen={isUpdateQuestChainConfirmationOpen}
-                onClose={onUpdateQuestChainConfirmationClose}
-              />
-            </>
-          )}
-        </Flex>
-
-        {/* Quest Chain Description */}
-        {!isEditingQuestChain && questChain.description && (
-          <Flex w="100%">
-            <MarkdownViewer markdown={questChain.description} />
-          </Flex>
-        )}
-        {isEditingQuestChain && (
-          <Flex w="100%">
-            <MarkdownEditor
-              value={chainDescription}
-              onChange={setChainDescription}
-            />
-          </Flex>
-        )}
-
-        {/* Quest Chain Members */}
-        <VStack spacing={2} align="flex-start" pt={4}>
-          <Text>Members</Text>
-          {Object.entries(members).map(([address, role]) => (
-            <HStack key={address} spacing={2}>
-              <UserDisplay address={address} color="white" />
-              <RoleTag role={role} />
-            </HStack>
-          ))}
-        </VStack>
-      </Flex>
-
-      {/* Mint Tile */}
-      {canMint && (
-        <Flex pt={6} w="100%">
-          <MintNFTTile
-            {...{
-              address: questChain.address,
-              chainId: questChain.chainId,
-              name: questChain.name,
-              onSuccess: refresh,
-              completed: questChain.quests.filter(q => !q.paused).length,
-            }}
-          />
-        </Flex>
-      )}
-
-      {/* Quests */}
-      <VStack spacing={6} w="100%" pt={8}>
-        {fetching ? (
-          <Spinner />
-        ) : (
-          <>
-            <Flex justifyContent="space-between" w="full">
-              <Text
-                w="full"
-                color="white"
-                fontSize={20}
-                textTransform="uppercase"
-              >
-                {questChain.quests.length} Quest
-                {questChain.quests.length === 1 ? '' : 's'} found
-              </Text>
-              {(isAdmin || isEditor) && (
-                <Button
-                  onClick={onOpenCreateQuest}
-                  leftIcon={<AddIcon fontSize="sm" ml={1} />}
-                >
-                  Create Quest
-                </Button>
+              {/* Mint Tile */}
+              {canMint && (
+                <Flex pt={6} w="100%">
+                  <MintNFTTile
+                    {...{
+                      address: questChain.address,
+                      chainId: questChain.chainId,
+                      name: questChain.name,
+                      onSuccess: refresh,
+                      completed: questChain.quests.filter(q => !q.paused)
+                        .length,
+                    }}
+                  />
+                </Flex>
               )}
             </Flex>
 
-            <Modal isOpen={isOpenCreateQuest} onClose={onCloseCreateQUest}>
-              <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
-              <ModalContent maxW="40rem">
-                <ModalHeader>Create Quest</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <AddQuestBlock
-                    questChain={questChain}
-                    refresh={refresh}
+            {/* Quests */}
+            <VStack spacing={6} w="100%" pt={8}>
+              {fetching ? (
+                <Spinner />
+              ) : (
+                <>
+                  <Flex justifyContent="space-between" w="full">
+                    <Text w="full" fontSize={20} textTransform="uppercase">
+                      {questChain.quests.length} Quest
+                      {questChain.quests.length === 1 ? '' : 's'} found
+                    </Text>
+                    {(isAdmin || isEditor) && (
+                      <Button
+                        onClick={onOpenCreateQuest}
+                        leftIcon={<AddIcon fontSize="sm" ml={1} />}
+                      >
+                        Create Quest
+                      </Button>
+                    )}
+                  </Flex>
+
+                  <Modal
+                    isOpen={isOpenCreateQuest}
                     onClose={onCloseCreateQUest}
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
+                  >
+                    <ModalOverlay
+                      bg="blackAlpha.300"
+                      backdropFilter="blur(10px)"
+                    />
+                    <ModalContent maxW="40rem">
+                      <ModalHeader>Create Quest</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <AddQuestBlock
+                          questChain={questChain}
+                          refresh={refresh}
+                          onClose={onCloseCreateQUest}
+                        />
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
 
-            {questChain.quests.map(quest => (
-              <Flex
-                w="full"
-                boxShadow="inset 0px 0px 0px 1px #AD90FF"
-                p={8}
-                gap={3}
-                borderRadius={20}
-                align="stretch"
-                key={quest.questId}
-                justifyContent="space-between"
-              >
-                <Flex flexDirection="column" w="full">
-                  {!(isEditingQuest && questEditId === quest.questId) && (
-                    <Flex justifyContent="space-between" w="full">
-                      <CollapsableQuestDisplay {...quest} />
-                      {(isAdmin || isEditor) && (
-                        <IconButton
-                          borderRadius="full"
-                          onClick={() => {
-                            setEditingQuest(true);
-                            setQuestName(quest.name || '');
-                            setQuestDescription(quest.description || '');
-                            setQuestEditId(quest.questId);
-                          }}
-                          icon={<EditIcon boxSize="1rem" />}
-                          aria-label={''}
-                        />
-                      )}
-                    </Flex>
-                  )}
+                  {questChain.quests.map(quest => (
+                    <Flex
+                      w="full"
+                      boxShadow="inset 0px 0px 0px 1px #AD90FF"
+                      p={8}
+                      gap={3}
+                      borderRadius={20}
+                      align="stretch"
+                      key={quest.questId}
+                      justifyContent="space-between"
+                    >
+                      <Flex flexDirection="column" w="full">
+                        {!(isEditingQuest && questEditId === quest.questId) && (
+                          <Flex justifyContent="space-between" w="full">
+                            <CollapsableQuestDisplay {...quest} />
+                            {(isAdmin || isEditor) && (
+                              <IconButton
+                                borderRadius="full"
+                                onClick={() => {
+                                  setEditingQuest(true);
+                                  setQuestName(quest.name || '');
+                                  setQuestDescription(quest.description || '');
+                                  setQuestEditId(quest.questId);
+                                }}
+                                icon={<EditIcon boxSize="1rem" />}
+                                aria-label={''}
+                              />
+                            )}
+                          </Flex>
+                        )}
 
-                  {isEditingQuest && questEditId === quest.questId && (
-                    <Flex flexDirection="column">
-                      <Flex>
-                        <Input
-                          mb={3}
-                          value={questName}
-                          onChange={e => setQuestName(e.target.value)}
-                        />
-                        <IconButton
-                          borderRadius="full"
-                          onClick={onUpdateQuestConfirmationOpen}
-                          isDisabled={isSubmittingQuest}
-                          icon={<CheckIcon boxSize="1rem" />}
-                          aria-label={''}
-                          mx={2}
-                        />
-                        <IconButton
-                          borderRadius="full"
-                          onClick={() => setEditingQuest(false)}
-                          isDisabled={isSubmittingQuest}
-                          icon={<CloseIcon boxSize="1rem" />}
-                          aria-label={''}
-                        />
-                        <ConfirmationModal
-                          onSubmit={() => {
-                            onUpdateQuestConfirmationClose();
-                            onSubmitQuest({
-                              name: questName,
-                              description: questDescription,
-                              questId: quest.questId,
-                            });
-                          }}
-                          title="Update Quest"
-                          content="Are you sure you want to update this quest?"
-                          isOpen={isUpdateQuestConfirmationOpen}
-                          onClose={() => {
-                            setChainDescription(quest.description || '');
-                            setChainName(quest.name || '');
-                            onUpdateQuestConfirmationClose();
-                          }}
-                        />
+                        {isEditingQuest && questEditId === quest.questId && (
+                          <Flex flexDirection="column">
+                            <Flex>
+                              <Input
+                                mb={3}
+                                value={questName}
+                                onChange={e => setQuestName(e.target.value)}
+                              />
+                              <IconButton
+                                borderRadius="full"
+                                onClick={onUpdateQuestConfirmationOpen}
+                                isDisabled={isSubmittingQuest}
+                                icon={<CheckIcon boxSize="1rem" />}
+                                aria-label={''}
+                                mx={2}
+                              />
+                              <IconButton
+                                borderRadius="full"
+                                onClick={() => setEditingQuest(false)}
+                                isDisabled={isSubmittingQuest}
+                                icon={<CloseIcon boxSize="1rem" />}
+                                aria-label={''}
+                              />
+                              <ConfirmationModal
+                                onSubmit={() => {
+                                  onUpdateQuestConfirmationClose();
+                                  onSubmitQuest({
+                                    name: questName,
+                                    description: questDescription,
+                                    questId: quest.questId,
+                                  });
+                                }}
+                                title="Update Quest"
+                                content="Are you sure you want to update this quest?"
+                                isOpen={isUpdateQuestConfirmationOpen}
+                                onClose={() => {
+                                  setChainDescription(quest.description || '');
+                                  setChainName(quest.name || '');
+                                  onUpdateQuestConfirmationClose();
+                                }}
+                              />
+                            </Flex>
+
+                            <MarkdownEditor
+                              value={questDescription}
+                              onChange={setQuestDescription}
+                            />
+                          </Flex>
+                        )}
                       </Flex>
 
-                      <MarkdownEditor
-                        value={questDescription}
-                        onChange={setQuestDescription}
-                      />
+                      {isUser && (
+                        <>
+                          {
+                            // TODO: Also display prev submissions and reviews here
+                            !userStatus[quest.questId]?.status ||
+                            userStatus[quest.questId]?.status === 'init' ||
+                            userStatus[quest.questId]?.status === 'fail' ? (
+                              <UploadProof
+                                // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
+                                address={address}
+                                questId={quest.questId}
+                                questChainId={questChain.chainId}
+                                questChainAddress={questChain.address}
+                                name={quest.name}
+                                refresh={refresh}
+                              />
+                            ) : (
+                              <Box>
+                                <Button
+                                  pointerEvents="none"
+                                  _hover={{}}
+                                  cursor="default"
+                                  color={
+                                    userStatus[quest.questId]?.status ===
+                                    'review'
+                                      ? 'pending'
+                                      : 'main'
+                                  }
+                                  border="1px solid"
+                                  borderColor={
+                                    userStatus[quest.questId]?.status ===
+                                    'review'
+                                      ? 'pending'
+                                      : 'main'
+                                  }
+                                >
+                                  {userStatus[quest.questId]?.status ===
+                                  'review'
+                                    ? 'Review Pending'
+                                    : 'Accepted'}
+                                </Button>
+                              </Box>
+                            )
+                          }
+                        </>
+                      )}
                     </Flex>
-                  )}
-                </Flex>
+                  ))}
+                </>
+              )}
+            </VStack>
+          </Flex>
 
-                {isUser && (
-                  <>
-                    {
-                      // TODO: Also display prev submissions and reviews here
-                      !userStatus[quest.questId]?.status ||
-                      userStatus[quest.questId]?.status === 'init' ||
-                      userStatus[quest.questId]?.status === 'fail' ? (
-                        <UploadProof
-                          // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
-                          address={address}
-                          questId={quest.questId}
-                          questChainId={questChain.chainId}
-                          questChainAddress={questChain.address}
-                          name={quest.name}
-                          refresh={refresh}
-                        />
-                      ) : (
-                        <Box>
-                          <Button
-                            pointerEvents="none"
-                            _hover={{}}
-                            cursor="default"
-                            color={
-                              userStatus[quest.questId]?.status === 'review'
-                                ? 'pending'
-                                : 'main'
-                            }
-                            border="1px solid"
-                            borderColor={
-                              userStatus[quest.questId]?.status === 'review'
-                                ? 'pending'
-                                : 'main'
-                            }
-                          >
-                            {userStatus[quest.questId]?.status === 'review'
-                              ? 'Review Pending'
-                              : 'Accepted'}
-                          </Button>
-                        </Box>
-                      )
-                    }
-                  </>
-                )}
+          {/* Right */}
+          <Flex flexDirection="column" maxW={373}>
+            {questChain.imageUrl && (
+              <Image
+                src={ipfsUriToHttp(questChain.imageUrl)}
+                alt="Cover Image"
+                borderRadius={8}
+                outline="1px solid #FFFFFF30"
+                mb={14}
+              />
+            )}
+            {/* Quest Chain Members */}
+            <Flex flexDir="column" px={5}>
+              <Text fontFamily="heading" fontSize="xl" mb={5}>
+                Members
+              </Text>
+              <Divider />
+              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+                <Text color="whiteAlpha.600">OWNERS</Text>
+                {owners.map(address => (
+                  <Box key={address}>
+                    <UserDisplay address={address} />
+                  </Box>
+                ))}
               </Flex>
-            ))}
-          </>
-        )}
-      </VStack>
+              <Divider />
+              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+                <Text color="whiteAlpha.600">ADMINS</Text>
+                {admins.map(address => (
+                  <Box key={address}>
+                    <UserDisplay address={address} />
+                  </Box>
+                ))}
+              </Flex>
+              <Divider />
+              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+                <Text color="whiteAlpha.600">EDITORS</Text>
+                {editors.map(address => (
+                  <Box key={address}>
+                    <UserDisplay address={address} />
+                  </Box>
+                ))}
+              </Flex>
+              <Divider />
+              <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+                <Text color="whiteAlpha.600">REVIEWERS</Text>
+                {reviewers.map(address => (
+                  <Box key={address}>
+                    <UserDisplay address={address} />
+                  </Box>
+                ))}
+              </Flex>
+              <Divider />
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
     </VStack>
   );
 };
