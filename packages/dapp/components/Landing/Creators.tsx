@@ -175,8 +175,8 @@ export const Creators: React.FC = () => {
             fontSize={{ base: 'lg', md: '3xl' }}
             maxW={{ base: '220px', md: 'full' }}
           >
-            ♢ can <span style={{ color: '#2DF8C7' }}>edit the contents</span> of
-            the quest chain along with its quests
+            ♢ can <span style={{ color: '#2DF8C7' }}>create and edit</span>{' '}
+            quests. Can disable and enable them as well.
           </Text>
         </Box>
         <Box gridArea="empty" />

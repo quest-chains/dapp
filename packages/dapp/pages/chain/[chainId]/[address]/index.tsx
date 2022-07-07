@@ -176,6 +176,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const isUser = !(isOwner || isAdmin || isEditor || isReviewer);
 
+  const [mode, setMode] = useState(isUser ? 'QUESTER' : 'MEMBER');
+
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
     questStatuses.forEach(item => {
@@ -343,6 +345,52 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             <AlertTitle color="white">Quest Chain is disabled!</AlertTitle>
           </Alert>
         )}
+
+        {(isAdmin || isEditor) && (
+          <Flex
+            h={14}
+            bgColor="whiteAlpha.100"
+            borderRadius={8}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Flex
+              w={32}
+              onClick={() => setMode('QUESTER')}
+              bgColor={mode === 'QUESTER' ? 'main.200' : 'whiteAlpha.100'}
+              h={8}
+              alignItems="center"
+              justifyContent="center"
+              borderLeftRadius={6}
+              borderWidth={1}
+              borderRightWidth={0}
+              borderColor="main.700"
+              cursor="pointer"
+            >
+              <Text fontSize="small" fontWeight="bold">
+                Quester Mode
+              </Text>
+            </Flex>
+            <Flex
+              w={32}
+              onClick={() => setMode('MEMBER')}
+              bgColor={mode === 'MEMBER' ? 'main.200' : 'whiteAlpha.100'}
+              h={8}
+              alignItems="center"
+              justifyContent="center"
+              borderRightRadius={6}
+              borderWidth={1}
+              borderColor="main.700"
+              cursor="pointer"
+            >
+              <Text fontSize="small" fontWeight="bold">
+                Member Mode
+              </Text>
+            </Flex>
+          </Flex>
+        )}
+
+        {/* Quest Chain Title */}
         <Flex justifyContent="space-between" w="full">
           {!isEditingQuestChain && (
             <>
@@ -397,16 +445,30 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 icon={<CloseIcon boxSize="1rem" />}
                 aria-label={''}
               />
+
+              <ConfirmationModal
+                onSubmit={() => {
+                  onUpdateQuestChainConfirmationClose();
+                  onSubmitQuestChain({
+                    name: chainName,
+                    description: chainDescription,
+                  });
+                }}
+                title="Update Quest Chain"
+                content="Are you sure you want to update this quest chain?"
+                isOpen={isUpdateQuestChainConfirmationOpen}
+                onClose={onUpdateQuestChainConfirmationClose}
+              />
             </>
           )}
         </Flex>
 
+        {/* Quest Chain Description */}
         {!isEditingQuestChain && questChain.description && (
           <Flex w="100%">
             <MarkdownViewer markdown={questChain.description} />
           </Flex>
         )}
-
         {isEditingQuestChain && (
           <Flex w="100%">
             <MarkdownEditor
@@ -415,6 +477,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             />
           </Flex>
         )}
+
+        {/* Quest Chain Members */}
         <VStack spacing={2} align="flex-start" pt={4}>
           <Text>Members</Text>
           {Object.entries(members).map(([address, role]) => (
@@ -424,22 +488,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </HStack>
           ))}
         </VStack>
-
-        <ConfirmationModal
-          onSubmit={() => {
-            onUpdateQuestChainConfirmationClose();
-            onSubmitQuestChain({
-              name: chainName,
-              description: chainDescription,
-            });
-          }}
-          title="Update Quest Chain"
-          content="Are you sure you want to update this quest chain?"
-          isOpen={isUpdateQuestChainConfirmationOpen}
-          onClose={onUpdateQuestChainConfirmationClose}
-        />
       </Flex>
 
+      {/* Mint Tile */}
       {canMint && (
         <Flex pt={6} w="100%">
           <MintNFTTile
@@ -454,6 +505,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         </Flex>
       )}
 
+      {/* Quests */}
       <VStack spacing={6} w="100%" pt={8}>
         {fetching ? (
           <Spinner />

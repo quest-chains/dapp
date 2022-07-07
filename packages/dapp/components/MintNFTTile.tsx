@@ -81,7 +81,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
         onClick={onMint}
         borderRadius="full"
         _hover={{
-          bg: 'darkMain',
+          bg: 'main.100',
         }}
         bg="main"
         color="black"
