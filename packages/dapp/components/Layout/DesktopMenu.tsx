@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   HStack,
-  Link as ChakraLink,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
@@ -45,52 +44,55 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
           </Text>
         </Button>
 
-        <HStack gap={4}>
+        <HStack gap={2}>
           {isConnected && (
             <NextLink href={`/profile/${address}`} passHref>
-              <ChakraLink display="block" _hover={{}}>
-                <Text
-                  borderBottomWidth={router.query.address === address ? 1 : 0}
-                  borderBottomColor="main"
-                  fontWeight="700"
-                  color="main"
-                >
-                  {isSmallerScreen ? 'Profile' : 'My Profile'}
-                </Text>
-              </ChakraLink>
+              <Text
+                px={1}
+                cursor="pointer"
+                boxShadow={
+                  router.query.address === address
+                    ? '0 4px 2px -2px #1f7165'
+                    : 'none'
+                }
+                fontWeight="700"
+                color="main"
+              >
+                {isSmallerScreen ? 'Profile' : 'My Profile'}
+              </Text>
             </NextLink>
           )}
           <NextLink href="/explore" passHref>
-            <ChakraLink display="block" _hover={{}}>
-              <Text
-                borderBottomWidth={router.pathname === '/explore' ? 1 : 0}
-                borderBottomColor="main"
-                color="main"
-                fontWeight="700"
-              >
-                {isSmallerScreen ? 'Explore' : 'Explore'}
-              </Text>
-            </ChakraLink>
+            <Text
+              px={1}
+              cursor="pointer"
+              boxShadow={
+                router.pathname === '/explore'
+                  ? '0 4px 2px -2px #1f7165'
+                  : 'none'
+              }
+              color="main"
+              fontWeight="700"
+            >
+              {isSmallerScreen ? 'Explore' : 'Explore'}
+            </Text>
           </NextLink>
           <NextLink href="/create" passHref>
-            <ChakraLink display="block" _hover={{}}>
-              <Box
-                borderWidth={1}
-                borderColor="white"
-                px={5}
-                py={2}
-                borderRadius="full"
-              >
-                <Text
-                  borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-                  borderBottomColor="main"
-                  fontWeight="700"
-                  color="white"
-                >
-                  {isSmallerScreen ? 'Create' : 'Create a chain'}
-                </Text>
-              </Box>
-            </ChakraLink>
+            <Box
+              borderWidth={1}
+              borderColor="white"
+              px={5}
+              py={2}
+              borderRadius="full"
+              bgColor={router.pathname === '/create' ? '#1f716540' : 'none'}
+              _hover={{
+                bgColor: '#2DF8C740',
+              }}
+            >
+              <Text cursor="pointer" fontWeight="700" color="white">
+                {isSmallerScreen ? 'Create' : 'Create a chain'}
+              </Text>
+            </Box>
           </NextLink>
         </HStack>
       </Flex>

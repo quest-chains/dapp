@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, TriangleDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -21,10 +21,10 @@ import NextLink from 'next/link';
 import React from 'react';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { PrimaryButton } from '@/components/PrimaryButton';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useENS } from '@/hooks/useENS';
 import {
+  AVAILABLE_NETWORK_INFO,
   formatAddress,
   isSupportedNetwork,
   SUPPORTED_NETWORK_INFO,
@@ -44,42 +44,37 @@ export const WalletDisplay: React.FC = () => {
   if (!address || !chainId) return null;
   const isSupportedChain = isSupportedNetwork(chainId);
   return (
-    <Popover placement={placement} gutter={20}>
+    <Popover placement={placement} gutter={20} trigger="hover">
       {/* @ts-expect-error @chakra-ui/react does not support @types/react@18 yet */}
       <PopoverTrigger>
         <Box>
           {isSupportedChain ? (
-            <PrimaryButton
-              px={2}
-              background="rgba(255, 255, 255, 0.05)"
+            <Flex
               fontWeight="400"
-              backdropFilter="blur(40px)"
-              borderRadius="full"
-              boxShadow="inset 0px 0px 0px 1px #AD90FF"
-              letterSpacing={2}
-              color="main"
               fontSize={14}
               height={10}
               zIndex={1500}
               width="max-content"
+              borderRadius="full"
+              cursor="pointer"
+              alignItems="center"
+              gap={3}
             >
-              <HStack spacing={2}>
-                <Davatar
-                  address={address}
-                  size={24}
-                  generatedAvatarType="jazzicon"
-                />
-                <Text fontWeight="normal" fontSize="normal">
+              <Davatar
+                address={address}
+                size={32}
+                generatedAvatarType="jazzicon"
+              />
+              <Flex flexDir="column">
+                <Text fontWeight="bold" fontSize="normal">
                   {formatAddress(address, ens)}
                 </Text>
-                <NetworkDisplay
-                  chainId={chainId}
-                  fontWeight="normal"
-                  spacing={1}
-                  asIcon
-                />
-              </HStack>
-            </PrimaryButton>
+                <Text fontSize="small">
+                  {AVAILABLE_NETWORK_INFO[chainId].name}
+                </Text>
+              </Flex>
+              <TriangleDownIcon w={3} />
+            </Flex>
           ) : (
             <Button px={6} fontSize="md" borderRadius="full" colorScheme="red">
               Wrong Network
