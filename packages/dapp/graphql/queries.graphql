@@ -6,7 +6,7 @@ query GlobalInfo {
 }
 
 query QuestChainsInfo($limit: Int) {
-  questChains(first: $limit) {
+  questChains(first: $limit, where: { paused: false }) {
     ...QuestChainInfo
   }
 }
@@ -37,7 +37,7 @@ query QuestChainAddresses($limit: Int!) {
 query QuestChainSearch($search: String, $limit: Int) {
   questChains(
     first: $limit
-    where: { search_contains: $search }
+    where: { search_contains: $search, paused: false }
     orderBy: createdAt
     orderDirection: desc
   ) {
@@ -48,7 +48,7 @@ query QuestChainSearch($search: String, $limit: Int) {
 query QuestChainSearch($search: String, $limit: Int) {
   questChains(
     first: $limit
-    where: { search_contains: $search }
+    where: { search_contains: $search, paused: false }
     orderBy: createdAt
     orderDirection: desc
   ) {
