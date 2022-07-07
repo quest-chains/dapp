@@ -5,10 +5,8 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 
 export const What: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
@@ -24,7 +22,6 @@ export const What: React.FC = () => {
       {!isSmallScreen && <Image src="Landing/Circles.svg" alt="circles" />}
 
       <Flex
-        ref={ref}
         display="flex"
         flexDirection="column"
         justify="baseline"

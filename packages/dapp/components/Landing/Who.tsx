@@ -7,10 +7,8 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 
 export const Who: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
@@ -24,7 +22,6 @@ export const Who: React.FC = () => {
     >
       {!isSmallScreen && <Image src="Landing/Circles2.svg" alt="circles" />}
       <Flex
-        ref={ref}
         gap={8}
         justifyContent="center"
         maxWidth={{ base: '90%', md: '5xl' }}

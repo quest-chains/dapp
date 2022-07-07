@@ -8,13 +8,11 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 import { Link } from 'react-scroll';
 
 import { SUPPORTED_NETWORK_INFO } from '@/web3/networks';
 
 export const BuiltWith: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
@@ -41,7 +39,6 @@ export const BuiltWith: React.FC = () => {
         zIndex={-3}
       />
       <Flex
-        ref={ref}
         display="flex"
         flexDirection="column"
         justifyContent="center"

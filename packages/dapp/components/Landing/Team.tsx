@@ -9,11 +9,8 @@ import {
   Link,
   Text,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 
 export const Team: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-
   return (
     <HStack
       w="full"
@@ -27,7 +24,6 @@ export const Team: React.FC = () => {
       id="team"
     >
       <Flex
-        ref={ref}
         display="flex"
         flexDirection="column"
         lineHeight={{ base: 'lg', '2xl': '2xl' }}

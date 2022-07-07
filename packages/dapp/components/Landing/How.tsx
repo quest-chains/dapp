@@ -8,10 +8,8 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 
 export const How: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
@@ -39,7 +37,6 @@ export const How: React.FC = () => {
         zIndex={-3}
       />
       <Flex
-        ref={ref}
         display="flex"
         flexDirection="column"
         justifyContent="center"

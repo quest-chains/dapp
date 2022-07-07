@@ -8,10 +8,8 @@ import {
   useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
 
 export const Creators: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
@@ -75,7 +73,6 @@ export const Creators: React.FC = () => {
             "empty1 admins empty2 empty2"
           `,
         }}
-        ref={ref}
       >
         {!isSmallScreen && (
           <Box h="338px" gridArea="creators" pr={12}>
