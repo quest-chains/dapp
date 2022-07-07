@@ -1,5 +1,8 @@
 import { AddIcon, CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   Flex,
@@ -31,6 +34,7 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { Role, RoleTag } from '@/components/RoleTag';
 import { UploadProof } from '@/components/UploadProof';
 import { UserDisplay } from '@/components/UserDisplay';
@@ -333,14 +337,26 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       </Head>
 
       <Flex flexDirection="column" w="100%" justify="center">
+        {questChain.paused && (
+          <Alert status="warning" borderRadius="md" mb={6}>
+            <AlertIcon />
+            <AlertTitle color="white">Quest Chain is disabled!</AlertTitle>
+          </Alert>
+        )}
         <Flex justifyContent="space-between" w="full">
           {!isEditingQuestChain && (
             <>
-              <Flex gap={3}>
-                <Text fontSize="2xl" fontWeight="bold" mb={3}>
+              <Flex gap={3} align="center">
+                <Text fontSize="2xl" fontWeight="bold">
                   {questChain.name}
                 </Text>
                 <NetworkDisplay asTag chainId={questChain.chainId} />
+                {isOwner && (
+                  <QuestChainPauseStatus
+                    questChain={questChain}
+                    refresh={refresh}
+                  />
+                )}
               </Flex>
               {isAdmin && chainId === questChain.chainId && (
                 <IconButton
