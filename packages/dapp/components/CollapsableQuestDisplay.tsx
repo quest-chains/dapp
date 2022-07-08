@@ -50,10 +50,7 @@ export const CollapsableQuestDisplay: React.FC<
             />
           ) : (
             <Box>
-              <Button
-                pointerEvents="none"
-                _hover={{}}
-                cursor="default"
+              <Box
                 color={
                   userStatus[questId]?.status === 'review' ? 'pending' : 'main'
                 }
@@ -61,11 +58,19 @@ export const CollapsableQuestDisplay: React.FC<
                 borderColor={
                   userStatus[questId]?.status === 'review' ? 'pending' : 'main'
                 }
+                bgColor={
+                  userStatus[questId]?.status === 'review'
+                    ? '#EFFF8F20'
+                    : 'main.100'
+                }
+                px={4}
+                borderRadius={6}
+                fontSize="sm"
               >
                 {userStatus[questId]?.status === 'review'
                   ? 'Review Pending'
                   : 'Accepted'}
-              </Button>
+              </Box>
             </Box>
           )
         }

@@ -432,7 +432,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </Flex>
 
             {/* Quest Chain Metadata */}
-            <Flex gap={5} mb={8}>
+            <Flex gap={10} mb={8}>
               {/* <Box>
                 <Text>TOTAL PLAYERS</Text>
                 <Text>{questChain.}</Text>
@@ -565,11 +565,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                 }}
                                 fontSize="xs"
                                 position="absolute"
-                                right={16}
+                                right={20}
                                 margin={0}
                                 top={6}
                               >
-                                <Image src={Edit.src} alt="Edit" />
+                                <Image src={Edit.src} alt="Edit" mr={3} />
+                                Edit
                               </Button>
                             )}
                           </Flex>
