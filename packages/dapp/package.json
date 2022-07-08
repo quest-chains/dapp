@@ -21,7 +21,10 @@
     "@emotion/styled": "^11.9.3",
     "@gnosis.pm/safe-apps-web3modal": "^14.0.0",
     "@quest-chains/utils": "0.1.0",
+    "@react-three/drei": "^9.17.0",
+    "@react-three/fiber": "^8.0.27",
     "@superfluid-finance/sdk-core": "^0.3.2",
+    "@types/three": "^0.141.0",
     "@walletconnect/web3-provider": "^1.7.8",
     "busboy": "^1.6.0",
     "chakra-ui-markdown-renderer": "^4.1.0",
@@ -44,6 +47,7 @@
     "remark-gfm": "^3.0.1",
     "remove-markdown": "^0.5.0",
     "sass": "^1.53.0",
+    "three": "^0.142.0",
     "typescript": "^4.7.4",
     "urql": "^2.2.2",
     "web3modal": "^1.9.8"
