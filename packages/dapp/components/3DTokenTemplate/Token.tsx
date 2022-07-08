@@ -4,7 +4,13 @@ import { Suspense } from 'react';
 
 import Model from './Model';
 
-export const Token = () => {
+export type TemplateProps = {
+  starLength: number;
+  name: string;
+  description: string;
+};
+
+export const Token: React.FC<TemplateProps> = props => {
   return (
     <Canvas>
       <Suspense fallback={null}>
@@ -13,7 +19,7 @@ export const Token = () => {
         <ambientLight />
         <directionalLight position={[0, 0, 5]} intensity={0.1} />
         <PerspectiveCamera makeDefault />
-        <Model />
+        <Model {...props} />
       </Suspense>
     </Canvas>
   );

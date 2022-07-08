@@ -6,7 +6,15 @@ import { useGLTF } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import React, { useRef } from 'react';
 
-export default function Model() {
+import Text from './Text';
+
+export type TemplateProps = {
+  starLength: number;
+  name: string;
+  description: string;
+};
+
+const Model: React.FC<TemplateProps> = ({ starLength, name }) => {
   const ref = useRef();
   const { nodes, materials } = useGLTF('/models/nft%20qc.gltf');
 
@@ -15,78 +23,88 @@ export default function Model() {
   });
 
   return (
-    <group
-      ref={ref}
-      dispose={null}
-      // rotation={[-0.65, 0.75, 0.75]}
-      position={[-9, -23, 0]}
-    >
-      <mesh
-        geometry={nodes.Sphere005.geometry}
-        material={materials['Material.004']}
-        position={[8.9, 24.68, 4.01]}
-        rotation={[0.2, -0.19, 0.9]}
-        scale={2.47}
-      />
-      <mesh
-        geometry={nodes.Curve001.geometry}
-        material={materials['Material.013']}
-        position={[6.33, 19.51, 2.37]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={148.79}
-      />
-      <mesh
-        geometry={nodes.Curve002.geometry}
-        material={materials['Material.019']}
-        position={[6.31, 19.5, 2.24]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={152.86}
-      />
-      <mesh
-        geometry={nodes.Curve003.geometry}
-        material={materials['Material.017']}
-        position={[7.82, 19.5, 2.24]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={152.86}
-      />
-      <mesh
-        geometry={nodes.Curve006.geometry}
-        material={materials['Material.010']}
-        position={[7.84, 19.51, 2.37]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={148.79}
-      />
-      <mesh
+    <group ref={ref} dispose={null} position={[-9, -23, 0]}>
+      <mesh // Disc
         geometry={nodes.Curve.geometry}
         material={materials.SVGMat}
         position={[0, 14.63, 0]}
         rotation={[Math.PI / 2, 0, 0]}
         scale={127.17}
       />
-      <mesh
+      <mesh // Gem
+        geometry={nodes.Sphere005.geometry}
+        material={materials['Material.004']}
+        position={[8.9, 24.68, 4.01]}
+        rotation={[0.2, -0.19, 0.9]}
+        scale={2.47}
+      />
+      <mesh // Lines
         geometry={nodes.Curve007.geometry}
         material={materials.lines}
         position={[4.3, 17.67, 2.25]}
         rotation={[Math.PI / 2, 0, 0]}
         scale={117.34}
       />
-      <mesh
-        geometry={nodes.Curve004.geometry}
-        material={materials['Material.020']}
-        position={[4.84, 19.5, 2.24]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={152.86}
-      />
-      <mesh
-        geometry={nodes.Curve005.geometry}
-        material={materials['Material.007']}
-        position={[4.86, 19.51, 2.37]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={148.79}
-      />
+      {starLength >= 3 && (
+        <>
+          <mesh // Star 1
+            geometry={nodes.Curve004.geometry}
+            material={materials['Material.020']}
+            position={[4.84, 19.5, 2.24]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={152.86}
+          />
+          <mesh // Star 1
+            geometry={nodes.Curve005.geometry}
+            material={materials['Material.007']}
+            position={[4.86, 19.51, 2.37]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={148.79}
+          />
+        </>
+      )}
+      {starLength >= 2 && (
+        <>
+          <mesh // Star 2
+            geometry={nodes.Curve001.geometry}
+            material={materials['Material.013']}
+            position={[6.33, 19.51, 2.37]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={148.79}
+          />
+          <mesh // Star 2
+            geometry={nodes.Curve002.geometry}
+            material={materials['Material.019']}
+            position={[6.31, 19.5, 2.24]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={152.86}
+          />
+        </>
+      )}
+      {starLength >= 1 && (
+        <>
+          <mesh // Star 3
+            geometry={nodes.Curve003.geometry}
+            material={materials['Material.017']}
+            position={[7.82, 19.5, 2.24]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={152.86}
+          />
+          <mesh // Star 3
+            geometry={nodes.Curve006.geometry}
+            material={materials['Material.010']}
+            position={[7.84, 19.51, 2.37]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={148.79}
+          />
+        </>
+      )}
+      <Text position={[6.84, 29, 2.37]}>{name}</Text>
     </group>
   );
-}
+};
 
 useGLTF.preload('/models/nft%20qc.gltf');
 // useGLTF.preload('/models/Quest%20Chains%20Token.gltf');
+
+export default Model;

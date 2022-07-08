@@ -1,8 +1,8 @@
-import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { HStack, Text, VStack } from '@chakra-ui/react';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 
-import { Token } from '@/components/3DTokenTemplate/Token';
+import NFT3DMetadataForm from '@/components/CreateChain/3DNFTMetadataForm';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -24,9 +24,7 @@ const Test: React.FC<Props> = () => {
           3D Token Test
         </Text>
       </HStack>
-      <Flex h="30rem">
-        <Token />
-      </Flex>
+      <NFT3DMetadataForm />
     </VStack>
   );
 };
