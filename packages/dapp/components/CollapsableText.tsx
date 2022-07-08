@@ -1,4 +1,4 @@
-import { Box, useBoolean } from '@chakra-ui/react';
+import { Box, Text, useBoolean } from '@chakra-ui/react';
 
 export const CollapsableText: React.FC<{
   title: string | null | undefined;
@@ -8,9 +8,7 @@ export const CollapsableText: React.FC<{
   return (
     <>
       <Box onClick={toggle} cursor="pointer">
-        <details>
-          <summary>{title}</summary>
-        </details>
+        <Text fontWeight={700}>{title}</Text>
       </Box>
       {isOpen && children}
     </>

@@ -13,7 +13,7 @@ export const CollapsableQuestDisplay: React.FC<
 > = ({ name, description }) => (
   <Box>
     <CollapsableText title={name}>
-      <Box mx={4} mt={2} color="white">
+      <Box mt={2} color="white">
         <MarkdownViewer markdown={description ?? ''} />
       </Box>
     </CollapsableText>

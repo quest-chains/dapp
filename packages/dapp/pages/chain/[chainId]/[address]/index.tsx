@@ -420,6 +420,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     fontWeight="bold"
                     lineHeight="3.5rem"
                     mb={3}
+                    fontFamily="heading"
                   >
                     {questChain.name}
                   </Text>
@@ -540,15 +541,21 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               ) : (
                 <>
                   <Flex justifyContent="space-between" w="full">
-                    <Text w="full" fontSize={20} textTransform="uppercase">
-                      {questChain.quests.length} Quest
-                      {questChain.quests.length === 1 ? '' : 's'} found
+                    <Text
+                      w="full"
+                      fontSize={40}
+                      textTransform="uppercase"
+                      fontFamily="heading"
+                    >
+                      Quests
                     </Text>
                     {(isAdmin || isEditor) && (
                       <Button
+                        variant="ghost"
                         onClick={onOpenCreateQuest}
-                        leftIcon={<AddIcon fontSize="sm" ml={1} />}
+                        fontSize="xs"
                       >
+                        <AddIcon fontSize="sm" mr={2} />
                         Create Quest
                       </Button>
                     )}
@@ -575,17 +582,19 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     </ModalContent>
                   </Modal>
 
-                  {questChain.quests.map(quest => (
+                  {questChain.quests.map((quest, index) => (
                     <Flex
                       w="full"
-                      boxShadow="inset 0px 0px 0px 1px #AD90FF"
                       p={8}
                       gap={3}
-                      borderRadius={20}
+                      borderRadius={10}
                       align="stretch"
+                      bgColor="whiteAlpha.100"
                       key={quest.questId}
                       justifyContent="space-between"
+                      position="relative"
                     >
+                      {index + 1}.
                       <Flex flexDirection="column" w="full">
                         {!(isEditingQuest && questEditId === quest.questId) && (
                           <Flex justifyContent="space-between" w="full">
@@ -601,11 +610,14 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                 }}
                                 icon={<EditIcon boxSize="1rem" />}
                                 aria-label={''}
+                                position="absolute"
+                                right={8}
+                                margin={0}
+                                top={6}
                               />
                             )}
                           </Flex>
                         )}
-
                         {isEditingQuest && questEditId === quest.questId && (
                           <Flex flexDirection="column">
                             <Flex>
@@ -656,7 +668,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           </Flex>
                         )}
                       </Flex>
-
                       {isUser && (
                         <>
                           {
@@ -713,28 +724,30 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           {/* Right */}
           <Flex flexDirection="column" maxW={373}>
             {/* Actions */}
-            <Flex justifyContent="space-between" h={124}>
-              {isAdmin && chainId === questChain.chainId && (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setEditingQuestChain(true);
-                    setChainName(questChain.name || '');
-                    setQuestDescription(questChain.description || '');
-                  }}
-                  fontSize="xs"
-                >
-                  <Image src={Edit.src} alt="Edit" mr={2} />
-                  Edit Metadata
-                </Button>
-              )}
-              {isOwner && (
-                <QuestChainPauseStatus
-                  questChain={questChain}
-                  refresh={refresh}
-                />
-              )}
-            </Flex>
+            {((isAdmin && chainId) || isOwner) && (
+              <Flex justifyContent="space-between" h={124}>
+                {isAdmin && chainId === questChain.chainId && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingQuestChain(true);
+                      setChainName(questChain.name || '');
+                      setQuestDescription(questChain.description || '');
+                    }}
+                    fontSize="xs"
+                  >
+                    <Image src={Edit.src} alt="Edit" mr={2} />
+                    Edit Metadata
+                  </Button>
+                )}
+                {isOwner && (
+                  <QuestChainPauseStatus
+                    questChain={questChain}
+                    refresh={refresh}
+                  />
+                )}
+              </Flex>
+            )}
 
             {/* Image (Should be NFT) */}
             {questChain.imageUrl && (
