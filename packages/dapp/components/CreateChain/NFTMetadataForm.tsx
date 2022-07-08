@@ -20,7 +20,7 @@ import {
   Wrap,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { handleError } from '@/utils/helpers';
 import {

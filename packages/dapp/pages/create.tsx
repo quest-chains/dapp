@@ -4,7 +4,7 @@ import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { ChainMetadataForm } from '@/components/CreateChain/ChainMetadataForm';
 import {

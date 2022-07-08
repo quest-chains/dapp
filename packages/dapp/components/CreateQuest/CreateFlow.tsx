@@ -6,7 +6,7 @@ import { Box, Flex, Input, Spinner, Text } from '@chakra-ui/react';
 import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { SubmitButton } from '@/components/SubmitButton';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';

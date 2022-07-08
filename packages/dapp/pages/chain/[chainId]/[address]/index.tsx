@@ -30,7 +30,7 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';

@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';

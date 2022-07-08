@@ -1,7 +1,7 @@
 import { Button, Image } from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import Power from '@/assets/Power.svg';
 import { QuestChainInfoFragment } from '@/graphql/types';

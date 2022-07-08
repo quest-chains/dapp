@@ -27,7 +27,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { CollapsableText } from '@/components/CollapsableText';
 import { MarkdownEditor } from '@/components/MarkdownEditor';

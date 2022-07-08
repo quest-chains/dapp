@@ -20,7 +20,7 @@ import {
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { QuestChain, QuestChain__factory } from '@/types';
 import { ZERO_ADDRESS } from '@/utils/constants';
