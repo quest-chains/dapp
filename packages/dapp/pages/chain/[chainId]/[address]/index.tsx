@@ -1,4 +1,4 @@
-import { AddIcon, CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
+import { AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Alert,
   AlertIcon,
@@ -56,7 +56,7 @@ import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-type UserStatusType = {
+export type UserStatusType = {
   [questId: string]: {
     submissions: {
       description: string | undefined | null;
@@ -623,7 +623,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                 }}
                                 fontSize="xs"
                                 position="absolute"
-                                right={6}
+                                right={16}
                                 margin={0}
                                 top={6}
                               >

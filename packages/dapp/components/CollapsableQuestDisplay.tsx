@@ -1,4 +1,6 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
+
+import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
 
 import { CollapsableText } from './CollapsableText';
 import { MarkdownViewer } from './MarkdownViewer';
@@ -7,7 +9,7 @@ import { UploadProof } from './UploadProof';
 type CollapsableQuestDisplayProps = {
   name?: string | undefined | null;
   description?: string | undefined | null;
-  userStatus: any;
+  userStatus: UserStatusType;
   questId: string;
   mode: string;
   address: string | null | undefined;
@@ -29,12 +31,12 @@ export const CollapsableQuestDisplay: React.FC<
   chainId,
   refresh,
 }) => (
-  <CollapsableText title={name} mode={mode}>
+  <CollapsableText title={name}>
     <Box mt={2} color="white">
       <MarkdownViewer markdown={description ?? ''} />
       {/* upload proof */}
       {mode === 'QUESTER' && (
-        <>
+        <Flex mt={5}>
           {
             // TODO: Also display prev submissions and reviews here
             !userStatus[questId]?.status ||
@@ -74,7 +76,7 @@ export const CollapsableQuestDisplay: React.FC<
               </Box>
             )
           }
-        </>
+        </Flex>
       )}
     </Box>
   </CollapsableText>

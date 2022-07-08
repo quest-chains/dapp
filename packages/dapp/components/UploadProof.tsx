@@ -153,8 +153,13 @@ export const UploadProof: React.FC<{
           <Button
             onClick={onOpen}
             isDisabled={chainId !== questChainId || !address}
+            borderWidth={1}
+            borderColor="white"
+            px={5}
+            py={2}
+            borderRadius="full"
           >
-            Upload Proof
+            Submit Proof
           </Button>
         )}
         {profile && (
