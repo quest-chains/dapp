@@ -5,6 +5,7 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint --ignore-path .gitignore \"*/**/*.{js,ts}\" --fix",
     "build": "tsc -b",
     "typecheck": "tsc"
   },

@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "dist",
+    "skipLibCheck": true,
     "resolveJsonModule": true
   },
   "include": ["./scripts", "./test"],

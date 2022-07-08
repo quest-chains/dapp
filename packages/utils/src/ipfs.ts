@@ -1,9 +1,10 @@
-import IPFSClient from 'ipfs-http-client';
-import { Web3Storage } from 'web3.storage';
 import { createReadStream } from 'fs';
 import { mkdtemp, rmdir, unlink, writeFile } from 'fs/promises';
+import IPFSClient from 'ipfs-http-client';
 import * as os from 'os';
 import * as path from 'path';
+import { Web3Storage } from 'web3.storage';
+
 import { Metadata } from './metadata';
 import { validateSchema } from './validate';
 
@@ -23,12 +24,15 @@ const uploadToIPFSTheGraph = async (jsonString: string) => {
 
 export const uploadMetadata = async (
   metadata: Metadata,
-  token: string = '',
+  token = '',
 ): Promise<string> => {
   const valid = validateSchema(metadata);
   if (!valid) throw new Error('Invalid metadata: schema validation failed');
   if (!token) throw new Error('Invalid web3.storage token');
-  const web3Storage = new Web3Storage({ token });
+  const web3Storage = new Web3Storage({
+    token,
+    endpoint: new URL('https://api.web3.storage'),
+  });
 
   const jsonString = JSON.stringify(metadata, undefined, 2);
 
@@ -45,7 +49,7 @@ export const uploadMetadata = async (
     stream: () => readable,
   };
 
-  const [_hashGraph, hashWeb3Storage] = await Promise.all([
+  const [, hashWeb3Storage] = await Promise.all([
     uploadToIPFSTheGraph(jsonString),
     web3Storage.put([tmpFile], { wrapWithDirectory: false }),
   ]);

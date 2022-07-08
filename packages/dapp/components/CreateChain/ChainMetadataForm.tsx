@@ -46,7 +46,9 @@ export const ChainMetadataForm: React.FC<{
     noKeyboard: true,
     multiple: false,
     onDrop,
-    accept: ['image/png', 'image/jpeg', 'image/gif'],
+    accept: {
+      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
+    },
   });
 
   const removeFile = (file: File) => () => {

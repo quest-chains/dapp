@@ -28,7 +28,7 @@ export const QuestChains: React.FC = () => {
       top={20}
     >
       <Container
-        d="flex"
+        display="flex"
         maxW={{
           base: '100%',
           md: 'xl',

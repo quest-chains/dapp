@@ -1,16 +1,11 @@
 {
   "name": "@quest-chains/mono-repo",
   "version": "1.0.0",
-  "keywords": [
-    "ethereum",
-    "react",
-    "workspaces",
-    "yarn"
-  ],
+  "keywords": ["ethereum", "react", "workspaces", "yarn"],
   "private": true,
   "scripts": {
-    "lint": "concurrently \"yarn workspace @quest-chains/dapp lint\" \"yarn workspace @quest-chains/contracts lint\"",
-    "typecheck": "concurrently \"yarn workspace @quest-chains/dapp typecheck\" \"yarn workspace @quest-chains/contracts typecheck\"",
+    "lint": "concurrently \"yarn workspace @quest-chains/utils lint\" \"yarn workspace @quest-chains/dapp lint\" \"yarn workspace @quest-chains/contracts lint\"",
+    "typecheck": "concurrently \"yarn workspace @quest-chains/utils typecheck\" \"yarn workspace @quest-chains/dapp typecheck\" \"yarn workspace @quest-chains/contracts typecheck\"",
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{json,yml,yaml,md,css,scss,sol}\"",
     "contracts:compile": "yarn workspace @quest-chains/contracts compile",
     "contracts:test": "yarn workspace @quest-chains/contracts test",
@@ -25,9 +20,7 @@
     "prepare": "yarn root:prepare"
   },
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
+    "packages": ["packages/*"]
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.2.1",
