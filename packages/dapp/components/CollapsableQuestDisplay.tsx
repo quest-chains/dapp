@@ -11,7 +11,6 @@ type CollapsableQuestDisplayProps = {
   description?: string | undefined | null;
   userStatus: UserStatusType;
   questId: string;
-  mode: string;
   address: string | null | undefined;
   questChainAddress: string;
   chainId: string;
@@ -25,7 +24,6 @@ export const CollapsableQuestDisplay: React.FC<
   description,
   userStatus,
   questId,
-  mode,
   address,
   questChainAddress,
   chainId,
@@ -35,49 +33,43 @@ export const CollapsableQuestDisplay: React.FC<
     <Box mt={2} color="white">
       <MarkdownViewer markdown={description ?? ''} />
       {/* upload proof */}
-      {mode === 'QUESTER' && (
-        <Flex mt={5}>
-          {
-            // TODO: Also display prev submissions and reviews here
-            !userStatus[questId]?.status ||
-            userStatus[questId]?.status === 'init' ||
-            userStatus[questId]?.status === 'fail' ? (
-              <UploadProof
-                // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
-                address={address}
-                questId={questId}
-                questChainId={chainId}
-                questChainAddress={questChainAddress}
-                name={name}
-                refresh={refresh}
-              />
-            ) : (
-              <Box>
-                <Button
-                  pointerEvents="none"
-                  _hover={{}}
-                  cursor="default"
-                  color={
-                    userStatus[questId]?.status === 'review'
-                      ? 'pending'
-                      : 'main'
-                  }
-                  border="1px solid"
-                  borderColor={
-                    userStatus[questId]?.status === 'review'
-                      ? 'pending'
-                      : 'main'
-                  }
-                >
-                  {userStatus[questId]?.status === 'review'
-                    ? 'Review Pending'
-                    : 'Accepted'}
-                </Button>
-              </Box>
-            )
-          }
-        </Flex>
-      )}
+      <Flex mt={5}>
+        {
+          // TODO: Also display prev submissions and reviews here
+          !userStatus[questId]?.status ||
+          userStatus[questId]?.status === 'init' ||
+          userStatus[questId]?.status === 'fail' ? (
+            <UploadProof
+              // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
+              address={address}
+              questId={questId}
+              questChainId={chainId}
+              questChainAddress={questChainAddress}
+              name={name}
+              refresh={refresh}
+            />
+          ) : (
+            <Box>
+              <Button
+                pointerEvents="none"
+                _hover={{}}
+                cursor="default"
+                color={
+                  userStatus[questId]?.status === 'review' ? 'pending' : 'main'
+                }
+                border="1px solid"
+                borderColor={
+                  userStatus[questId]?.status === 'review' ? 'pending' : 'main'
+                }
+              >
+                {userStatus[questId]?.status === 'review'
+                  ? 'Review Pending'
+                  : 'Accepted'}
+              </Button>
+            </Box>
+          )
+        }
+      </Flex>
     </Box>
   </CollapsableText>
 );

@@ -609,7 +609,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                               questChainAddress={questChain.address}
                               chainId={questChain.chainId}
                               userStatus={userStatus}
-                              mode={mode}
                               refresh={refresh}
                             />
                             {mode === 'MEMBER' && (isAdmin || isEditor) && (
