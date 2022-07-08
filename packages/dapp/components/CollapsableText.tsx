@@ -1,3 +1,4 @@
+import { CloseIcon } from '@chakra-ui/icons';
 import { Flex, Image, Text, useBoolean } from '@chakra-ui/react';
 
 import play from '@/assets/play.svg';
@@ -5,7 +6,8 @@ import play from '@/assets/play.svg';
 export const CollapsableText: React.FC<{
   title: string | null | undefined;
   children: unknown;
-}> = ({ title, children }) => {
+  mode: string;
+}> = ({ title, children, mode }) => {
   const [isOpen, { toggle }] = useBoolean(false);
   return (
     <Flex flexDir="column" w="full">
@@ -16,7 +18,10 @@ export const CollapsableText: React.FC<{
         justifyContent="space-between"
       >
         <Text fontWeight={700}>{title}</Text>
-        {isOpen && <Image src={play.src} alt="play" />}
+        {!isOpen && mode !== 'MEMBER' && (
+          <Image src={play.src} alt="play" h={6} />
+        )}
+        {isOpen && mode !== 'MEMBER' && <CloseIcon h={8} />}
       </Flex>
       <>{isOpen && children}</>
     </Flex>

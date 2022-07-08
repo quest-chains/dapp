@@ -583,6 +583,10 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     </ModalContent>
                   </Modal>
 
+                  {/* would be really nice if this was refactored by 
+                  separating the whole quest actions logic into its own component, so:
+                  - edit quest
+                  - upload proof */}
                   {questChain.quests.map((quest, index) => (
                     <Flex
                       w="full"
@@ -609,21 +613,22 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                               refresh={refresh}
                             />
                             {mode === 'MEMBER' && (isAdmin || isEditor) && (
-                              <IconButton
-                                borderRadius="full"
+                              <Button
+                                variant="ghost"
                                 onClick={() => {
                                   setEditingQuest(true);
                                   setQuestName(quest.name || '');
                                   setQuestDescription(quest.description || '');
                                   setQuestEditId(quest.questId);
                                 }}
-                                icon={<EditIcon boxSize="1rem" />}
-                                aria-label={''}
+                                fontSize="xs"
                                 position="absolute"
-                                right={8}
+                                right={6}
                                 margin={0}
                                 top={6}
-                              />
+                              >
+                                <Image src={Edit.src} alt="Edit" />
+                              </Button>
                             )}
                           </Flex>
                         </>
