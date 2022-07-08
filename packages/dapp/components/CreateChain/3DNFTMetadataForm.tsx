@@ -12,7 +12,7 @@ import {
   SliderTrack,
   Stack,
   Text,
-  Textarea,
+  // Textarea,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
@@ -28,7 +28,7 @@ const NFT3DMetadataForm: React.FC<{
   // const [gemIndex, setGemIndex] = useState<number>(0);
   const [starLength, setStarLength] = useState<number>(3);
   const [name, setName] = useState<string>('Special Chain');
-  const [description, setDescription] = useState<string>(
+  const [description] = useState<string>(
     'Award for exceptional performance in Special Chain!',
   );
 
@@ -187,6 +187,7 @@ const NFT3DMetadataForm: React.FC<{
               />
             </FormControl>
           </Wrap>
+          {/*
           <FormControl isRequired>
             <FormLabel color="main" htmlFor="description">
               Description
@@ -198,7 +199,7 @@ const NFT3DMetadataForm: React.FC<{
               maxLength={100}
               placeholder="NFT Badge Description"
             />
-          </FormControl>
+          </FormControl> */}
         </VStack>
       </Stack>
     </VStack>

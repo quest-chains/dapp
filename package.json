@@ -17,7 +17,8 @@
     "dapp:start": "yarn workspace @quest-chains/dapp start",
     "dapp:generate": "yarn workspace @quest-chains/dapp generate",
     "root:prepare": "concurrently \"yarn workspace @quest-chains/utils build\" \"yarn workspace @quest-chains/contracts build\" \"yarn workspace @quest-chains/dapp generate\" && husky install",
-    "prepare": "yarn root:prepare"
+    "prepare": "yarn root:prepare",
+    "postinstall": "patch-package"
   },
   "workspaces": {
     "packages": ["packages/*"]
