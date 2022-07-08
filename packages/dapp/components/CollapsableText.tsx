@@ -1,4 +1,6 @@
-import { Box, Text, useBoolean } from '@chakra-ui/react';
+import { Flex, Image, Text, useBoolean } from '@chakra-ui/react';
+
+import play from '@/assets/play.svg';
 
 export const CollapsableText: React.FC<{
   title: string | null | undefined;
@@ -6,11 +8,17 @@ export const CollapsableText: React.FC<{
 }> = ({ title, children }) => {
   const [isOpen, { toggle }] = useBoolean(false);
   return (
-    <>
-      <Box onClick={toggle} cursor="pointer">
+    <Flex flexDir="column" w="full">
+      <Flex
+        onClick={toggle}
+        cursor="pointer"
+        w={isOpen ? 'full' : 'initial'}
+        justifyContent="space-between"
+      >
         <Text fontWeight={700}>{title}</Text>
-      </Box>
-      {isOpen && children}
-    </>
+        {isOpen && <Image src={play.src} alt="play" />}
+      </Flex>
+      <>{isOpen && children}</>
+    </Flex>
   );
 };

@@ -38,7 +38,6 @@ import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { Role } from '@/components/RoleTag';
-import { UploadProof } from '@/components/UploadProof';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
   getQuestChainAddresses,
@@ -596,11 +595,19 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       justifyContent="space-between"
                       position="relative"
                     >
-                      {index + 1}.
-                      <Flex flexDirection="column" w="full">
-                        {!(isEditingQuest && questEditId === quest.questId) && (
+                      {!(isEditingQuest && questEditId === quest.questId) && (
+                        <>
+                          {index + 1}.
                           <Flex justifyContent="space-between" w="full">
-                            <CollapsableQuestDisplay {...quest} />
+                            <CollapsableQuestDisplay
+                              {...quest}
+                              address={address}
+                              questChainAddress={questChain.address}
+                              chainId={questChain.chainId}
+                              userStatus={userStatus}
+                              mode={mode}
+                              refresh={refresh}
+                            />
                             {mode === 'MEMBER' && (isAdmin || isEditor) && (
                               <IconButton
                                 borderRadius="full"
@@ -619,105 +626,58 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                               />
                             )}
                           </Flex>
-                        )}
+                        </>
+                      )}
 
-                        {/* Edit quest components */}
-                        {isEditingQuest && questEditId === quest.questId && (
-                          <Flex flexDirection="column">
-                            <Flex>
-                              <Input
-                                mb={3}
-                                value={questName}
-                                onChange={e => setQuestName(e.target.value)}
-                              />
-                              <IconButton
-                                borderRadius="full"
-                                onClick={onUpdateQuestConfirmationOpen}
-                                isDisabled={isSubmittingQuest}
-                                icon={<CheckIcon boxSize="1rem" />}
-                                aria-label={''}
-                                mx={2}
-                              />
-                              <IconButton
-                                borderRadius="full"
-                                onClick={() => setEditingQuest(false)}
-                                isDisabled={isSubmittingQuest}
-                                icon={<CloseIcon boxSize="1rem" />}
-                                aria-label={''}
-                              />
-                              <ConfirmationModal
-                                onSubmit={() => {
-                                  onUpdateQuestConfirmationClose();
-                                  onSubmitQuest({
-                                    name: questName,
-                                    description: questDescription,
-                                    questId: quest.questId,
-                                  });
-                                }}
-                                title="Update Quest"
-                                content="Are you sure you want to update this quest?"
-                                isOpen={isUpdateQuestConfirmationOpen}
-                                onClose={() => {
-                                  setChainDescription(quest.description || '');
-                                  setChainName(quest.name || '');
-                                  onUpdateQuestConfirmationClose();
-                                }}
-                              />
-                            </Flex>
-
-                            <MarkdownEditor
-                              value={questDescription}
-                              onChange={setQuestDescription}
+                      {/* Edit quest components */}
+                      {isEditingQuest && questEditId === quest.questId && (
+                        <Flex flexDirection="column" w="full">
+                          <Flex>
+                            <Input
+                              mb={3}
+                              value={questName}
+                              onChange={e => setQuestName(e.target.value)}
+                            />
+                            <IconButton
+                              borderRadius="full"
+                              onClick={onUpdateQuestConfirmationOpen}
+                              isDisabled={isSubmittingQuest}
+                              icon={<CheckIcon boxSize="1rem" />}
+                              aria-label={''}
+                              mx={2}
+                            />
+                            <IconButton
+                              borderRadius="full"
+                              onClick={() => setEditingQuest(false)}
+                              isDisabled={isSubmittingQuest}
+                              icon={<CloseIcon boxSize="1rem" />}
+                              aria-label={''}
+                            />
+                            <ConfirmationModal
+                              onSubmit={() => {
+                                onUpdateQuestConfirmationClose();
+                                onSubmitQuest({
+                                  name: questName,
+                                  description: questDescription,
+                                  questId: quest.questId,
+                                });
+                              }}
+                              title="Update Quest"
+                              content="Are you sure you want to update this quest?"
+                              isOpen={isUpdateQuestConfirmationOpen}
+                              onClose={() => {
+                                setChainDescription(quest.description || '');
+                                setChainName(quest.name || '');
+                                onUpdateQuestConfirmationClose();
+                              }}
                             />
                           </Flex>
-                        )}
-                      </Flex>
-                      {/* upload proof */}
-                      {mode === 'QUESTER' && (
-                        <>
-                          {
-                            // TODO: Also display prev submissions and reviews here
-                            !userStatus[quest.questId]?.status ||
-                            userStatus[quest.questId]?.status === 'init' ||
-                            userStatus[quest.questId]?.status === 'fail' ? (
-                              <UploadProof
-                                // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
-                                address={address}
-                                questId={quest.questId}
-                                questChainId={questChain.chainId}
-                                questChainAddress={questChain.address}
-                                name={quest.name}
-                                refresh={refresh}
-                              />
-                            ) : (
-                              <Box>
-                                <Button
-                                  pointerEvents="none"
-                                  _hover={{}}
-                                  cursor="default"
-                                  color={
-                                    userStatus[quest.questId]?.status ===
-                                    'review'
-                                      ? 'pending'
-                                      : 'main'
-                                  }
-                                  border="1px solid"
-                                  borderColor={
-                                    userStatus[quest.questId]?.status ===
-                                    'review'
-                                      ? 'pending'
-                                      : 'main'
-                                  }
-                                >
-                                  {userStatus[quest.questId]?.status ===
-                                  'review'
-                                    ? 'Review Pending'
-                                    : 'Accepted'}
-                                </Button>
-                              </Box>
-                            )
-                          }
-                        </>
+
+                          <MarkdownEditor
+                            value={questDescription}
+                            onChange={setQuestDescription}
+                          />
+                        </Flex>
                       )}
                     </Flex>
                   ))}
