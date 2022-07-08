@@ -29,7 +29,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
-import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
+import { CollapsableText } from '@/components/CollapsableText';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -79,7 +79,11 @@ const StatusDisplay: React.FC<{
       align="stretch"
     >
       <HStack align="flex-start" justify="space-between" w="100%">
-        <CollapsableQuestDisplay {...quest} />
+        <CollapsableText title={quest.name}>
+          <Box mt={2} color="white">
+            <MarkdownViewer markdown={description ?? ''} />
+          </Box>
+        </CollapsableText>
         <UserDisplay address={user.id} />
       </HStack>
       <Flex w="100%" fontSize="lg">

@@ -11,6 +11,7 @@ import {
   IconButton,
   Image,
   Input,
+  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -26,8 +27,9 @@ import {
 import { Signer } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
@@ -215,6 +217,31 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     return userStat;
   }, [questStatuses]);
 
+  const [progress, setProgress] = useState({
+    total: 0,
+    inReviewCount: 0,
+    completeCount: 0,
+  });
+  useEffect(() => {
+    if (questChain) {
+      if (questChain?.quests) {
+        const inReviewCount = questChain.quests.filter(
+          quest => userStatus[quest.questId]?.status === 'review',
+        ).length;
+        const completeCount = questChain.quests.filter(
+          quest => userStatus[quest.questId]?.status === 'pass',
+        ).length;
+
+        setProgress({
+          inReviewCount: inReviewCount || 0,
+          completeCount: completeCount || 0,
+          total: questChain.quests.length || 0,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questChain, userStatus]);
+
   const canMint = useMemo(
     () =>
       !!address &&
@@ -336,6 +363,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               borderRadius={8}
               alignItems="center"
               justifyContent="center"
+              zIndex={100}
             >
               <Flex
                 w={32}
@@ -481,8 +509,69 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Flex>
 
               {/* Actions */}
+              <Flex
+                w="full"
+                justifyContent="space-between"
+                h={6}
+                alignItems="center"
+                mb={6}
+              >
+                <Flex w="90%" borderColor="whiteAlpha.200" border="1px solid">
+                  <Box
+                    bg="main"
+                    w={`${(progress.completeCount / progress.total) * 100}%`}
+                  />
+                  <Box
+                    bgColor="pending"
+                    w={`${(progress.inReviewCount / progress.total) * 100}%`}
+                  />
+                  <Box bgColor="grey" h={2} />
+                </Flex>
+                <Text>
+                  {`${Math.round(
+                    (progress.completeCount / progress.total) * 100,
+                  )}%`}
+                </Text>
+              </Flex>
               <Flex>
-                {mode === 'QUESTER' && <Button>Start Playing</Button>}
+                {mode === 'QUESTER' &&
+                  progress.completeCount === 0 &&
+                  progress.inReviewCount === 0 &&
+                  progress.total !== 0 && (
+                    <Button
+                      borderWidth={1}
+                      borderColor="main"
+                      px={12}
+                      py={2}
+                      bgColor="main"
+                      borderRadius="full"
+                      color="black"
+                      _hover={{
+                        bgColor: 'main.950',
+                      }}
+                    >
+                      START PLAYING
+                    </Button>
+                  )}
+                {mode === 'MEMBER' && (
+                  <NextLink
+                    as={`/chain/${questChain.chainId}/${questChain.address}/review`}
+                    href={`/chain/[chainId]/[address]/review`}
+                    passHref
+                  >
+                    <ChakraLink display="block" _hover={{}}>
+                      <Button
+                        borderWidth={1}
+                        borderColor="white"
+                        px={12}
+                        py={2}
+                        borderRadius="full"
+                      >
+                        REVIEW SUBMISSIONS
+                      </Button>
+                    </ChakraLink>
+                  </NextLink>
+                )}
 
                 {/* Mint Tile */}
                 {canMint && (
@@ -508,13 +597,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 ) : (
                   <>
                     <Flex justifyContent="space-between" w="full">
-                      <Text
-                        w="full"
-                        fontSize={40}
-                        textTransform="uppercase"
-                        fontFamily="heading"
-                      >
-                        Quests
+                      <Text w="full" fontSize={40} fontFamily="heading">
+                        QUESTS
                       </Text>
                       {mode === 'MEMBER' && (isAdmin || isEditor) && (
                         <Button

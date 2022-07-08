@@ -44,6 +44,7 @@ export const theme = extendTheme({
     ['main.700']: '#2DF8C770',
     ['main.800']: '#2DF8C780',
     ['main.900']: '#2DF8C790',
+    ['main.950']: '#2DF8C795',
     pending: '#EFFF8F',
     rejected: '#FD86FF',
     neutral: '#BCBCBC',
