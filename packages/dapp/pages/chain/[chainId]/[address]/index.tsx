@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Divider,
+  Fade,
   Flex,
   IconButton,
   Image,
@@ -19,6 +20,7 @@ import {
   Spinner,
   Text,
   useDisclosure,
+  useTimeout,
   VStack,
 } from '@chakra-ui/react';
 import { Signer } from 'ethers';
@@ -78,6 +80,11 @@ export type UserStatusType = {
 const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
   const { address, chainId, provider } = useWallet();
+  const [visible, setVisible] = useState(false);
+
+  useTimeout(() => {
+    setVisible(true);
+  }, 1000);
 
   const {
     isOpen: isUpdateQuestChainConfirmationOpen,
@@ -291,149 +298,163 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   return (
     <VStack w="100%" px={{ base: 0, lg: 40 }}>
-      <Head>
-        <title>
-          {questChain.name} - {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
-        </title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <Box
+        bgImage={ipfsUriToHttp(questChain.imageUrl)}
+        position="absolute"
+        height="full"
+        width="full"
+        opacity="0.05"
+        bgPos="top"
+        bgSize="cover"
+      />
+      <Fade in={visible}>
+        <Head>
+          <title>
+            {questChain.name} -{' '}
+            {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
+          </title>
+          <meta
+            name="viewport"
+            content="initial-scale=1.0, width=device-width"
+          />
+        </Head>
 
-      <Flex flexDirection="column" w="100%" justify="center">
-        {questChain.paused && (
-          <Alert status="warning" borderRadius="md" mb={6}>
-            <AlertIcon />
-            <AlertTitle>Quest Chain is disabled!</AlertTitle>
-          </Alert>
-        )}
+        <Flex flexDirection="column" w="100%" justify="center" zIndex="10">
+          {questChain.paused && (
+            <Alert status="warning" borderRadius="md" mb={6}>
+              <AlertIcon />
+              <AlertTitle>Quest Chain is disabled!</AlertTitle>
+            </Alert>
+          )}
 
-        {/* Set Mode  */}
-        {(isAdmin || isEditor || isReviewer) && (
-          <Flex
-            h={14}
-            mb={14}
-            bgColor="whiteAlpha.100"
-            borderRadius={8}
-            alignItems="center"
-            justifyContent="center"
-          >
+          {/* Set Mode  */}
+          {(isAdmin || isEditor || isReviewer) && (
             <Flex
-              w={32}
-              onClick={() => setMode('QUESTER')}
-              bgColor={mode === 'QUESTER' ? 'main.200' : 'whiteAlpha.100'}
-              h={8}
+              h={14}
+              mb={14}
+              bgColor="whiteAlpha.100"
+              borderRadius={8}
               alignItems="center"
               justifyContent="center"
-              borderLeftRadius={6}
-              borderWidth={1}
-              borderRightWidth={0}
-              borderColor="main.700"
-              cursor="pointer"
             >
-              <Text fontSize="small" fontWeight="bold">
-                Quester Mode
-              </Text>
+              <Flex
+                w={32}
+                onClick={() => setMode('QUESTER')}
+                bgColor={mode === 'QUESTER' ? 'main.200' : 'whiteAlpha.100'}
+                h={8}
+                alignItems="center"
+                justifyContent="center"
+                borderLeftRadius={6}
+                borderWidth={1}
+                borderRightWidth={0}
+                borderColor="main.700"
+                cursor="pointer"
+              >
+                <Text fontSize="small" fontWeight="bold">
+                  Quester Mode
+                </Text>
+              </Flex>
+              <Flex
+                w={32}
+                onClick={() => setMode('MEMBER')}
+                bgColor={mode === 'MEMBER' ? 'main.200' : 'whiteAlpha.100'}
+                h={8}
+                alignItems="center"
+                justifyContent="center"
+                borderRightRadius={6}
+                borderWidth={1}
+                borderColor="main.700"
+                cursor="pointer"
+              >
+                <Text fontSize="small" fontWeight="bold">
+                  Member Mode
+                </Text>
+              </Flex>
             </Flex>
-            <Flex
-              w={32}
-              onClick={() => setMode('MEMBER')}
-              bgColor={mode === 'MEMBER' ? 'main.200' : 'whiteAlpha.100'}
-              h={8}
-              alignItems="center"
-              justifyContent="center"
-              borderRightRadius={6}
-              borderWidth={1}
-              borderColor="main.700"
-              cursor="pointer"
-            >
-              <Text fontSize="small" fontWeight="bold">
-                Member Mode
-              </Text>
-            </Flex>
-          </Flex>
-        )}
+          )}
 
-        {/* Quest Chain */}
-        <Flex gap={10} justifyContent="space-between">
-          {/* Left */}
-          <Flex flexDirection="column" w="full">
-            {/* Quest Chain Title */}
-            <Flex justifyContent="space-between" w="full">
-              {!isEditingQuestChain && (
-                <Flex flexDirection="column" mb={8}>
-                  <Text
-                    fontSize="6xl"
-                    fontWeight="bold"
-                    lineHeight="3.5rem"
-                    fontFamily="heading"
-                    mb={3}
-                  >
-                    {questChain.name}
-                  </Text>
-                  <Box>
-                    <NetworkDisplay chainId={questChain.chainId} />
-                  </Box>
-                </Flex>
-              )}
+          {/* Quest Chain */}
+          <Flex gap={10} justifyContent="space-between">
+            {/* Left */}
+            <Flex flexDirection="column" w="full">
+              {/* Quest Chain Title */}
+              <Flex justifyContent="space-between" w="full">
+                {!isEditingQuestChain && (
+                  <Flex flexDirection="column" mb={8}>
+                    <Text
+                      fontSize="6xl"
+                      fontWeight="bold"
+                      lineHeight="3.5rem"
+                      fontFamily="heading"
+                      mb={3}
+                    >
+                      {questChain.name}
+                    </Text>
+                    <Box>
+                      <NetworkDisplay chainId={questChain.chainId} />
+                    </Box>
+                  </Flex>
+                )}
 
-              {isEditingQuestChain && (
-                <>
-                  <Input
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    fontFamily="heading"
-                    mb={3}
-                    value={chainName}
-                    onChange={e => setChainName(e.target.value)}
+                {isEditingQuestChain && (
+                  <>
+                    <Input
+                      fontSize="2xl"
+                      fontWeight="bold"
+                      fontFamily="heading"
+                      mb={3}
+                      value={chainName}
+                      onChange={e => setChainName(e.target.value)}
+                    />
+                    <IconButton
+                      borderRadius="full"
+                      onClick={onUpdateQuestChainConfirmationOpen}
+                      isDisabled={isSubmittingQuestChain}
+                      icon={<CheckIcon boxSize="1rem" />}
+                      aria-label={''}
+                      mx={2}
+                    />
+                    <IconButton
+                      borderRadius="full"
+                      onClick={() => setEditingQuestChain(false)}
+                      isDisabled={isSubmittingQuestChain}
+                      icon={<CloseIcon boxSize="1rem" />}
+                      aria-label={''}
+                    />
+
+                    <ConfirmationModal
+                      onSubmit={() => {
+                        onUpdateQuestChainConfirmationClose();
+                        onSubmitQuestChain({
+                          name: chainName,
+                          description: chainDescription,
+                        });
+                      }}
+                      title="Update Quest Chain"
+                      content="Are you sure you want to update this quest chain?"
+                      isOpen={isUpdateQuestChainConfirmationOpen}
+                      onClose={onUpdateQuestChainConfirmationClose}
+                    />
+                  </>
+                )}
+              </Flex>
+
+              {/* Quest Chain Description */}
+              <Flex mb={8}>
+                {!isEditingQuestChain && questChain.description && (
+                  <MarkdownViewer markdown={questChain.description} />
+                )}
+                {isEditingQuestChain && (
+                  <MarkdownEditor
+                    value={chainDescription}
+                    onChange={setChainDescription}
                   />
-                  <IconButton
-                    borderRadius="full"
-                    onClick={onUpdateQuestChainConfirmationOpen}
-                    isDisabled={isSubmittingQuestChain}
-                    icon={<CheckIcon boxSize="1rem" />}
-                    aria-label={''}
-                    mx={2}
-                  />
-                  <IconButton
-                    borderRadius="full"
-                    onClick={() => setEditingQuestChain(false)}
-                    isDisabled={isSubmittingQuestChain}
-                    icon={<CloseIcon boxSize="1rem" />}
-                    aria-label={''}
-                  />
+                )}
+              </Flex>
 
-                  <ConfirmationModal
-                    onSubmit={() => {
-                      onUpdateQuestChainConfirmationClose();
-                      onSubmitQuestChain({
-                        name: chainName,
-                        description: chainDescription,
-                      });
-                    }}
-                    title="Update Quest Chain"
-                    content="Are you sure you want to update this quest chain?"
-                    isOpen={isUpdateQuestChainConfirmationOpen}
-                    onClose={onUpdateQuestChainConfirmationClose}
-                  />
-                </>
-              )}
-            </Flex>
-
-            {/* Quest Chain Description */}
-            <Flex mb={8}>
-              {!isEditingQuestChain && questChain.description && (
-                <MarkdownViewer markdown={questChain.description} />
-              )}
-              {isEditingQuestChain && (
-                <MarkdownEditor
-                  value={chainDescription}
-                  onChange={setChainDescription}
-                />
-              )}
-            </Flex>
-
-            {/* Quest Chain Metadata */}
-            <Flex gap={10} mb={8}>
-              {/* <Box>
+              {/* Quest Chain Metadata */}
+              <Flex gap={10} mb={8}>
+                {/* <Box>
                 <Text>TOTAL PLAYERS</Text>
                 <Text>{questChain.}</Text>
               </Box>
@@ -441,217 +462,218 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 <Text>PLAYERS FINISHED</Text>
                 <Text>{questChain.}</Text>
               </Box> */}
-              <Box>
-                <Text color="whiteAlpha.600">QUESTS</Text>
-                <Text>{questChain.quests.length}</Text>
-              </Box>
-              <Box>
-                <Text color="whiteAlpha.600">DATE CREATED</Text>
-                <Text>
-                  {new Date(questChain.createdAt * 1000).toLocaleDateString(
-                    'en-US',
-                  )}
-                </Text>
-              </Box>
-              <Box>
-                <Text color="whiteAlpha.600">CREATED BY</Text>
-                <UserDisplay address={questChain.createdBy.id} ghost />
-              </Box>
-            </Flex>
-
-            {/* Actions */}
-            <Flex>
-              {mode === 'QUESTER' && <Button>Start Playing</Button>}
-
-              {/* Mint Tile */}
-              {canMint && (
-                <Flex pt={6} w="100%">
-                  <MintNFTTile
-                    {...{
-                      address: questChain.address,
-                      chainId: questChain.chainId,
-                      name: questChain.name,
-                      onSuccess: refresh,
-                      completed: questChain.quests.filter(q => !q.paused)
-                        .length,
-                    }}
-                  />
-                </Flex>
-              )}
-            </Flex>
-
-            {/* Quests */}
-            <VStack spacing={6} w="100%" pt={8}>
-              {fetching ? (
-                <Spinner />
-              ) : (
-                <>
-                  <Flex justifyContent="space-between" w="full">
-                    <Text
-                      w="full"
-                      fontSize={40}
-                      textTransform="uppercase"
-                      fontFamily="heading"
-                    >
-                      Quests
-                    </Text>
-                    {mode === 'MEMBER' && (isAdmin || isEditor) && (
-                      <Button
-                        variant="ghost"
-                        onClick={onOpenCreateQuest}
-                        fontSize="xs"
-                      >
-                        <AddIcon fontSize="sm" mr={2} />
-                        Create Quest
-                      </Button>
+                <Box>
+                  <Text color="whiteAlpha.600">QUESTS</Text>
+                  <Text>{questChain.quests.length}</Text>
+                </Box>
+                <Box>
+                  <Text color="whiteAlpha.600">DATE CREATED</Text>
+                  <Text>
+                    {new Date(questChain.createdAt * 1000).toLocaleDateString(
+                      'en-US',
                     )}
-                  </Flex>
+                  </Text>
+                </Box>
+                <Box>
+                  <Text color="whiteAlpha.600">CREATED BY</Text>
+                  <UserDisplay address={questChain.createdBy.id} ghost />
+                </Box>
+              </Flex>
 
-                  <Modal
-                    isOpen={isOpenCreateQuest}
-                    onClose={onCloseCreateQUest}
-                  >
-                    <ModalOverlay
-                      bg="blackAlpha.300"
-                      backdropFilter="blur(10px)"
+              {/* Actions */}
+              <Flex>
+                {mode === 'QUESTER' && <Button>Start Playing</Button>}
+
+                {/* Mint Tile */}
+                {canMint && (
+                  <Flex pt={6} w="100%">
+                    <MintNFTTile
+                      {...{
+                        address: questChain.address,
+                        chainId: questChain.chainId,
+                        name: questChain.name,
+                        onSuccess: refresh,
+                        completed: questChain.quests.filter(q => !q.paused)
+                          .length,
+                      }}
                     />
-                    <ModalContent maxW="40rem">
-                      <ModalHeader>Create Quest</ModalHeader>
-                      <ModalCloseButton />
-                      <ModalBody>
-                        <AddQuestBlock
-                          questChain={questChain}
-                          refresh={refresh}
-                          onClose={onCloseCreateQUest}
-                        />
-                      </ModalBody>
-                    </ModalContent>
-                  </Modal>
+                  </Flex>
+                )}
+              </Flex>
 
-                  {/* would be really nice if this was refactored by 
+              {/* Quests */}
+              <VStack spacing={6} w="100%" pt={8}>
+                {fetching ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <Flex justifyContent="space-between" w="full">
+                      <Text
+                        w="full"
+                        fontSize={40}
+                        textTransform="uppercase"
+                        fontFamily="heading"
+                      >
+                        Quests
+                      </Text>
+                      {mode === 'MEMBER' && (isAdmin || isEditor) && (
+                        <Button
+                          variant="ghost"
+                          onClick={onOpenCreateQuest}
+                          fontSize="xs"
+                        >
+                          <AddIcon fontSize="sm" mr={2} />
+                          Create Quest
+                        </Button>
+                      )}
+                    </Flex>
+
+                    <Modal
+                      isOpen={isOpenCreateQuest}
+                      onClose={onCloseCreateQUest}
+                    >
+                      <ModalOverlay
+                        bg="blackAlpha.300"
+                        backdropFilter="blur(10px)"
+                      />
+                      <ModalContent maxW="40rem">
+                        <ModalHeader>Create Quest</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                          <AddQuestBlock
+                            questChain={questChain}
+                            refresh={refresh}
+                            onClose={onCloseCreateQUest}
+                          />
+                        </ModalBody>
+                      </ModalContent>
+                    </Modal>
+
+                    {/* would be really nice if this was refactored by 
                   separating the whole quest actions logic into its own component, so:
                   - edit quest
                   - upload proof */}
-                  {questChain.quests.map((quest, index) => (
-                    <Flex
-                      w="full"
-                      p={8}
-                      gap={3}
-                      borderRadius={10}
-                      align="stretch"
-                      bgColor="whiteAlpha.100"
-                      key={quest.questId}
-                      justifyContent="space-between"
-                      position="relative"
-                    >
-                      {!(isEditingQuest && questEditId === quest.questId) && (
-                        <>
-                          {index + 1}.
-                          <Flex justifyContent="space-between" w="full">
-                            <CollapsableQuestDisplay
-                              {...quest}
-                              address={address}
-                              questChainAddress={questChain.address}
-                              chainId={questChain.chainId}
-                              userStatus={userStatus}
-                              refresh={refresh}
-                            />
-                            {mode === 'MEMBER' && (isAdmin || isEditor) && (
-                              <Button
-                                variant="ghost"
-                                onClick={() => {
-                                  setEditingQuest(true);
-                                  setQuestEditId(quest.questId);
-                                }}
-                                fontSize="xs"
-                                position="absolute"
-                                right={20}
-                                margin={0}
-                                top={6}
-                              >
-                                <Image src={Edit.src} alt="Edit" mr={3} />
-                                Edit
-                              </Button>
-                            )}
-                          </Flex>
-                        </>
-                      )}
+                    {questChain.quests.map((quest, index) => (
+                      <Flex
+                        w="full"
+                        p={8}
+                        gap={3}
+                        borderRadius={10}
+                        align="stretch"
+                        bgColor="whiteAlpha.100"
+                        key={quest.questId}
+                        justifyContent="space-between"
+                        position="relative"
+                      >
+                        {!(isEditingQuest && questEditId === quest.questId) && (
+                          <>
+                            {index + 1}.
+                            <Flex justifyContent="space-between" w="full">
+                              <CollapsableQuestDisplay
+                                {...quest}
+                                address={address}
+                                questChainAddress={questChain.address}
+                                chainId={questChain.chainId}
+                                userStatus={userStatus}
+                                refresh={refresh}
+                              />
+                              {mode === 'MEMBER' && (isAdmin || isEditor) && (
+                                <Button
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingQuest(true);
+                                    setQuestEditId(quest.questId);
+                                  }}
+                                  fontSize="xs"
+                                  position="absolute"
+                                  right={20}
+                                  margin={0}
+                                  top={6}
+                                >
+                                  <Image src={Edit.src} alt="Edit" mr={3} />
+                                  Edit
+                                </Button>
+                              )}
+                            </Flex>
+                          </>
+                        )}
 
-                      {/* Edit quest components */}
-                      {isEditingQuest && questEditId === quest.questId && (
-                        <QuestEditor
-                          refresh={refresh}
-                          questChainId={questChain.chainId}
-                          questChainAddress={questChain.address}
-                          quest={quest}
-                          setEditingQuest={setEditingQuest}
-                        />
-                      )}
-                    </Flex>
-                  ))}
-                </>
-              )}
-            </VStack>
-          </Flex>
-
-          {/* Right */}
-          <Flex flexDirection="column" maxW={373}>
-            {/* Actions */}
-            {mode === 'MEMBER' && ((isAdmin && chainId) || isOwner) && (
-              <Flex justifyContent="space-between" h={124}>
-                {isAdmin && chainId === questChain.chainId && (
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      setEditingQuestChain(true);
-                      setChainName(questChain.name || '');
-                    }}
-                    fontSize="xs"
-                  >
-                    <Image src={Edit.src} alt="Edit" mr={2} />
-                    Edit Metadata
-                  </Button>
+                        {/* Edit quest components */}
+                        {isEditingQuest && questEditId === quest.questId && (
+                          <QuestEditor
+                            refresh={refresh}
+                            questChainId={questChain.chainId}
+                            questChainAddress={questChain.address}
+                            quest={quest}
+                            setEditingQuest={setEditingQuest}
+                          />
+                        )}
+                      </Flex>
+                    ))}
+                  </>
                 )}
-                {isOwner && (
-                  <QuestChainPauseStatus
-                    questChain={questChain}
-                    refresh={refresh}
-                  />
+              </VStack>
+            </Flex>
+
+            {/* Right */}
+            <Flex flexDirection="column" maxW={373}>
+              {/* Actions */}
+              {mode === 'MEMBER' && ((isAdmin && chainId) || isOwner) && (
+                <Flex justifyContent="space-between" h={124}>
+                  {isAdmin && chainId === questChain.chainId && (
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setEditingQuestChain(true);
+                        setChainName(questChain.name || '');
+                      }}
+                      fontSize="xs"
+                    >
+                      <Image src={Edit.src} alt="Edit" mr={2} />
+                      Edit Metadata
+                    </Button>
+                  )}
+                  {isOwner && (
+                    <QuestChainPauseStatus
+                      questChain={questChain}
+                      refresh={refresh}
+                    />
+                  )}
+                </Flex>
+              )}
+
+              {/* Image (Should be NFT) */}
+              {questChain.imageUrl && (
+                <Image
+                  src={ipfsUriToHttp(questChain.imageUrl)}
+                  alt="Cover Image"
+                  borderRadius={8}
+                  outline="1px solid #FFFFFF30"
+                  mb={14}
+                />
+              )}
+
+              {/* Quest Chain Members */}
+              <Flex flexDir="column" px={5}>
+                <Text fontFamily="heading" fontSize="xl" mb={5}>
+                  Members
+                </Text>
+                <Divider />
+                <MemberSection role="OWNERS" addresses={owners} />
+                {admins.length && (
+                  <MemberSection role="ADMINS" addresses={admins} />
+                )}
+                {editors.length && (
+                  <MemberSection role="EDITORS" addresses={editors} />
+                )}
+                {reviewers.length && (
+                  <MemberSection role="REVIEWERS" addresses={reviewers} />
                 )}
               </Flex>
-            )}
-
-            {/* Image (Should be NFT) */}
-            {questChain.imageUrl && (
-              <Image
-                src={ipfsUriToHttp(questChain.imageUrl)}
-                alt="Cover Image"
-                borderRadius={8}
-                outline="1px solid #FFFFFF30"
-                mb={14}
-              />
-            )}
-
-            {/* Quest Chain Members */}
-            <Flex flexDir="column" px={5}>
-              <Text fontFamily="heading" fontSize="xl" mb={5}>
-                Members
-              </Text>
-              <Divider />
-              <MemberSection role="OWNERS" addresses={owners} />
-              {admins.length && (
-                <MemberSection role="ADMINS" addresses={admins} />
-              )}
-              {editors.length && (
-                <MemberSection role="EDITORS" addresses={editors} />
-              )}
-              {reviewers.length && (
-                <MemberSection role="REVIEWERS" addresses={reviewers} />
-              )}
             </Flex>
           </Flex>
         </Flex>
-      </Flex>
+      </Fade>
     </VStack>
   );
 };
