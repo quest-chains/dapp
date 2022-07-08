@@ -516,7 +516,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 alignItems="center"
                 mb={6}
               >
-                <Flex w="90%" borderColor="whiteAlpha.200" border="1px solid">
+                <Flex
+                  w="90%"
+                  borderColor="whiteAlpha.200"
+                  border="1px solid"
+                  borderRadius={3}
+                >
                   <Box
                     bg="main"
                     w={`${(progress.completeCount / progress.total) * 100}%`}
