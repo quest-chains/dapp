@@ -644,7 +644,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         gap={3}
                         borderRadius={10}
                         align="stretch"
-                        bgColor="whiteAlpha.100"
+                        bgColor={
+                          userStatus[quest.questId]?.status === 'pass'
+                            ? 'main.300'
+                            : userStatus[quest.questId]?.status === 'review'
+                            ? '#EFFF8F30'
+                            : 'whiteAlpha.100'
+                        }
                         key={quest.questId}
                         justifyContent="space-between"
                         position="relative"
