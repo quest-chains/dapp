@@ -756,13 +756,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 </Text>
                 <Divider />
                 <MemberSection role="OWNERS" addresses={owners} />
-                {admins.length && (
+                {admins.length !== 0 && (
                   <MemberSection role="ADMINS" addresses={admins} />
                 )}
-                {editors.length && (
+                {editors.length !== 0 && (
                   <MemberSection role="EDITORS" addresses={editors} />
                 )}
-                {reviewers.length && (
+                {reviewers.length !== 0 && (
                   <MemberSection role="REVIEWERS" addresses={reviewers} />
                 )}
               </Flex>
