@@ -28,6 +28,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import Edit from '@/assets/Edit.svg';
 import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
@@ -344,8 +345,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     );
   }
 
-  // console.log('members', members);
-
   return (
     <VStack w="100%" px={{ base: 0, lg: 40 }}>
       <Head>
@@ -516,25 +515,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             {/* Actions */}
             <Flex>
               <Button>Start Playing</Button>
-
-              {isOwner && (
-                <QuestChainPauseStatus
-                  questChain={questChain}
-                  refresh={refresh}
-                />
-              )}
-              {isAdmin && chainId === questChain.chainId && (
-                <IconButton
-                  borderRadius="full"
-                  onClick={() => {
-                    setEditingQuestChain(true);
-                    setChainName(questChain.name || '');
-                    setQuestDescription(questChain.description || '');
-                  }}
-                  icon={<EditIcon boxSize="1rem" />}
-                  aria-label={''}
-                />
-              )}
 
               {/* Mint Tile */}
               {canMint && (
@@ -732,6 +712,31 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
           {/* Right */}
           <Flex flexDirection="column" maxW={373}>
+            {/* Actions */}
+            <Flex justifyContent="space-between" h={124}>
+              {isAdmin && chainId === questChain.chainId && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setEditingQuestChain(true);
+                    setChainName(questChain.name || '');
+                    setQuestDescription(questChain.description || '');
+                  }}
+                  fontSize="xs"
+                >
+                  <Image src={Edit.src} alt="Edit" mr={2} />
+                  Edit Metadata
+                </Button>
+              )}
+              {isOwner && (
+                <QuestChainPauseStatus
+                  questChain={questChain}
+                  refresh={refresh}
+                />
+              )}
+            </Flex>
+
+            {/* Image (Should be NFT) */}
             {questChain.imageUrl && (
               <Image
                 src={ipfsUriToHttp(questChain.imageUrl)}
@@ -741,6 +746,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 mb={14}
               />
             )}
+
             {/* Quest Chain Members */}
             <Flex flexDir="column" px={5}>
               <Text fontFamily="heading" fontSize="xl" mb={5}>
