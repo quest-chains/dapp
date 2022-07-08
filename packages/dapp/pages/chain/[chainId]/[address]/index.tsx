@@ -37,6 +37,7 @@ import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
+import { QuestEditor } from '@/components/QuestEditor';
 import { Role } from '@/components/RoleTag';
 import { UserDisplay } from '@/components/UserDisplay';
 import {
@@ -79,11 +80,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { address, chainId, provider } = useWallet();
 
   const {
-    isOpen: isUpdateQuestConfirmationOpen,
-    onOpen: onUpdateQuestConfirmationOpen,
-    onClose: onUpdateQuestConfirmationClose,
-  } = useDisclosure();
-  const {
     isOpen: isUpdateQuestChainConfirmationOpen,
     onOpen: onUpdateQuestChainConfirmationOpen,
     onClose: onUpdateQuestChainConfirmationClose,
@@ -107,9 +103,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const [chainDescription, setChainDescription] = useState(
     questChain?.description || '',
   );
-
-  const [questName, setQuestName] = useState('');
-  const [questDescription, setQuestDescription] = useState('');
 
   const [questEditId, setQuestEditId] = useState(0);
 
@@ -240,7 +233,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     provider?.getSigner() as Signer,
   );
 
-  const [isSubmittingQuest, setSubmittingQuest] = useState(false);
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
   const onSubmitQuestChain = useCallback(
@@ -278,53 +270,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
       setEditingQuestChain(false);
       setSubmittingQuestChain(false);
-    },
-    [contract, refresh, chainId, questChain],
-  );
-
-  const onSubmitQuest = useCallback(
-    async ({
-      name,
-      description,
-      questId,
-    }: {
-      name: string;
-      description: string;
-      questId: number;
-    }) => {
-      if (!chainId || chainId !== questChain?.chainId) return;
-      setSubmittingQuest(true);
-      const metadata: Metadata = {
-        name,
-        description,
-      };
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      try {
-        const hash = await uploadMetadataViaAPI(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const tx = await contract.editQuest(questId, details);
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success(`Successfully updated the Quest: ${name}`);
-        refresh();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      }
-
-      setEditingQuest(false);
-      setSubmittingQuest(false);
     },
     [contract, refresh, chainId, questChain],
   );
@@ -616,8 +561,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                 variant="ghost"
                                 onClick={() => {
                                   setEditingQuest(true);
-                                  setQuestName(quest.name || '');
-                                  setQuestDescription(quest.description || '');
                                   setQuestEditId(quest.questId);
                                 }}
                                 fontSize="xs"
@@ -635,53 +578,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
                       {/* Edit quest components */}
                       {isEditingQuest && questEditId === quest.questId && (
-                        <Flex flexDirection="column" w="full">
-                          <Flex>
-                            <Input
-                              mb={3}
-                              value={questName}
-                              onChange={e => setQuestName(e.target.value)}
-                            />
-                            <IconButton
-                              borderRadius="full"
-                              onClick={onUpdateQuestConfirmationOpen}
-                              isDisabled={isSubmittingQuest}
-                              icon={<CheckIcon boxSize="1rem" />}
-                              aria-label={''}
-                              mx={2}
-                            />
-                            <IconButton
-                              borderRadius="full"
-                              onClick={() => setEditingQuest(false)}
-                              isDisabled={isSubmittingQuest}
-                              icon={<CloseIcon boxSize="1rem" />}
-                              aria-label={''}
-                            />
-                            <ConfirmationModal
-                              onSubmit={() => {
-                                onUpdateQuestConfirmationClose();
-                                onSubmitQuest({
-                                  name: questName,
-                                  description: questDescription,
-                                  questId: quest.questId,
-                                });
-                              }}
-                              title="Update Quest"
-                              content="Are you sure you want to update this quest?"
-                              isOpen={isUpdateQuestConfirmationOpen}
-                              onClose={() => {
-                                setChainDescription(quest.description || '');
-                                setChainName(quest.name || '');
-                                onUpdateQuestConfirmationClose();
-                              }}
-                            />
-                          </Flex>
-
-                          <MarkdownEditor
-                            value={questDescription}
-                            onChange={setQuestDescription}
-                          />
-                        </Flex>
+                        <QuestEditor
+                          refresh={refresh}
+                          questChainId={questChain.chainId}
+                          questChainAddress={questChain.address}
+                          quest={quest}
+                          setEditingQuest={setEditingQuest}
+                        />
                       )}
                     </Flex>
                   ))}
@@ -701,7 +604,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     onClick={() => {
                       setEditingQuestChain(true);
                       setChainName(questChain.name || '');
-                      setQuestDescription(questChain.description || '');
                     }}
                     fontSize="xs"
                   >
