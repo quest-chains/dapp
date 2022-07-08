@@ -409,7 +409,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         )}
 
         {/* Quest Chain */}
-        <Flex gap={10}>
+        <Flex gap={10} justifyContent="space-between">
           {/* Left */}
           <Flex flexDirection="column">
             {/* Quest Chain Title */}
@@ -473,19 +473,45 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </Flex>
 
             {/* Quest Chain Description */}
-            {!isEditingQuestChain && questChain.description && (
-              <Flex w="100%">
+            <Flex mb={8}>
+              {!isEditingQuestChain && questChain.description && (
                 <MarkdownViewer markdown={questChain.description} />
-              </Flex>
-            )}
-            {isEditingQuestChain && (
-              <Flex w="100%">
+              )}
+              {isEditingQuestChain && (
                 <MarkdownEditor
                   value={chainDescription}
                   onChange={setChainDescription}
                 />
-              </Flex>
-            )}
+              )}
+            </Flex>
+
+            {/* Quest Chain Metadata */}
+            <Flex gap={5} mb={8}>
+              {/* <Box>
+                <Text>TOTAL PLAYERS</Text>
+                <Text>{questChain.}</Text>
+              </Box>
+              <Box>
+                <Text>PLAYERS FINISHED</Text>
+                <Text>{questChain.}</Text>
+              </Box> */}
+              <Box>
+                <Text color="whiteAlpha.600">QUESTS</Text>
+                <Text>{questChain.quests.length}</Text>
+              </Box>
+              <Box>
+                <Text color="whiteAlpha.600">DATE CREATED</Text>
+                <Text>
+                  {new Date(questChain.createdAt * 1000).toLocaleDateString(
+                    'en-US',
+                  )}
+                </Text>
+              </Box>
+              <Box>
+                <Text color="whiteAlpha.600">CREATED BY</Text>
+                <UserDisplay address={questChain.createdBy.id} ghost />
+              </Box>
+            </Flex>
 
             {/* Actions */}
             <Flex>

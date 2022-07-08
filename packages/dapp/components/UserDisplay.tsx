@@ -6,16 +6,17 @@ import NextLink from 'next/link';
 import { useENS } from '@/hooks/useENS';
 import { formatAddress } from '@/web3';
 
-export const UserDisplay: React.FC<{ address: string; color?: string }> = ({
-  address,
-  color = 'white',
-}) => {
+export const UserDisplay: React.FC<{
+  address: string;
+  color?: string;
+  ghost?: boolean;
+}> = ({ address, color = 'white', ghost = false }) => {
   const { ens } = useENS(address);
   return (
     <NextLink as={`/profile/${address}`} href="/profile/[address]" passHref>
       <Link _hover={{}} borderRadius="full">
-        <Button variant="ghost" size="md" px={4} height={8}>
-          <HStack spacing={2} position="relative" color={color}>
+        <Button variant="ghost" size="md" height={8} px={ghost ? 0 : 4}>
+          <HStack position="relative" color={color}>
             <Davatar
               address={address}
               size={20}

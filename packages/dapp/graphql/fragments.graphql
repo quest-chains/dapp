@@ -3,6 +3,10 @@ fragment QuestChainInfo on QuestChain {
   paused
   chainId
   updatedAt
+  createdAt
+  createdBy {
+    id
+  }
   name
   description
   imageUrl
