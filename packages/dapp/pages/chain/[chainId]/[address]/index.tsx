@@ -362,7 +362,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           </Alert>
         )}
 
-        {(isAdmin || isEditor) && (
+        {/* Set Mode  */}
+        {(isAdmin || isEditor || isReviewer) && (
           <Flex
             h={14}
             mb={14}
@@ -410,7 +411,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         {/* Quest Chain */}
         <Flex gap={10} justifyContent="space-between">
           {/* Left */}
-          <Flex flexDirection="column">
+          <Flex flexDirection="column" w="full">
             {/* Quest Chain Title */}
             <Flex justifyContent="space-between" w="full">
               {!isEditingQuestChain && (
@@ -419,8 +420,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     fontSize="6xl"
                     fontWeight="bold"
                     lineHeight="3.5rem"
-                    mb={3}
                     fontFamily="heading"
+                    mb={3}
                   >
                     {questChain.name}
                   </Text>
@@ -435,6 +436,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Input
                     fontSize="2xl"
                     fontWeight="bold"
+                    fontFamily="heading"
                     mb={3}
                     value={chainName}
                     onChange={e => setChainName(e.target.value)}
@@ -515,7 +517,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
             {/* Actions */}
             <Flex>
-              <Button>Start Playing</Button>
+              {mode === 'QUESTER' && <Button>Start Playing</Button>}
 
               {/* Mint Tile */}
               {canMint && (
@@ -549,7 +551,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     >
                       Quests
                     </Text>
-                    {(isAdmin || isEditor) && (
+                    {mode === 'MEMBER' && (isAdmin || isEditor) && (
                       <Button
                         variant="ghost"
                         onClick={onOpenCreateQuest}
@@ -599,7 +601,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         {!(isEditingQuest && questEditId === quest.questId) && (
                           <Flex justifyContent="space-between" w="full">
                             <CollapsableQuestDisplay {...quest} />
-                            {(isAdmin || isEditor) && (
+                            {mode === 'MEMBER' && (isAdmin || isEditor) && (
                               <IconButton
                                 borderRadius="full"
                                 onClick={() => {
@@ -618,6 +620,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                             )}
                           </Flex>
                         )}
+
+                        {/* Edit quest components */}
                         {isEditingQuest && questEditId === quest.questId && (
                           <Flex flexDirection="column">
                             <Flex>
@@ -668,7 +672,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                           </Flex>
                         )}
                       </Flex>
-                      {isUser && (
+                      {/* upload proof */}
+                      {mode === 'QUESTER' && (
                         <>
                           {
                             // TODO: Also display prev submissions and reviews here
@@ -724,7 +729,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           {/* Right */}
           <Flex flexDirection="column" maxW={373}>
             {/* Actions */}
-            {((isAdmin && chainId) || isOwner) && (
+            {mode === 'MEMBER' && ((isAdmin && chainId) || isOwner) && (
               <Flex justifyContent="space-between" h={124}>
                 {isAdmin && chainId === questChain.chainId && (
                   <Button
