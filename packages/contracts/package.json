@@ -20,13 +20,13 @@
     "flatten": "yarn flatten-factory && yarn flatten-chain"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.6",
+    "@nomiclabs/hardhat-ethers": "^2.1.0",
     "@nomiclabs/hardhat-etherscan": "^3.1.0",
     "@nomiclabs/hardhat-waffle": "^2.0.0",
-    "@openzeppelin/contracts": "^4.6.0",
+    "@openzeppelin/contracts": "^4.7.0",
     "@quest-chains/utils": "0.1.0",
-    "@typechain/ethers-v5": "^10.0.0",
-    "@typechain/hardhat": "^6.0.0",
+    "@typechain/ethers-v5": "^10.1.0",
+    "@typechain/hardhat": "^6.1.2",
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
     "@types/prompt-sync": "^4.1.1",
@@ -35,18 +35,18 @@
     "delay": "^5.0.0",
     "dotenv": "^16.0.1",
     "ethereum-waffle": "^3.0.0",
-    "ethers": "^5.6.8",
-    "hardhat": "^2.9.9",
+    "ethers": "^5.6.9",
+    "hardhat": "^2.10.0",
     "hardhat-gas-reporter": "^1.0.7",
-    "prettier": "^2.3.2",
+    "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
     "prompt-sync": "^4.2.0",
     "querystring": "^0.2.1",
     "solhint": "^3.3.6",
     "solidity-coverage": "^0.7.21",
-    "ts-node": "^10.1.0",
-    "typechain": "^8.0.0",
-    "typescript": "^4.5.2"
+    "ts-node": "^10.8.2",
+    "typechain": "^8.1.0",
+    "typescript": "^4.7.4"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -58,6 +58,6 @@
     ]
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.6.0"
+    "@openzeppelin/contracts-upgradeable": "^4.7.0"
   }
 }
