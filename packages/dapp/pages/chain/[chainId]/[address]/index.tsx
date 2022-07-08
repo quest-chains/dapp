@@ -327,9 +327,10 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     <VStack w="100%" px={{ base: 0, lg: 40 }}>
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
-        position="absolute"
-        height="full"
-        width="full"
+        position="fixed"
+        height="150%"
+        top="-200px"
+        width="150%"
         opacity="0.05"
         bgPos="top"
         bgSize="cover"
