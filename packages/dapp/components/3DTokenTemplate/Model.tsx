@@ -4,22 +4,30 @@
 
 import { useGLTF } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
-import React, { useRef } from 'react';
+import React, { MutableRefObject, useRef } from 'react';
 
-import Text from './Text';
+import { WrapText as Text } from './Text';
 
 export type TemplateProps = {
   starLength: number;
   name: string;
   description: string;
+  sceneRef: MutableRefObject<THREE.Scene | null>;
 };
 
-const Model: React.FC<TemplateProps> = ({ starLength, name }) => {
+export const Model: React.FC<TemplateProps> = ({
+  starLength,
+  name,
+  description,
+  sceneRef,
+}) => {
   const ref = useRef();
+
   const { nodes, materials } = useGLTF('/models/nft%20qc.gltf');
 
-  useThree(({ camera }) => {
+  useThree(({ camera, scene }) => {
     camera.position.set(-0.5, 2, 35.5);
+    sceneRef.current = scene;
   });
 
   return (
@@ -99,12 +107,15 @@ const Model: React.FC<TemplateProps> = ({ starLength, name }) => {
           />
         </>
       )}
-      <Text position={[6.84, 29, 2.37]}>{name}</Text>
+      <Text position={[2.84, 29.2, 2.37]} length={18} vAlign="bottom">
+        {name}
+      </Text>
+      <Text position={[9.24, 19.46, 2.37]} size={0.95} length={28}>
+        {description}
+      </Text>
     </group>
   );
 };
 
 useGLTF.preload('/models/nft%20qc.gltf');
 // useGLTF.preload('/models/Quest%20Chains%20Token.gltf');
-
-export default Model;

@@ -2,27 +2,22 @@
 // @ts-nocheck
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
+import { ForwardedRef, forwardRef, Suspense } from 'react';
 
-import Model from './Model';
+import { Model, TemplateProps } from './Model';
 
-export type TemplateProps = {
-  starLength: number;
-  name: string;
-  description: string;
-};
-
-export const Token: React.FC<TemplateProps> = props => {
-  return (
-    <Canvas>
-      <Suspense fallback={null}>
-        <OrbitControls />
-        <hemisphereLight />
-        <ambientLight />
-        <directionalLight position={[0, 0, 5]} intensity={0.1} />
-        <PerspectiveCamera makeDefault />
-        <Model {...props} />
-      </Suspense>
-    </Canvas>
-  );
-};
+export const Token = forwardRef(
+  (props: TemplateProps, ref: ForwardedRef<HTMLCanvasElement>) => {
+    return (
+      <Canvas ref={ref} gl={{ preserveDrawingBuffer: true }}>
+        <Suspense fallback={null}>
+          <OrbitControls />
+          <pointLight position={[0, 0, 15]} intensity={0.5} />
+          <pointLight position={[0, 0, -15]} intensity={0.5} />
+          <PerspectiveCamera makeDefault />
+          <Model {...props} />
+        </Suspense>
+      </Canvas>
+    );
+  },
+);

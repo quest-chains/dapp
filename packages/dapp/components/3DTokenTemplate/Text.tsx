@@ -5,11 +5,12 @@ import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 import boldFontJson from '@/assets/fonts/bold.json';
+import { wordWrapText } from '@/utils/stringHelpers';
 
 export default function Text({
   children,
-  vAlign = 'center',
-  hAlign = 'center',
+  vAlign = 'top',
+  hAlign = 'right',
   size = 2,
   ...props
 }) {
@@ -17,11 +18,11 @@ export default function Text({
     () => ({
       size: 40,
       height: 30,
-      curveSegments: 32,
+      curveSegments: 20,
       bevelEnabled: true,
-      bevelThickness: 6,
-      bevelSize: 2.5,
-      bevelOffset: 0,
+      bevelThickness: 4,
+      bevelSize: 2,
+      bevelOffset: -1,
       bevelSegments: 8,
     }),
     [],
@@ -38,12 +39,38 @@ export default function Text({
         vAlign === 'center' ? -size.y / 2 : vAlign === 'top' ? 0 : -size.y;
     }
   }, [children, hAlign, vAlign]);
+
   return (
-    <group {...props} scale={[0.01 * size, 0.01 * size, 0.01]}>
+    <group {...props} scale={[0.01 * size, 0.01 * size, 0.005]}>
       <Text3D ref={mesh} font={boldFontJson} {...config}>
         {children}
-        <meshNormalMaterial />
+        <meshStandardMaterial />
       </Text3D>
     </group>
   );
 }
+
+export const WrapText = ({
+  children,
+  size = 2,
+  length = 20,
+  spill = 2,
+  ...props
+}) => {
+  if (typeof children !== 'string') return null;
+
+  const wrapArray = wordWrapText(children, length, spill);
+  return (
+    <group {...props}>
+      {wrapArray.map((line, i) => (
+        <Text
+          position={[0, size * i * -1 * Math.pow(0.84, size), 0]}
+          key={line + '-' + i}
+          size={size}
+        >
+          {line}
+        </Text>
+      ))}
+    </group>
+  );
+};

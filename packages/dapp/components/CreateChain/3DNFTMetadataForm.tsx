@@ -1,5 +1,6 @@
 import {
   AspectRatio,
+  Button,
   Flex,
   FormControl,
   FormLabel,
@@ -12,24 +13,114 @@ import {
   SliderTrack,
   Stack,
   Text,
-  // Textarea,
+  Textarea,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'react-hot-toast';
+
+// import {
+//   uploadFilesViaAPI,
+//   Metadata,
+//   uploadMetadataViaAPI,
+// } from '@/utils/metadata';
+import { handleError } from '@/utils/helpers';
+import { arrayBufferToFile, renderSceneToGLB } from '@/utils/threeHelpers';
 
 import { Token } from '../3DTokenTemplate/Token';
+// import { dataURItoFile } from '@/utils/templateHelpers';
+import { SubmitButton } from '../SubmitButton';
 
 const NFT3DMetadataForm: React.FC<{
+  chainName?: string;
   onBack?: () => void;
   onSubmit?: (metadataUri: string) => void | Promise<void>;
-}> = () => {
+}> = ({ chainName, onBack, onSubmit }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+
   // const [bgIndex, setBgIndex] = useState<number>(0);
   // const [gemIndex, setGemIndex] = useState<number>(0);
   const [starLength, setStarLength] = useState<number>(3);
   const [name, setName] = useState<string>('Special Chain');
-  const [description] = useState<string>(
+  const [description, setDescription] = useState<string>(
     'Award for exceptional performance in Special Chain!',
+  );
+
+  useEffect(() => {
+    if (chainName) {
+      setName(chainName);
+      setDescription(`Award for exceptional performance in ${chainName}!`);
+    }
+  }, [chainName]);
+
+  const [isLoading, setLoading] = useState(false);
+
+  const exportMetadata = useCallback(
+    async () => {
+      if (!canvasRef.current || !sceneRef.current) return;
+      setLoading(true);
+      let tid;
+      try {
+        tid = toast.loading('Uploading image to IPFS via web3.storage');
+        // const imageDataURI = canvasRef.current.toDataURL();
+        // const imageFile = dataURItoFile(imageDataURI, 'badge.png');
+
+        const modelBinary = await renderSceneToGLB(sceneRef.current);
+        // const modelFile =
+        arrayBufferToFile(modelBinary, 'badge.glb');
+
+        //       let hash = await uploadFilesViaAPI([imageFile, modelFile]);
+        //       const metadata: Metadata = {
+        //         name,
+        //         description,
+        //         image_url: `ipfs://${hash}/badge.png`,
+        //         animation_url: `ipfs://${hash}/badge.glb`,
+        //         attributes: [
+        //           // {
+        //           //   trait_type: 'Background',
+        //           //   value: backgroundNames[bgIndex],
+        //           // },
+        //           // {
+        //           //   trait_type: 'Gem',
+        //           //   value: gemNames[gemIndex],
+        //           // },
+        //           {
+        //             display_type: 'number',
+        //             trait_type: 'Stars',
+        //             value: starLength,
+        //           },
+        //         ],
+        //       };
+
+        //       toast.dismiss(tid);
+        //       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+        //       hash = await uploadMetadataViaAPI(metadata);
+        //       const details = `ipfs://${hash}`;
+        //       toast.dismiss(tid);
+
+        //       console.log({
+        //         metadataUri: details,
+        //         imageUri: metadata.image_url,
+        //         animationUri: metadata.animation_url,
+        //       });
+        //       onSubmit?.(details);
+      } catch (error) {
+        if (tid) {
+          toast.dismiss(tid);
+        }
+        handleError(error);
+      } finally {
+        if (tid) {
+          toast.dismiss(tid);
+        }
+        setLoading(false);
+      }
+    },
+    [
+      // onSubmit, starLength, name, description
+    ],
   );
 
   return (
@@ -50,21 +141,17 @@ const NFT3DMetadataForm: React.FC<{
       <Stack
         w="100%"
         direction={{ base: 'column', lg: 'row-reverse' }}
+        align={{ base: 'stretch', lg: 'center' }}
         spacing={{ base: 8, lg: 0 }}
       >
         <AspectRatio ratio={1} w="100%" maxW={{ base: '100%', lg: '50%' }}>
-          <Flex
-            w="100%"
-            h="100%"
-            justify="center"
-            align="center"
-            zIndex={2}
-            borderRadius="md"
-          >
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Token
               starLength={starLength}
               name={name}
               description={description}
+              ref={canvasRef}
+              sceneRef={sceneRef}
             />
           </Flex>
         </AspectRatio>
@@ -187,7 +274,6 @@ const NFT3DMetadataForm: React.FC<{
               />
             </FormControl>
           </Wrap>
-          {/*
           <FormControl isRequired>
             <FormLabel color="main" htmlFor="description">
               Description
@@ -199,9 +285,34 @@ const NFT3DMetadataForm: React.FC<{
               maxLength={100}
               placeholder="NFT Badge Description"
             />
-          </FormControl> */}
+          </FormControl>
         </VStack>
       </Stack>
+      <Flex
+        mt={4}
+        w="100%"
+        justify={onBack ? 'space-between' : 'flex-end'}
+        align="center"
+      >
+        {onBack && (
+          <Button
+            variant="ghost"
+            mr={3}
+            onClick={onBack}
+            borderRadius="full"
+            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+          >
+            Back
+          </Button>
+        )}
+        <SubmitButton
+          isLoading={isLoading}
+          type="submit"
+          onClick={exportMetadata}
+        >
+          Next
+        </SubmitButton>
+      </Flex>
     </VStack>
   );
 };
