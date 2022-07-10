@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { ForwardedRef, forwardRef, Suspense } from 'react';
 
@@ -12,9 +12,8 @@ export const Token = forwardRef(
       <Canvas ref={ref} gl={{ preserveDrawingBuffer: true }}>
         <Suspense fallback={null}>
           <OrbitControls />
-          <pointLight position={[0, 0, 15]} intensity={0.5} />
-          <pointLight position={[0, 0, -15]} intensity={0.5} />
-          <PerspectiveCamera makeDefault />
+          <pointLight position={[0, 0, 15]} intensity={0.5} decay={2} />
+          <pointLight position={[0, 0, -15]} intensity={0.5} decay={2} />
           <Model {...props} />
         </Suspense>
       </Canvas>

@@ -5,20 +5,21 @@
 import { useGLTF } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import React, { MutableRefObject, useRef } from 'react';
+import * as THREE from 'three';
 
 import { WrapText as Text } from './Text';
 
 export type TemplateProps = {
-  starLength: number;
-  name: string;
-  description: string;
-  sceneRef: MutableRefObject<THREE.Scene | null>;
+  starLength?: number;
+  name?: string;
+  description?: string;
+  sceneRef?: MutableRefObject<THREE.Scene | null>;
 };
 
 export const Model: React.FC<TemplateProps> = ({
-  starLength,
-  name,
-  description,
+  starLength = 3,
+  name = '',
+  description = '',
   sceneRef,
 }) => {
   const ref = useRef();
@@ -26,8 +27,10 @@ export const Model: React.FC<TemplateProps> = ({
   const { nodes, materials } = useGLTF('/models/nft%20qc.gltf');
 
   useThree(({ camera, scene }) => {
-    camera.position.set(-0.5, 2, 35.5);
-    sceneRef.current = scene;
+    camera.position.set(-0.5, 2, 20);
+    if (sceneRef) {
+      sceneRef.current = scene;
+    }
   });
 
   return (

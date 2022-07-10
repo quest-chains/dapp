@@ -1,4 +1,4 @@
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 
@@ -16,15 +16,15 @@ const Test: React.FC<Props> = () => {
       spacing={8}
     >
       <Head>
-        <title>3D Token Test</title>
+        <title>Quest Chain 3D NFT</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <HStack justify="space-between" w="100%">
-        <Text color="main" fontSize={20}>
-          3D Token Test
-        </Text>
-      </HStack>
-      <NFT3DMetadataForm />
+      <NFT3DMetadataForm
+        submitLabel={'Submit'}
+        onSubmit={(uri: string) =>
+          alert(`Successfully created Metadata URI: "${uri}"`)
+        }
+      />
     </VStack>
   );
 };

@@ -5,7 +5,7 @@ export type Metadata = {
   animation_url?: string;
   external_url?: string;
   attributes?: {
-    trait_type: string;
+    trait_type?: string;
     value: string | number;
     display_type?: 'number' | 'boost_number' | 'boost_percentage';
   }[];
