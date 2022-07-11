@@ -38,6 +38,10 @@ type QuestChain @entity {
   chainId: String!
   address: Bytes!
   factoryAddress: Bytes!
+  numCompletedQuesters: Int!
+  completedQuesters: [User!]!
+  numQuesters: Int!
+  questers: [User!]!
   owners: [User!]!
   admins: [User!]!
   reviewers: [User!]!
@@ -57,6 +61,7 @@ type QuestChain @entity {
   questsPassed: [QuestStatus!]!
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!
+  questCount: Int!
   quests: [Quest!]! @derivedFrom(field: "questChain")
   edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
   status: [QuestStatus!]! @derivedFrom(field: "questChain")
@@ -83,6 +88,10 @@ type Quest @entity {
   paused: Boolean!
   questChain: QuestChain!
   questId: BigInt!
+  numCompletedQuesters: Int!
+  completedQuesters: [User!]!
+  numQuesters: Int!
+  questers: [User!]!
   details: String!
   name: String
   description: String
@@ -118,6 +127,8 @@ type User @entity {
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "user")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "reviewer")
   tokens: [QuestChainToken!]! @derivedFrom(field: "owners")
+  completedQuests: [Quest!]! @derivedFrom(field: "completedQuesters")
+  completedQuestChains: [Quest!]! @derivedFrom(field: "completedQuesters")
 }
 
 enum Status {

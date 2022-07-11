@@ -1,5 +1,5 @@
 import { log } from '@graphprotocol/graph-ts';
-import { QuestChainToken, QuestChain, Global } from '../types/schema';
+import { QuestChain, Global } from '../types/schema';
 
 import {
   QuestChainCreated as QuestChainCreatedEvent,
@@ -50,6 +50,15 @@ export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   questChain.createdBy = user.id;
   questChain.creationTxHash = event.transaction.hash;
   questChain.chainId = network;
+
+  questChain.numCompletedQuesters = 0;
+  questChain.completedQuesters = new Array<string>();
+  questChain.numQuesters = 0;
+  questChain.questers = new Array<string>();
+
+  questChain.questCount = 0;
+  questChain.paused = false;
+
   questChain.owners = new Array<string>();
   questChain.admins = new Array<string>();
   questChain.editors = new Array<string>();

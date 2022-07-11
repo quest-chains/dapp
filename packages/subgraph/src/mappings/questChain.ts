@@ -28,6 +28,7 @@ import {
   fetchMetadata,
   getRoles,
   getUser,
+  questChainCompletedByUser,
   removeFromArray,
 } from './helpers';
 
@@ -195,6 +196,11 @@ export function handleQuestCreated(event: QuestCreatedEvent): void {
     quest.externalUrl = metadata.externalUrl;
     quest.creationTxHash = event.transaction.hash;
 
+    quest.numCompletedQuesters = 0;
+    quest.completedQuesters = new Array<string>();
+    quest.numQuesters = 0;
+    quest.questers = new Array<string>();
+
     let search = createSearchString(metadata.name, metadata.description);
     quest.search = search;
 
@@ -209,6 +215,11 @@ export function handleQuestCreated(event: QuestCreatedEvent): void {
     quest.usersInReview = new Array<string>();
 
     quest.save();
+
+    let questCount = questChain.questCount;
+    questChain.questCount = questCount + 1;
+
+    questChain.save();
   }
 }
 
@@ -386,6 +397,18 @@ export function handleQuestProofSubmitted(
       submissions.push(proof.id);
       questStatus.submissions = submissions;
 
+      let questers = quest.questers;
+      questers = removeFromArray(questers, user.id); // to remove duplicates
+      questers.push(user.id);
+      quest.questers = questers;
+      quest.numQuesters = questers.length;
+
+      questers = questChain.questers;
+      questers = removeFromArray(questers, user.id); // to remove duplicates
+      questers.push(user.id);
+      questChain.questers = questers;
+      questChain.numQuesters = questers.length;
+
       proof.save();
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
@@ -499,6 +522,28 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
       reviewer.save();
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
+
+      if (
+        event.params.success &&
+        questChainCompletedByUser(
+          event.address,
+          questChain.questCount,
+          event.params.quester,
+        )
+      ) {
+        let completedQuesters = quest.completedQuesters;
+        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
+        completedQuesters.push(user.id);
+        quest.completedQuesters = completedQuesters;
+        quest.numCompletedQuesters = completedQuesters.length;
+
+        completedQuesters = questChain.completedQuesters;
+        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
+        completedQuesters.push(user.id);
+        questChain.completedQuesters = completedQuesters;
+        questChain.numCompletedQuesters = completedQuesters.length;
+      }
+
       user.save();
       quest.save();
       questChain.save();
