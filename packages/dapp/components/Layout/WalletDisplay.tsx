@@ -70,7 +70,7 @@ export const WalletDisplay: React.FC = () => {
                   {formatAddress(address, ens)}
                 </Text>
                 <Text fontSize="small">
-                  {AVAILABLE_NETWORK_INFO[chainId].name}
+                  {AVAILABLE_NETWORK_INFO[chainId].label}
                 </Text>
               </Flex>
               <TriangleDownIcon w={3} />

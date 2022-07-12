@@ -19,7 +19,7 @@ export const What: React.FC = () => {
       gap={10}
       pt={20}
     >
-      {!isSmallScreen && <Image src="Landing/Circles.svg" alt="circles" />}
+      {!isSmallScreen && <Image src="/Landing/Circles.svg" alt="circles" />}
 
       <Flex
         display="flex"
@@ -34,7 +34,7 @@ export const What: React.FC = () => {
         alignItems={{ base: 'center', md: 'initial' }}
       >
         {isSmallScreen && (
-          <Image src="Landing/Circles.svg" alt="circles" width={20} mb={8} />
+          <Image src="/Landing/Circles.svg" alt="circles" width={20} mb={8} />
         )}
         <Heading
           fontSize={{ base: 36, md: 70 }}

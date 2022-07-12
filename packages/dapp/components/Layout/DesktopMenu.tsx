@@ -78,21 +78,18 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             </Text>
           </NextLink>
           <NextLink href="/create" passHref>
-            <Box
+            <Button
               borderWidth={1}
               borderColor="white"
               px={5}
               py={2}
               borderRadius="full"
               bgColor={router.pathname === '/create' ? '#1f716540' : 'none'}
-              _hover={{
-                bgColor: '#2DF8C740',
-              }}
             >
               <Text cursor="pointer" fontWeight="700" color="white">
                 {isSmallerScreen ? 'Create' : 'Create a chain'}
               </Text>
-            </Box>
+            </Button>
           </NextLink>
         </HStack>
       </Flex>

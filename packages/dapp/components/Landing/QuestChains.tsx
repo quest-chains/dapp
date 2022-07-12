@@ -81,7 +81,7 @@ export const QuestChains: React.FC = () => {
             <VStack>
               <Flex>
                 <Image
-                  src="Landing/Star1.svg"
+                  src="/Landing/Star1.svg"
                   alt="star1"
                   width={{ base: 12, md: 20 }}
                 />
@@ -90,7 +90,7 @@ export const QuestChains: React.FC = () => {
               <Flex>
                 Chains
                 <Image
-                  src="Landing/Star2.svg"
+                  src="/Landing/Star2.svg"
                   alt="star2"
                   width={{ base: 20, md: 30 }}
                 />

@@ -53,7 +53,7 @@ export const How: React.FC = () => {
           flexDirection={{ base: 'column', md: 'row' }}
         >
           {!isSmallScreen && (
-            <Image src="Landing/Circles3.svg" alt="circles3" mr={10} />
+            <Image src="/Landing/Circles3.svg" alt="circles3" mr={10} />
           )}
           <Heading
             color="main"
@@ -123,7 +123,7 @@ export const How: React.FC = () => {
             </Flex>
           </Flex>
           {!isSmallScreen && (
-            <Image src="Landing/Circles4.svg" alt="circles3" mr={10} />
+            <Image src="/Landing/Circles4.svg" alt="circles3" mr={10} />
           )}
         </Flex>
       </Flex>

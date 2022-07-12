@@ -1,8 +1,9 @@
-import { Button } from '@chakra-ui/react';
+import { Button, Image } from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import Power from '@/assets/Power.svg';
 import { QuestChainInfoFragment } from '@/graphql/types';
 import { QuestChain, QuestChain__factory } from '@/types';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -65,17 +66,14 @@ export const QuestChainPauseStatus: React.FC<{
     <Button
       onClick={togglePause}
       isLoading={isLoading}
-      background="whiteAlpha.50"
-      fontWeight="400"
-      borderRadius="full"
-      backdropFilter="blur(40px)"
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      color="main"
-      _hover={{
-        background: 'whiteAlpha.200',
-      }}
-      size="sm"
+      variant="ghost"
+      fontSize="xs"
     >
+      <Image
+        src={Power.src}
+        alt={questChain.paused ? 'Enable' : 'Disable'}
+        mr={2}
+      />
       {questChain.paused ? 'Enable Quest Chain' : 'Disable Quest Chain'}
     </Button>
   );

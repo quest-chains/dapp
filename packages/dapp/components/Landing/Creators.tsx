@@ -153,7 +153,7 @@ export const Creators: React.FC = () => {
             h="338px"
             gridArea="q"
           >
-            <Image src="Landing/Q.svg" alt="circles3" mr={10} />
+            <Image src="/Landing/Q.svg" alt="circles3" mr={10} />
           </Flex>
         )}
         <Box
@@ -175,8 +175,8 @@ export const Creators: React.FC = () => {
             fontSize={{ base: 'lg', md: '3xl' }}
             maxW={{ base: '220px', md: 'full' }}
           >
-            ♢ can <span style={{ color: '#2DF8C7' }}>edit the contents</span> of
-            the quest chain along with its quests
+            ♢ can <span style={{ color: '#2DF8C7' }}>create and edit</span>{' '}
+            quests. Can disable and enable them as well.
           </Text>
         </Box>
         <Box gridArea="empty" />
@@ -210,7 +210,7 @@ export const Creators: React.FC = () => {
       <Flex w="full" pos="relative" justifyContent="center" mt={40}>
         {!isSmallScreen && (
           <Image
-            src="Landing/Turbine.svg"
+            src="/Landing/Turbine.svg"
             position="absolute"
             left="0"
             top="-400px"

@@ -20,7 +20,7 @@ export const Who: React.FC = () => {
       minH="70vh"
       id="who"
     >
-      {!isSmallScreen && <Image src="Landing/Circles2.svg" alt="circles" />}
+      {!isSmallScreen && <Image src="/Landing/Circles2.svg" alt="circles" />}
       <Flex
         gap={8}
         justifyContent="center"
@@ -37,7 +37,7 @@ export const Who: React.FC = () => {
       >
         {isSmallScreen && (
           <Image
-            src="Landing/Circles2.svg"
+            src="/Landing/Circles2.svg"
             alt="circles"
             width={20}
             mb={{ base: 0, md: 8 }}
