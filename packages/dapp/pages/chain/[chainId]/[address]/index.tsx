@@ -550,6 +550,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 </Text>
               </Flex>
               <Flex>
+                {/* to be implemented eventually */}
+                {/* 
                 {mode === 'QUESTER' &&
                   progress.completeCount === 0 &&
                   progress.inReviewCount === 0 &&
@@ -568,7 +570,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     >
                       START PLAYING
                     </Button>
-                  )}
+                  )} */}
                 {mode === 'MEMBER' && (
                   <NextLink
                     as={`/chain/${questChain.chainId}/${questChain.address}/review`}
