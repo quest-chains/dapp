@@ -749,12 +749,10 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               )}
 
               {/* Image (Should be NFT) */}
-              {questChain.imageUrl && (
+              {questChain.token.imageUrl && (
                 <Image
-                  src={ipfsUriToHttp(questChain.imageUrl)}
-                  alt="Cover Image"
-                  borderRadius={8}
-                  outline="1px solid #FFFFFF30"
+                  src={ipfsUriToHttp(questChain.token.imageUrl)}
+                  alt="Quest Chain NFT badge"
                   mb={14}
                 />
               )}
