@@ -257,6 +257,7 @@ contract QuestChain is
     }
 
     function mintToken(address _quester) public override {
+        require(questCount > 0, "QuestChain: no quests found");
         for (uint256 questId = 0; questId < questCount; questId = questId + 1) {
             require(
                 questPaused[questId] ||
