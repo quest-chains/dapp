@@ -11,8 +11,7 @@
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md,css,scss,sol}\"",
     "root:prepare": "yarn --cwd ../../ root:prepare",
     "prepare": "yarn root:prepare",
-    "generate": "graphql-codegen --config=codegen.yml",
-    "postinstall": "yarn --cwd ../../ patch-package"
+    "generate": "graphql-codegen --config=codegen.yml"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
