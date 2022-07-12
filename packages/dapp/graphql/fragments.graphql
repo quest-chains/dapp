@@ -8,6 +8,8 @@ fragment QuestChainInfo on QuestChain {
     id
   }
   name
+  numQuesters
+  numCompletedQuesters
   description
   imageUrl
   quests {

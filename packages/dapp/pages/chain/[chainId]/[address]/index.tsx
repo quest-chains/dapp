@@ -482,21 +482,29 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Flex>
 
               {/* Quest Chain Metadata */}
-              <Flex gap={10} mb={8}>
-                {/* <Box>
-                <Text>TOTAL PLAYERS</Text>
-                <Text>{questChain.}</Text>
-              </Box>
-              <Box>
-                <Text>PLAYERS FINISHED</Text>
-                <Text>{questChain.}</Text>
-              </Box> */}
+              <Flex mb={8} justifyContent="space-between">
                 <Box>
-                  <Text color="whiteAlpha.600">QUESTS</Text>
+                  <Text color="whiteAlpha.600" fontSize="sm">
+                    TOTAL PLAYERS
+                  </Text>
+                  <Text>{questChain.numQuesters}</Text>
+                </Box>
+                <Box>
+                  <Text color="whiteAlpha.600" fontSize="sm">
+                    PLAYERS FINISHED
+                  </Text>
+                  <Text>{questChain.numCompletedQuesters}</Text>
+                </Box>
+                <Box>
+                  <Text color="whiteAlpha.600" fontSize="sm">
+                    QUESTS
+                  </Text>
                   <Text>{questChain.quests.length}</Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600">DATE CREATED</Text>
+                  <Text color="whiteAlpha.600" fontSize="sm">
+                    DATE CREATED
+                  </Text>
                   <Text>
                     {new Date(questChain.createdAt * 1000).toLocaleDateString(
                       'en-US',
@@ -504,7 +512,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   </Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600">CREATED BY</Text>
+                  <Text color="whiteAlpha.600" fontSize="sm">
+                    CREATED BY
+                  </Text>
                   <UserDisplay address={questChain.createdBy.id} ghost />
                 </Box>
               </Flex>
