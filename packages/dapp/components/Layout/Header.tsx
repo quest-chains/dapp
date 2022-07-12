@@ -22,15 +22,8 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
       pos="fixed"
     >
       <NextLink href="/" passHref>
-        <ChakraLink display="block" _hover={{}}>
-          <Heading
-            color="main"
-            fontSize={isSmallScreen ? '5xl' : '3xl'}
-            fontWeight="normal"
-            lineHeight="1rem"
-          >
-            <Image src="/logo.svg" alt="Quest Chains" height={9} />
-          </Heading>
+        <ChakraLink display="block" _hover={{}} w={16}>
+          <Image src="/logo.png" alt="Quest Chains" height={9} />
         </ChakraLink>
       </NextLink>
 
