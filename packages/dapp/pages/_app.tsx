@@ -21,9 +21,9 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
       <div
         className={router.pathname === '/' ? 'background-root' : 'background'}
       >
-        {/* <span></span>
         <span></span>
-        <span></span> */}
+        <span></span>
+        <span></span>
       </div>
       <Global styles={globalStyles} />
       <WalletProvider>

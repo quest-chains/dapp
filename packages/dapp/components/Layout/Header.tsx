@@ -1,15 +1,7 @@
-import {
-  Heading,
-  HStack,
-  Image,
-  Link as ChakraLink,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { HStack, Image, Link as ChakraLink } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const isSmallScreen = useBreakpointValue({ base: true, md: false });
-
   return (
     <HStack
       w="100%"
