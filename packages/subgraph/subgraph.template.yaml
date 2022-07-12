@@ -1,5 +1,8 @@
 specVersion: 0.0.2
 description: QuestChain
+features:
+  - ipfsOnEthereumContracts
+  - nonFatalErrors
 schema:
   file: ./src/schema.graphql
 dataSources:

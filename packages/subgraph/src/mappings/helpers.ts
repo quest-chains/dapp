@@ -5,8 +5,9 @@ import {
   json,
   dataSource,
   log,
+  BigInt,
 } from '@graphprotocol/graph-ts';
-import { User } from '../types/schema';
+import { User, Quest, QuestStatus } from '../types/schema';
 import { QuestChain as QuestChainContract } from '../types/templates/QuestChain/QuestChain';
 
 class Metadata {
@@ -110,6 +111,9 @@ export function getUser(address: Address): User {
   let user = User.load(address.toHexString());
   if (user == null) {
     user = new User(address.toHexString());
+    user.questsPassed = new Array<string>();
+    user.questsFailed = new Array<string>();
+    user.questsInReview = new Array<string>();
   }
   return user as User;
 }
@@ -142,4 +146,27 @@ export function createSearchString(
     .toLowerCase()
     .concat(' ')
     .concat((description as String).toLowerCase());
+}
+
+export function questChainCompletedByUser(
+  chainAddress: Address,
+  questCount: i32,
+  userAddress: Address,
+): boolean {
+  for (let questIdx: i32 = 0; questIdx < questCount; questIdx = questIdx + 1) {
+    let questId = chainAddress
+      .toHexString()
+      .concat('-')
+      .concat(BigInt.fromI32(questIdx).toHexString());
+    let questStatusId = questId.concat('-').concat(userAddress.toHexString());
+    let quest = Quest.load(questId);
+    if (quest == null) return false;
+    if (!quest.paused) {
+      let questStatus = QuestStatus.load(questStatusId);
+      if (questStatus == null) return false;
+      if (questStatus.status != 'pass') return false;
+    }
+  }
+  if (questCount == 0) return false;
+  return true;
 }
