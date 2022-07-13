@@ -9,13 +9,12 @@ import { formatAddress } from '@/web3';
 export const UserDisplay: React.FC<{
   address: string;
   color?: string;
-  ghost?: boolean;
-}> = ({ address, color = 'white', ghost = false }) => {
+}> = ({ address, color = 'white' }) => {
   const { ens } = useENS(address);
   return (
     <NextLink as={`/profile/${address}`} href="/profile/[address]" passHref>
       <Link _hover={{}} borderRadius="full">
-        <Button variant="ghost" size="md" height={8} px={ghost ? 0 : 4}>
+        <Button variant="ghost" size="md" height={8} px={4}>
           <HStack position="relative" color={color}>
             <Davatar
               address={address}

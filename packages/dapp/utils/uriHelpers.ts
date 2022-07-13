@@ -1,13 +1,16 @@
 const IPFS_URL_ADDON = `ipfs/`;
 const IPNS_URL_ADDON = `ipns/`;
 const URL_ADDON_LENGTH = 5;
+const IPFS_URL_ADDON2 = 'ipfs://';
 
 const parseUri = (
   uri: string,
-): { protocol: string; hash: string; name: string } => {
+): { protocol: string; hash: string; name: string; is3D: boolean } => {
   let protocol = uri.split(':')[0].toLowerCase();
   let hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2] ?? '';
   let name = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2] ?? '';
+  let is3D = false;
+
   if (uri.includes(IPFS_URL_ADDON)) {
     protocol = 'ipfs';
     const hashIndex = uri.indexOf(IPFS_URL_ADDON) + URL_ADDON_LENGTH;
@@ -23,14 +26,19 @@ const parseUri = (
     protocol = 'ipfs';
     const hashIndex = uri.indexOf('Qm');
     hash = uri.substring(hashIndex);
+  } else if (uri.includes('/badge.png')) {
+    protocol = 'ipfs';
+    hash = uri.substring(IPFS_URL_ADDON2.length).replace('/badge.png', '');
+    is3D = true;
   }
-  return { protocol, hash, name };
+  return { protocol, hash, name, is3D };
 };
 
 export const uriToHttpAsArray = (uri: string): string[] => {
   if (!uri) return [];
   if (uri.startsWith('data')) return [uri];
   const { protocol, hash, name } = parseUri(uri);
+
   switch (protocol) {
     case 'https':
       return [uri];
@@ -63,7 +71,8 @@ export const uriToHttpAsArray = (uri: string): string[] => {
 
 export const ipfsUriToHttp = (uri: string | null | undefined): string => {
   if (!uri) return '';
-  const { protocol, hash } = parseUri(uri);
+  const { protocol, hash, is3D } = parseUri(uri);
   if (protocol !== 'ipfs' || !hash) return '';
+  if (is3D) return `https://${hash}.ipfs.infura-ipfs.io/badge.png`;
   return `https://${hash}.ipfs.infura-ipfs.io`;
 };

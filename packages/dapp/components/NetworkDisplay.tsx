@@ -37,7 +37,7 @@ export const NetworkDisplay: React.FC<
   );
 
   return asTag ? (
-    <Tag borderRadius="full" p={1} pl={2} maxHeight="2rem">
+    <Tag borderRadius="full" py={1} px={2} maxHeight="2rem">
       {inner}
     </Tag>
   ) : (

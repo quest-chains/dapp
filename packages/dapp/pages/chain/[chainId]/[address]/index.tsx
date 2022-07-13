@@ -334,6 +334,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         opacity="0.05"
         bgPos="top"
         bgSize="cover"
+        zIndex={-1}
       />
       <Fade in={visible}>
         <Head>
@@ -411,7 +412,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 {!isEditingQuestChain && (
                   <Flex flexDirection="column" mb={8}>
                     <Text
-                      fontSize="6xl"
+                      fontSize="5xl"
                       fontWeight="bold"
                       lineHeight="3.5rem"
                       fontFamily="heading"
@@ -515,7 +516,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Text color="whiteAlpha.600" fontSize="sm">
                     CREATED BY
                   </Text>
-                  <UserDisplay address={questChain.createdBy.id} ghost />
+                  <UserDisplay address={questChain.createdBy.id} />
                 </Box>
               </Flex>
 
