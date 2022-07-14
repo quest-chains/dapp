@@ -1,26 +1,41 @@
 {
   "name": "@quest-chains/mono-repo",
   "version": "1.0.0",
-  "keywords": ["ethereum", "react", "workspaces", "yarn"],
+  "keywords": [
+    "ethereum",
+    "react",
+    "workspaces",
+    "yarn"
+  ],
   "private": true,
   "scripts": {
-    "lint": "concurrently \"yarn workspace @quest-chains/utils lint\" \"yarn workspace @quest-chains/dapp lint\" \"yarn workspace @quest-chains/contracts lint\"",
-    "typecheck": "concurrently \"yarn workspace @quest-chains/utils typecheck\" \"yarn workspace @quest-chains/dapp typecheck\" \"yarn workspace @quest-chains/contracts typecheck\"",
+    "lint": "concurrently \"yarn utils:lint\" \"yarn dapp:lint\" \"yarn contracts:lint\"",
+    "typecheck": "concurrently \"yarn utils:typecheck\" \"yarn dapp:typecheck\" \"yarn contracts:typecheck\"",
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{json,yml,yaml,md,css,scss,sol}\"",
     "contracts:compile": "yarn workspace @quest-chains/contracts compile",
+    "contracts:build": "yarn workspace @quest-chains/contracts build",
+    "contracts:lint": "yarn workspace @quest-chains/contracts lint",
+    "contracts:typecheck": "yarn workspace @quest-chains/contracts typecheck",
     "contracts:test": "yarn workspace @quest-chains/contracts test",
     "contracts:deploy": "yarn workspace @quest-chains/contracts deploy",
     "subgraph:codegen": "yarn workspace @quest-chains/subgraph codegen",
     "subgraph:build": "yarn workspace @quest-chains/subgraph build",
     "dapp:dev": "yarn workspace @quest-chains/dapp dev",
+    "dapp:lint": "yarn workspace @quest-chains/dapp lint",
+    "dapp:typecheck": "yarn workspace @quest-chains/dapp typecheck",
     "dapp:build": "yarn workspace @quest-chains/dapp build",
     "dapp:start": "yarn workspace @quest-chains/dapp start",
     "dapp:generate": "yarn workspace @quest-chains/dapp generate",
-    "root:prepare": "concurrently \"yarn workspace @quest-chains/utils build\" \"yarn workspace @quest-chains/contracts build\" \"yarn workspace @quest-chains/dapp generate\" && patch-package && husky install",
+    "utils:lint": "yarn workspace @quest-chains/utils lint",
+    "utils:build": "yarn workspace @quest-chains/utils build",
+    "utils:typecheck": "yarn workspace @quest-chains/utils typecheck",
+    "root:prepare": "concurrently \"yarn utils:build\" \"yarn contracts:build\" \"yarn dapp:generate\" && patch-package && husky install",
     "prepare": "yarn root:prepare"
   },
   "workspaces": {
-    "packages": ["packages/*"]
+    "packages": [
+      "packages/*"
+    ]
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^12.2.1",
