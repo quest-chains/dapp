@@ -2,8 +2,9 @@ import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Input, useDisclosure } from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
+import { QuestChainInfoFragment } from '@/graphql/types';
 import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -14,11 +15,14 @@ import { useWallet } from '@/web3';
 import { ConfirmationModal } from './ConfirmationModal';
 import { MarkdownEditor } from './MarkdownEditor';
 
+type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
 type QuestEditorProps = {
   refresh: () => void;
   questChainAddress?: string;
   questChainId?: string;
-  quest: any;
+  quest: ArrayElement<QuestChainInfoFragment['quests']>;
   setEditingQuest: (sth: boolean) => void;
 };
 
@@ -100,7 +104,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       <Flex>
         <Input
           mb={3}
-          value={questName}
+          value={questName ?? ''}
           onChange={e => setQuestName(e.target.value)}
         />
         <IconButton
@@ -122,8 +126,8 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
           onSubmit={() => {
             onUpdateQuestConfirmationClose();
             onSubmitQuest({
-              name: questName,
-              description: questDescription,
+              name: questName ?? '',
+              description: questDescription ?? '',
               questId: quest.questId,
             });
           }}
@@ -136,7 +140,10 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
         />
       </Flex>
 
-      <MarkdownEditor value={questDescription} onChange={setQuestDescription} />
+      <MarkdownEditor
+        value={questDescription ?? ''}
+        onChange={setQuestDescription}
+      />
     </Flex>
   );
 };
