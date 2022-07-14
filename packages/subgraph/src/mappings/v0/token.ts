@@ -1,12 +1,16 @@
-import { QuestChainToken } from '../types/schema';
+import { QuestChainToken } from '../../types/schema';
 
 import {
-  QuestChainToken as QuestChainTokenContract,
+  QuestChainTokenV0 as QuestChainTokenContract,
   TransferSingle as TransferSingleEvent,
   URI as URIEvent,
-} from '../types/templates/QuestChainToken/QuestChainToken';
-import { ADDRESS_ZERO } from './constants';
-import { removeFromArray, fetchMetadata, getUser } from './helpers';
+} from '../../types/templates/QuestChainTokenV0/QuestChainTokenV0';
+import {
+  ADDRESS_ZERO,
+  removeFromArray,
+  fetchMetadata,
+  getUser,
+} from '../helpers';
 
 export function handleTransferSingle(event: TransferSingleEvent): void {
   let tokenId = event.address

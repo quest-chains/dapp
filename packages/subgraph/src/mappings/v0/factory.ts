@@ -1,17 +1,17 @@
 import { log } from '@graphprotocol/graph-ts';
-import { QuestChain, Global } from '../types/schema';
+import { QuestChain, Global } from '../../types/schema';
 
 import {
   QuestChainCreated as QuestChainCreatedEvent,
   QuestChainImplUpdated as QuestChainImplUpdatedEvent,
-  QuestChainFactory,
-} from '../types/QuestChainFactory/QuestChainFactory';
+  QuestChainFactoryV0 as QuestChainFactory,
+} from '../../types/QuestChainFactoryV0/QuestChainFactoryV0';
 import {
-  QuestChain as QuestChainTemplate,
-  QuestChainToken as QuestChainTokenTemplate,
-} from '../types/templates';
+  QuestChainV0 as QuestChainTemplate,
+  QuestChainTokenV0 as QuestChainTokenTemplate,
+} from '../../types/templates';
 
-import { getUser, getNetwork } from './helpers';
+import { getUser, getNetwork } from '../helpers';
 
 export function handleQuestChainImplUpdated(
   event: QuestChainImplUpdatedEvent,
@@ -67,6 +67,7 @@ export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   questChain.questsPassed = new Array<string>();
   questChain.questsFailed = new Array<string>();
   questChain.questsInReview = new Array<string>();
+  questChain.version = '0';
 
   QuestChainTemplate.create(event.params.questChain);
 

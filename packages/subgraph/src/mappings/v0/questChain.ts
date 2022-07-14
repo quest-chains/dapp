@@ -7,7 +7,7 @@ import {
   QuestStatus,
   ProofSubmission,
   ReviewSubmission,
-} from '../types/schema';
+} from '../../types/schema';
 
 import {
   QuestChainCreated as QuestChainCreatedEvent,
@@ -22,7 +22,7 @@ import {
   QuestEdited as QuestEditedEvent,
   QuestProofSubmitted as QuestProofSubmittedEvent,
   QuestProofReviewed as QuestProofReviewedEvent,
-} from '../types/templates/QuestChain/QuestChain';
+} from '../../types/templates/QuestChainV0/QuestChainV0';
 import {
   createSearchString,
   fetchMetadata,
@@ -30,7 +30,7 @@ import {
   getUser,
   questChainCompletedByUser,
   removeFromArray,
-} from './helpers';
+} from '../helpers';
 
 export function handleChainCreated(event: QuestChainCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
