@@ -43,6 +43,3 @@ output
 
 # graphql
 graphql/types.ts
-
-# contract
-types/
