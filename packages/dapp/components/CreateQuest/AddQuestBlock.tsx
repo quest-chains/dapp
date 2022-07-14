@@ -31,7 +31,7 @@ import { toast } from 'react-hot-toast';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';

@@ -1,4 +1,4 @@
-import { Flex, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Button, Flex, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import NFT3DMetadataForm from '@/components/CreateChain/3DNFTMetadataForm';
 import { ChainMetadataForm } from '@/components/CreateChain/ChainMetadataForm';
 import {
   ChainRolesForm,
@@ -15,7 +16,7 @@ import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
-import { QuestChainFactory, QuestChainFactory__factory } from '@/types';
+import { QuestChainFactory, QuestChainFactory__factory } from '@/types/v0';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
@@ -105,16 +106,31 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     [chainId, factoryContract, router, chainUri, nftUri],
   );
 
+  const [show3DBeta, setShow3DBeta] = useState(false);
+
   return (
     <VStack w="100%" align="stretch" px={{ base: 0, lg: 12 }} spacing={8}>
       <Head>
         <title>Create</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <HStack justify="space-between" w="100%">
+      <HStack w="100%" spacing="4">
         <Text color="main" fontSize={20}>
           CREATE NEW QUEST CHAIN
         </Text>
+        {step === 1 && (
+          <Button
+            onClick={() => setShow3DBeta(s => !s)}
+            borderWidth={1}
+            borderColor="white"
+            px={5}
+            py={2}
+            borderRadius="full"
+            size="sm"
+          >
+            {show3DBeta ? 'BACK TO 2D NFT' : 'TRY 3D NFT BETA'}
+          </Button>
+        )}
       </HStack>
       {showForm && (
         <>
@@ -122,11 +138,19 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             <ChainMetadataForm onSubmit={onSubmitChainMeta} />
           </Flex>
           <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
-            <NFTMetadataForm
-              chainName={chainName}
-              onSubmit={onSubmitNFTMeta}
-              onBack={() => setStep(0)}
-            />
+            {show3DBeta ? (
+              <NFT3DMetadataForm
+                chainName={chainName}
+                onSubmit={onSubmitNFTMeta}
+                onBack={() => setStep(0)}
+              />
+            ) : (
+              <NFTMetadataForm
+                chainName={chainName}
+                onSubmit={onSubmitNFTMeta}
+                onBack={() => setStep(0)}
+              />
+            )}
           </Flex>
           <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
             <ChainRolesForm
@@ -152,7 +176,15 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           )}
           <VStack w="full" gap={4} flex={1}>
             {questChains.map(
-              ({ address, chainId, name, description, quests, imageUrl }) => (
+              ({
+                address,
+                chainId,
+                name,
+                description,
+                quests,
+                imageUrl,
+                paused,
+              }) => (
                 <QuestChainTile
                   {...{
                     address,
@@ -161,6 +193,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
                     chainId,
                     quests: quests.length,
                     imageUrl,
+                    paused,
                   }}
                   key={address}
                 />

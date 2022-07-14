@@ -51,7 +51,7 @@ import {
 import { Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -350,9 +350,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
         <Flex flexDirection="column" w="100%" justify="center" zIndex="10">
           {questChain.paused && (
-            <Alert status="warning" borderRadius="md" mb={6}>
-              <AlertIcon />
-              <AlertTitle>Quest Chain is disabled!</AlertTitle>
+            <Alert status="warning" borderRadius="md" mb={6} height="14">
+              <AlertIcon boxSize="1.75rem" />
+              <AlertTitle>Quest Chain is disabled.</AlertTitle>
             </Alert>
           )}
 
@@ -536,17 +536,27 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 >
                   <Box
                     bg="main"
-                    w={`${(progress.completeCount / progress.total) * 100}%`}
+                    w={`${
+                      (progress.total
+                        ? progress.completeCount / progress.total
+                        : 0) * 100
+                    }%`}
                   />
                   <Box
                     bgColor="pending"
-                    w={`${(progress.inReviewCount / progress.total) * 100}%`}
+                    w={`${
+                      (progress.total
+                        ? progress.inReviewCount / progress.total
+                        : 0) * 100
+                    }%`}
                   />
                   <Box bgColor="grey" h={2} />
                 </Flex>
                 <Text>
                   {`${Math.round(
-                    (progress.completeCount / progress.total) * 100,
+                    (progress.total
+                      ? progress.completeCount / progress.total
+                      : 0) * 100,
                   )}%`}
                 </Text>
               </Flex>
@@ -616,7 +626,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 ) : (
                   <>
                     <Flex justifyContent="space-between" w="full">
-                      <Text w="full" fontSize={40} fontFamily="heading">
+                      <Text fontSize={40} fontFamily="heading">
                         QUESTS
                       </Text>
                       {mode === 'MEMBER' && (isAdmin || isEditor) && (

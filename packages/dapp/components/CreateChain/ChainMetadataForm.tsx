@@ -60,33 +60,35 @@ export const ChainMetadataForm: React.FC<{
   const { isConnected, chainId } = useWallet();
 
   const isDisabled =
-    !isConnected ||
-    !isSupportedNetwork(chainId) ||
-    !description ||
-    !myFiles.length;
+    !isConnected || !isSupportedNetwork(chainId) || !description;
 
   const [isSubmitting, setSubmitting] = useState(false);
 
   const exportMetadata = useCallback(async () => {
-    let tid = toast.loading('Uploading image to IPFS via web3.storage');
+    let tid;
     try {
       setSubmitting(true);
-      const file = myFiles[0];
-      let hash = await uploadFilesViaAPI([file]);
       const metadata: Metadata = {
         name,
         description,
-        image_url: `ipfs://${hash}`,
       };
-      toast.dismiss(tid);
+      if (myFiles.length) {
+        tid = toast.loading('Uploading image to IPFS via web3.storage');
+        const file = myFiles[0];
+        const imageHash = await uploadFilesViaAPI([file]);
+        metadata.image_url = `ipfs://${imageHash}`;
+        toast.dismiss(tid);
+      }
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      hash = await uploadMetadataViaAPI(metadata);
+      const hash = await uploadMetadataViaAPI(metadata);
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 
       await onSubmit(name, metadataUri);
     } catch (error) {
-      toast.dismiss(tid);
+      if (tid) {
+        toast.dismiss(tid);
+      }
       handleError(error);
     } finally {
       setSubmitting(false);
@@ -134,9 +136,9 @@ export const ChainMetadataForm: React.FC<{
               placeholder="Quest Chain Description"
             />
           </FormControl>
-          <FormControl isRequired>
+          <FormControl>
             <FormLabel color="main" htmlFor="file">
-              Cover Image
+              Cover Image (optional)
             </FormLabel>
             {myFiles.length ? (
               <>

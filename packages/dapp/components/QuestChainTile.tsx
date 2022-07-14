@@ -1,8 +1,12 @@
+import { WarningIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   Link as ChakraLink,
   Progress,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
   Tooltip,
   VStack,
@@ -24,6 +28,7 @@ type QuestChainTileProps = {
   completed?: number;
   quests: number;
   onClick?: () => void;
+  paused?: boolean;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -35,6 +40,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   quests,
   imageUrl,
   onClick = () => undefined,
+  paused = false,
 }) => (
   <NextLink
     as={`/chain/${chainId}/${address}`}
@@ -74,23 +80,31 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
             borderRadius="0.25rem"
             pos="relative"
           >
-            <Text
-              fontSize="xl"
-              fontWeight="bold"
-              color="main"
-              letterSpacing={4}
-              display="-webkit-box"
-              textOverflow="ellipsis"
-              overflow="hidden"
-              maxW="calc(100%)"
-              sx={{
-                lineClamp: 1,
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
-              {name}
-            </Text>
+            <Flex justifyContent="space-between">
+              <Text
+                fontSize="xl"
+                fontWeight="bold"
+                color="main"
+                letterSpacing={4}
+                display="-webkit-box"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                maxW="calc(100%)"
+                sx={{
+                  lineClamp: 1,
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: 'vertical',
+                }}
+              >
+                {name}
+              </Text>
+              {paused && (
+                <Tag variant="subtle" colorScheme="orange" borderRadius="full">
+                  <TagLeftIcon as={WarningIcon} boxSize="1.25rem" />
+                  <TagLabel color="white">Disabled</TagLabel>
+                </Tag>
+              )}
+            </Flex>
             {completed && (
               <Flex justify="space-between" align="center">
                 <Progress

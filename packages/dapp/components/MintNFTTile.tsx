@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import VictoryCupImage from '@/assets/victory-cup.svg';
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
