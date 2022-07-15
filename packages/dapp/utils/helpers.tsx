@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { HStack, Link, Text } from '@chakra-ui/react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { getExplorerLabel, getTxUrl } from '@/web3';
 

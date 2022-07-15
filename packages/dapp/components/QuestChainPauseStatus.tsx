@@ -1,11 +1,11 @@
 import { Button, Image } from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import Power from '@/assets/Power.svg';
 import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';

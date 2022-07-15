@@ -83,7 +83,7 @@
                 "value": "narwhal"
               }
             ],
-            "required": ["trait_type", "value"],
+            "required": ["value"],
             "properties": {
               "display_type": {
                 "$id": "#/properties/attributes/items/anyOf/0/properties/display_type",

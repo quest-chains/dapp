@@ -27,7 +27,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 import { CollapsableText } from '@/components/CollapsableText';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -42,7 +42,7 @@ import { getStatusesForChain } from '@/graphql/questStatuses';
 import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';

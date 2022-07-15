@@ -45,7 +45,6 @@ export const WalletDisplay: React.FC = () => {
   const isSupportedChain = isSupportedNetwork(chainId);
   return (
     <Popover placement={placement} gutter={20} trigger="hover">
-      {/* @ts-expect-error @chakra-ui/react does not support @types/react@18 yet */}
       <PopoverTrigger>
         <Box>
           {isSupportedChain ? (

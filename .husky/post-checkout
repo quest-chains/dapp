@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Builds our assets upon checkout
+#
+# Args passed to this are:
+# $1 - Previous HEAD
+# $2 - New HEAD
+# $3 - 1 if checking out a branch, 0 if checking out something else, such as a file (rollbacks)
+
+if ! command -v yarn &> /dev/null; then
+  exit 0
+fi
+
+
+. "$(dirname "$0")/_/husky.sh"
+
+if [ "$3" -eq "1" ]; then
+    echo 'Branch checkout detected. Setting up dependencies...'
+    yarn install
+fi

@@ -68,6 +68,7 @@ type QuestChain @entity {
   submittedProofs: [ProofSubmission!]! @derivedFrom(field: "questChain")
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "questChain")
   token: QuestChainToken! @derivedFrom(field: "questChain")
+  version: String!
 }
 
 type QuestEdit @entity {

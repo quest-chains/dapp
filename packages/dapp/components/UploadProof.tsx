@@ -20,9 +20,9 @@ import {
 import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
-import { QuestChain, QuestChain__factory } from '@/types';
+import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';

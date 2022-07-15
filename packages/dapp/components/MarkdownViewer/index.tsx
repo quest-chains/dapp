@@ -70,7 +70,7 @@ const markdownTheme: Components = {
     return (
       <Code
         whiteSpace="break-spaces"
-        d="block"
+        display="block"
         w="full"
         px={4}
         py={2}

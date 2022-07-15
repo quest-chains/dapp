@@ -16,7 +16,10 @@ export const handler: (
   req: NextApiRequest,
   res: NextApiResponse<Record<string, string>>,
 ) => {
-  const storage = new Web3Storage({ token: WEB3_STORAGE_TOKEN ?? '' });
+  const storage = new Web3Storage({
+    token: WEB3_STORAGE_TOKEN ?? '',
+    endpoint: new URL('https://api.web3.storage'),
+  });
   const busboy = Busboy({ headers: req.headers });
   const files: { field: string; name: string }[] = [];
 

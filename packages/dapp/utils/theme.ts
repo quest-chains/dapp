@@ -14,6 +14,10 @@ const Input = {
   },
 };
 
+const Form = {
+  baseStyle: { container: { padding: '2px' } },
+};
+
 export const theme = extendTheme({
   breakpoints: {
     '3xl': '108em',
@@ -58,6 +62,7 @@ export const theme = extendTheme({
   },
   components: {
     Input,
+    Form,
   },
 });
 
@@ -91,5 +96,9 @@ export const globalStyles = css`
     }
     background: #0d1117;
     overflow-x: hidden;
+  }
+  html,
+  #__next {
+    height: 100%;
   }
 `;

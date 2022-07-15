@@ -56,7 +56,14 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   }, [handleUserKeyPress]);
 
   return (
-    <Stack align="center" p={0} m={0} spacing={0} fontFamily="body">
+    <Stack
+      align="center"
+      p={0}
+      m={0}
+      spacing={0}
+      fontFamily="body"
+      minH="100vh"
+    >
       {/* {!isLanding && ( */}
       <Header>
         {isSmallScreen ? (
@@ -80,7 +87,6 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         <Flex
           direction="column"
           w="100%"
-          flex={1}
           visibility={
             isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
           }

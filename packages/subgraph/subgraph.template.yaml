@@ -1,5 +1,5 @@
-specVersion: 0.0.2
-description: QuestChain
+specVersion: 0.0.4
+description: Quest Chains
 features:
   - ipfsOnEthereumContracts
   - nonFatalErrors
@@ -8,14 +8,14 @@ schema:
 dataSources:
   # prettier-ignore
   - kind: ethereum/contract
-    name: QuestChainFactory
+    name: QuestChainFactoryV0
     # prettier-ignore
     network: {{network}}
     source:
-      address: '{{factory}}'
-      abi: QuestChainFactory
+      address: '{{v0.factory}}'
+      abi: QuestChainFactoryV0
       # prettier-ignore
-      startBlock: {{blockNumber}}
+      startBlock: {{v0.blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -26,27 +26,27 @@ dataSources:
         - Quest
         - User
       abis:
-        - name: QuestChain
-          file: ./src/abis/QuestChain.json
-        - name: QuestChainFactory
-          file: ./src/abis/QuestChainFactory.json
-        - name: QuestChainToken
-          file: ./src/abis/QuestChainToken.json
+        - name: QuestChainV0
+          file: ./src/abis/v0/QuestChain.json
+        - name: QuestChainFactoryV0
+          file: ./src/abis/v0/QuestChainFactory.json
+        - name: QuestChainTokenV0
+          file: ./src/abis/v0/QuestChainToken.json
       eventHandlers:
         - event: QuestChainImplUpdated(indexed address,indexed address)
           handler: handleQuestChainImplUpdated
         - event: QuestChainCreated(indexed uint256,address)
           handler: handleQuestChainCreated
 
-      file: ./src/mappings/factory.ts
+      file: ./src/mappings/v0/factory.ts
   # prettier-ignore
 templates:
   - kind: ethereum/contract
-    name: QuestChain
+    name: QuestChainV0
     # prettier-ignore
     network: {{network}}
     source:
-      abi: QuestChain
+      abi: QuestChainV0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -57,12 +57,12 @@ templates:
         - Quest
         - User
       abis:
-        - name: QuestChain
-          file: ./src/abis/QuestChain.json
-        - name: QuestChainFactory
-          file: ./src/abis/QuestChainFactory.json
-        - name: QuestChainToken
-          file: ./src/abis/QuestChainToken.json
+        - name: QuestChainV0
+          file: ./src/abis/v0/QuestChain.json
+        - name: QuestChainFactoryV0
+          file: ./src/abis/v0/QuestChainFactory.json
+        - name: QuestChainTokenV0
+          file: ./src/abis/v0/QuestChainToken.json
       eventHandlers:
         - event: QuestChainCreated(indexed address,string)
           handler: handleChainCreated
@@ -88,15 +88,15 @@ templates:
           handler: handleQuestProofSubmitted
         - event: QuestProofReviewed(indexed address,indexed address,indexed uint256,bool,string)
           handler: handleQuestProofReviewed
-      file: ./src/mappings/questChain.ts
+      file: ./src/mappings/v0/questChain.ts
   - kind: ethereum/contract
-    name: QuestChainToken
+    name: QuestChainTokenV0
     # prettier-ignore
     network: {{network}}
     source:
-      abi: QuestChainToken
+      abi: QuestChainTokenV0
     mapping:
-      file: ./src/mappings/token.ts
+      file: ./src/mappings/v0/token.ts
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
@@ -104,12 +104,12 @@ templates:
         - Vault
         - Pool
       abis:
-        - name: QuestChain
-          file: ./src/abis/QuestChain.json
-        - name: QuestChainFactory
-          file: ./src/abis/QuestChainFactory.json
-        - name: QuestChainToken
-          file: ./src/abis/QuestChainToken.json
+        - name: QuestChainV0
+          file: ./src/abis/v0/QuestChain.json
+        - name: QuestChainFactoryV0
+          file: ./src/abis/v0/QuestChainFactory.json
+        - name: QuestChainTokenV0
+          file: ./src/abis/v0/QuestChainToken.json
       eventHandlers:
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle

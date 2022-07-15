@@ -50,6 +50,7 @@ export const dataURItoFile = (dataURI: string, filename: string): File => {
   for (let i = 0; i < binary.length; i++) {
     array.push(binary.charCodeAt(i));
   }
+
   const mimeType = dataURI.split(',')[0].split(':')[1].split(';')[0];
   const blob = new Blob([new Uint8Array(array)], { type: mimeType });
   const file = new File([blob], filename);
