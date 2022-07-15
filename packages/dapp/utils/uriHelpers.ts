@@ -68,9 +68,12 @@ export const ipfsUriToHttp = (uri: string | null | undefined): string => {
   const { protocol, hash } = parseUri(uri);
   if (protocol !== 'ipfs' || !hash) return '';
 
-  if (hash.includes('/'))
-    return `https://${hash}.ipfs.infura-ipfs.io${hash.substring(
-      hash.indexOf('/'),
-    )}`;
+  if (hash.includes('/')) {
+    const slashIndex = hash.indexOf('/');
+    return `https://${hash.substring(
+      0,
+      slashIndex,
+    )}.ipfs.infura-ipfs.io${hash.substring(slashIndex)}`;
+  }
   return `https://${hash}.ipfs.infura-ipfs.io`;
 };
