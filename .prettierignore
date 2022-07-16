@@ -43,3 +43,12 @@ output
 
 # graphql
 graphql/types.ts
+
+# yarn
+.yarn
+.yarnrc.yml
+.pnp.*
+package-lock.json
+
+# contract types
+/types/

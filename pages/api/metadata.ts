@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { uploadMetadata } from '@/../utils/dist';
+import { uploadMetadata } from '@/lib';
 import { WEB3_STORAGE_TOKEN } from '@/utils/constants';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

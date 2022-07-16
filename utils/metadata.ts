@@ -1,5 +1,4 @@
-import { Metadata as MetadataType } from '@/../utils/dist/metadata';
-import { validateSchema } from '@/../utils/dist/validate';
+import { Metadata as MetadataType, validateSchema } from '@/lib';
 
 export type Metadata = MetadataType;
 

@@ -1,40 +1,48 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-node_modules
-.pnp
+/node_modules
+/.pnp
 .pnp.js
 
 # testing
-coverage
+/coverage
+
+# next.js
+/.next/
+/out/
 
 # production
-build
-dist
-.next
+/build
 
 # misc
 .DS_Store
-.env*
+*.pem
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# contracts
-packages/contracts/cache
-packages/contracts/types
-packages/contracts/artifacts
-packages/contracts/coverage*
+# local env files
+.env*
+.sw[a-z]
 
-# subgraph
-packages/subgraph/build/
-packages/subgraph/src/types/
-packages/subgraph/subgraph.yaml
+# vercel
+.vercel
+
+# songaday
+layers
+output
 
 # vim
 *.sw[a-z]
+
+# typescript
+*.tsbuildinfo
+
+# graphql
+graphql/types.ts
 
 # yarn
 .yarn
