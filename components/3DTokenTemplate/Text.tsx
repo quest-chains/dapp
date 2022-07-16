@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { Text3D } from '@react-three/drei';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';

@@ -12,6 +12,7 @@ export const MenuLandingDesktop: React.FC = () => (
       </ChakraLink>
     </NextLink>
 
+    {/* @ts-expect-error */}
     <Link
       activeClass="active"
       to="what"
@@ -23,16 +24,19 @@ export const MenuLandingDesktop: React.FC = () => (
         What
       </Text>
     </Link>
+    {/* @ts-expect-error */}
     <Link activeClass="active" to="who" spy={true} smooth={true} duration={500}>
       <Text fontSize={20} ml={3} cursor="pointer" fontFamily="headingLight">
         Who
       </Text>
     </Link>
+    {/* @ts-expect-error */}
     <Link activeClass="active" to="how" spy={true} smooth={true} duration={500}>
       <Text fontSize={20} ml={3} cursor="pointer" fontFamily="headingLight">
         How
       </Text>
     </Link>
+    {/* @ts-expect-error */}
     <Link
       activeClass="active"
       to="creators"
@@ -45,6 +49,7 @@ export const MenuLandingDesktop: React.FC = () => (
         Creators
       </Text>
     </Link>
+    {/* @ts-expect-error */}
     <Link
       activeClass="active"
       to="questers"
@@ -57,6 +62,7 @@ export const MenuLandingDesktop: React.FC = () => (
         Questers
       </Text>
     </Link>
+    {/* @ts-expect-error */}
     <Link
       activeClass="active"
       to="team"

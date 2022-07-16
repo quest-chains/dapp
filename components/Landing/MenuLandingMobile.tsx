@@ -54,6 +54,7 @@ export const MenuLandingMobile: React.FC = () => {
                 </ChakraLink>
               </NextLink>
 
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
@@ -71,6 +72,7 @@ export const MenuLandingMobile: React.FC = () => {
                   What
                 </Text>
               </Link>
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
@@ -88,6 +90,7 @@ export const MenuLandingMobile: React.FC = () => {
                   Who
                 </Text>
               </Link>
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
@@ -105,6 +108,7 @@ export const MenuLandingMobile: React.FC = () => {
                   How
                 </Text>
               </Link>
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
@@ -123,6 +127,7 @@ export const MenuLandingMobile: React.FC = () => {
                   Creators
                 </Text>
               </Link>
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
@@ -141,6 +146,7 @@ export const MenuLandingMobile: React.FC = () => {
                   Questers
                 </Text>
               </Link>
+              {/* @ts-expect-error */}
               <Link
                 activeClass="active"
                 onClick={toggleOpen}
