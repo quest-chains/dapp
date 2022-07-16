@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "next dev",
-    "build": "yarn root:prepare && next build",
+    "build": "next build",
     "start": "next start",
     "typecheck": "tsc",
     "lint": "eslint --ignore-path .gitignore \"*/**/*.{js,jsx,ts,tsx}\" --fix",
