@@ -9,6 +9,8 @@ import * as THREE from 'three';
 import { WrapText as Text } from './Text';
 
 export type TemplateProps = {
+  bgIndex?: number;
+  gemIndex?: number;
   starLength?: number;
   name?: string;
   description?: string;
@@ -16,6 +18,8 @@ export type TemplateProps = {
 };
 
 export const Model: React.FC<TemplateProps> = ({
+  bgIndex = 0,
+  gemIndex = 0,
   starLength = 3,
   name = '',
   description = '',
@@ -24,6 +28,45 @@ export const Model: React.FC<TemplateProps> = ({
   const ref = useRef();
 
   const { nodes, materials } = useGLTF('/models/nft%20qc.gltf');
+  const {
+    nodes: {
+      Curve009: { geometry: rectangleGeo },
+    },
+    materials: { ['Material.003']: rectangleMaterial },
+  } = useGLTF('/models/token%20rectangle.gltf');
+
+  const circleGeo = nodes.Curve.geometry;
+  const circleMaterial = materials.SVGMat;
+
+  const bgs = [
+    { geo: circleGeo, material: circleMaterial },
+    { geo: rectangleGeo, material: rectangleMaterial },
+  ];
+  const bg = bgs[bgIndex];
+
+  const {
+    materials: { ['Material.004']: gem01 },
+  } = useGLTF('/models/gem01.gltf');
+  const {
+    materials: { ['Material.004']: gem02 },
+  } = useGLTF('/models/gem02.gltf');
+  const {
+    materials: { ['Material.004']: gem03 },
+  } = useGLTF('/models/gem03.gltf');
+  const {
+    materials: { ['Material.004']: gem04 },
+  } = useGLTF('/models/gem04.gltf');
+  const {
+    materials: { ['Material.004']: gem05 },
+  } = useGLTF('/models/gem05.gltf');
+  const {
+    materials: { ['Material.004']: gem06 },
+  } = useGLTF('/models/gem06.gltf');
+  const {
+    materials: { ['Material.004']: gem07 },
+  } = useGLTF('/models/gem07.gltf');
+  const gems = [gem01, gem02, gem03, gem04, gem05, gem06, gem07];
+  const gem = gems[gemIndex];
 
   useThree(({ camera, scene }) => {
     camera.position.set(-0.5, 2, 20);
@@ -35,15 +78,15 @@ export const Model: React.FC<TemplateProps> = ({
   return (
     <group ref={ref} dispose={null} position={[-9, -23, 0]}>
       <mesh // Disc
-        geometry={nodes.Curve.geometry}
-        material={materials.SVGMat}
+        geometry={bg.geo}
+        material={bg.material}
         position={[0, 14.63, 0]}
         rotation={[Math.PI / 2, 0, 0]}
         scale={127.17}
       />
       <mesh // Gem
         geometry={nodes.Sphere005.geometry}
-        material={materials['Material.004']}
+        material={gem}
         position={[8.9, 24.68, 4.01]}
         rotation={[0.2, -0.19, 0.9]}
         scale={2.47}
@@ -109,8 +152,22 @@ export const Model: React.FC<TemplateProps> = ({
           />
         </>
       )}
-      <Text position={[2.84, 29.2, 2.37]} length={18} vAlign="bottom">
+      <Text
+        position={[2.84, 29.2, 2.37]}
+        length={18}
+        vAlign="bottom"
+        font="heading"
+      >
         {name}
+      </Text>
+      <Text
+        position={[4.14, 21.1, 2.37]}
+        size={1.3}
+        length={18}
+        color="#2DF8C7"
+        font="heading"
+      >
+        Quest Chains
       </Text>
       <Text position={[9.24, 19.46, 2.37]} size={0.95} length={28}>
         {description}
@@ -120,4 +177,11 @@ export const Model: React.FC<TemplateProps> = ({
 };
 
 useGLTF.preload('/models/nft%20qc.gltf');
-// useGLTF.preload('/models/Quest%20Chains%20Token.gltf');
+useGLTF.preload('/models/gem01.gltf');
+useGLTF.preload('/models/gem02.gltf');
+useGLTF.preload('/models/gem03.gltf');
+useGLTF.preload('/models/gem04.gltf');
+useGLTF.preload('/models/gem05.gltf');
+useGLTF.preload('/models/gem06.gltf');
+useGLTF.preload('/models/gem07.gltf');
+useGLTF.preload('/models/token%20rectangle.gltf');

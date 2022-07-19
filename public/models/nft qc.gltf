@@ -499,32 +499,32 @@
         {
             "mimeType" : "image/png",
             "name" : "sphere2",
-            "uri" : "yes/sphere2.png"
+            "uri" : "textures/sphere2.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "pink star token",
-            "uri" : "yes/pink%20star%20token.png"
+            "uri" : "textures/pink%20star%20token.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "green star token",
-            "uri" : "yes/green%20star%20token.png"
+            "uri" : "textures/green%20star%20token.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "token",
-            "uri" : "yes/token.png"
+            "uri" : "textures/token.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "lines",
-            "uri" : "yes/lines.png"
+            "uri" : "textures/lines.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "yellow star token",
-            "uri" : "yes/yellow%20star%20token.png"
+            "uri" : "textures/yellow%20star%20token.png"
         }
     ],
     "accessors" : [

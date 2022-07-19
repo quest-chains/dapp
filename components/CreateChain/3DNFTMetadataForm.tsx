@@ -5,6 +5,7 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Image,
   Input,
   Slider,
   SliderFilledTrack,
@@ -14,6 +15,7 @@ import {
   Stack,
   Text,
   Textarea,
+  Tooltip,
   VStack,
   Wrap,
 } from '@chakra-ui/react';
@@ -27,7 +29,13 @@ import {
   uploadFilesViaAPI,
   uploadMetadataViaAPI,
 } from '@/utils/metadata';
-import { dataURItoFile } from '@/utils/templateHelpers';
+import {
+  backgroundNames,
+  backgrounds,
+  dataURItoFile,
+  gemNames,
+  gems,
+} from '@/utils/templateHelpers';
 import { renderSceneToGLB } from '@/utils/threeHelpers';
 
 import { Token } from '../3DTokenTemplate/Token';
@@ -42,8 +50,8 @@ const NFT3DMetadataForm: React.FC<{
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
 
-  // const [bgIndex, setBgIndex] = useState<number>(0);
-  // const [gemIndex, setGemIndex] = useState<number>(0);
+  const [bgIndex, setBgIndex] = useState<number>(0);
+  const [gemIndex, setGemIndex] = useState<number>(0);
   const [starLength, setStarLength] = useState<number>(3);
   const [name, setName] = useState<string>('Special Chain');
   const [description, setDescription] = useState<string>(
@@ -78,14 +86,14 @@ const NFT3DMetadataForm: React.FC<{
         image_url: `ipfs://${hash}/badge.png`,
         animation_url: `ipfs://${hash}/badge.glb`,
         attributes: [
-          // {
-          //   trait_type: 'Background',
-          //   value: backgroundNames[bgIndex],
-          // },
-          // {
-          //   trait_type: 'Gem',
-          //   value: gemNames[gemIndex],
-          // },
+          {
+            trait_type: 'Background',
+            value: backgroundNames[bgIndex],
+          },
+          {
+            trait_type: 'Gem',
+            value: gemNames[gemIndex],
+          },
           {
             display_type: 'number',
             trait_type: 'Stars',
@@ -115,7 +123,7 @@ const NFT3DMetadataForm: React.FC<{
       }
       setLoading(false);
     }
-  }, [onSubmit, starLength, name, description]);
+  }, [onSubmit, starLength, name, description, bgIndex, gemIndex]);
 
   return (
     <VStack
@@ -141,6 +149,8 @@ const NFT3DMetadataForm: React.FC<{
         <AspectRatio ratio={1} w="100%" maxW={{ base: '100%', lg: '50%' }}>
           <Flex w="100%" h="100%" justify="center" align="center">
             <Token
+              bgIndex={bgIndex}
+              gemIndex={gemIndex}
               starLength={starLength}
               name={name}
               description={description}
@@ -155,7 +165,6 @@ const NFT3DMetadataForm: React.FC<{
           w="100%"
           maxW={{ base: '100%', lg: '60%' }}
         >
-          {/*
           <FormControl isRequired>
             <FormLabel color="main" htmlFor="description">
               Background Shape
@@ -223,7 +232,7 @@ const NFT3DMetadataForm: React.FC<{
                 ))}
               </Wrap>
             </HStack>
-          </FormControl> */}
+          </FormControl>
           <FormControl isRequired>
             <FormLabel color="main" htmlFor="description">
               Number of Stars
