@@ -4,6 +4,7 @@ import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 import boldFontJson from '@/assets/fonts/bold.json';
+import headingFontJson from '@/assets/fonts/heading.json';
 import { wordWrapText } from '@/utils/stringHelpers';
 
 export default function Text({
@@ -11,6 +12,8 @@ export default function Text({
   vAlign = 'top',
   hAlign = 'right',
   size = 2,
+  color = 'white',
+  font = 'body',
   ...props
 }) {
   const config = useMemo(
@@ -41,9 +44,13 @@ export default function Text({
 
   return (
     <group {...props} scale={[0.01 * size, 0.01 * size, 0.005]}>
-      <Text3D ref={mesh} font={boldFontJson} {...config}>
+      <Text3D
+        ref={mesh}
+        font={font === 'heading' ? headingFontJson : boldFontJson}
+        {...config}
+      >
         {children}
-        <meshStandardMaterial />
+        <meshStandardMaterial color={color} />
       </Text3D>
     </group>
   );
@@ -51,9 +58,11 @@ export default function Text({
 
 export const WrapText = ({
   children,
+  color = 'white',
   size = 2,
   length = 20,
   spill = 2,
+  font = 'body',
   ...props
 }) => {
   if (typeof children !== 'string') return null;
@@ -66,6 +75,8 @@ export const WrapText = ({
           position={[0, size * i * -1 * Math.pow(0.84, size), 0]}
           key={line + '-' + i}
           size={size}
+          color={color}
+          font={font}
         >
           {line}
         </Text>

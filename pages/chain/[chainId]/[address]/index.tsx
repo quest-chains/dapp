@@ -48,7 +48,7 @@ import {
   getQuestChainAddresses,
   getQuestChainInfo,
 } from '@/graphql/questChains';
-import { Status } from '@/graphql/types';
+import { QuestChainInfoFragment, Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { QuestChain, QuestChain__factory } from '@/types/v0';
@@ -404,7 +404,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           )}
 
           {/* Quest Chain */}
-          <Flex gap={10} justifyContent="space-between">
+          <Flex
+            gap={10}
+            justifyContent="space-between"
+            direction={{ base: 'column', md: 'row' }}
+          >
             {/* Left */}
             <Flex flexDirection="column" w="full">
               {/* Quest Chain Title */}
@@ -469,6 +473,25 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 )}
               </Flex>
 
+              <Flex
+                flexDirection="column-reverse"
+                maxW={373}
+                display={{ base: 'flex', md: 'none' }}
+              >
+                <ActionsAndImage
+                  mode={mode}
+                  isAdmin={isAdmin}
+                  isOwner={isOwner}
+                  onEdit={() => {
+                    setEditingQuestChain(true);
+                    setChainName(questChain.name || '');
+                  }}
+                  refresh={refresh}
+                  chainId={chainId}
+                  questChain={questChain}
+                />
+              </Flex>
+
               {/* Quest Chain Description */}
               <Flex mb={8}>
                 {!isEditingQuestChain && questChain.description && (
@@ -483,27 +506,27 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Flex>
 
               {/* Quest Chain Metadata */}
-              <Flex mb={8} justifyContent="space-between">
+              <Flex mb={8} justifyContent="space-between" gap={1}>
                 <Box>
-                  <Text color="whiteAlpha.600" fontSize="sm">
+                  <Text color="whiteAlpha.600" fontSize="xs">
                     TOTAL PLAYERS
                   </Text>
                   <Text>{questChain.numQuesters}</Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600" fontSize="sm">
+                  <Text color="whiteAlpha.600" fontSize="xs">
                     PLAYERS FINISHED
                   </Text>
                   <Text>{questChain.numCompletedQuesters}</Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600" fontSize="sm">
+                  <Text color="whiteAlpha.600" fontSize="xs">
                     QUESTS
                   </Text>
                   <Text>{questChain.quests.length}</Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600" fontSize="sm">
+                  <Text color="whiteAlpha.600" fontSize="xs">
                     DATE CREATED
                   </Text>
                   <Text>
@@ -513,7 +536,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   </Text>
                 </Box>
                 <Box>
-                  <Text color="whiteAlpha.600" fontSize="sm">
+                  <Text color="whiteAlpha.600" fontSize="xs">
                     CREATED BY
                   </Text>
                   <UserDisplay address={questChain.createdBy.id} />
@@ -736,40 +759,24 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
             {/* Right */}
             <Flex flexDirection="column" maxW={373}>
-              {/* Actions */}
-              {mode === 'MEMBER' && ((isAdmin && chainId) || isOwner) && (
-                <Flex justifyContent="space-between" h={124}>
-                  {isAdmin && chainId === questChain.chainId && (
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setEditingQuestChain(true);
-                        setChainName(questChain.name || '');
-                      }}
-                      fontSize="xs"
-                    >
-                      <Image src={Edit.src} alt="Edit" mr={2} />
-                      Edit Metadata
-                    </Button>
-                  )}
-                  {isOwner && (
-                    <QuestChainPauseStatus
-                      questChain={questChain}
-                      refresh={refresh}
-                    />
-                  )}
-                </Flex>
-              )}
-
-              {/* Image (Should be NFT) */}
-              {questChain.token.imageUrl && (
-                <Image
-                  src={ipfsUriToHttp(questChain.token.imageUrl)}
-                  alt="Quest Chain NFT badge"
-                  mb={14}
+              <Flex
+                flexDirection="column"
+                maxW={373}
+                display={{ base: 'none', md: 'flex' }}
+              >
+                <ActionsAndImage
+                  mode={mode}
+                  isAdmin={isAdmin}
+                  isOwner={isOwner}
+                  onEdit={() => {
+                    setEditingQuestChain(true);
+                    setChainName(questChain.name || '');
+                  }}
+                  refresh={refresh}
+                  chainId={chainId}
+                  questChain={questChain}
                 />
-              )}
-
+              </Flex>
               {/* Quest Chain Members */}
               <Flex flexDir="column" px={5}>
                 <Text fontFamily="heading" fontSize="xl" mb={5}>
@@ -794,6 +801,55 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     </VStack>
   );
 };
+
+type ActionsAndImageProps = {
+  mode: string;
+  isAdmin: boolean;
+  isOwner: boolean;
+  onEdit: () => void;
+  refresh: () => void;
+  chainId: string | null | undefined;
+  questChain: QuestChainInfoFragment;
+};
+
+const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
+  mode,
+  isAdmin,
+  isOwner,
+  onEdit,
+  refresh,
+  chainId,
+  questChain,
+}) => (
+  <>
+    {/* Actions */}
+    {mode === 'MEMBER' &&
+      chainId &&
+      chainId === questChain.chainId &&
+      (isAdmin || isOwner) && (
+        <Flex justifyContent="space-between" h={124}>
+          {isAdmin && (
+            <Button variant="ghost" onClick={onEdit} fontSize="xs">
+              <Image src={Edit.src} alt="Edit" mr={2} />
+              Edit Metadata
+            </Button>
+          )}
+          {isOwner && (
+            <QuestChainPauseStatus questChain={questChain} refresh={refresh} />
+          )}
+        </Flex>
+      )}
+
+    {/* Image (Should be NFT) */}
+    {questChain.token.imageUrl && (
+      <Image
+        src={ipfsUriToHttp(questChain.token.imageUrl)}
+        alt="Quest Chain NFT badge"
+        mb={14}
+      />
+    )}
+  </>
+);
 
 type RolesProps = {
   role: string;
