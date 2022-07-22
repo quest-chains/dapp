@@ -1,4 +1,12 @@
-import { Button, Flex, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  Spinner,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { Signer } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -12,6 +20,7 @@ import {
   ChainRolesForm,
   RolesFormValues,
 } from '@/components/CreateChain/ChainRolesForm';
+import CustomNFTMetadataForm from '@/components/CreateChain/CustomNFTMetadataForm';
 import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
@@ -107,6 +116,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   );
 
   const [show3DBeta, setShow3DBeta] = useState(false);
+  const [showCustom, setShowCustom] = useState(false);
 
   return (
     <VStack w="100%" align="stretch" px={{ base: 0, lg: 12 }} spacing={8}>
@@ -119,17 +129,38 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           CREATE NEW QUEST CHAIN
         </Text>
         {step === 1 && (
-          <Button
-            onClick={() => setShow3DBeta(s => !s)}
-            borderWidth={1}
-            borderColor="white"
-            px={5}
-            py={2}
-            borderRadius="full"
-            size="sm"
-          >
-            {show3DBeta ? 'BACK TO 2D NFT' : 'TRY 3D NFT BETA'}
-          </Button>
+          <Box>
+            <Button
+              onClick={() => {
+                setShow3DBeta(s => !s);
+                setShowCustom(false);
+              }}
+              borderWidth={1}
+              borderColor="white"
+              px={5}
+              py={2}
+              borderRadius="full"
+              size="sm"
+              mr={4}
+            >
+              {show3DBeta ? 'BACK TO 2D NFT' : 'TRY 3D NFT BETA'}
+            </Button>
+
+            <Button
+              onClick={() => {
+                setShowCustom(s => !s);
+                setShow3DBeta(false);
+              }}
+              borderWidth={1}
+              borderColor="white"
+              px={5}
+              py={2}
+              borderRadius="full"
+              size="sm"
+            >
+              {showCustom ? 'BACK TO 2D NFT' : 'UPLOAD CUSTOM IMAGE'}
+            </Button>
+          </Box>
         )}
       </HStack>
       {showForm && (
@@ -138,13 +169,21 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             <ChainMetadataForm onSubmit={onSubmitChainMeta} />
           </Flex>
           <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
-            {show3DBeta ? (
+            {show3DBeta && (
               <NFT3DMetadataForm
                 chainName={chainName}
                 onSubmit={onSubmitNFTMeta}
                 onBack={() => setStep(0)}
               />
-            ) : (
+            )}
+            {showCustom && (
+              <CustomNFTMetadataForm
+                chainName={chainName}
+                onSubmit={onSubmitNFTMeta}
+                onBack={() => setStep(0)}
+              />
+            )}
+            {!showCustom && !show3DBeta && (
               <NFTMetadataForm
                 chainName={chainName}
                 onSubmit={onSubmitNFTMeta}
