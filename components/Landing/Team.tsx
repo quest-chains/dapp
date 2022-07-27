@@ -76,275 +76,108 @@ export const Team: React.FC = () => {
             templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(5, 1fr)' }}
             height={{ base: 'initial', md: '20rem' }}
           >
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
-              p={8}
-              borderRadius={12}
-            >
-              <Avatar
-                name="vid"
-                src="/Landing/profile/vid.png"
-                size="2xl"
-                showBorder
-                borderColor="main"
-              />
-              <Text
-                fontWeight="bold"
-                mt={3}
-                fontSize="lg"
-                fontFamily="heading"
-                mb={2}
-              >
-                vid
-              </Text>
-              <Text marginBottom="auto" fontSize="sm">
-                Front-End Developer
-              </Text>
-
-              <Flex alignItems="center" justifyContent="center" gap={2}>
-                <ChakraLink
-                  href="https://github.com/vidvidvid"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/github.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-                <ChakraLink
-                  href="https://www.linkedin.com/in/vid-topolovec-62a152a4/"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/linkedin.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-                <ChakraLink
-                  href="https://twitter.com/viiiiiid1"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/twitter.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-              </Flex>
-            </Flex>
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
-              p={8}
-              borderRadius={12}
-            >
-              <Avatar
-                name="dan13ram"
-                src="/Landing/profile/dan.jpeg"
-                size="2xl"
-                showBorder
-                borderColor="main"
-              />
-              <Text
-                fontWeight="bold"
-                mt={3}
-                fontSize="lg"
-                fontFamily="heading"
-                mb={2}
-              >
-                dan13ram
-              </Text>
-              <Text marginBottom="auto" fontSize="sm">
-                Full-Stack Developer
-              </Text>
-
-              <Flex alignItems="center" justifyContent="center">
-                <ChakraLink
-                  href="https://github.com/dan13ram"
-                  isExternal
-                  borderRadius="full"
-                  mr={2}
-                >
-                  <Image
-                    src="/Landing/contact/github.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-                <ChakraLink
-                  href="https://twitter.com/dan13ram"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/twitter.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-              </Flex>
-            </Flex>
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
-              p={8}
-              borderRadius={12}
-            >
-              <Avatar
-                name="Parv"
-                src="/Landing/profile/parv.jpeg"
-                size="2xl"
-                showBorder
-                borderColor="main"
-              />
-              <Text
-                fontWeight="bold"
-                mt={3}
-                fontSize="lg"
-                fontFamily="heading"
-                mb={2}
-              >
-                Parv
-              </Text>
-              <Text marginBottom="auto" fontSize="sm">
-                Solidity Developer
-              </Text>
-              <Flex alignItems="center" justifyContent="center">
-                <ChakraLink
-                  href="https://github.com/parv3213"
-                  isExternal
-                  borderRadius="full"
-                  mr={2}
-                >
-                  <Image
-                    src="/Landing/contact/github.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-                <ChakraLink
-                  href="https://twitter.com/parv3213"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/twitter.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-              </Flex>
-            </Flex>
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
-              p={8}
-              borderRadius={12}
-            >
-              <Avatar
-                name="Dave"
-                src="/Landing/profile/dave.jpg"
-                size="2xl"
-                showBorder
-                borderColor="main"
-              />
-              <Text
-                fontWeight="bold"
-                mt={3}
-                fontSize="lg"
-                fontFamily="heading"
-                mb={2}
-              >
-                Dave
-              </Text>
-              <Text marginBottom="auto" fontSize="sm">
-                Product Designer
-              </Text>
-
-              <Flex alignItems="center" justifyContent="center" gap={2}>
-                <ChakraLink
-                  href="https://www.linkedin.com/in/davortomic/"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Image
-                    src="/Landing/contact/linkedin.png"
-                    alt="ipfs"
-                    height={6}
-                  />
-                </ChakraLink>
-                <ChakraLink
-                  href="https://bit.ly/Portfolio-Davor_Tomic"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Heading
-                    color="blue.200"
-                    fontSize={'xl'}
-                    fontWeight="normal"
-                    lineHeight="1rem"
-                  >
-                    Portfolio
-                  </Heading>
-                </ChakraLink>
-              </Flex>
-            </Flex>
-            <Flex
-              flexDir="column"
-              alignItems="center"
-              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
-              p={8}
-              borderRadius={12}
-            >
-              <Avatar
-                name="Beti"
-                src="/Landing/profile/beti.png"
-                size="2xl"
-                showBorder
-                borderColor="main"
-              />
-              <Text
-                fontWeight="bold"
-                mt={3}
-                fontSize="lg"
-                fontFamily="heading"
-                mb={2}
-              >
-                beti
-              </Text>
-              <Text marginBottom="auto" fontSize="sm">
-                Artist
-              </Text>
-              <Flex alignItems="center" justifyContent="center">
-                <ChakraLink
-                  href="https://www.behance.net/betifrim"
-                  isExternal
-                  borderRadius="full"
-                >
-                  <Heading
-                    color="blue.200"
-                    fontSize={'xl'}
-                    fontWeight="normal"
-                    lineHeight="1rem"
-                  >
-                    Portfolio
-                  </Heading>
-                </ChakraLink>
-              </Flex>
-            </Flex>
+            <ProfileCard
+              name="Vid"
+              role="Front-End Developer"
+              image="/Landing/profile/vid.png"
+              github="https://github.com/vidvidvid"
+              linkedin="https://www.linkedin.com/in/vid-topolovec-62a152a4/"
+              twitter="https://twitter.com/viiiiiid1"
+            />
+            <ProfileCard
+              name="Dan"
+              role="Full-Stack Developer"
+              image="/Landing/profile/dan.jpeg"
+              github="https://github.com/dan13ram"
+              twitter="https://twitter.com/dan13ram"
+            />
+            <ProfileCard
+              name="Parv"
+              role="Solidity Developer"
+              image="/Landing/profile/parv.jpeg"
+              github="https://github.com/parv3213"
+              twitter="https://twitter.com/parv3213"
+            />
+            <ProfileCard
+              name="Dave"
+              role="Product Designer"
+              image="/Landing/profile/dave.jpg"
+              linkedin="https://www.linkedin.com/in/davortomic/"
+              portfolio="https://bit.ly/Portfolio-Davor_Tomic"
+            />
+            <ProfileCard
+              name="Beti"
+              role="Artist"
+              image="/Landing/profile/beti.png"
+              portfolio="https://www.behance.net/betifrim"
+            />
           </Grid>
         </Flex>
       </Flex>
     </HStack>
   );
 };
+
+const ProfileCard = ({
+  name,
+  role,
+  image,
+  github,
+  linkedin,
+  twitter,
+  portfolio,
+}: {
+  name: string;
+  image: string;
+  role: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  portfolio?: string;
+}) => (
+  <Flex
+    flexDir="column"
+    alignItems="center"
+    background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
+    p={8}
+    borderRadius={12}
+  >
+    <Avatar name={name} src={image} size="2xl" showBorder borderColor="main" />
+    <Text fontWeight="bold" mt={3} fontSize="lg" fontFamily="heading" mb={2}>
+      {name}
+    </Text>
+    <Text marginBottom="auto" fontSize="sm">
+      {role}
+    </Text>
+
+    <Flex alignItems="center" justifyContent="center" gap={2}>
+      {github && (
+        <ChakraLink href={github} isExternal borderRadius="full">
+          <Image src="/Landing/contact/github.png" alt="ipfs" height={6} />
+        </ChakraLink>
+      )}
+      {linkedin && (
+        <ChakraLink href={linkedin} isExternal borderRadius="full">
+          <Image src="/Landing/contact/linkedin.png" alt="ipfs" height={6} />
+        </ChakraLink>
+      )}
+      {twitter && (
+        <ChakraLink href={twitter} isExternal borderRadius="full">
+          <Image src="/Landing/contact/twitter.png" alt="ipfs" height={6} />
+        </ChakraLink>
+      )}
+      {portfolio && (
+        <ChakraLink href={portfolio} isExternal borderRadius="full">
+          <Heading
+            color="blue.200"
+            fontSize={'xl'}
+            fontWeight="normal"
+            lineHeight="1rem"
+          >
+            Portfolio
+          </Heading>
+        </ChakraLink>
+      )}
+    </Flex>
+  </Flex>
+);
