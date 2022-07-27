@@ -73,7 +73,7 @@ export const Team: React.FC = () => {
           <Grid
             gap={8}
             // display={{ base: 'flex', md: 'grid' }}
-            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
+            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(5, 1fr)' }}
             height={{ base: 'initial', md: '20rem' }}
           >
             <Flex
@@ -200,6 +200,58 @@ export const Team: React.FC = () => {
               borderRadius={12}
             >
               <Avatar
+                name="Parv"
+                src="/Landing/profile/parv.jpeg"
+                size="2xl"
+                showBorder
+                borderColor="main"
+              />
+              <Text
+                fontWeight="bold"
+                mt={3}
+                fontSize="lg"
+                fontFamily="heading"
+                mb={2}
+              >
+                Parv
+              </Text>
+              <Text marginBottom="auto" fontSize="sm">
+                Solidity Developer
+              </Text>
+              <Flex alignItems="center" justifyContent="center">
+                <ChakraLink
+                  href="https://github.com/parv3213"
+                  isExternal
+                  borderRadius="full"
+                  mr={2}
+                >
+                  <Image
+                    src="/Landing/contact/github.png"
+                    alt="ipfs"
+                    height={6}
+                  />
+                </ChakraLink>
+                <ChakraLink
+                  href="https://twitter.com/parv3213"
+                  isExternal
+                  borderRadius="full"
+                >
+                  <Image
+                    src="/Landing/contact/twitter.png"
+                    alt="ipfs"
+                    height={6}
+                  />
+                </ChakraLink>
+              </Flex>
+            </Flex>
+            <Flex
+              flexDir="column"
+              alignItems="center"
+              background="linear-gradient(transparent, rgba(45, 248, 199, 0.2))"
+              p={8}
+              borderRadius={12}
+            >
+              <Avatar
                 name="Dave"
                 src="/Landing/profile/dave.jpg"
                 size="2xl"
@@ -271,7 +323,7 @@ export const Team: React.FC = () => {
                 beti
               </Text>
               <Text marginBottom="auto" fontSize="sm">
-                UI/UX & Artist
+                Artist
               </Text>
               <Flex alignItems="center" justifyContent="center">
                 <ChakraLink
