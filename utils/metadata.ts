@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { Metadata as MetadataType, validateSchema } from '@/lib';
 
 export type Metadata = MetadataType;
@@ -29,13 +31,35 @@ export const uploadFilesViaAPI = async (
     formData.append(files[i].name, files[i]);
   }
 
-  const res = await fetch('/api/storage', {
-    method: 'POST',
-    body: formData,
-    credentials: 'include',
-  });
-  const { response, error } = await res.json();
-  if (error) throw new Error(error);
+  // const res = await fetch('/api/storage', {
+  //   method: 'POST',
+  //   body: formData,
+  //   credentials: 'include',
+  //   headers: {
+  //     Accept: 'application/json',
+  //     'Content-Type': 'multipart/form-data',
+  //   },
+  // });
+  // const { response, error } = await res.json();
+  // if (error) throw new Error(error);
 
+  const config = {
+    headers: {
+      'content-type': 'multipart/form-data',
+      Accept: 'application/json',
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onUploadProgress: (event: any) => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Current progress:`,
+        Math.round((event.loaded * 100) / event.total),
+      );
+    },
+  };
+  const res = await axios.post('/api/storage', formData, config);
+
+  const { response, error } = res.data;
+  if (error) throw new Error(error);
   return response;
 };
