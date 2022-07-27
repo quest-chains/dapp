@@ -5,6 +5,7 @@ import NextLink from 'next/link';
 
 import { useENS } from '@/hooks/useENS';
 import { formatAddress } from '@/web3';
+import { getEthersProvider } from '@/web3/providers';
 
 export const UserDisplay: React.FC<{
   address: string;
@@ -20,6 +21,7 @@ export const UserDisplay: React.FC<{
               address={address}
               size={20}
               generatedAvatarType="jazzicon"
+              provider={getEthersProvider('0x1')}
             />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
               {formatAddress(utils.getAddress(address), ens)}
