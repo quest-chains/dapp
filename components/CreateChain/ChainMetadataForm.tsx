@@ -20,11 +20,7 @@ import { toast } from 'react-hot-toast';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { handleError } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 export const ChainMetadataForm: React.FC<{
@@ -75,12 +71,12 @@ export const ChainMetadataForm: React.FC<{
       if (myFiles.length) {
         tid = toast.loading('Uploading image to IPFS via web3.storage');
         const file = myFiles[0];
-        const imageHash = await uploadFilesViaAPI([file]);
+        const imageHash = await uploadFiles([file]);
         metadata.image_url = `ipfs://${imageHash}`;
         toast.dismiss(tid);
       }
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      const hash = await uploadMetadataViaAPI(metadata);
+      const hash = await uploadMetadata(metadata);
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 

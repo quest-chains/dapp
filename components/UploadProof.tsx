@@ -26,11 +26,7 @@ import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 import { MarkdownEditor } from './MarkdownEditor';
@@ -96,14 +92,14 @@ export const UploadProof: React.FC<{
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
-        let hash = myFiles.length ? await uploadFilesViaAPI(myFiles) : '';
+        let hash = myFiles.length ? await uploadFiles(myFiles) : '';
         const metadata: Metadata = {
           name: `Submission - Quest - ${name} - User - ${address}`,
           description: proofDescription,
           external_url: hash ? `ipfs://${hash}` : undefined,
         };
 
-        hash = await uploadMetadataViaAPI(metadata);
+        hash = await uploadMetadata(metadata);
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(

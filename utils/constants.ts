@@ -6,7 +6,7 @@ export const SUPPORTED_NETWORKS = process.env
   .filter(n => !!n && !Number.isNaN(Number(n)))
   .map(n => `0x${Number(n).toString(16)}`);
 
-export const WEB3_STORAGE_TOKEN = process.env.NEXT_WEB3_STORAGE_TOKEN!;
+export const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export const GRAPH_HEALTH_ENDPOINT =
   'https://api.thegraph.com/index-node/graphql';
