@@ -49,7 +49,26 @@ class GraphHealthStore {
   }
 }
 
-const graphHealthStore = new GraphHealthStore();
+const HealthStoreSingleton = (function () {
+  let instance: GraphHealthStore;
+
+  function createInstance() {
+    return new GraphHealthStore();
+  }
+
+  return {
+    getInstance: function () {
+      if (!instance) {
+        instance = createInstance();
+      }
+      return instance;
+    },
+  };
+})();
+
+const getGraphStatus = () => HealthStoreSingleton.getInstance().status();
+
+export const initGraphHealthStore = getGraphStatus;
 
 export const getGraphLatestBlock = (chainId: string): number =>
-  graphHealthStore.status()[chainId];
+  getGraphStatus()[chainId];
