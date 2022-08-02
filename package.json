@@ -27,6 +27,7 @@
     "@types/three": "^0.141.0",
     "@walletconnect/web3-provider": "^1.7.8",
     "ajv": "^8.11.0",
+    "axios": "^0.27.2",
     "busboy": "^1.6.0",
     "chakra-ui-markdown-renderer": "^4.1.0",
     "concat-stream": "^2.0.0",

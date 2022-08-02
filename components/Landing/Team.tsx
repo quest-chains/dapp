@@ -82,7 +82,7 @@ export const Team: React.FC = () => {
               image="/Landing/profile/vid.png"
               github="https://github.com/vidvidvid"
               linkedin="https://www.linkedin.com/in/vid-topolovec-62a152a4/"
-              twitter="https://twitter.com/viiiiiid1"
+              twitter="https://twitter.com/viiiiiiiiiiiid"
             />
             <ProfileCard
               name="Dan"

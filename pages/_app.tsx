@@ -7,14 +7,19 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { AppLayout } from '@/components/Layout/AppLayout';
+import { initGraphHealthStore } from '@/stores/graphHealth';
 import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   const router = useRouter();
+  useEffect(() => {
+    initGraphHealthStore();
+  }, []);
 
   return (
     <ChakraProvider resetCSS theme={theme}>
