@@ -47,7 +47,7 @@ export const Team: React.FC = () => {
 
           <Flex mb={8}>
             <Link
-              href="https://discord.gg/BxXykDnC"
+              href="https://discord.gg/sjnh6cuVcN"
               isExternal
               borderRadius="full"
               mx={4}
