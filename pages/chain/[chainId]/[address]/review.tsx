@@ -46,11 +46,7 @@ import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
@@ -222,11 +218,11 @@ const Review: React.FC<Props> = ({
             description: reviewDescription,
           };
           if (myFiles.length > 0) {
-            const filesHash = await uploadFilesViaAPI(myFiles);
+            const filesHash = await uploadFiles(myFiles);
             metadata.external_url = `ipfs://${filesHash}`;
           }
 
-          const hash = await uploadMetadataViaAPI(metadata);
+          const hash = await uploadMetadata(metadata);
           const details = `ipfs://${hash}`;
           toast.dismiss(tid);
           tid = toast.loading(

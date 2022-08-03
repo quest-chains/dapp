@@ -1,3 +1,10 @@
+import Ajv from 'ajv';
+
+import schema from './schema.json';
+
+const ajv = new Ajv({ allowUnionTypes: true });
+const validate = ajv.compile(schema);
+
 export type Metadata = {
   name: string;
   description: string;
@@ -10,3 +17,6 @@ export type Metadata = {
     display_type?: 'number' | 'boost_number' | 'boost_percentage';
   }[];
 };
+
+export const validateSchema = (metadata: Metadata): boolean =>
+  validate(metadata);

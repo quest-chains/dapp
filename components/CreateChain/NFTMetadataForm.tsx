@@ -23,11 +23,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { handleError } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import {
   backgroundNames,
   backgrounds,
@@ -68,7 +64,7 @@ const NFTMetadataForm: React.FC<{
     try {
       const dataURI = await componentToPNG(componentRef);
       const file = dataURItoFile(dataURI, 'badge.png');
-      let hash = await uploadFilesViaAPI([file]);
+      let hash = await uploadFiles([file]);
       const metadata: Metadata = {
         name,
         description,
@@ -92,7 +88,7 @@ const NFTMetadataForm: React.FC<{
 
       toast.dismiss(tid);
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      hash = await uploadMetadataViaAPI(metadata);
+      hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
       onSubmit(details);
