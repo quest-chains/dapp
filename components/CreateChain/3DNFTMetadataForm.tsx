@@ -24,11 +24,7 @@ import { toast } from 'react-hot-toast';
 
 import { arrayBufferToFile } from '@/utils/fileHelpers';
 import { handleError } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import {
   backgroundNames,
   backgrounds,
@@ -79,7 +75,7 @@ const NFT3DMetadataForm: React.FC<{
       const modelBinary = await renderSceneToGLB(sceneRef.current);
       const modelFile = arrayBufferToFile(modelBinary, 'badge.glb');
 
-      let hash = await uploadFilesViaAPI([imageFile, modelFile]);
+      let hash = await uploadFiles([imageFile, modelFile]);
       const metadata: Metadata = {
         name,
         description,
@@ -107,7 +103,7 @@ const NFT3DMetadataForm: React.FC<{
 
       toast.dismiss(tid);
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      hash = await uploadMetadataViaAPI(metadata);
+      hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
 

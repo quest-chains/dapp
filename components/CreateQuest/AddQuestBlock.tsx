@@ -35,7 +35,7 @@ import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { Metadata, uploadMetadataViaAPI } from '@/utils/metadata';
+import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { useWallet } from '@/web3';
 
 import { CreateFlow } from './CreateFlow';
@@ -117,7 +117,7 @@ export const AddQuestBlock: React.FC<{
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
 
       try {
-        const hash = await uploadMetadataViaAPI(metadata);
+        const hash = await uploadMetadata(metadata);
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(

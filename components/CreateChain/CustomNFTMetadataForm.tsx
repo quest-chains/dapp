@@ -14,11 +14,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
 import { handleError } from '@/utils/helpers';
-import {
-  Metadata,
-  uploadFilesViaAPI,
-  uploadMetadataViaAPI,
-} from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
 import { SubmitButton } from '../SubmitButton';
 
@@ -68,7 +64,7 @@ const CustomNFTMetadataForm: React.FC<{
     let tid = toast.loading('Uploading image to IPFS via web3.storage');
     try {
       const file = myFiles[0];
-      let hash = await uploadFilesViaAPI([file]);
+      let hash = await uploadFiles([file]);
 
       const metadata: Metadata = {
         name,
@@ -78,7 +74,7 @@ const CustomNFTMetadataForm: React.FC<{
 
       toast.dismiss(tid);
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      hash = await uploadMetadataViaAPI(metadata);
+      hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
       onSubmit(details);

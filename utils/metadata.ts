@@ -1,29 +1,36 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
-import { Metadata as MetadataType, validateSchema } from '@/lib';
+import { API_URL } from './constants';
+import { Metadata as MetadataType, validateSchema } from './validate';
 
 export type Metadata = MetadataType;
 
-export const uploadMetadataViaAPI = async (
+type HttpResponse = { response: unknown; error: string };
+
+export const uploadMetadata = async (
   metadata: MetadataType,
 ): Promise<string> => {
   const valid = validateSchema(metadata);
   if (!valid) throw new Error('Invalid Metadata Schema');
-  const res = await fetch('/api/metadata', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ metadata }),
-  });
-  const { response, error } = await res.json();
-  if (error) throw new Error(error);
 
-  return response;
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  };
+
+  try {
+    const res = await axios.post(`${API_URL}/upload/json`, metadata, config);
+    return res.data.response;
+  } catch (error) {
+    throw new Error(
+      ((error as AxiosError).response?.data as HttpResponse).error,
+    );
+  }
 };
 
-export const uploadFilesViaAPI = async (
+export const uploadFiles = async (
   files: File[] | FileList,
 ): Promise<string> => {
   const formData = new FormData();
@@ -31,25 +38,12 @@ export const uploadFilesViaAPI = async (
     formData.append(files[i].name, files[i]);
   }
 
-  // const res = await fetch('/api/storage', {
-  //   method: 'POST',
-  //   body: formData,
-  //   credentials: 'include',
-  //   headers: {
-  //     Accept: 'application/json',
-  //     'Content-Type': 'multipart/form-data',
-  //   },
-  // });
-  // const { response, error } = await res.json();
-  // if (error) throw new Error(error);
-
   const config = {
     headers: {
-      'content-type': 'multipart/form-data',
+      'Content-Type': 'multipart/form-data',
       Accept: 'application/json',
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onUploadProgress: (event: any) => {
+    onUploadProgress: (event: { loaded: number; total: number }) => {
       // eslint-disable-next-line no-console
       console.log(
         `Current progress:`,
@@ -57,9 +51,13 @@ export const uploadFilesViaAPI = async (
       );
     },
   };
-  const res = await axios.post('/api/storage', formData, config);
 
-  const { response, error } = res.data;
-  if (error) throw new Error(error);
-  return response;
+  try {
+    const res = await axios.post(`${API_URL}/upload/files`, formData, config);
+    return res.data.response;
+  } catch (error) {
+    throw new Error(
+      ((error as AxiosError).response?.data as HttpResponse).error,
+    );
+  }
 };
