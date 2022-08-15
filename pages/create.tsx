@@ -7,11 +7,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Signer } from 'ethers';
+import { randomBytes } from 'ethers/lib/utils';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import NFT3DMetadataForm from '@/components/CreateChain/3DNFTMetadataForm';
@@ -25,7 +25,11 @@ import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
-import { QuestChainFactory, QuestChainFactory__factory } from '@/types/v0';
+import {
+  QuestChainFactory as QuestChainFactoryV1,
+  QuestChainFactory__factory as QuestChainFactoryV1__factory,
+} from '@/types/v1';
+import { QuestChainCommons } from '@/types/v1/contracts/QuestChainFactory';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
@@ -35,16 +39,7 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>;
 const Create: React.FC<Props> = ({ globalInfo }) => {
   const router = useRouter();
 
-  const { provider, chainId } = useWallet();
-
-  const factoryContract: QuestChainFactory | undefined = useMemo(() => {
-    if (!isSupportedNetwork(chainId)) return;
-
-    return QuestChainFactory__factory.connect(
-      globalInfo[chainId as string],
-      provider?.getSigner() as Signer,
-    );
-  }, [provider, chainId, globalInfo]);
+  const { address, provider, chainId } = useWallet();
 
   const { questChains, fetching } =
     useLatestCreatedQuestChainsDataForAllChains();
@@ -71,19 +66,29 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       editorAddresses,
       reviewerAddresses,
     }: RolesFormValues) => {
-      if (!chainId || !isSupportedNetwork(chainId) || !factoryContract) return;
+      if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
+        return;
 
       let tid = toast.loading(
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
       );
       try {
-        const tx = await factoryContract.createWithRoles(
-          chainUri,
-          nftUri,
-          adminAddresses,
-          editorAddresses,
-          reviewerAddresses,
-        );
+        const info: QuestChainCommons.QuestChainInfoStruct = {
+          details: chainUri,
+          tokenURI: nftUri,
+          owners: [address],
+          admins: adminAddresses,
+          editors: editorAddresses,
+          reviewers: reviewerAddresses,
+          quests: [],
+          paused: false,
+        };
+        const factoryContract: QuestChainFactoryV1 =
+          QuestChainFactoryV1__factory.connect(
+            globalInfo[chainId],
+            provider.getSigner(),
+          );
+        const tx = await factoryContract.create(info, randomBytes(32));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -100,9 +105,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         setNFTUri('');
         setStep(0);
 
-        const address = await awaitQuestChainAddress(receipt);
-        if (address) {
-          router.push(`/chain/${chainId}/${address}`);
+        const questChainAddress = await awaitQuestChainAddress(receipt);
+        if (questChainAddress) {
+          router.push(`/chain/${chainId}/${questChainAddress}`);
         } else {
           setShowForm(false);
           setTimeout(() => setShowForm(true), 50);
@@ -112,7 +117,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         handleError(error);
       }
     },
-    [chainId, factoryContract, router, chainUri, nftUri],
+    [address, chainId, router, chainUri, nftUri, provider, globalInfo],
   );
 
   const [show3DBeta, setShow3DBeta] = useState(false);

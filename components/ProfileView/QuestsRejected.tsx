@@ -19,42 +19,38 @@ import {
 import { UploadProof } from '@/components/UploadProof';
 import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
+import { useWallet } from '@/web3';
 
 export const QuestRejectedStatus: React.FC<{
-  quest: QuestStatusInfoFragment;
-  address: string;
+  statusInfo: QuestStatusInfoFragment;
   refresh: () => void;
-}> = ({ quest, address, refresh }) => (
+}> = ({ statusInfo, refresh }) => (
   <Box background="rgba(180, 83, 9, 0.3)" p={8} maxW="32rem">
     <Flex alignItems="center" mb={3}>
       <WarningTwoIcon color="#F59E0B" mr={3} />
 
       <Text fontWeight="bold" fontSize={16}>
-        Submission in {quest.questChain.name} rejected
+        Submission in {statusInfo.questChain.name} rejected
       </Text>
     </Flex>
     <Text>
-      Your submission of proof for {quest.quest.name} was rejected, with the
-      following explanation:{' '}
+      Your submission of proof for {statusInfo.quest.name} was rejected, with
+      the following explanation:{' '}
     </Text>
     <Text fontWeight="bold" mb={3}>
-      {quest.reviews.slice(-1)[0].description}
+      {statusInfo.reviews.slice(-1)[0].description}
     </Text>
     <UploadProof
-      address={address}
-      questId={quest.quest.questId}
-      questChainId={quest.questChain.chainId}
-      questChainAddress={quest.questChain.address}
-      name={quest.quest.name}
+      quest={statusInfo.quest}
+      questChain={statusInfo.questChain}
       refresh={refresh}
       profile
     />
   </Box>
 );
 
-export const QuestsRejected: React.FC<{
-  address: string;
-}> = ({ address }) => {
+export const QuestsRejected: React.FC = () => {
+  const { address } = useWallet();
   const {
     results: questsRejected,
     fetching,
@@ -91,11 +87,10 @@ export const QuestsRejected: React.FC<{
             </Button>
           )}
           <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
-            {questsRejected.slice(0, 2).map(quest => (
+            {questsRejected.slice(0, 2).map(statusInfo => (
               <QuestRejectedStatus
-                key={quest.id}
-                quest={quest}
-                address={address}
+                key={statusInfo.id}
+                statusInfo={statusInfo}
                 refresh={refresh}
               />
             ))}
@@ -110,11 +105,10 @@ export const QuestsRejected: React.FC<{
           <ModalCloseButton />
           <ModalBody>
             <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
-              {questsRejected.slice(0, 2).map(quest => (
+              {questsRejected.slice(0, 2).map(statusInfo => (
                 <QuestRejectedStatus
-                  key={quest.id}
-                  quest={quest}
-                  address={address}
+                  key={statusInfo.id}
+                  statusInfo={statusInfo}
                   refresh={refresh}
                 />
               ))}

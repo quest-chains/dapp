@@ -21,7 +21,6 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { Signer } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -42,13 +41,14 @@ import { getStatusesForChain } from '@/graphql/questStatuses';
 import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { QuestChain, QuestChain__factory } from '@/types/v0';
-import { ZERO_ADDRESS } from '@/utils/constants';
+import { QuestChain as QuestChainV0 } from '@/types/v0';
+import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
+import { getQuestChainContract } from '@/web3/contract';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -156,10 +156,6 @@ const Review: React.FC<Props> = ({
   const [accepting, setAccepting] = useState(false);
 
   const { provider, address, chainId } = useWallet();
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChain?.address ?? ZERO_ADDRESS,
-    provider?.getSigner() as Signer,
-  );
 
   const reviews = useMemo(() => {
     if (questStatuses) return questStatuses.filter(q => q.status === 'review');
@@ -206,7 +202,13 @@ const Review: React.FC<Props> = ({
 
   const onSubmit = useCallback(
     async (success: boolean) => {
-      if (!chainId || chainId !== questChain?.chainId) return;
+      if (
+        !chainId ||
+        !questChain ||
+        !provider ||
+        chainId !== questChain.chainId
+      )
+        return;
       if (quest && reviewDescription) {
         setRejecting(!success);
         setAccepting(success);
@@ -228,12 +230,25 @@ const Review: React.FC<Props> = ({
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
-          const tx = await contract.reviewProof(
-            quest.userId,
-            quest.questId,
-            success,
-            details,
+
+          const contract = getQuestChainContract(
+            questChain.address,
+            questChain.version,
+            provider.getSigner(),
           );
+          const tx = await (questChain.version === '1'
+            ? (contract as QuestChainV1).reviewProofs(
+                [quest.userId],
+                [quest.questId],
+                [success],
+                [details],
+              )
+            : (contract as QuestChainV0).reviewProof(
+                quest.userId,
+                quest.questId,
+                success,
+                details,
+              ));
           toast.dismiss(tid);
           tid = handleTxLoading(tx.hash, chainId);
           const receipt = await tx.wait(1);
@@ -258,7 +273,6 @@ const Review: React.FC<Props> = ({
       }
     },
     [
-      contract,
       refresh,
       quest,
       reviewDescription,
@@ -267,6 +281,7 @@ const Review: React.FC<Props> = ({
       address,
       chainId,
       questChain,
+      provider,
     ],
   );
 

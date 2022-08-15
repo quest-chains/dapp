@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 
 import { getStatusForUser } from '@/graphql/statusForUser';
+import { QuestChainInfoFragment } from '@/graphql/types';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 import { useRefresh } from './useRefresh';
 
 export type UserNFTStatus = {
-  address: string;
-  chainId: string;
-  name?: string | null | undefined;
+  questChain: QuestChainInfoFragment;
   completed: number;
 };
 
 export const useNFTsToMintForAllChains = (
-  address: string,
+  address: string | undefined | null,
 ): {
   error: unknown;
   fetching: boolean;
@@ -26,6 +25,12 @@ export const useNFTsToMintForAllChains = (
   const [refreshCount, refresh] = useRefresh();
 
   useEffect(() => {
+    if (!address) {
+      setFetching(false);
+      setError(new Error('No address provider'));
+      setResults([]);
+      return;
+    }
     let isMounted = true;
     (async () => {
       try {
@@ -53,10 +58,8 @@ export const useNFTsToMintForAllChains = (
                   .includes(address?.toLowerCase()),
             )
             .map(us => ({
-              chainId: us.chain.chainId,
-              address: us.chain.address,
+              questChain: us.chain,
               completed: us.completed,
-              name: us.chain.name,
             })),
         );
       } catch (err) {

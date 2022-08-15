@@ -1,28 +1,22 @@
 import { Button, Image } from '@chakra-ui/react';
-import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Power from '@/assets/Power.svg';
 import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain, QuestChain__factory } from '@/types/v0';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
-
+import { getQuestChainContract } from '@/web3/contract';
 export const QuestChainPauseStatus: React.FC<{
   questChain: QuestChainInfoFragment;
   refresh: () => void | Promise<void>;
 }> = ({ questChain, refresh }) => {
   const { provider, chainId } = useWallet();
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChain.address,
-    provider?.getSigner() as Signer,
-  );
   const [isLoading, setLoading] = useState(false);
 
   const togglePause = useCallback(async () => {
-    if (!chainId || chainId !== questChain?.chainId) {
+    if (!chainId || chainId !== questChain.chainId || !provider) {
       toast.error(
         `Incorrect Network. Please switch your wallet to ${
           AVAILABLE_NETWORK_INFO[questChain.chainId].name
@@ -36,6 +30,12 @@ export const QuestChainPauseStatus: React.FC<{
       tid = toast.loading(
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
       );
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      );
+
       const tx = await (questChain.paused
         ? contract.unpause()
         : contract.pause());
@@ -60,7 +60,7 @@ export const QuestChainPauseStatus: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [contract, chainId, refresh, questChain.paused, questChain.chainId]);
+  }, [chainId, refresh, questChain, provider]);
 
   return (
     <Button
