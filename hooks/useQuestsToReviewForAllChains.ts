@@ -6,7 +6,7 @@ import { QuestChainReviewInfoFragment } from '@/graphql/types';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestsToReviewForAllChains = (
-  address: string,
+  address: string | undefined | null,
 ): {
   error: unknown;
   fetching: boolean;
@@ -17,9 +17,14 @@ export const useQuestsToReviewForAllChains = (
   const [results, setResults] = useState<QuestChainReviewInfoFragment[]>([]);
 
   useEffect(() => {
+    if (!address) {
+      setFetching(false);
+      setError(new Error('No address provider'));
+      setResults([]);
+      return;
+    }
     let isMounted = true;
     (async () => {
-      if (!address) return;
       try {
         setFetching(true);
         const allResults = await Promise.all(

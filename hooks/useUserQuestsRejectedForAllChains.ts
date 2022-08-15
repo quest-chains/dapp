@@ -7,7 +7,7 @@ import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { useRefresh } from './useRefresh';
 
 export const useUserQuestsRejectedForAllChains = (
-  address: string,
+  address: string | undefined | null,
 ): {
   error: unknown;
   fetching: boolean;
@@ -20,6 +20,12 @@ export const useUserQuestsRejectedForAllChains = (
   const [refreshCount, refresh] = useRefresh();
 
   useEffect(() => {
+    if (!address) {
+      setFetching(false);
+      setError(new Error('No address provider'));
+      setResults([]);
+      return;
+    }
     let isMounted = true;
     (async () => {
       try {

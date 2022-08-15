@@ -1,5 +1,7 @@
 fragment QuestChainInfo on QuestChain {
   address: id
+  version
+  premium
   paused
   chainId
   updatedAt

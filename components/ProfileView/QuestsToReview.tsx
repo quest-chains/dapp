@@ -21,6 +21,7 @@ import NextLink from 'next/link';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainReviewInfoFragment } from '@/graphql/types';
 import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllChains';
+import { useWallet } from '@/web3';
 
 const QuestChainStatusView: React.FC<{
   questChain: QuestChainReviewInfoFragment;
@@ -67,9 +68,8 @@ const QuestChainStatusView: React.FC<{
   </NextLink>
 );
 
-export const QuestsToReview: React.FC<{
-  address: string;
-}> = ({ address }) => {
+export const QuestsToReview: React.FC = () => {
+  const { address } = useWallet();
   const { results: chainsToReview, fetching } =
     useQuestsToReviewForAllChains(address);
 
