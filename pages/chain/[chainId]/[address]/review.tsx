@@ -47,6 +47,7 @@ import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
+import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
@@ -60,8 +61,7 @@ const StatusDisplay: React.FC<{
 
   const { description, externalUrl } = submissions[submissions.length - 1];
 
-  const hash = externalUrl?.split('/').pop();
-  const url = hash ? `https://${hash}.ipfs.infura-ipfs.io` : '';
+  const url = ipfsUriToHttp(externalUrl);
 
   const isSmallerScreen = useBreakpointValue({ base: true, md: false });
 

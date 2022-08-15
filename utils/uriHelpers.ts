@@ -42,19 +42,19 @@ export const uriToHttpAsArray = (uri: string): string[] => {
       if (hash.startsWith('ipfs')) {
         const newHash = hash.split('/')[1];
         return [
-          `https://ipfs.infura.io/ipfs/${newHash}/`,
+          `https://gateway.ipfs.io/ipfs/${newHash}/`,
           `https://gateway.pinata.cloud/ipfs/${newHash}/`,
           `https://ipfs.io/ipfs/${newHash}/`,
         ];
       }
       return [
-        `https://ipfs.infura.io/ipfs/${hash}/`,
+        `https://gateway.ipfs.io/ipfs/${hash}/`,
         `https://gateway.pinata.cloud/ipfs/${hash}/`,
         `https://ipfs.io/ipfs/${hash}/`,
       ];
     case 'ipns':
       return [
-        `https://ipfs.infura.io/ipns/${name}/`,
+        `https://gateway.ipfs.io/ipns/${name}/`,
         `https://gateway.pinata.cloud/ipns/${name}/`,
         `https://ipfs.io/ipns/${name}/`,
       ];
@@ -65,15 +65,6 @@ export const uriToHttpAsArray = (uri: string): string[] => {
 
 export const ipfsUriToHttp = (uri: string | null | undefined): string => {
   if (!uri) return '';
-  const { protocol, hash } = parseUri(uri);
-  if (protocol !== 'ipfs' || !hash) return '';
-
-  if (hash.includes('/')) {
-    const slashIndex = hash.indexOf('/');
-    return `https://${hash.substring(
-      0,
-      slashIndex,
-    )}.ipfs.infura-ipfs.io${hash.substring(slashIndex)}`;
-  }
-  return `https://${hash}.ipfs.infura-ipfs.io`;
+  const array = uriToHttpAsArray(uri);
+  return array[0] ?? '';
 };
