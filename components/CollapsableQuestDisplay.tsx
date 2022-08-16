@@ -52,7 +52,7 @@ export const CollapsableQuestDisplay: React.FC<
                 }
                 bgColor={
                   userStatus[quest.questId]?.status === 'review'
-                    ? '#EFFF8quest.F20'
+                    ? '#EFFF8F20'
                     : 'main.100'
                 }
                 px={4}
