@@ -30,7 +30,7 @@ const ChainNFTForm: React.FC<{
           borderColor="gray.500"
           color="gray.500"
           borderRadius={4}
-          mr={3}
+          mr={4}
         >
           STEP 2
         </Box>

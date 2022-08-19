@@ -39,7 +39,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(2); // change back to 0
 
   const onSubmitChainMeta = (
     name: string,
@@ -156,8 +156,16 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         </Box>
       )}
 
-      <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
+      <Flex
+        w="100%"
+        display={step === 1 ? 'flex' : 'none'}
+        flexDir="column"
+        gap={8}
+      >
         <ChainMetadataForm onSubmit={onSubmitChainMeta} />
+        <Step2 />
+        <Step3 />
+        <Step4 />
       </Flex>
 
       {step >= 2 && (
@@ -178,16 +186,56 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         </Box>
       )}
 
-      <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
+      <Flex
+        w="100%"
+        display={step === 2 ? 'flex' : 'none'}
+        flexDir="column"
+        gap={8}
+      >
         <ChainNFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
+        <Step3 />
+        <Step4 />
       </Flex>
 
       <Flex w="100%" display={step === 3 ? 'flex' : 'none'}>
         <ChainRolesForm onSubmit={onSubmitRoles} onBack={() => setStep(1)} />
+        <Step4 />
       </Flex>
     </Flex>
   );
 };
+
+const Step: React.FC<{
+  number: number;
+  title: string;
+}> = ({ number, title }) => (
+  <Flex
+    w="100%"
+    boxShadow="inset 0px 0px 0px 1px #718096"
+    borderRadius={10}
+    px={{ base: 4, md: 12 }}
+    py={8}
+    alignItems="center"
+  >
+    <Box
+      py={1}
+      px={3}
+      borderWidth={1}
+      borderColor="gray.500"
+      color="gray.500"
+      borderRadius={4}
+      mr={6}
+    >
+      STEP {number}
+    </Box>
+    <Text fontWeight="bold" fontSize={16} color="gray.400">
+      {title}
+    </Text>
+  </Flex>
+);
+const Step2 = () => <Step number={2} title="Chain completion NFT" />;
+const Step3 = () => <Step number={3} title="Members" />;
+const Step4 = () => <Step number={4} title="Quests" />;
 
 export const getStaticProps = async () => {
   return {
