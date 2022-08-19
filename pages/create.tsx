@@ -114,7 +114,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <HStack w="100%" spacing="4">
-        {step === 1 && (
+        {step === 2 && (
           <Box>
             <Button
               onClick={() => {
@@ -149,54 +149,52 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           </Box>
         )}
       </HStack>
-      <>
-        <Flex w="100%" display={step === 0 ? 'flex' : 'none'} flexDir="column">
-          <Step0 />
-          <Flex w="full" justifyContent="center">
-            <Button
-              onClick={() => setStep(1)}
-              borderRadius="full"
-              _hover={{
-                bg: 'main.950',
-              }}
-              px={32}
-              bg="main"
-              color="black"
-            >
-              GET STARTED
-            </Button>
-          </Flex>
+      <Flex w="100%" display={step === 0 ? 'flex' : 'none'} flexDir="column">
+        <Step0 />
+        <Flex w="full" justifyContent="center">
+          <Button
+            onClick={() => setStep(1)}
+            borderRadius="full"
+            _hover={{
+              bg: 'main.950',
+            }}
+            px={32}
+            bg="main"
+            color="black"
+          >
+            GET STARTED
+          </Button>
         </Flex>
-        <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
-          <ChainMetadataForm onSubmit={onSubmitChainMeta} />
-        </Flex>
-        <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
-          {show3DBeta && (
-            <NFT3DMetadataForm
-              chainName={chainName}
-              onSubmit={onSubmitNFTMeta}
-              onBack={() => setStep(1)}
-            />
-          )}
-          {showCustom && (
-            <CustomNFTMetadataForm
-              chainName={chainName}
-              onSubmit={onSubmitNFTMeta}
-              onBack={() => setStep(1)}
-            />
-          )}
-          {!showCustom && !show3DBeta && (
-            <NFTMetadataForm
-              chainName={chainName}
-              onSubmit={onSubmitNFTMeta}
-              onBack={() => setStep(1)}
-            />
-          )}
-        </Flex>
-        <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
-          <ChainRolesForm onSubmit={onSubmitRoles} onBack={() => setStep(1)} />
-        </Flex>
-      </>
+      </Flex>
+      <Flex w="100%" display={step === 1 ? 'flex' : 'none'}>
+        <ChainMetadataForm onSubmit={onSubmitChainMeta} />
+      </Flex>
+      <Flex w="100%" display={step === 2 ? 'flex' : 'none'}>
+        {show3DBeta && (
+          <NFT3DMetadataForm
+            chainName={chainName}
+            onSubmit={onSubmitNFTMeta}
+            onBack={() => setStep(1)}
+          />
+        )}
+        {showCustom && (
+          <CustomNFTMetadataForm
+            chainName={chainName}
+            onSubmit={onSubmitNFTMeta}
+            onBack={() => setStep(1)}
+          />
+        )}
+        {!showCustom && !show3DBeta && (
+          <NFTMetadataForm
+            chainName={chainName}
+            onSubmit={onSubmitNFTMeta}
+            onBack={() => setStep(1)}
+          />
+        )}
+      </Flex>
+      <Flex w="100%" display={step === 3 ? 'flex' : 'none'}>
+        <ChainRolesForm onSubmit={onSubmitRoles} onBack={() => setStep(1)} />
+      </Flex>
     </VStack>
   );
 };

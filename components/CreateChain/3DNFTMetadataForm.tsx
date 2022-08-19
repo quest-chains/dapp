@@ -122,15 +122,7 @@ const NFT3DMetadataForm: React.FC<{
   }, [onSubmit, starLength, name, description, bgIndex, gemIndex]);
 
   return (
-    <VStack
-      w="100%"
-      align="stretch"
-      spacing={8}
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      borderRadius={30}
-      px={{ base: 4, md: 8 }}
-      py={8}
-    >
+    <VStack w="100%" align="stretch" spacing={8}>
       <HStack justify="space-between" w="100%">
         <Text color="main" fontSize={20}>
           QUEST CHAIN 3D NFT
