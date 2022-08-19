@@ -13,7 +13,6 @@ import {
   SliderThumb,
   SliderTrack,
   Stack,
-  Text,
   Textarea,
   Tooltip,
   VStack,
@@ -101,24 +100,12 @@ const NFTMetadataForm: React.FC<{
   }, [onSubmit, bgIndex, gemIndex, starLength, name, description]);
 
   return (
-    <VStack
-      w="100%"
-      align="stretch"
-      spacing={8}
-      boxShadow="inset 0px 0px 0px 1px white"
-      borderRadius={30}
-      px={{ base: 4, md: 8 }}
-      py={8}
-    >
-      <HStack justify="space-between" w="100%">
-        <Text color="main" fontSize={20}>
-          QUEST CHAIN NFT
-        </Text>
-      </HStack>
+    <VStack w="100%" align="stretch" spacing={8}>
       <Stack
         w="100%"
         direction={{ base: 'column', lg: 'row-reverse' }}
         spacing={{ base: 8, lg: 0 }}
+        mb={12}
       >
         <Flex
           justify="center"
@@ -144,9 +131,7 @@ const NFTMetadataForm: React.FC<{
           maxW={{ base: '100%', lg: '60%' }}
         >
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Background Shape
-            </FormLabel>
+            <FormLabel htmlFor="description">Background Shape</FormLabel>
             <HStack>
               {backgrounds.map((bg, bgId) => (
                 <Tooltip label={`${backgroundNames[bgId]} Background`} key={bg}>
@@ -174,9 +159,7 @@ const NFTMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Gem
-            </FormLabel>
+            <FormLabel htmlFor="description">Gem</FormLabel>
             <HStack>
               <Wrap maxW="45rem">
                 {gems.map((gem, gemId) => (
@@ -212,9 +195,7 @@ const NFTMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Number of Stars
-            </FormLabel>
+            <FormLabel htmlFor="description">Number of Stars</FormLabel>
             <Slider
               value={starLength}
               onChange={v => setStarLength(v)}
@@ -242,9 +223,7 @@ const NFTMetadataForm: React.FC<{
           </FormControl>
           <Wrap>
             <FormControl isRequired>
-              <FormLabel color="main" htmlFor="name">
-                Name
-              </FormLabel>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 value={name}
                 onChange={e => setName(e.target.value)}
@@ -256,9 +235,7 @@ const NFTMetadataForm: React.FC<{
             </FormControl>
           </Wrap>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Description
-            </FormLabel>
+            <FormLabel htmlFor="description">Description</FormLabel>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -270,7 +247,6 @@ const NFTMetadataForm: React.FC<{
         </VStack>
       </Stack>
       <Flex
-        mt={4}
         w="100%"
         justify={onBack ? 'space-between' : 'flex-end'}
         align="center"
@@ -290,8 +266,9 @@ const NFTMetadataForm: React.FC<{
           isLoading={isLoading}
           type="submit"
           onClick={exportMetadata}
+          w="full"
         >
-          Next
+          Continue to Step 3
         </SubmitButton>
       </Flex>
     </VStack>

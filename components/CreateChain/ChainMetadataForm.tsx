@@ -105,8 +105,8 @@ export const ChainMetadataForm: React.FC<{
       spacing={10}
       boxShadow="inset 0px 0px 0px 1px white"
       borderRadius={10}
-      px={{ base: 4, md: 20 }}
-      py={{ base: 8, md: 12 }}
+      px={{ base: 4, md: 12 }}
+      py={8}
     >
       <HStack w="100%">
         <Box

@@ -41,8 +41,7 @@ const NFT3DMetadataForm: React.FC<{
   chainName?: string;
   onBack?: () => void;
   onSubmit?: (metadataUri: string) => void | Promise<void>;
-  submitLabel?: string;
-}> = ({ chainName, onBack, onSubmit, submitLabel = 'Next' }) => {
+}> = ({ chainName, onBack, onSubmit }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
 
@@ -122,25 +121,15 @@ const NFT3DMetadataForm: React.FC<{
   }, [onSubmit, starLength, name, description, bgIndex, gemIndex]);
 
   return (
-    <VStack
-      w="100%"
-      align="stretch"
-      spacing={8}
-      boxShadow="inset 0px 0px 0px 1px white"
-      borderRadius={30}
-      px={{ base: 4, md: 8 }}
-      py={8}
-    >
+    <VStack w="100%" align="stretch" spacing={8}>
       <HStack justify="space-between" w="100%">
-        <Text color="main" fontSize={20}>
-          QUEST CHAIN 3D NFT
-        </Text>
+        <Text fontSize={20}>QUEST CHAIN 3D NFT</Text>
       </HStack>
       <Stack
         w="100%"
         direction={{ base: 'column', lg: 'row-reverse' }}
         align={{ base: 'stretch', lg: 'center' }}
-        spacing={{ base: 8, lg: 0 }}
+        mb={12}
       >
         <AspectRatio ratio={1} w="100%" maxW={{ base: '100%', lg: '50%' }}>
           <Flex w="100%" h="100%" justify="center" align="center">
@@ -162,9 +151,7 @@ const NFT3DMetadataForm: React.FC<{
           maxW={{ base: '100%', lg: '60%' }}
         >
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Background Shape
-            </FormLabel>
+            <FormLabel htmlFor="description">Background Shape</FormLabel>
             <HStack>
               {backgrounds.map((bg, bgId) => (
                 <Tooltip label={`${backgroundNames[bgId]} Background`} key={bg}>
@@ -192,9 +179,7 @@ const NFT3DMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Gem
-            </FormLabel>
+            <FormLabel htmlFor="description">Gem</FormLabel>
             <HStack>
               <Wrap maxW="45rem">
                 {gems.map((gem, gemId) => (
@@ -230,9 +215,7 @@ const NFT3DMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Number of Stars
-            </FormLabel>
+            <FormLabel htmlFor="description">Number of Stars</FormLabel>
             <Slider
               value={starLength}
               onChange={v => setStarLength(v)}
@@ -260,9 +243,7 @@ const NFT3DMetadataForm: React.FC<{
           </FormControl>
           <Wrap>
             <FormControl isRequired>
-              <FormLabel color="main" htmlFor="name">
-                Name
-              </FormLabel>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 value={name}
                 onChange={e => setName(e.target.value)}
@@ -274,9 +255,7 @@ const NFT3DMetadataForm: React.FC<{
             </FormControl>
           </Wrap>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Description
-            </FormLabel>
+            <FormLabel htmlFor="description">Description</FormLabel>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -288,7 +267,6 @@ const NFT3DMetadataForm: React.FC<{
         </VStack>
       </Stack>
       <Flex
-        mt={4}
         w="100%"
         justify={onBack ? 'space-between' : 'flex-end'}
         align="center"
@@ -308,8 +286,9 @@ const NFT3DMetadataForm: React.FC<{
           isLoading={isLoading}
           type="submit"
           onClick={exportMetadata}
+          w="full"
         >
-          {submitLabel}
+          Continue to Step 3
         </SubmitButton>
       </Flex>
     </VStack>
