@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { randomBytes } from 'ethers/lib/utils';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -22,9 +14,7 @@ import {
 } from '@/components/CreateChain/ChainRolesForm';
 import CustomNFTMetadataForm from '@/components/CreateChain/CustomNFTMetadataForm';
 import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
-import { QuestChainTile } from '@/components/QuestChainTile';
 import { getGlobalInfo } from '@/graphql/globalInfo';
-import { useLatestCreatedQuestChainsDataForAllChains } from '@/hooks/useLatestCreatedQuestChainsDataForAllChains';
 import {
   QuestChainFactory as QuestChainFactoryV1,
   QuestChainFactory__factory as QuestChainFactoryV1__factory,
@@ -40,9 +30,6 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const router = useRouter();
 
   const { address, provider, chainId } = useWallet();
-
-  const { questChains, fetching } =
-    useLatestCreatedQuestChainsDataForAllChains();
 
   const [chainName, setChainName] = useState('');
   const [chainUri, setChainUri] = useState('');
@@ -202,48 +189,6 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
               onBack={() => setStep(1)}
             />
           </Flex>
-        </>
-      )}
-
-      {fetching ? (
-        <VStack w="100%">
-          <Spinner color="main" />
-        </VStack>
-      ) : (
-        <>
-          {questChains.length > 0 && (
-            <Text fontSize={20} textTransform="uppercase" color="white">
-              {`Created ${questChains.length} Quest Chain${
-                questChains.length > 1 ? 's' : ''
-              }`}
-            </Text>
-          )}
-          <VStack w="full" gap={4} flex={1}>
-            {questChains.map(
-              ({
-                address,
-                chainId,
-                name,
-                description,
-                quests,
-                imageUrl,
-                paused,
-              }) => (
-                <QuestChainTile
-                  {...{
-                    address,
-                    name,
-                    description,
-                    chainId,
-                    quests: quests.length,
-                    imageUrl,
-                    paused,
-                  }}
-                  key={address}
-                />
-              ),
-            )}
-          </VStack>
         </>
       )}
     </VStack>
