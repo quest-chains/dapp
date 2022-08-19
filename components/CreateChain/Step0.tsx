@@ -3,10 +3,10 @@ import React from 'react';
 
 const Step0: React.FC = () => {
   return (
-    <VStack w="full" align="stretch" spacing={8} px={{ base: 4, md: 8 }} py={8}>
-      <Flex justify="space-between" w="full" justifyContent="center">
+    <VStack w="full" align="stretch" spacing={8}>
+      <Flex w="full" justifyContent="center">
         <Text fontFamily="heading" color="white" fontSize={40}>
-          Here’s what’s coming up
+          Here's what's coming up
         </Text>
       </Flex>
       <Grid

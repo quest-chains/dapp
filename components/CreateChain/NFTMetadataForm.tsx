@@ -105,7 +105,7 @@ const NFTMetadataForm: React.FC<{
       w="100%"
       align="stretch"
       spacing={8}
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
+      boxShadow="inset 0px 0px 0px 1px white"
       borderRadius={30}
       px={{ base: 4, md: 8 }}
       py={8}
@@ -281,7 +281,7 @@ const NFTMetadataForm: React.FC<{
             mr={3}
             onClick={onBack}
             borderRadius="full"
-            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            boxShadow="inset 0px 0px 0px 1px white"
           >
             Back
           </Button>
