@@ -37,7 +37,7 @@ import { ImageTemplate } from './ImageTemplate';
 const NFTMetadataForm: React.FC<{
   chainName?: string;
   onBack?: () => void;
-  onSubmit: (metadataUri: string) => void | Promise<void>;
+  onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,7 +89,7 @@ const NFTMetadataForm: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details);
+      onSubmit(details, metadata.image_url);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);

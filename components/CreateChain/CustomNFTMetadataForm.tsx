@@ -22,7 +22,7 @@ import { SubmitButton } from '../SubmitButton';
 const CustomNFTMetadataForm: React.FC<{
   chainName?: string;
   onBack?: () => void;
-  onSubmit: (metadataUri: string) => void | Promise<void>;
+  onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const [myFiles, setMyFiles] = useState<File[]>([]);
   const isDisabled = !myFiles.length;
@@ -79,7 +79,7 @@ const CustomNFTMetadataForm: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details);
+      onSubmit(details, metadata.image_url);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);

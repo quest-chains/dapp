@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Image, Text } from '@chakra-ui/react';
 import { randomBytes } from 'ethers/lib/utils';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -39,6 +39,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
+  const [nftUrl, setNFTUrl] = useState('');
   const [step, setStep] = useState(0); // change back to 0
 
   const onSubmitChainMeta = (
@@ -54,8 +55,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setStep(2);
   };
 
-  const onSubmitNFTMeta = (metadataUri: string) => {
+  const onSubmitNFTMeta = (metadataUri: string, nftUrl?: string) => {
     setNFTUri(metadataUri);
+    if (nftUrl) setNFTUrl(nftUrl);
     setStep(3);
   };
 
@@ -102,7 +104,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         setChainName('');
         setChainUri('');
         setNFTUri('');
-        setStep(0);
+        setStep(4);
 
         const questChainAddress = await awaitQuestChainAddress(receipt);
         if (questChainAddress) {
@@ -169,21 +171,27 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       </Flex>
 
       {step >= 2 && (
-        <Box>
-          <Flex flexDir="column" mb={8}>
+        <Flex>
+          <Flex flexDir="column" gap={8}>
             <Text
               fontSize="5xl"
               fontWeight="bold"
               lineHeight="3.5rem"
               fontFamily="heading"
-              mb={3}
             >
               {chainName}
             </Text>
             <Box>{chainId && <NetworkDisplay chainId={chainId} />}</Box>
+            <MarkdownViewer markdown={chainDescription} />
           </Flex>
-          <MarkdownViewer markdown={chainDescription} />
-        </Box>
+          {nftUrl && (
+            <Image
+              maxW={373}
+              src={ipfsUriToHttp(nftUrl)}
+              alt="Quest Chain NFT badge"
+            />
+          )}
+        </Flex>
       )}
 
       <Flex

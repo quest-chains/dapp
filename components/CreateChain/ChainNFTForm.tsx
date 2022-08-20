@@ -7,7 +7,7 @@ import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 
 const ChainNFTForm: React.FC<{
-  onSubmit: (metadataUri: string) => void | Promise<void>;
+  onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
   chainName: string;
 }> = ({ onSubmit, chainName }) => {
   const [selectedNFT, setSelectedNFT] = useState('2D'); // 3D, custom
