@@ -76,9 +76,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           details: chainUri,
           tokenURI: nftUri,
           owners: [address],
-          admins: adminAddresses,
-          editors: editorAddresses,
-          reviewers: reviewerAddresses,
+          admins: adminAddresses.filter(address => address !== ''),
+          editors: editorAddresses.filter(address => address !== ''),
+          reviewers: reviewerAddresses.filter(address => address !== ''),
           quests: [],
           paused: false,
         };
@@ -197,8 +197,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         <Step4 />
       </Flex>
 
-      <Flex w="100%" display={step === 3 ? 'flex' : 'none'}>
-        <ChainRolesForm onSubmit={onSubmitRoles} onBack={() => setStep(1)} />
+      <Flex
+        w="100%"
+        display={step === 3 ? 'flex' : 'none'}
+        flexDir="column"
+        gap={8}
+      >
+        <ChainRolesForm onSubmit={onSubmitRoles} />
         <Step4 />
       </Flex>
     </Flex>

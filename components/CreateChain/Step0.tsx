@@ -22,7 +22,7 @@ const Step0: React.FC = () => {
         <Step
           image="/Create/nft.png"
           title="2. Define NFT"
-          description="Create a custom 2D or 3D NFT or upload your own image."
+          description="Create a custom 2D or 3D NFT or upload your own image. Players who complete the quest chain will become eligible to mint it!"
         />
         <Step
           image="/Create/members.png"

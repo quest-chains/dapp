@@ -37,9 +37,9 @@ export const ChainRolesForm: React.FC<{
   onSubmit: (values: RolesFormValues) => void | Promise<void>;
 }> = ({ onSubmit }) => {
   const initialValues: RolesFormValues = {
-    adminAddresses: [],
-    editorAddresses: [],
-    reviewerAddresses: [],
+    adminAddresses: [''],
+    editorAddresses: [''],
+    reviewerAddresses: [''],
   };
 
   const { isConnected, chainId } = useWallet();
@@ -92,7 +92,7 @@ export const ChainRolesForm: React.FC<{
       </HStack>
       <Box maxW="3xl">
         <Text>
-          A quest chain can exist with only you—its creator—as a member.{' '}
+          A quest chain can exist with only you - its creator - as a member.
         </Text>
         <Text>
           However, adding members may be beneficial when you want to divide the
@@ -103,134 +103,31 @@ export const ChainRolesForm: React.FC<{
       <Formik initialValues={initialValues} onSubmit={submitRoles}>
         {({ isSubmitting, values }: FormikState<RolesFormValues>) => (
           <Form>
-            <Flex w="full">
+            <Flex
+              w="full"
+              gap={8}
+              flexDir={{ base: 'column', md: 'row' }}
+              mb={8}
+            >
               <VStack
                 w={{ base: '100%', md: '50%' }}
                 align="flex-start"
                 spacing={4}
               >
-                <FieldArray
+                <Role
                   name="adminAddresses"
-                  render={arrayHelpers => (
-                    <Box w="100%">
-                      <FormLabel color="main" htmlFor="adminAddresses">
-                        Admin Users (optional)
-                      </FormLabel>
-                      {values.adminAddresses.map((_address, index) => (
-                        <HStack key={index} mb={2}>
-                          <Box w="100%" maxW="20rem">
-                            <Field name={`adminAddresses.${index}`}>
-                              {({
-                                field,
-                              }: FieldProps<string, RolesFormValues>) => (
-                                <FormControl isRequired>
-                                  <Input
-                                    {...field}
-                                    id={`adminAddresses.${index}`}
-                                    placeholder="Admin Address"
-                                  />
-                                </FormControl>
-                              )}
-                            </Field>
-                          </Box>
-                          <IconButton
-                            borderRadius="full"
-                            onClick={() => arrayHelpers.remove(index)}
-                            icon={<CloseIcon boxSize="0.7rem" />}
-                            aria-label={''}
-                          />
-                        </HStack>
-                      ))}
-                      <Button
-                        borderRadius="full"
-                        onClick={() => arrayHelpers.push('')}
-                      >
-                        Add address
-                      </Button>
-                    </Box>
-                  )}
+                  role="admin"
+                  addresses={values.adminAddresses}
                 />
-                <FieldArray
+                <Role
                   name="editorAddresses"
-                  render={arrayHelpers => (
-                    <Box w="100%">
-                      <FormLabel color="main" htmlFor="editorAddresses">
-                        Editor Users (optional)
-                      </FormLabel>
-                      {values.editorAddresses.map((_address, index) => (
-                        <HStack key={index} mb={2}>
-                          <Box w="100%" maxW="20rem">
-                            <Field name={`editorAddresses.${index}`}>
-                              {({
-                                field,
-                              }: FieldProps<string, RolesFormValues>) => (
-                                <FormControl isRequired>
-                                  <Input
-                                    {...field}
-                                    id={`editorAddresses.${index}`}
-                                    placeholder="Editor Address"
-                                  />
-                                </FormControl>
-                              )}
-                            </Field>
-                          </Box>
-                          <IconButton
-                            borderRadius="full"
-                            onClick={() => arrayHelpers.remove(index)}
-                            icon={<CloseIcon boxSize="0.7rem" />}
-                            aria-label={''}
-                          />
-                        </HStack>
-                      ))}
-                      <Button
-                        borderRadius="full"
-                        onClick={() => arrayHelpers.push('')}
-                      >
-                        Add address
-                      </Button>
-                    </Box>
-                  )}
+                  role="editor"
+                  addresses={values.editorAddresses}
                 />
-                <FieldArray
+                <Role
                   name="reviewerAddresses"
-                  render={arrayHelpers => (
-                    <Box w="100%">
-                      <FormLabel htmlFor="reviewerAddresses" color="main">
-                        Reviewer Users (optional)
-                      </FormLabel>
-                      {values.reviewerAddresses.map((_address, index) => (
-                        <HStack key={index} mb={2}>
-                          <Box w="100%" maxW="20rem">
-                            <Field name={`reviewerAddresses.${index}`}>
-                              {({
-                                field,
-                              }: FieldProps<string, RolesFormValues>) => (
-                                <FormControl isRequired>
-                                  <Input
-                                    {...field}
-                                    id={`reviewerAddresses.${index}`}
-                                    placeholder="Reviewer Address"
-                                  />
-                                </FormControl>
-                              )}
-                            </Field>
-                          </Box>
-                          <IconButton
-                            borderRadius="full"
-                            onClick={() => arrayHelpers.remove(index)}
-                            icon={<CloseIcon boxSize="0.7rem" />}
-                            aria-label={''}
-                          />
-                        </HStack>
-                      ))}
-                      <Button
-                        borderRadius="full"
-                        onClick={() => arrayHelpers.push('')}
-                      >
-                        Add address
-                      </Button>
-                    </Box>
-                  )}
+                  role="reviewer"
+                  addresses={values.reviewerAddresses}
                 />
               </VStack>
               <Grid
@@ -287,3 +184,55 @@ export const ChainRolesForm: React.FC<{
     </VStack>
   );
 };
+const Role: React.FC<{
+  addresses: string[];
+  name: string;
+  role: string;
+}> = ({ addresses, name, role }) => (
+  <FieldArray
+    name={name}
+    render={arrayHelpers => (
+      <Box w="100%">
+        <FormLabel color="main" htmlFor={name}>
+          {role.charAt(0).toUpperCase() + role.slice(1) + 's'}
+        </FormLabel>
+        {addresses.map((_address, index) => (
+          <HStack key={index} mb={2}>
+            <Box w="100%">
+              <Field name={`${name}.${index}`}>
+                {({ field }: FieldProps<string, RolesFormValues>) => (
+                  <FormControl>
+                    <Input
+                      bg="#0F172A"
+                      {...field}
+                      id={`${name}.${index}`}
+                      placeholder={`Paste or write in ${role}'s address...`}
+                    />
+                  </FormControl>
+                )}
+              </Field>
+            </Box>
+            {addresses.length - 1 === index && (
+              <Button
+                borderRadius="full"
+                isDisabled={_address === ''}
+                onClick={() => {
+                  arrayHelpers.push('');
+                }}
+              >
+                Add
+              </Button>
+            )}
+            <IconButton
+              borderRadius="full"
+              isDisabled={index === 0}
+              onClick={() => arrayHelpers.remove(index)}
+              icon={<CloseIcon boxSize="0.7rem" />}
+              aria-label={''}
+            />
+          </HStack>
+        ))}
+      </Box>
+    )}
+  />
+);
