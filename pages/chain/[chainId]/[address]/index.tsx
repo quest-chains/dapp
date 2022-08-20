@@ -782,22 +782,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 />
               </Flex>
               {/* Quest Chain Members */}
-              <Flex flexDir="column" px={5}>
-                <Text fontFamily="heading" fontSize="xl" mb={5}>
-                  Members
-                </Text>
-                <Divider />
-                <MemberSection role="OWNERS" addresses={owners} />
-                {admins.length !== 0 && (
-                  <MemberSection role="ADMINS" addresses={admins} />
-                )}
-                {editors.length !== 0 && (
-                  <MemberSection role="EDITORS" addresses={editors} />
-                )}
-                {reviewers.length !== 0 && (
-                  <MemberSection role="REVIEWERS" addresses={reviewers} />
-                )}
-              </Flex>
+              <Members
+                owners={owners}
+                admins={admins}
+                editors={editors}
+                reviewers={reviewers}
+              />
             </Flex>
           </Flex>
         </Flex>
@@ -860,6 +850,13 @@ type RolesProps = {
   addresses: string[];
 };
 
+type MembersProps = {
+  owners: string[];
+  admins: string[];
+  editors: string[];
+  reviewers: string[];
+};
+
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
   <>
     <Flex justify="space-between" alignItems="center" my={3} pl={4}>
@@ -874,6 +871,28 @@ const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
     </Flex>
     <Divider />
   </>
+);
+
+export const Members: React.FC<MembersProps> = ({
+  owners,
+  admins,
+  editors,
+  reviewers,
+}) => (
+  <Flex flexDir="column" px={5}>
+    <Text fontFamily="heading" fontSize="xl" mb={5}>
+      Members
+    </Text>
+    <Divider />
+    <MemberSection role="OWNERS" addresses={owners} />
+    {admins.length !== 0 && <MemberSection role="ADMINS" addresses={admins} />}
+    {editors.length !== 0 && (
+      <MemberSection role="EDITORS" addresses={editors} />
+    )}
+    {reviewers.length !== 0 && (
+      <MemberSection role="REVIEWERS" addresses={reviewers} />
+    )}
+  </Flex>
 );
 
 type QueryParams = { address: string; chainId: string };

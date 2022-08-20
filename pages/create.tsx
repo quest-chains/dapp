@@ -27,6 +27,8 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
+import { Members } from './chain/[chainId]/[address]';
+
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Create: React.FC<Props> = ({ globalInfo }) => {
@@ -40,7 +42,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(0); // change back to 0
+  const [step, setStep] = useState(4); // change back to 0
+  const [ownerAddresses] = useState([address || '']);
+  const [adminAddresses, setAdminAddresses] = useState(['']);
+  const [editorAddresses, setEditorAddresses] = useState(['']);
+  const [reviewerAddresses, setReviewerAddresses] = useState(['']);
 
   const onSubmitChainMeta = (
     name: string,
@@ -74,6 +80,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
       );
       try {
+        setAdminAddresses(adminAddresses);
+        setEditorAddresses(editorAddresses);
+        setReviewerAddresses(reviewerAddresses);
         const info: QuestChainCommons.QuestChainInfoStruct = {
           details: chainUri,
           tokenURI: nftUri,
@@ -99,28 +108,36 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain');
+        // toast.success('Successfully created a new Quest Chain');
 
         setChainName('');
         setChainUri('');
         setNFTUri('');
         setStep(4);
 
-        const questChainAddress = await awaitQuestChainAddress(receipt);
-        if (questChainAddress) {
-          router.push(`/chain/${chainId}/${questChainAddress}`);
-        }
+        // const questChainAddress = await awaitQuestChainAddress(receipt);
+        // if (questChainAddress) {
+        //   router.push(`/chain/${chainId}/${questChainAddress}`);
+        // }
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
       }
     },
-    [address, chainId, router, chainUri, nftUri, provider, globalInfo],
+    [
+      address,
+      chainId,
+      // router,
+      chainUri,
+      nftUri,
+      provider,
+      globalInfo,
+    ],
   );
 
   return (
     <Flex
-      w="100%"
+      w="full"
       align="stretch"
       px={{ base: 0, lg: 12 }}
       gap={8}
@@ -143,7 +160,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {step === 0 && (
-        <Flex w="100%" flexDir="column">
+        <Flex w="full" flexDir="column">
           <Step0 />
           <Flex w="full" justifyContent="center">
             <SubmitButton onClick={() => setStep(1)} px={32}>
@@ -159,7 +176,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       )}
 
       <Flex
-        w="100%"
+        w="full"
         display={step === 1 ? 'flex' : 'none'}
         flexDir="column"
         gap={8}
@@ -195,7 +212,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       )}
 
       <Flex
-        w="100%"
+        w="full"
         display={step === 2 ? 'flex' : 'none'}
         flexDir="column"
         gap={8}
@@ -206,13 +223,32 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       </Flex>
 
       <Flex
-        w="100%"
+        w="full"
         display={step === 3 ? 'flex' : 'none'}
         flexDir="column"
         gap={8}
       >
         <ChainRolesForm onSubmit={onSubmitRoles} />
         <Step4 />
+      </Flex>
+
+      <Flex
+        w="full"
+        display={step === 3 ? 'flex' : 'none'}
+        flexDir="column"
+        gap={8}
+      >
+        <Flex>Finally let's add some quests!</Flex>
+        <Flex maxW={373}>
+          {address && (
+            <Members
+              owners={ownerAddresses}
+              admins={adminAddresses}
+              editors={editorAddresses}
+              reviewers={reviewerAddresses}
+            />
+          )}
+        </Flex>
       </Flex>
     </Flex>
   );
@@ -223,7 +259,7 @@ const Step: React.FC<{
   title: string;
 }> = ({ number, title }) => (
   <Flex
-    w="100%"
+    w="full"
     boxShadow="inset 0px 0px 0px 1px #718096"
     borderRadius={10}
     px={{ base: 4, md: 12 }}
