@@ -39,7 +39,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
-  const [step, setStep] = useState(2); // change back to 0
+  const [step, setStep] = useState(0); // change back to 0
 
   const onSubmitChainMeta = (
     name: string,
