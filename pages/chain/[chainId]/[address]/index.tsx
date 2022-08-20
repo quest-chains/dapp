@@ -879,7 +879,7 @@ export const Members: React.FC<MembersProps> = ({
   editors,
   reviewers,
 }) => (
-  <Flex flexDir="column" px={5}>
+  <Flex flexDir="column" px={5} width="full">
     <Text fontFamily="heading" fontSize="xl" mb={5}>
       Members
     </Text>

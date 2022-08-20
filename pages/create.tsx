@@ -12,6 +12,7 @@ import {
   ChainRolesForm,
   RolesFormValues,
 } from '@/components/CreateChain/ChainRolesForm';
+import { CreateQuests } from '@/components/CreateChain/CreateQuests';
 import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
@@ -234,15 +235,17 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
       <Flex
         w="full"
-        display={step === 3 ? 'flex' : 'none'}
-        flexDir="column"
+        display={step === 4 ? 'flex' : 'none'}
+        flexDir={{ base: 'column', md: 'row' }}
         gap={8}
       >
-        <Flex>Finally let's add some quests!</Flex>
-        <Flex maxW={373}>
+        <Flex w="-moz-max-content">
+          <CreateQuests />
+        </Flex>
+        <Flex w={373}>
           {address && (
             <Members
-              owners={ownerAddresses}
+              owners={[address || '']}
               admins={adminAddresses}
               editors={editorAddresses}
               reviewers={reviewerAddresses}
