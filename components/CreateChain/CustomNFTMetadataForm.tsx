@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
+import Edit from '@/assets/Edit.svg';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
@@ -24,6 +25,7 @@ const CustomNFTMetadataForm: React.FC<{
   onSubmit: (metadataUri: string) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const [myFiles, setMyFiles] = useState<File[]>([]);
+  const isDisabled = !myFiles.length;
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       setMyFiles([...myFiles, ...acceptedFiles]);
@@ -149,14 +151,30 @@ const CustomNFTMetadataForm: React.FC<{
             Back
           </Button>
         )}
-        <SubmitButton
-          isLoading={isLoading}
-          type="submit"
-          onClick={exportMetadata}
-          w="full"
-        >
-          Continue to Step 3
-        </SubmitButton>
+        {isDisabled && (
+          <Button
+            borderWidth={1}
+            borderColor="white"
+            height={{ base: 10, md: 12 }}
+            px={5}
+            borderRadius="full"
+            isDisabled
+            w="full"
+          >
+            <Image src={Edit.src} alt="Edit" mr={3} />
+            To continue, enter Name and Description
+          </Button>
+        )}
+        {!isDisabled && (
+          <SubmitButton
+            isLoading={isLoading}
+            type="submit"
+            onClick={exportMetadata}
+            w="full"
+          >
+            Continue to Step 3
+          </SubmitButton>
+        )}
       </Flex>
     </VStack>
   );
