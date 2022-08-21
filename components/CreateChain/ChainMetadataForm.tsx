@@ -134,6 +134,7 @@ export const ChainMetadataForm: React.FC<{
               <Input
                 color="white"
                 onChange={e => setName(e.target.value)}
+                bg="#0F172A"
                 value={name}
                 id="name"
                 placeholder="Quest Chain Name"

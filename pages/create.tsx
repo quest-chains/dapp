@@ -25,6 +25,7 @@ import {
 import { QuestChainCommons } from '@/types/v1/contracts/QuestChainFactory';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
+import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
@@ -43,7 +44,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(4); // change back to 0
+  const [step, setStep] = useState(0); // change back to 0
   const [ownerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -68,22 +69,35 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setStep(3);
   };
 
-  const onSubmitRoles = useCallback(
-    async ({
-      adminAddresses,
-      editorAddresses,
-      reviewerAddresses,
-    }: RolesFormValues) => {
+  const onSubmitRoles = ({
+    adminAddresses,
+    editorAddresses,
+    reviewerAddresses,
+  }: RolesFormValues) => {
+    setAdminAddresses(adminAddresses);
+    setEditorAddresses(editorAddresses);
+    setReviewerAddresses(reviewerAddresses);
+    setStep(4);
+  };
+
+  const onPublishQuestChain = useCallback(
+    async (quests: { name: string; description: string }[]) => {
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
         return;
 
       let tid = toast.loading(
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
       );
+
+      const metadata: Metadata[] = quests;
+      const hashes = await Promise.all(
+        metadata.map(quest => uploadMetadata(quest)),
+      );
+
+      const questsDetails = hashes.map(hash => `ipfs://${hash}`);
+
+      // return;
       try {
-        setAdminAddresses(adminAddresses);
-        setEditorAddresses(editorAddresses);
-        setReviewerAddresses(reviewerAddresses);
         const info: QuestChainCommons.QuestChainInfoStruct = {
           details: chainUri,
           tokenURI: nftUri,
@@ -91,7 +105,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           admins: adminAddresses.filter(address => address !== ''),
           editors: editorAddresses.filter(address => address !== ''),
           reviewers: reviewerAddresses.filter(address => address !== ''),
-          quests: [],
+          quests: questsDetails,
           paused: false,
         };
         const factoryContract: QuestChainFactoryV1 =
@@ -108,18 +122,17 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        // toast.success('Successfully created a new Quest Chain');
 
         setChainName('');
         setChainUri('');
         setNFTUri('');
-        setStep(4);
 
-        // const questChainAddress = await awaitQuestChainAddress(receipt);
-        // if (questChainAddress) {
-        //   router.push(`/chain/${chainId}/${questChainAddress}`);
-        // }
+        const questChainAddress = await awaitQuestChainAddress(receipt);
+        toast.dismiss(tid);
+        toast.success('Successfully created a new Quest Chain');
+        if (questChainAddress) {
+          router.push(`/chain/${chainId}/${questChainAddress}`);
+        }
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -128,11 +141,14 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     [
       address,
       chainId,
-      // router,
+      provider,
       chainUri,
       nftUri,
-      provider,
+      adminAddresses,
+      editorAddresses,
+      reviewerAddresses,
       globalInfo,
+      router,
     ],
   );
 
@@ -240,10 +256,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         gap={8}
       >
         <Flex flexGrow={1} flexDir="column" gap={8}>
-          <CreateQuests />
-          <SubmitButton type="submit" w="full">
-            PUBLISH QUEST CHAIN
-          </SubmitButton>
+          <CreateQuests onPublishQuestChain={onPublishQuestChain} />
         </Flex>
         <Flex w={373}>
           {address && (
