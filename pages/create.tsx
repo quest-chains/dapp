@@ -189,7 +189,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       </Flex>
 
       {step >= 2 && (
-        <Flex>
+        <Flex gap={8}>
           <Flex flexDir="column" gap={8}>
             <Text
               fontSize="5xl"
@@ -239,13 +239,16 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         flexDir={{ base: 'column', md: 'row' }}
         gap={8}
       >
-        <Flex w="-moz-max-content">
+        <Flex flexGrow={1} flexDir="column" gap={8}>
           <CreateQuests />
+          <SubmitButton type="submit" w="full">
+            PUBLISH QUEST CHAIN
+          </SubmitButton>
         </Flex>
         <Flex w={373}>
           {address && (
             <Members
-              owners={[address || '']}
+              owners={ownerAddresses}
               admins={adminAddresses}
               editors={editorAddresses}
               reviewers={reviewerAddresses}

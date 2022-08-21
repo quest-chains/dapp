@@ -15,22 +15,22 @@ const Step0: React.FC = () => {
         gap={10}
       >
         <Step
-          image="/Create/details.png"
+          image="/CreateChain/details.png"
           title="1. Enter details"
           description="Every quest chain needs to have a name and description. You can also add a background image for your new quest chain here."
         />
         <Step
-          image="/Create/nft.png"
+          image="/CreateChain/nft.png"
           title="2. Define NFT"
           description="Create a custom 2D or 3D NFT or upload your own image. Players who complete the quest chain will become eligible to mint it!"
         />
         <Step
-          image="/Create/members.png"
+          image="/CreateChain/members.png"
           title="3. Assign members"
           description="Set up the role structure of the quest chain."
         />
         <Step
-          image="/Create/quest.png"
+          image="/CreateChain/quest.png"
           title="4. Create quests"
           description="After setting up the quest chain it's time to add some quests to it."
         />
