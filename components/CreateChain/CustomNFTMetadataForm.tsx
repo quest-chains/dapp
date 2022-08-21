@@ -162,7 +162,7 @@ const CustomNFTMetadataForm: React.FC<{
             w="full"
           >
             <Image src={Edit.src} alt="Edit" mr={3} />
-            To continue, enter Name and Description
+            To continue, upload an image
           </Button>
         )}
         {!isDisabled && (
