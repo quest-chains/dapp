@@ -1,12 +1,12 @@
 import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import NFT3DMetadataForm from '@/components/CreateChain/3DNFTMetadataForm';
-import CustomNFTMetadataForm from '@/components/CreateChain/CustomNFTMetadataForm';
-import NFTMetadataForm from '@/components/CreateChain/NFTMetadataForm';
+import NFTForm2D from '@/components/CreateChain/NFTForm2D';
+import NFTForm3D from '@/components/CreateChain/NFTForm3D';
+import NFTFormCustom from '@/components/CreateChain/NFTFormCustom';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 
-const ChainNFTForm: React.FC<{
+const NFTForm: React.FC<{
   onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
   chainName: string;
 }> = ({ onSubmit, chainName }) => {
@@ -103,13 +103,13 @@ const ChainNFTForm: React.FC<{
         </Button>
       </Flex>
       {selectedNFT === '2D' && (
-        <NFTMetadataForm chainName={chainName} onSubmit={onSubmit} />
+        <NFTForm2D chainName={chainName} onSubmit={onSubmit} />
       )}
       {selectedNFT === '3D' && (
-        <NFT3DMetadataForm chainName={chainName} onSubmit={onSubmit} />
+        <NFTForm3D chainName={chainName} onSubmit={onSubmit} />
       )}
       {selectedNFT === 'custom' && (
-        <CustomNFTMetadataForm chainName={chainName} onSubmit={onSubmit} />
+        <NFTFormCustom chainName={chainName} onSubmit={onSubmit} />
       )}
     </VStack>
   );
@@ -123,4 +123,4 @@ export const getStaticProps = async () => {
   };
 };
 
-export default ChainNFTForm;
+export default NFTForm;

@@ -6,13 +6,13 @@ import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { ChainMetadataForm } from '@/components/CreateChain/ChainMetadataForm';
-import ChainNFTForm from '@/components/CreateChain/ChainNFTForm';
 import {
   ChainRolesForm,
   RolesFormValues,
 } from '@/components/CreateChain/ChainRolesForm';
 import { CreateQuests } from '@/components/CreateChain/CreateQuests';
+import { MetadataForm } from '@/components/CreateChain/MetadataForm';
+import NFTForm from '@/components/CreateChain/NFTForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
@@ -44,7 +44,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(0); // change back to 0
+  const [step, setStep] = useState(2); // change back to 0
   const [ownerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -198,7 +198,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         flexDir="column"
         gap={8}
       >
-        <ChainMetadataForm onSubmit={onSubmitChainMeta} />
+        <MetadataForm onSubmit={onSubmitChainMeta} />
         <Step2 />
         <Step3 />
         <Step4 />
@@ -234,7 +234,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         flexDir="column"
         gap={8}
       >
-        <ChainNFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
+        <NFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
         <Step3 />
         <Step4 />
       </Flex>

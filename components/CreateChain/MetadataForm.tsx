@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormLabel,
   HStack,
   IconButton,
   Image,
@@ -23,7 +22,7 @@ import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
-export const ChainMetadataForm: React.FC<{
+export const MetadataForm: React.FC<{
   onBack?: () => void;
   onSubmit: (
     name: string,
@@ -126,36 +125,31 @@ export const ChainMetadataForm: React.FC<{
       </HStack>
       <form>
         <Flex w="100%" align="flex-start" gap={20} mb={14}>
-          <Box w="50%">
-            <FormControl isRequired mb={6}>
-              <FormLabel htmlFor="name" fontSize={14} fontWeight="bold">
-                Name
-              </FormLabel>
+          <VStack w="50%" spacing={4}>
+            <Flex w="full" flexDir="column" gap={2}>
+              <Flex alignSelf="start">Name</Flex>
               <Input
                 color="white"
-                onChange={e => setName(e.target.value)}
-                bg="#0F172A"
                 value={name}
+                bg="#0F172A"
                 id="name"
+                onChange={e => setName(e.target.value)}
                 placeholder="Quest Chain Name"
               />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel htmlFor="description" fontSize={14} fontWeight="bold">
-                Description
-              </FormLabel>
+            </Flex>
+            <Flex w="full" flexDir="column" gap={2}>
+              <Flex alignSelf="start">Description</Flex>
               <MarkdownEditor
                 height="12rem"
                 value={description}
-                onChange={setDescription}
                 placeholder="Quest Chain Description"
+                onChange={setDescription}
               />
-            </FormControl>
-          </Box>
+            </Flex>
+          </VStack>
           <FormControl w="50%" position="relative" top="1.5rem">
-            <FormLabel htmlFor="file" fontSize={14} fontWeight="bold">
-              Cover Image (optional)
-            </FormLabel>
+            <Flex alignSelf="start">Cover Image (optional)</Flex>
+
             {myFiles.length ? (
               <>
                 {myFiles.map((file: File) => (

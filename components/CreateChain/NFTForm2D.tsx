@@ -34,7 +34,7 @@ import {
 import { SubmitButton } from '../SubmitButton';
 import { ImageTemplate } from './ImageTemplate';
 
-const NFTMetadataForm: React.FC<{
+const NFTForm2D: React.FC<{
   chainName?: string;
   onBack?: () => void;
   onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
@@ -134,6 +134,7 @@ const NFTMetadataForm: React.FC<{
               minLength={1}
               maxLength={35}
               id="name"
+              bg="#0F172A"
               placeholder="NFT Badge Name"
             />
           </FormControl>
@@ -146,6 +147,7 @@ const NFTMetadataForm: React.FC<{
               onChange={e => setDescription(e.target.value)}
               minLength={1}
               maxLength={100}
+              bg="#0F172A"
               placeholder="NFT Badge Description"
             />
           </FormControl>
@@ -293,4 +295,4 @@ const NFTMetadataForm: React.FC<{
   );
 };
 
-export default NFTMetadataForm;
+export default NFTForm2D;

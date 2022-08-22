@@ -35,7 +35,7 @@ import { renderSceneToGLB } from '@/utils/threeHelpers';
 import { Token } from '../3DTokenTemplate/Token';
 import { SubmitButton } from '../SubmitButton';
 
-const NFT3DMetadataForm: React.FC<{
+const NFTForm3D: React.FC<{
   chainName?: string;
   onBack?: () => void;
   onSubmit?: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
@@ -153,6 +153,7 @@ const NFT3DMetadataForm: React.FC<{
               minLength={1}
               maxLength={35}
               id="name"
+              bg="#0F172A"
               placeholder="NFT Badge Name"
             />
           </FormControl>
@@ -163,6 +164,7 @@ const NFT3DMetadataForm: React.FC<{
               onChange={e => setDescription(e.target.value)}
               minLength={1}
               maxLength={100}
+              bg="#0F172A"
               placeholder="NFT Badge Description"
             />
           </FormControl>
@@ -310,4 +312,4 @@ const NFT3DMetadataForm: React.FC<{
   );
 };
 
-export default NFT3DMetadataForm;
+export default NFTForm3D;
