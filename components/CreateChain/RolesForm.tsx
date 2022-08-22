@@ -33,7 +33,7 @@ export interface RolesFormValues {
   reviewerAddresses: string[];
 }
 
-export const ChainRolesForm: React.FC<{
+export const RolesForm: React.FC<{
   onSubmit: (values: RolesFormValues) => void | Promise<void>;
 }> = ({ onSubmit }) => {
   const initialValues: RolesFormValues = {
@@ -193,7 +193,7 @@ const Role: React.FC<{
     name={name}
     render={arrayHelpers => (
       <Box w="100%">
-        <FormLabel color="main" htmlFor={name}>
+        <FormLabel htmlFor={name}>
           {role.charAt(0).toUpperCase() + role.slice(1) + 's'}
         </FormLabel>
         {addresses.map((_address, index) => (
