@@ -1,4 +1,4 @@
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   AccordionButton,
@@ -9,6 +9,7 @@ import {
   Button,
   Flex,
   HStack,
+  IconButton,
   Image,
   Text,
   VStack,
@@ -32,6 +33,10 @@ export const CreateQuests: React.FC<{
 
   const onAddQuest = (name: string, description: string) =>
     setQuests([...quests, { name, description }]);
+
+  const onRemoveQuest = (index: number) => {
+    setQuests(quests.filter((_, i) => i !== index));
+  };
 
   return (
     <>
@@ -102,13 +107,15 @@ export const CreateQuests: React.FC<{
             />
           )}
           <Accordion allowMultiple w="full">
-            {quests.map(({ name, description }, index) => (
-              <Quest
-                key={name + description}
-                name={`${index + 1}. ${name}`}
-                description={description}
-              />
-            ))}
+            {quests &&
+              quests.map(({ name, description }, index) => (
+                <Quest
+                  key={name + description}
+                  name={`${index + 1}. ${name}`}
+                  description={description}
+                  onRemoveQuest={() => onRemoveQuest(index)}
+                />
+              ))}
           </Accordion>
           <Text>
             It is perfectly fine to add quests after the quest chain has been
@@ -131,17 +138,23 @@ export const CreateQuests: React.FC<{
 const Quest: React.FC<{
   name: string;
   description: string;
-}> = ({ name, description }) => {
+  onRemoveQuest: () => void;
+}> = ({ name, description, onRemoveQuest }) => {
   return (
     <AccordionItem>
-      <h2>
+      <Flex>
         <AccordionButton>
           <Box flex="1" textAlign="left" fontWeight="bold">
             {name}
           </Box>
           <AccordionIcon />
         </AccordionButton>
-      </h2>
+        <IconButton
+          icon={<SmallCloseIcon />}
+          onClick={onRemoveQuest}
+          aria-label=""
+        />
+      </Flex>
       <AccordionPanel pb={4}>
         <MarkdownViewer markdown={description} />
       </AccordionPanel>
