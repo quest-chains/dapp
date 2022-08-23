@@ -28,6 +28,7 @@ import { handleError } from '@/utils/helpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 export interface RolesFormValues {
+  ownerAddresses: string[];
   adminAddresses: string[];
   editorAddresses: string[];
   reviewerAddresses: string[];
@@ -37,6 +38,7 @@ export const RolesForm: React.FC<{
   onSubmit: (values: RolesFormValues) => void | Promise<void>;
 }> = ({ onSubmit }) => {
   const initialValues: RolesFormValues = {
+    ownerAddresses: [''],
     adminAddresses: [''],
     editorAddresses: [''],
     reviewerAddresses: [''],
@@ -92,7 +94,7 @@ export const RolesForm: React.FC<{
       </HStack>
       <Box maxW="3xl">
         <Text>
-          A quest chain can exist with only you - its creator - as a member.
+          A quest chain can exist with only you - its owner - as a member.
         </Text>
         <Text>
           However, adding members may be beneficial when you want to divide the
@@ -114,25 +116,14 @@ export const RolesForm: React.FC<{
                 align="flex-start"
                 spacing={4}
               >
-                <Role
-                  name="adminAddresses"
-                  role="admin"
-                  addresses={values.adminAddresses}
-                />
-                <Role
-                  name="editorAddresses"
-                  role="editor"
-                  addresses={values.editorAddresses}
-                />
-                <Role
-                  name="reviewerAddresses"
-                  role="reviewer"
-                  addresses={values.reviewerAddresses}
-                />
+                <Role role="owner" addresses={values.ownerAddresses} />
+                <Role role="admin" addresses={values.adminAddresses} />
+                <Role role="editor" addresses={values.editorAddresses} />
+                <Role role="reviewer" addresses={values.reviewerAddresses} />
               </VStack>
               <Grid
                 bgColor="rgba(0,0,0,0.4)"
-                templateColumns="2fr 1fr 1fr 1fr"
+                templateColumns="2fr 1fr 1fr 1fr 1fr"
                 w="50%"
                 p={8}
                 alignItems="center"
@@ -140,6 +131,9 @@ export const RolesForm: React.FC<{
                 gap={4}
               >
                 <Box />
+                <Text fontSize={14} fontWeight="bold">
+                  Owner
+                </Text>
                 <Text fontSize={14} fontWeight="bold">
                   Admin
                 </Text>
@@ -150,8 +144,16 @@ export const RolesForm: React.FC<{
                   Reviewer
                 </Text>
                 <Text fontSize={14} fontWeight="bold" pr={8}>
+                  Add/remove owners & upgrade to premium chain
+                </Text>
+                <CheckIcon />
+                <CloseIcon color="gray.600" />
+                <CloseIcon color="gray.600" />
+                <CloseIcon color="gray.600" />
+                <Text fontSize={14} fontWeight="bold" pr={8}>
                   Add/remove admins, editors and reviewers
                 </Text>
+                <CheckIcon />
                 <CheckIcon />
                 <CloseIcon color="gray.600" />
                 <CloseIcon color="gray.600" />
@@ -160,10 +162,12 @@ export const RolesForm: React.FC<{
                 </Text>
                 <CheckIcon />
                 <CheckIcon />
+                <CheckIcon />
                 <CloseIcon color="gray.600" />
                 <Text fontSize={14} fontWeight="bold" pr={8}>
                   Approve/decline submissions
                 </Text>
+                <CheckIcon />
                 <CheckIcon />
                 <CheckIcon />
                 <CheckIcon />
@@ -186,26 +190,25 @@ export const RolesForm: React.FC<{
 };
 const Role: React.FC<{
   addresses: string[];
-  name: string;
   role: string;
-}> = ({ addresses, name, role }) => (
+}> = ({ addresses, role }) => (
   <FieldArray
-    name={name}
+    name={role + 'Addresses'}
     render={arrayHelpers => (
       <Box w="100%">
-        <FormLabel htmlFor={name}>
+        <FormLabel htmlFor={role + 'Addresses'}>
           {role.charAt(0).toUpperCase() + role.slice(1) + 's'}
         </FormLabel>
         {addresses.map((_address, index) => (
           <HStack key={index} mb={2}>
             <Box w="100%">
-              <Field name={`${name}.${index}`}>
+              <Field name={`${role + 'Addresses'}.${index}`}>
                 {({ field }: FieldProps<string, RolesFormValues>) => (
                   <FormControl>
                     <Input
                       bg="#0F172A"
                       {...field}
-                      id={`${name}.${index}`}
+                      id={`${role + 'Addresses'}.${index}`}
                       placeholder={`Paste or write in ${role}'s address...`}
                     />
                   </FormControl>

@@ -42,7 +42,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
   const [step, setStep] = useState(3); // change back to 0
-  const [ownerAddresses] = useState([address || '']);
+  const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
   const [reviewerAddresses, setReviewerAddresses] = useState(['']);
@@ -67,10 +67,12 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   };
 
   const onSubmitRoles = ({
+    ownerAddresses,
     adminAddresses,
     editorAddresses,
     reviewerAddresses,
   }: RolesFormValues) => {
+    setOwnerAddresses(ownerAddresses.concat(address || ''));
     setAdminAddresses(adminAddresses);
     setEditorAddresses(editorAddresses);
     setReviewerAddresses(reviewerAddresses);
@@ -98,7 +100,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         const info: QuestChainCommons.QuestChainInfoStruct = {
           details: chainUri,
           tokenURI: nftUri,
-          owners: [address],
+          owners: ownerAddresses.filter(address => address !== ''),
           admins: adminAddresses.filter(address => address !== ''),
           editors: editorAddresses.filter(address => address !== ''),
           reviewers: reviewerAddresses.filter(address => address !== ''),
@@ -141,6 +143,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       provider,
       chainUri,
       nftUri,
+      ownerAddresses,
       adminAddresses,
       editorAddresses,
       reviewerAddresses,
