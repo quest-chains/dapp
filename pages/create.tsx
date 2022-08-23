@@ -44,7 +44,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
   const [isPremium, setIsPremium] = useState(true);
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
