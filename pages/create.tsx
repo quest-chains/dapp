@@ -209,6 +209,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     ],
   );
 
+  const goBackToNFTSelection = () => {
+    setStep(2);
+    setNFTUri('');
+    setIsPremium(false);
+    setNFTUrl('');
+  };
+
   return (
     <Flex
       w="full"
@@ -318,6 +325,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             isPremium={isPremium}
             isApproved={isApproved}
             approveTokens={approveTokens}
+            goBackToNFTSelection={goBackToNFTSelection}
           />
         </Flex>
         <Flex w={373}>

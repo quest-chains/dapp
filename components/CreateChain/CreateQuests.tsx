@@ -33,7 +33,14 @@ export const CreateQuests: React.FC<{
   isPremium: boolean;
   approveTokens: () => void | Promise<void>;
   isApproved: boolean;
-}> = ({ onPublishQuestChain, isPremium, approveTokens, isApproved }) => {
+  goBackToNFTSelection: () => void;
+}> = ({
+  onPublishQuestChain,
+  isPremium,
+  approveTokens,
+  isApproved,
+  goBackToNFTSelection,
+}) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [editingQuestIndex, setEditingQuestIndex] = useState(0);
@@ -176,6 +183,32 @@ export const CreateQuests: React.FC<{
           </Checkbox>
         </Tooltip>
       </Flex>
+
+      {isPremium && (
+        <Flex
+          bgColor="blackAlpha.600"
+          py={10}
+          px={12}
+          gap={3}
+          borderRadius={10}
+        >
+          <Image src="/CreateChain/gem-premium.svg" alt="circles3" w={16} />
+          <Box>
+            <Text fontSize={18} fontWeight="bold" mb={3}>
+              This quest chain has a 3D completion NFT, which is a PREMIUM
+              feature and costs $10.
+            </Text>
+            <Text
+              fontSize={14}
+              decoration="underline"
+              cursor="pointer"
+              onClick={goBackToNFTSelection}
+            >
+              Changed your mind? Downgrade to 2D and publish for free.
+            </Text>
+          </Box>
+        </Flex>
+      )}
 
       <Flex w="full" gap={4}>
         {isPremium && !isApproved && (
