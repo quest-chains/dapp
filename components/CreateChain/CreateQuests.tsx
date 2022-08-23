@@ -1,4 +1,4 @@
-import { AddIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   AccordionButton,
@@ -11,13 +11,16 @@ import {
   HStack,
   IconButton,
   Image,
+  Input,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 
+import { MarkdownEditor } from '../MarkdownEditor';
 import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock } from './AddQuestBlock';
 
@@ -27,6 +30,11 @@ export const CreateQuests: React.FC<{
   ) => void | Promise<void>;
 }> = ({ onPublishQuestChain }) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
+  const [isEditingQuest, setIsEditingQuest] = useState(false);
+  const [editingQuestIndex, setEditingQuestIndex] = useState(0);
+  const [questDescription, setDescription] = useState('');
+  const [questName, setName] = useState('');
+
   const [quests, setQuests] = useState<{ name: string; description: string }[]>(
     [],
   );
@@ -36,6 +44,11 @@ export const CreateQuests: React.FC<{
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
+  };
+
+  const onEditQuest = (name: string, description: string, index: number) => {
+    setIsEditingQuest(false);
+    setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
 
   return (
@@ -73,6 +86,41 @@ export const CreateQuests: React.FC<{
           alignItems="center"
           flexDir="column"
         >
+          <Accordion allowMultiple w="full">
+            {quests &&
+              quests.map(({ name, description }, index) =>
+                isEditingQuest && editingQuestIndex === index ? (
+                  <EditingQuest
+                    key={name + description}
+                    name={questName}
+                    description={questDescription}
+                    setName={setName}
+                    setDescription={setDescription}
+                    onSave={onEditQuest}
+                    index={index}
+                  ></EditingQuest>
+                ) : (
+                  <Quest
+                    key={name + description}
+                    name={`${index + 1}. ${name}`}
+                    description={description}
+                    onRemoveQuest={() => onRemoveQuest(index)}
+                    onEditQuest={() => {
+                      setName(name);
+                      setDescription(description);
+                      setIsEditingQuest(true);
+                      setEditingQuestIndex(index);
+                    }}
+                  />
+                ),
+              )}
+          </Accordion>
+          {isAddingQuest && (
+            <AddQuestBlock
+              onClose={() => setIsAddingQuest(false)}
+              onAdd={onAddQuest}
+            />
+          )}
           {!isAddingQuest && (
             <>
               {!quests.length && (
@@ -100,27 +148,12 @@ export const CreateQuests: React.FC<{
               </Button>
             </>
           )}
-          {isAddingQuest && (
-            <AddQuestBlock
-              onClose={() => setIsAddingQuest(false)}
-              onAdd={onAddQuest}
-            />
+          {!quests.length && (
+            <Text>
+              It is perfectly fine to add quests after the quest chain has been
+              published.
+            </Text>
           )}
-          <Accordion allowMultiple w="full">
-            {quests &&
-              quests.map(({ name, description }, index) => (
-                <Quest
-                  key={name + description}
-                  name={`${index + 1}. ${name}`}
-                  description={description}
-                  onRemoveQuest={() => onRemoveQuest(index)}
-                />
-              ))}
-          </Accordion>
-          <Text>
-            It is perfectly fine to add quests after the quest chain has been
-            published.
-          </Text>
         </Flex>
       </VStack>
 
@@ -139,25 +172,58 @@ const Quest: React.FC<{
   name: string;
   description: string;
   onRemoveQuest: () => void;
-}> = ({ name, description, onRemoveQuest }) => {
+  onEditQuest: () => void;
+}> = ({ name, description, onRemoveQuest, onEditQuest }) => {
   return (
-    <AccordionItem>
-      <Flex>
-        <AccordionButton>
+    <AccordionItem bg="gray.900" borderRadius={10} px={4} mb={3}>
+      <Flex alignItems="center">
+        <AccordionButton py={6}>
           <Box flex="1" textAlign="left" fontWeight="bold">
             {name}
           </Box>
           <AccordionIcon />
         </AccordionButton>
-        <IconButton
-          icon={<SmallCloseIcon />}
-          onClick={onRemoveQuest}
-          aria-label=""
-        />
+        <Tooltip label="Delete Quest">
+          <IconButton
+            icon={<SmallCloseIcon />}
+            onClick={onRemoveQuest}
+            aria-label=""
+            bg="transparent"
+          />
+        </Tooltip>
+        <Tooltip label="Edit Quest">
+          <IconButton
+            icon={<EditIcon />}
+            onClick={onEditQuest}
+            aria-label=""
+            bg="transparent"
+          />
+        </Tooltip>
       </Flex>
-      <AccordionPanel pb={4}>
+      <AccordionPanel>
         <MarkdownViewer markdown={description} />
       </AccordionPanel>
     </AccordionItem>
+  );
+};
+
+const EditingQuest: React.FC<{
+  name: string;
+  description: string;
+  setName: (name: string) => void;
+  setDescription: (description: string) => void;
+  onSave: (name: string, description: string, index: number) => void;
+  index: number;
+}> = ({ name, description, setName, setDescription, onSave, index }) => {
+  return (
+    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
+      <Input
+        bg="#0F172A"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <MarkdownEditor value={description ?? ''} onChange={setDescription} />
+      <Button onClick={() => onSave(name, description, index)}>Save</Button>
+    </Flex>
   );
 };
