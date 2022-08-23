@@ -70,10 +70,10 @@ const NFTForm: React.FC<{
             Chain completion NFT
           </Text>
         </Flex>
-
         <IconButton
-          icon={<QuestionOutlineIcon />}
+          icon={<QuestionOutlineIcon height={7} width={7} fontWeight="bold" />}
           onClick={onOpen}
+          borderRadius="full"
           bg="transparent"
           aria-label="info"
         />

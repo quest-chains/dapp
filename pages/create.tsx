@@ -16,6 +16,8 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
 import { getGlobalInfo } from '@/graphql/globalInfo';
 import {
+  IERC20 as IERC20V1,
+  IERC20__factory as IERC20V1__factory,
   QuestChainFactory as QuestChainFactoryV1,
   QuestChainFactory__factory as QuestChainFactoryV1__factory,
 } from '@/types/v1';
@@ -42,7 +44,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
   const [isPremium, setIsPremium] = useState(false);
-  const [step, setStep] = useState(2); // change back to 0
+  const [step, setStep] = useState(0);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -118,15 +120,41 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         };
         const factoryContract: QuestChainFactoryV1 =
           QuestChainFactoryV1__factory.connect(
-            globalInfo[chainId],
+            globalInfo[chainId].address,
             provider.getSigner(),
           );
+        const tokenContract: IERC20V1 = IERC20V1__factory.connect(
+          globalInfo[chainId].paymentTokenAddress,
+          provider.getSigner(),
+        );
 
         let tx;
+
         if (isPremium) {
-          tx = await factoryContract.create(info, randomBytes(32));
+          const tokenAllowance = await tokenContract.allowance(
+            address,
+            globalInfo[chainId].address,
+          );
+          if (tokenAllowance.toNumber() >= globalInfo[chainId].upgradeFee) {
+            tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
+          } else {
+            try {
+              await tokenContract.approve(
+                globalInfo[chainId].address,
+                globalInfo[chainId].upgradeFee,
+              );
+              tx = await factoryContract.createAndUpgrade(
+                info,
+                randomBytes(32),
+              );
+            } catch (error) {
+              toast.dismiss(tid);
+              handleError(error);
+              return;
+            }
+          }
         } else {
-          tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
+          tx = await factoryContract.create(info, randomBytes(32));
         }
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
@@ -221,7 +249,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       </Flex>
 
       {step >= 2 && (
-        <Flex gap={8}>
+        <Flex gap={8} justifyContent="space-between">
           <Flex flexDir="column" gap={8}>
             <Text
               fontSize="5xl"
