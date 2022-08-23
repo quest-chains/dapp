@@ -43,12 +43,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [isPremium, setIsPremium] = useState(false);
-  const [step, setStep] = useState(0);
+  const [isPremium, setIsPremium] = useState(true);
+  const [step, setStep] = useState(4);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
   const [reviewerAddresses, setReviewerAddresses] = useState(['']);
+  const [isApproved, setIsApproved] = useState(false);
 
   const onSubmitChainMeta = (
     name: string,
@@ -87,6 +88,39 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setStep(4);
   };
 
+  const approveTokens = async () => {
+    if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
+      return;
+    let tid;
+    try {
+      const { factoryAddress, paymentTokenAddress, upgradeFee } =
+        globalInfo[chainId];
+      const tokenContract: IERC20V1 = IERC20V1__factory.connect(
+        paymentTokenAddress,
+        provider.getSigner(),
+      );
+      const tokenAllowance = await tokenContract.allowance(
+        address,
+        factoryAddress,
+      );
+      if (tokenAllowance.toNumber() >= upgradeFee) setIsApproved(true);
+      else {
+        tid = toast.loading('Approving spending of tokens, please wait...');
+        const approval = await tokenContract.approve(
+          factoryAddress,
+          upgradeFee,
+        );
+        await approval.wait();
+        setIsApproved(true);
+        toast.dismiss(tid);
+        toast.success('Approved');
+      }
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
+    }
+  };
+
   const onPublishQuestChain = useCallback(
     async (
       quests: { name: string; description: string }[],
@@ -97,16 +131,18 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
 
       let tid = toast.loading('Uploading Quests, please wait...');
 
-      const metadata: Metadata[] = quests;
-      const hashes = await Promise.all(
-        metadata.map(quest => uploadMetadata(quest)),
-      );
-      const questsDetails = hashes.map(hash => `ipfs://${hash}`);
-      toast.dismiss(tid);
+      let questsDetails: string[] = [];
+      if (quests.length) {
+        const metadata: Metadata[] = quests;
+        const hashes = await Promise.all(
+          metadata.map(quest => uploadMetadata(quest)),
+        );
+        questsDetails = hashes.map(hash => `ipfs://${hash}`);
+        toast.dismiss(tid);
+      }
 
       try {
-        const { factoryAddress, paymentTokenAddress, upgradeFee } =
-          globalInfo[chainId];
+        const { factoryAddress } = globalInfo[chainId];
 
         const info: QuestChainCommons.QuestChainInfoStruct = {
           details: chainUri,
@@ -123,44 +159,14 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             factoryAddress,
             provider.getSigner(),
           );
-        const tokenContract: IERC20V1 = IERC20V1__factory.connect(
-          paymentTokenAddress,
-          provider.getSigner(),
-        );
 
         let tx;
 
         if (isPremium) {
-          const tokenAllowance = await tokenContract.allowance(
-            address,
-            factoryAddress,
+          tid = toast.loading(
+            'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
-          if (tokenAllowance.toNumber() >= upgradeFee) {
-            tid = toast.loading(
-              'Waiting for Confirmation - Confirm the transaction in your Wallet',
-            );
-            tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
-          } else {
-            try {
-              tid = toast.loading(
-                'Waiting for Confirmation - Approve spending the token for Premium Quest Chain',
-              );
-              const approval = await tokenContract.approve(
-                factoryAddress,
-                upgradeFee,
-              );
-              approval.wait();
-
-              tx = await factoryContract.createAndUpgrade(
-                info,
-                randomBytes(32),
-              );
-            } catch (error) {
-              toast.dismiss(tid);
-              handleError(error);
-              return;
-            }
-          }
+          tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
         } else {
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
@@ -307,7 +313,12 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         gap={8}
       >
         <Flex flexGrow={1} flexDir="column" gap={8}>
-          <CreateQuests onPublishQuestChain={onPublishQuestChain} />
+          <CreateQuests
+            onPublishQuestChain={onPublishQuestChain}
+            isPremium={isPremium}
+            isApproved={isApproved}
+            approveTokens={approveTokens}
+          />
         </Flex>
         <Flex w={373}>
           {address && (

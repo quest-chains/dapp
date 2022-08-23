@@ -30,7 +30,10 @@ export const CreateQuests: React.FC<{
     quests: { name: string; description: string }[],
     startAsDisabled: boolean,
   ) => void | Promise<void>;
-}> = ({ onPublishQuestChain }) => {
+  isPremium: boolean;
+  approveTokens: () => void | Promise<void>;
+  isApproved: boolean;
+}> = ({ onPublishQuestChain, isPremium, approveTokens, isApproved }) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [editingQuestIndex, setEditingQuestIndex] = useState(0);
@@ -174,13 +177,26 @@ export const CreateQuests: React.FC<{
         </Tooltip>
       </Flex>
 
-      <SubmitButton
-        onClick={() => onPublishQuestChain(quests, startAsDisabled)}
-        type="submit"
-        w="full"
-      >
-        PUBLISH QUEST CHAIN
-      </SubmitButton>
+      <Flex w="full" gap={4}>
+        {isPremium && !isApproved && (
+          <SubmitButton
+            isDisabled={!(isPremium && !isApproved)}
+            onClick={async () => approveTokens()}
+            type="submit"
+            flex={1}
+          >
+            Approve tokens
+          </SubmitButton>
+        )}
+        <SubmitButton
+          isDisabled={isPremium && !isApproved}
+          onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
+          type="submit"
+          flex={1}
+        >
+          PUBLISH QUEST CHAIN
+        </SubmitButton>
+      </Flex>
     </>
   );
 };
