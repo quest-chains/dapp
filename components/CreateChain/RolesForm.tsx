@@ -10,8 +10,10 @@ import {
   IconButton,
   Input,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { ethers } from 'ethers';
 import {
   Field,
   FieldArray,
@@ -24,6 +26,7 @@ import {
 import { useCallback } from 'react';
 
 import { SubmitButton } from '@/components/SubmitButton';
+import { UserDisplay } from '@/components/UserDisplay';
 import { handleError } from '@/utils/helpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
@@ -201,38 +204,59 @@ const Role: React.FC<{
         </FormLabel>
         {addresses.map((_address, index) => (
           <HStack key={index} mb={2}>
-            <Box w="100%">
-              <Field name={`${role + 'Addresses'}.${index}`}>
-                {({ field }: FieldProps<string, RolesFormValues>) => (
-                  <FormControl>
-                    <Input
-                      bg="#0F172A"
-                      {...field}
-                      id={`${role + 'Addresses'}.${index}`}
-                      placeholder={`Paste or write in ${role}'s address...`}
-                    />
-                  </FormControl>
-                )}
-              </Field>
-            </Box>
-            {addresses.length - 1 === index && (
-              <Button
-                borderRadius="full"
-                isDisabled={_address === ''}
-                onClick={() => {
-                  arrayHelpers.push('');
-                }}
-              >
-                Add
-              </Button>
+            {addresses.length - 1 === index ? (
+              <Box w="100%">
+                <Field name={`${role + 'Addresses'}.${index}`}>
+                  {({ field }: FieldProps<string, RolesFormValues>) => (
+                    <FormControl>
+                      <Input
+                        bg="#0F172A"
+                        {...field}
+                        id={`${role + 'Addresses'}.${index}`}
+                        placeholder={`Paste or write in ${role}'s address...`}
+                      />
+                    </FormControl>
+                  )}
+                </Field>
+              </Box>
+            ) : (
+              <Flex flexGrow={1}>
+                <UserDisplay address={_address} full />
+              </Flex>
             )}
-            <IconButton
-              borderRadius="full"
-              isDisabled={index === 0}
-              onClick={() => arrayHelpers.remove(index)}
-              icon={<CloseIcon boxSize="0.7rem" />}
-              aria-label={''}
-            />
+
+            {addresses.length - 1 === index && (
+              <Tooltip
+                isDisabled={ethers.utils.isAddress(_address)}
+                label="Please input a valid address"
+                shouldWrapChildren
+              >
+                <Button
+                  borderRadius="full"
+                  isDisabled={!ethers.utils.isAddress(_address)}
+                  onClick={() => {
+                    arrayHelpers.push('');
+                  }}
+                >
+                  Add
+                </Button>
+              </Tooltip>
+            )}
+            {addresses.length && (
+              <IconButton
+                borderRadius="full"
+                isDisabled={addresses[index] === ''}
+                onClick={() => {
+                  if (addresses.length > 1) arrayHelpers.remove(index);
+                  else {
+                    arrayHelpers.remove(index);
+                    arrayHelpers.push('');
+                  }
+                }}
+                icon={<CloseIcon boxSize="0.7rem" />}
+                aria-label={''}
+              />
+            )}
           </HStack>
         ))}
       </Box>
