@@ -95,19 +95,19 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
         return;
 
-      let tid = toast.loading(
-        'Waiting for Confirmation - Confirm the transaction in your Wallet',
-      );
+      let tid = toast.loading('Uploading Quests, please wait...');
 
       const metadata: Metadata[] = quests;
       const hashes = await Promise.all(
         metadata.map(quest => uploadMetadata(quest)),
       );
-
       const questsDetails = hashes.map(hash => `ipfs://${hash}`);
+      toast.dismiss(tid);
 
-      // return;
       try {
+        const { factoryAddress, paymentTokenAddress, upgradeFee } =
+          globalInfo[chainId];
+
         const info: QuestChainCommons.QuestChainInfoStruct = {
           details: chainUri,
           tokenURI: nftUri,
@@ -120,11 +120,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         };
         const factoryContract: QuestChainFactoryV1 =
           QuestChainFactoryV1__factory.connect(
-            globalInfo[chainId].address,
+            factoryAddress,
             provider.getSigner(),
           );
         const tokenContract: IERC20V1 = IERC20V1__factory.connect(
-          globalInfo[chainId].paymentTokenAddress,
+          paymentTokenAddress,
           provider.getSigner(),
         );
 
@@ -133,16 +133,24 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         if (isPremium) {
           const tokenAllowance = await tokenContract.allowance(
             address,
-            globalInfo[chainId].address,
+            factoryAddress,
           );
-          if (tokenAllowance.toNumber() >= globalInfo[chainId].upgradeFee) {
+          if (tokenAllowance.toNumber() >= upgradeFee) {
+            tid = toast.loading(
+              'Waiting for Confirmation - Confirm the transaction in your Wallet',
+            );
             tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
           } else {
             try {
-              await tokenContract.approve(
-                globalInfo[chainId].address,
-                globalInfo[chainId].upgradeFee,
+              tid = toast.loading(
+                'Waiting for Confirmation - Approve spending the token for Premium Quest Chain',
               );
+              const approval = await tokenContract.approve(
+                factoryAddress,
+                upgradeFee,
+              );
+              approval.wait();
+
               tx = await factoryContract.createAndUpgrade(
                 info,
                 randomBytes(32),
@@ -154,6 +162,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             }
           }
         } else {
+          tid = toast.loading(
+            'Waiting for Confirmation - Confirm the transaction in your Wallet',
+          );
           tx = await factoryContract.create(info, randomBytes(32));
         }
         toast.dismiss(tid);
@@ -165,13 +176,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
 
-        setChainName('');
-        setChainUri('');
-        setNFTUri('');
-
         const questChainAddress = await awaitQuestChainAddress(receipt);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain');
+        toast.success('Successfully created a new Quest Chain! Redirecting...');
         if (questChainAddress) {
           router.push(`/chain/${chainId}/${questChainAddress}`);
         }

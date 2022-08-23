@@ -548,7 +548,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Text color="whiteAlpha.600" fontSize="xs">
                     CREATED BY
                   </Text>
-                  <UserDisplay address={questChain.createdBy.id} />
+                  {questChain.createdBy.id && (
+                    <UserDisplay address={questChain.createdBy.id} />
+                  )}
                 </Box>
               </Flex>
 
@@ -864,7 +866,7 @@ const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
       <Flex flexDir="column">
         {addresses.map(address => (
           <Box key={address}>
-            <UserDisplay address={address} />
+            {address && <UserDisplay address={address} />}
           </Box>
         ))}
       </Flex>

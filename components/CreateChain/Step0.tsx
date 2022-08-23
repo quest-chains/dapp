@@ -6,7 +6,7 @@ const Step0: React.FC = () => {
     <VStack w="full" align="stretch" spacing={8}>
       <Flex w="full" justifyContent="center">
         <Text fontFamily="heading" color="white" fontSize={40}>
-          Here's what's coming up
+          Here&apos;s what&apos;s coming up
         </Text>
       </Flex>
       <Grid

@@ -9,7 +9,7 @@ import { SUPPORTED_NETWORK_INFO } from '@/web3';
 export const getFactoryAddress = async (
   chainId: string,
 ): Promise<{
-  address: string;
+  factoryAddress: string;
   tokenAddress: string;
   paymentTokenAddress: string;
   upgradeFee: number;
@@ -28,7 +28,7 @@ export const getFactoryAddress = async (
     data.globals[0];
 
   return {
-    address: factoryAddress,
+    factoryAddress,
     tokenAddress,
     paymentTokenAddress,
     upgradeFee,
@@ -39,7 +39,7 @@ export const getGlobalInfo = async (): Promise<
   Record<
     string,
     {
-      address: string;
+      factoryAddress: string;
       tokenAddress: string;
       paymentTokenAddress: string;
       upgradeFee: number;
@@ -49,7 +49,7 @@ export const getGlobalInfo = async (): Promise<
   const globalInfo: Record<
     string,
     {
-      address: string;
+      factoryAddress: string;
       tokenAddress: string;
       paymentTokenAddress: string;
       upgradeFee: number;

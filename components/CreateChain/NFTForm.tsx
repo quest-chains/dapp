@@ -21,7 +21,6 @@ import { useState } from 'react';
 import NFTForm2D from '@/components/CreateChain/NFTForm2D';
 import NFTForm3D from '@/components/CreateChain/NFTForm3D';
 import NFTFormCustom from '@/components/CreateChain/NFTFormCustom';
-import { getGlobalInfo } from '@/graphql/globalInfo';
 
 const NFTForm: React.FC<{
   onSubmit: (
@@ -179,14 +178,6 @@ const NFTForm: React.FC<{
       </Modal>
     </VStack>
   );
-};
-
-export const getStaticProps = async () => {
-  return {
-    props: {
-      globalInfo: await getGlobalInfo(),
-    },
-  };
 };
 
 export default NFTForm;
