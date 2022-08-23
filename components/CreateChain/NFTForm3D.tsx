@@ -38,7 +38,11 @@ import { SubmitButton } from '../SubmitButton';
 const NFTForm3D: React.FC<{
   chainName?: string;
   onBack?: () => void;
-  onSubmit?: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
+  onSubmit: (
+    metadataUri: string,
+    nftUrl: string | undefined,
+    isPremium: boolean,
+  ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -104,7 +108,7 @@ const NFTForm3D: React.FC<{
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
 
-      onSubmit?.(details, metadata.image_url);
+      onSubmit(details, metadata.image_url, true);
     } catch (error) {
       if (tid) {
         toast.dismiss(tid);

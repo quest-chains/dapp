@@ -41,7 +41,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(4); // change back to 0
+  const [isPremium, setIsPremium] = useState(false);
+  const [step, setStep] = useState(2); // change back to 0
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -60,8 +61,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setStep(2);
   };
 
-  const onSubmitNFTMeta = (metadataUri: string, nftUrl?: string) => {
+  const onSubmitNFTMeta = (
+    metadataUri: string,
+    nftUrl: string | undefined,
+    isPremium: boolean,
+  ) => {
     setNFTUri(metadataUri);
+    setIsPremium(isPremium);
     if (nftUrl) setNFTUrl(nftUrl);
     setStep(3);
   };
@@ -115,7 +121,13 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             globalInfo[chainId],
             provider.getSigner(),
           );
-        const tx = await factoryContract.create(info, randomBytes(32));
+
+        let tx;
+        if (isPremium) {
+          tx = await factoryContract.create(info, randomBytes(32));
+        } else {
+          tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
+        }
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -151,6 +163,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       editorAddresses,
       reviewerAddresses,
       globalInfo,
+      isPremium,
       router,
     ],
   );

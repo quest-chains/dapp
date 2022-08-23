@@ -37,7 +37,11 @@ import { ImageTemplate } from './ImageTemplate';
 const NFTForm2D: React.FC<{
   chainName?: string;
   onBack?: () => void;
-  onSubmit: (metadataUri: string, nftUrl?: string) => void | Promise<void>;
+  onSubmit: (
+    metadataUri: string,
+    nftUrl: string | undefined,
+    isPremium: boolean,
+  ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,7 +93,7 @@ const NFTForm2D: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details, metadata.image_url);
+      onSubmit(details, metadata.image_url, false);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
