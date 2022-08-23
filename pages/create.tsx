@@ -41,7 +41,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(3); // change back to 0
+  const [step, setStep] = useState(4); // change back to 0
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -80,7 +80,10 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   };
 
   const onPublishQuestChain = useCallback(
-    async (quests: { name: string; description: string }[]) => {
+    async (
+      quests: { name: string; description: string }[],
+      startAsDisabled: boolean,
+    ) => {
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
         return;
 
@@ -105,7 +108,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           editors: editorAddresses.filter(address => address !== ''),
           reviewers: reviewerAddresses.filter(address => address !== ''),
           quests: questsDetails,
-          paused: false,
+          paused: startAsDisabled,
         };
         const factoryContract: QuestChainFactoryV1 =
           QuestChainFactoryV1__factory.connect(

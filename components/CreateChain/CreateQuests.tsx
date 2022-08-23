@@ -7,6 +7,7 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Checkbox,
   Flex,
   HStack,
   IconButton,
@@ -27,6 +28,7 @@ import { AddQuestBlock } from './AddQuestBlock';
 export const CreateQuests: React.FC<{
   onPublishQuestChain: (
     quests: { name: string; description: string }[],
+    startAsDisabled: boolean,
   ) => void | Promise<void>;
 }> = ({ onPublishQuestChain }) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
@@ -34,6 +36,7 @@ export const CreateQuests: React.FC<{
   const [editingQuestIndex, setEditingQuestIndex] = useState(0);
   const [questDescription, setDescription] = useState('');
   const [questName, setName] = useState('');
+  const [startAsDisabled, setStartAsDisabled] = useState(false);
 
   const [quests, setQuests] = useState<{ name: string; description: string }[]>(
     [],
@@ -157,8 +160,22 @@ export const CreateQuests: React.FC<{
         </Flex>
       </VStack>
 
+      <Flex w="full" justifyContent="center">
+        <Tooltip
+          label="A disabled quest chain won't be visible to public. You can enable it at a later time."
+          shouldWrapChildren
+        >
+          <Checkbox
+            isChecked={startAsDisabled}
+            onChange={() => setStartAsDisabled(!startAsDisabled)}
+          >
+            <Text borderBottom="dotted 1px">Start quest chain as disabled</Text>
+          </Checkbox>
+        </Tooltip>
+      </Flex>
+
       <SubmitButton
-        onClick={() => onPublishQuestChain(quests)}
+        onClick={() => onPublishQuestChain(quests, startAsDisabled)}
         type="submit"
         w="full"
       >
@@ -175,7 +192,7 @@ const Quest: React.FC<{
   onEditQuest: () => void;
 }> = ({ name, description, onRemoveQuest, onEditQuest }) => {
   return (
-    <AccordionItem bg="gray.900" borderRadius={10} px={4} mb={3}>
+    <AccordionItem bg="gray.900" borderRadius={10} px={4} mb={3} border={0}>
       <Flex alignItems="center">
         <AccordionButton py={6}>
           <Box flex="1" textAlign="left" fontWeight="bold">
