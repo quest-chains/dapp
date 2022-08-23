@@ -20,6 +20,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import ThreeSixty from '@/assets/360.svg';
 import { arrayBufferToFile } from '@/utils/fileHelpers';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -149,6 +150,8 @@ const NFTForm3D: React.FC<{
             ref={canvasRef}
             sceneRef={sceneRef}
           />
+          <Image src={ThreeSixty.src} alt="Edit" mr={3} />
+
           <FormControl isRequired>
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
