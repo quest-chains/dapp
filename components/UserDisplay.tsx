@@ -11,7 +11,7 @@ export const UserDisplay: React.FC<{
   address: string;
   color?: string;
   full?: boolean;
-}> = ({ address, color = 'white', full = false }) => {
+}> = ({ address, color = 'white' }) => {
   const { ens } = useENS(address);
   return (
     <NextLink as={`/profile/${address}`} href="/profile/[address]" passHref>
@@ -25,7 +25,7 @@ export const UserDisplay: React.FC<{
               provider={getEthersProvider('0x1')}
             />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {full ? address : formatAddress(utils.getAddress(address), ens)}
+              {formatAddress(utils.getAddress(address), ens)}
             </Text>
           </HStack>
         </Button>

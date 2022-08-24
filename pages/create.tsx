@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 import { CreateQuests } from '@/components/CreateChain/CreateQuests';
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
-import { RolesForm, RolesFormValues } from '@/components/CreateChain/RolesForm';
+import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
@@ -75,16 +75,27 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setStep(3);
   };
 
-  const onSubmitRoles = ({
-    ownerAddresses,
-    adminAddresses,
-    editorAddresses,
-    reviewerAddresses,
-  }: RolesFormValues) => {
-    setOwnerAddresses(ownerAddresses.concat(address || ''));
-    setAdminAddresses(adminAddresses);
-    setEditorAddresses(editorAddresses);
-    setReviewerAddresses(reviewerAddresses);
+  const onSubmitRoles = (members: Member[]) => {
+    setOwnerAddresses(
+      members
+        .filter(member => member.role === 'owner')
+        .map(member => member.address),
+    );
+    setAdminAddresses(
+      members
+        .filter(member => member.role === 'admin')
+        .map(member => member.address),
+    );
+    setEditorAddresses(
+      members
+        .filter(member => member.role === 'editor')
+        .map(member => member.address),
+    );
+    setReviewerAddresses(
+      members
+        .filter(member => member.role === 'reviewer')
+        .map(member => member.address),
+    );
     setStep(4);
   };
 
@@ -309,7 +320,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         flexDir="column"
         gap={8}
       >
-        <RolesForm onSubmit={onSubmitRoles} />
+        <RolesForm onSubmit={onSubmitRoles} address={address} />
         <Step4 />
       </Flex>
 

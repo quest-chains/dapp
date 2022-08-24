@@ -1,73 +1,61 @@
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
-  Button,
   Flex,
-  FormControl,
-  FormLabel,
   Grid,
   HStack,
   IconButton,
+  Image,
   Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
-import {
-  Field,
-  FieldArray,
-  FieldProps,
-  Form,
-  Formik,
-  FormikHelpers,
-  FormikState,
-} from 'formik';
-import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
+import AddUser from '@/assets/add-user.svg';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
-import { handleError } from '@/utils/helpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
-export interface RolesFormValues {
-  ownerAddresses: string[];
-  adminAddresses: string[];
-  editorAddresses: string[];
-  reviewerAddresses: string[];
+export interface Member {
+  role: string;
+  address: string;
 }
 
 export const RolesForm: React.FC<{
-  onSubmit: (values: RolesFormValues) => void | Promise<void>;
-}> = ({ onSubmit }) => {
-  const initialValues: RolesFormValues = {
-    ownerAddresses: [''],
-    adminAddresses: [''],
-    editorAddresses: [''],
-    reviewerAddresses: [''],
-  };
-
+  onSubmit: (members: Member[]) => void;
+  address: string | undefined | null;
+}> = ({ onSubmit, address }) => {
   const { isConnected, chainId } = useWallet();
 
-  const isDisabled = !isConnected || !isSupportedNetwork(chainId);
+  const [members, setMembers] = useState<Member[]>([]);
 
-  const submitRoles = useCallback(
-    async (
-      values: RolesFormValues,
-      { setSubmitting, resetForm }: FormikHelpers<RolesFormValues>,
-    ) => {
-      try {
-        setSubmitting(true);
-        await onSubmit(values);
-        resetForm();
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setSubmitting(false);
-      }
-    },
-    [onSubmit],
-  );
+  const setRole = (role: string, address: string) => {
+    const newMembers = members.map(member => {
+      if (member.address === address) return { address, role };
+      else return member;
+    });
+
+    setMembers(newMembers);
+  };
+
+  const addNewAddress = (address: string) => {
+    setMembers(members.concat({ address, role: '' }));
+  };
+
+  useEffect(() => {
+    if (address && !members.length) {
+      setMembers([{ role: 'owner', address }]);
+    }
+  }, [address, members.length]);
+
+  const isDisabled = !isConnected || !isSupportedNetwork(chainId);
 
   return (
     <VStack
@@ -105,161 +93,150 @@ export const RolesForm: React.FC<{
           between multiple people.
         </Text>
       </Box>
-      <Formik initialValues={initialValues} onSubmit={submitRoles}>
-        {({ isSubmitting, values }: FormikState<RolesFormValues>) => (
-          <Form>
-            <Flex
-              w="full"
-              gap={8}
-              flexDir={{ base: 'column', md: 'row' }}
-              mb={8}
-            >
-              <VStack
-                w={{ base: '100%', md: '50%' }}
-                align="flex-start"
-                spacing={4}
-              >
-                <Role role="owner" addresses={values.ownerAddresses} />
-                <Role role="admin" addresses={values.adminAddresses} />
-                <Role role="editor" addresses={values.editorAddresses} />
-                <Role role="reviewer" addresses={values.reviewerAddresses} />
-              </VStack>
-              <Grid
-                bgColor="rgba(0,0,0,0.4)"
-                templateColumns="2fr 1fr 1fr 1fr 1fr"
-                w="50%"
-                p={8}
-                alignItems="center"
-                justifyItems="center"
-                gap={4}
-              >
-                <Box />
-                <Text fontSize={14} fontWeight="bold">
-                  Owner
-                </Text>
-                <Text fontSize={14} fontWeight="bold">
-                  Admin
-                </Text>
-                <Text fontSize={14} fontWeight="bold">
-                  Editor
-                </Text>
-                <Text fontSize={14} fontWeight="bold">
-                  Reviewer
-                </Text>
-                <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Add/remove owners & upgrade to premium chain
-                </Text>
-                <CheckIcon />
-                <CloseIcon color="gray.600" />
-                <CloseIcon color="gray.600" />
-                <CloseIcon color="gray.600" />
-                <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Add/remove admins, editors and reviewers
-                </Text>
-                <CheckIcon />
-                <CheckIcon />
-                <CloseIcon color="gray.600" />
-                <CloseIcon color="gray.600" />
-                <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Add/edit/delete quests
-                </Text>
-                <CheckIcon />
-                <CheckIcon />
-                <CheckIcon />
-                <CloseIcon color="gray.600" />
-                <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Approve/decline submissions
-                </Text>
-                <CheckIcon />
-                <CheckIcon />
-                <CheckIcon />
-                <CheckIcon />
-              </Grid>
-            </Flex>
+      <Flex w="full" gap={8} flexDir={{ base: 'column', md: 'row' }} mb={8}>
+        <VStack w={{ base: '100%', md: '50%' }} align="flex-start" spacing={4}>
+          <Roles
+            members={members}
+            setRole={setRole}
+            ownerAddress={address}
+            addNewAddress={addNewAddress}
+          />
+        </VStack>
+        <Grid
+          bgColor="rgba(0,0,0,0.4)"
+          templateColumns="2fr 1fr 1fr 1fr 1fr"
+          w="50%"
+          p={8}
+          alignItems="center"
+          justifyItems="center"
+          gap={4}
+        >
+          <Box />
+          <Text fontSize={14} fontWeight="bold">
+            Owner
+          </Text>
+          <Text fontSize={14} fontWeight="bold">
+            Admin
+          </Text>
+          <Text fontSize={14} fontWeight="bold">
+            Editor
+          </Text>
+          <Text fontSize={14} fontWeight="bold">
+            Reviewer
+          </Text>
+          <Text fontSize={14} fontWeight="bold" pr={8}>
+            Add/remove owners & upgrade to premium chain
+          </Text>
+          <CheckIcon />
+          <CloseIcon color="gray.600" />
+          <CloseIcon color="gray.600" />
+          <CloseIcon color="gray.600" />
+          <Text fontSize={14} fontWeight="bold" pr={8}>
+            Add/remove admins, editors and reviewers
+          </Text>
+          <CheckIcon />
+          <CheckIcon />
+          <CloseIcon color="gray.600" />
+          <CloseIcon color="gray.600" />
+          <Text fontSize={14} fontWeight="bold" pr={8}>
+            Add/edit/delete quests
+          </Text>
+          <CheckIcon />
+          <CheckIcon />
+          <CheckIcon />
+          <CloseIcon color="gray.600" />
+          <Text fontSize={14} fontWeight="bold" pr={8}>
+            Approve/decline submissions
+          </Text>
+          <CheckIcon />
+          <CheckIcon />
+          <CheckIcon />
+          <CheckIcon />
+        </Grid>
+      </Flex>
 
-            <SubmitButton
-              isLoading={isSubmitting}
-              type="submit"
-              isDisabled={isDisabled}
-              w="full"
-            >
-              Continue to Step 4
-            </SubmitButton>
-          </Form>
-        )}
-      </Formik>
+      <SubmitButton
+        onClick={() => onSubmit(members)}
+        isDisabled={isDisabled}
+        w="full"
+      >
+        Continue to Step 4
+      </SubmitButton>
     </VStack>
   );
 };
-const Role: React.FC<{
-  addresses: string[];
-  role: string;
-}> = ({ addresses, role }) => (
-  <FieldArray
-    name={role + 'Addresses'}
-    render={arrayHelpers => (
-      <Box w="100%">
-        <FormLabel htmlFor={role + 'Addresses'}>
-          {role.charAt(0).toUpperCase() + role.slice(1) + 's'}
-        </FormLabel>
-        {addresses.map((_address, index) => (
-          <HStack key={index} mb={2}>
-            {addresses.length - 1 === index ? (
-              <Box w="100%">
-                <Field name={`${role + 'Addresses'}.${index}`}>
-                  {({ field }: FieldProps<string, RolesFormValues>) => (
-                    <FormControl>
-                      <Input
-                        bg="#0F172A"
-                        {...field}
-                        id={`${role + 'Addresses'}.${index}`}
-                        placeholder={`Paste or write in ${role}'s address...`}
-                      />
-                    </FormControl>
-                  )}
-                </Field>
-              </Box>
-            ) : (
-              <Flex flexGrow={1}>
-                <UserDisplay address={_address} full />
-              </Flex>
-            )}
+const Roles: React.FC<{
+  members: Member[];
+  ownerAddress?: string | undefined | null;
+  setRole: (role: string, address: string) => void;
+  addNewAddress: (address: string) => void;
+}> = ({ members, setRole, ownerAddress, addNewAddress }) => {
+  const [newAddress, setNewAddress] = useState('');
 
-            {addresses.length - 1 === index && (
-              <Tooltip
-                isDisabled={ethers.utils.isAddress(_address)}
-                label="Please input a valid address"
-                shouldWrapChildren
+  return (
+    <Flex flexDir="column" w="full" gap={4}>
+      <Text>Add a member</Text>
+      <Flex bgColor="gray.800" alignItems="center" p={1} borderRadius={8}>
+        <InputGroup flexGrow={1}>
+          <InputLeftElement
+            pointerEvents="none"
+            // eslint-disable-next-line react/no-children-prop, jsx-a11y/alt-text
+            children={<Image src={AddUser.src} left={6} position="absolute" />}
+          />
+          <Input
+            border={0}
+            pl={16}
+            type="address"
+            placeholder="Paste or write in ETH address..."
+            value={newAddress}
+            onChange={e => setNewAddress(e.target.value)}
+          />
+        </InputGroup>
+        <Tooltip
+          isDisabled={ethers.utils.isAddress(newAddress)}
+          label="Please input a valid address"
+          shouldWrapChildren
+        >
+          <IconButton
+            isDisabled={!ethers.utils.isAddress(newAddress)}
+            onClick={() => {
+              if (members.find(member => member.address === newAddress)) {
+                setNewAddress('');
+                toast.error('Address has already been added');
+                return;
+              }
+              addNewAddress(newAddress);
+              setNewAddress('');
+            }}
+            icon={<CheckIcon />}
+            aria-label="Add"
+            height={9}
+            w={16}
+          />
+        </Tooltip>
+      </Flex>
+
+      {members.map(({ role, address }) => (
+        <Flex key={role + address}>
+          {address && (
+            <Flex w="full" justifyContent="space-between" alignItems="center">
+              <UserDisplay address={address} full />
+              <Select
+                onChange={e => setRole(e.target.value, address)}
+                value={role}
+                placeholder="Select role"
+                isDisabled={ownerAddress === address}
+                w="auto"
               >
-                <Button
-                  borderRadius="full"
-                  isDisabled={!ethers.utils.isAddress(_address)}
-                  onClick={() => {
-                    arrayHelpers.push('');
-                  }}
-                >
-                  Add
-                </Button>
-              </Tooltip>
-            )}
-            {addresses.length && (
-              <IconButton
-                borderRadius="full"
-                isDisabled={addresses[index] === ''}
-                onClick={() => {
-                  if (addresses.length > 1) arrayHelpers.remove(index);
-                  else {
-                    arrayHelpers.remove(index);
-                    arrayHelpers.push('');
-                  }
-                }}
-                icon={<CloseIcon boxSize="0.7rem" />}
-                aria-label={''}
-              />
-            )}
-          </HStack>
-        ))}
-      </Box>
-    )}
-  />
-);
+                <option value="owner">Owner</option>
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="reviewer">Reviewer</option>
+              </Select>
+            </Flex>
+          )}
+        </Flex>
+      ))}
+    </Flex>
+  );
+};
