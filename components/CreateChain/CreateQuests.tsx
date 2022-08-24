@@ -127,6 +127,7 @@ export const CreateQuests: React.FC<{
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
+                    isCreatingChain
                   />
                 ),
               )}
@@ -248,6 +249,7 @@ export const Quest: React.FC<{
   userStatus?: UserStatusType;
   questChain?: QuestChainInfoFragment;
   refresh?: () => void;
+  isCreatingChain?: boolean;
 }> = ({
   name,
   description,
@@ -259,6 +261,7 @@ export const Quest: React.FC<{
   userStatus,
   questChain,
   refresh,
+  isCreatingChain = false,
 }) => {
   return (
     <AccordionItem bg={bgColor} borderRadius={10} px={4} mb={3} border={0}>
@@ -271,14 +274,16 @@ export const Quest: React.FC<{
         </AccordionButton>
         {isMember && (
           <>
-            <Tooltip label="Delete Quest">
-              <IconButton
-                icon={<SmallCloseIcon />}
-                onClick={onRemoveQuest}
-                aria-label=""
-                bg="transparent"
-              />
-            </Tooltip>
+            {isCreatingChain && (
+              <Tooltip label="Delete Quest">
+                <IconButton
+                  icon={<SmallCloseIcon />}
+                  onClick={onRemoveQuest}
+                  aria-label=""
+                  bg="transparent"
+                />
+              </Tooltip>
+            )}
             <Tooltip label="Edit Quest">
               <IconButton
                 icon={<EditIcon />}
