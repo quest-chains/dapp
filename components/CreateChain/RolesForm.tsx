@@ -93,7 +93,7 @@ export const RolesForm: React.FC<{
           between multiple people.
         </Text>
       </Box>
-      <Flex w="full" gap={8} flexDir={{ base: 'column', md: 'row' }} mb={8}>
+      <Flex w="full" gap={16} flexDir={{ base: 'column', md: 'row' }} mb={8}>
         <VStack w={{ base: '100%', md: '50%' }} align="flex-start" spacing={4}>
           <Roles
             members={members}
@@ -103,55 +103,102 @@ export const RolesForm: React.FC<{
           />
         </VStack>
         <Grid
-          bgColor="rgba(0,0,0,0.4)"
           templateColumns="2fr 1fr 1fr 1fr 1fr"
           w="50%"
-          p={8}
           alignItems="center"
           justifyItems="center"
-          gap={4}
+          h="fit-content"
         >
-          <Box />
-          <Text fontSize={14} fontWeight="bold">
-            Owner
-          </Text>
-          <Text fontSize={14} fontWeight="bold">
-            Admin
-          </Text>
-          <Text fontSize={14} fontWeight="bold">
-            Editor
-          </Text>
-          <Text fontSize={14} fontWeight="bold">
-            Reviewer
-          </Text>
-          <Text fontSize={14} fontWeight="bold" pr={8}>
-            Add/remove owners & upgrade to premium chain
-          </Text>
-          <CheckIcon />
-          <CloseIcon color="gray.600" />
-          <CloseIcon color="gray.600" />
-          <CloseIcon color="gray.600" />
-          <Text fontSize={14} fontWeight="bold" pr={8}>
-            Add/remove admins, editors and reviewers
-          </Text>
-          <CheckIcon />
-          <CheckIcon />
-          <CloseIcon color="gray.600" />
-          <CloseIcon color="gray.600" />
-          <Text fontSize={14} fontWeight="bold" pr={8}>
-            Add/edit/delete quests
-          </Text>
-          <CheckIcon />
-          <CheckIcon />
-          <CheckIcon />
-          <CloseIcon color="gray.600" />
-          <Text fontSize={14} fontWeight="bold" pr={8}>
-            Approve/decline submissions
-          </Text>
-          <CheckIcon />
-          <CheckIcon />
-          <CheckIcon />
-          <CheckIcon />
+          <GridItem bgColor="" />
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <Text fontSize={14} fontWeight="bold">
+              Owner
+            </Text>
+          </GridItem>
+          <GridItem>
+            <Text fontSize={14} fontWeight="bold">
+              Admin
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <Text fontSize={14} fontWeight="bold">
+              Editor
+            </Text>
+          </GridItem>
+          <GridItem>
+            <Text fontSize={14} fontWeight="bold">
+              Reviewer
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <Text fontSize={14} fontWeight="bold" p={4}>
+              Add/remove owners & upgrade to premium chain
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.08)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CloseIcon color="gray.600" />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.08)">
+            <CloseIcon color="gray.600" />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CloseIcon color="gray.600" />
+          </GridItem>
+          <GridItem>
+            <Text fontSize={14} fontWeight="bold" p={4}>
+              Add/remove admins, editors and reviewers
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem>
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CloseIcon color="gray.600" />
+          </GridItem>
+          <GridItem>
+            <CloseIcon color="gray.600" />
+          </GridItem>
+
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <Text fontSize={14} fontWeight="bold" p={4}>
+              Add/edit/delete quests
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.08)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.08)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CloseIcon color="gray.600" />
+          </GridItem>
+          <GridItem>
+            <Text fontSize={14} fontWeight="bold" p={4}>
+              Approve/decline submissions
+            </Text>
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem>
+            <CheckIcon />
+          </GridItem>
+          <GridItem bgColor="rgba(255, 255, 255, 0.04)">
+            <CheckIcon />
+          </GridItem>
+          <GridItem>
+            <CheckIcon />
+          </GridItem>
         </Grid>
       </Flex>
 
@@ -165,6 +212,25 @@ export const RolesForm: React.FC<{
     </VStack>
   );
 };
+
+const GridItem: React.FC<{
+  bgColor?: string | undefined;
+  children?: unknown;
+}> = ({ bgColor, children }) => {
+  return (
+    <Flex
+      bgColor={bgColor}
+      w="full"
+      h="full"
+      justifyContent="center"
+      alignItems="center"
+      p={2}
+    >
+      <>{children}</>
+    </Flex>
+  );
+};
+
 const Roles: React.FC<{
   members: Member[];
   ownerAddress?: string | undefined | null;
