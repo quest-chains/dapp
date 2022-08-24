@@ -658,16 +658,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Spinner />
                 ) : (
                   <>
-                    <Flex justifyContent="space-between" w="full">
+                    <Flex
+                      justifyContent="space-between"
+                      w="full"
+                      alignItems="center"
+                    >
                       <Text fontSize={40} fontFamily="heading">
                         QUESTS
                       </Text>
                       {mode === Mode.MEMBER && (isAdmin || isEditor) && (
-                        <Button
-                          variant="ghost"
-                          onClick={onOpenCreateQuest}
-                          fontSize="xs"
-                        >
+                        <Button onClick={onOpenCreateQuest} fontSize="xs">
                           <AddIcon fontSize="sm" mr={2} />
                           Create Quest
                         </Button>
