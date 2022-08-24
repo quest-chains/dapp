@@ -6,7 +6,7 @@ import {
 } from '@/graphql/types';
 import { SUPPORTED_NETWORK_INFO } from '@/web3';
 
-export const getFactoryAddress = async (
+export const getChainInfo = async (
   chainId: string,
 ): Promise<{
   factoryAddress: string;
@@ -58,7 +58,7 @@ export const getGlobalInfo = async (): Promise<
 
   await Promise.all(
     Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
-      const info = await getFactoryAddress(chainId);
+      const info = await getChainInfo(chainId);
       if (info !== null) {
         globalInfo[chainId] = info;
       }
