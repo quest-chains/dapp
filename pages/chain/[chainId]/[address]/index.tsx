@@ -34,7 +34,7 @@ import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { Quest } from '@/components/CreateChain/CreateQuests';
+import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';

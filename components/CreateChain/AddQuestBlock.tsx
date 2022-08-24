@@ -19,59 +19,63 @@ export const AddQuestBlock: React.FC<{
   const isDisabled = name === '' || description === '';
 
   return (
-    <Flex w="100%" direction="column" align="stretch">
-      <Flex w="full" gap={20} alignItems="normal">
-        <Flex flexGrow={1} flexDirection="column">
-          <VStack mb={4} spacing={4}>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Name</Flex>
-              <Input
-                color="white"
-                value={name}
-                bg="#0F172A"
-                id="name"
-                onChange={e => setName(e.target.value)}
-                placeholder="Quest Name"
-              />
-            </Flex>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Description</Flex>
-              <MarkdownEditor
-                height="12rem"
-                value={description}
-                placeholder="Quest Description"
-                onChange={setDescription}
-              />
-            </Flex>
-          </VStack>
-          <Flex w="100%" justify="flex-end" my={4}>
-            {isDisabled && (
-              <Button
-                borderWidth={1}
-                borderColor="white"
-                height={{ base: 10, md: 12 }}
-                px={5}
-                borderRadius="full"
-                isDisabled
-                w="full"
-              >
-                <Image src={Edit.src} alt="Edit" mr={3} />
-                To continue, enter the name and description for the quest
-              </Button>
-            )}
-            {!isDisabled && (
-              <SubmitButton
-                onClick={onSubmit}
-                type="submit"
-                isDisabled={isDisabled}
-                w="full"
-                fontWeight="bold"
-                fontSize={14}
-              >
-                ADD QUEST
-              </SubmitButton>
-            )}
+    <Flex
+      w="full"
+      gap={20}
+      alignItems="normal"
+      display={{ base: 'box', md: 'flex' }}
+    >
+      <Flex flexGrow={1} flexDirection="column">
+        <VStack mb={4} spacing={4}>
+          <Flex w="full" flexDir="column" gap={2}>
+            <Flex alignSelf="start">Name</Flex>
+            <Input
+              color="white"
+              value={name}
+              bg="#0F172A"
+              id="name"
+              onChange={e => setName(e.target.value)}
+              placeholder="Quest Name"
+            />
           </Flex>
+          <Flex w="full" flexDir="column" gap={2}>
+            <Flex alignSelf="start">Description</Flex>
+            <MarkdownEditor
+              height="12rem"
+              value={description}
+              placeholder="Quest Description"
+              onChange={setDescription}
+            />
+          </Flex>
+        </VStack>
+        <Flex w="100%" justify="flex-end" my={4}>
+          {isDisabled && (
+            <Button
+              borderWidth={1}
+              borderColor="white"
+              height={{ base: 10, md: 12 }}
+              fontSize={{ base: 9, md: 14 }}
+              px={5}
+              borderRadius="full"
+              isDisabled
+              w="full"
+            >
+              <Image src={Edit.src} alt="Edit" mr={3} />
+              To continue, enter the name and description for the quest
+            </Button>
+          )}
+          {!isDisabled && (
+            <SubmitButton
+              onClick={onSubmit}
+              type="submit"
+              isDisabled={isDisabled}
+              w="full"
+              fontWeight="bold"
+              fontSize={{ base: 12, md: 14 }}
+            >
+              ADD QUEST
+            </SubmitButton>
+          )}
         </Flex>
       </Flex>
     </Flex>

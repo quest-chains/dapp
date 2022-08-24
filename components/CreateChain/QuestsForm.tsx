@@ -13,6 +13,7 @@ import {
   IconButton,
   Image,
   Input,
+  Link,
   Text,
   Tooltip,
   VStack,
@@ -28,7 +29,7 @@ import { SubmitButton } from '../SubmitButton';
 import { UploadProofButton } from '../UploadProofButton';
 import { AddQuestBlock } from './AddQuestBlock';
 
-export const CreateQuests: React.FC<{
+export const QuestsForm: React.FC<{
   onPublishQuestChain: (
     quests: { name: string; description: string }[],
     startAsDisabled: boolean,
@@ -157,7 +158,7 @@ export const CreateQuests: React.FC<{
                 borderColor="white"
                 borderRadius="full"
                 py={2}
-                px={40}
+                px={{ base: 10, md: 40 }}
                 onClick={() => setIsAddingQuest(true)}
               >
                 <AddIcon fontSize="sm" mr={2} />
@@ -191,8 +192,8 @@ export const CreateQuests: React.FC<{
       {isPremium && (
         <Flex
           bgColor="blackAlpha.600"
-          py={10}
-          px={12}
+          py={{ base: 6, md: 10 }}
+          px={{ base: 7, md: 12 }}
           gap={3}
           borderRadius={10}
         >
@@ -200,7 +201,16 @@ export const CreateQuests: React.FC<{
           <Box>
             <Text fontSize={18} fontWeight="bold" mb={3}>
               This quest chain has a 3D completion NFT, which is a PREMIUM
-              feature and costs $10.
+              feature and costs 2{' '}
+              <Link
+                mx={1}
+                isExternal
+                href="https://metagame.wtf/seeds"
+                textDecoration="underline"
+              >
+                SEED tokens
+              </Link>
+              .
             </Text>
             <Text
               fontSize={14}
@@ -221,6 +231,7 @@ export const CreateQuests: React.FC<{
             onClick={async () => approveTokens()}
             type="submit"
             flex={1}
+            fontSize={{ base: 12, md: 16 }}
           >
             Approve tokens
           </SubmitButton>
@@ -230,6 +241,7 @@ export const CreateQuests: React.FC<{
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
           type="submit"
           flex={1}
+          fontSize={{ base: 12, md: 16 }}
         >
           PUBLISH QUEST CHAIN
         </SubmitButton>

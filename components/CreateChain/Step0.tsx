@@ -5,7 +5,12 @@ const Step0: React.FC = () => {
   return (
     <VStack w="full" align="stretch" spacing={8}>
       <Flex w="full" justifyContent="center">
-        <Text fontFamily="heading" color="white" fontSize={40}>
+        <Text
+          fontFamily="heading"
+          color="white"
+          fontSize={40}
+          textAlign="center"
+        >
           Here&apos;s what&apos;s coming up
         </Text>
       </Flex>

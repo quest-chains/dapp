@@ -6,9 +6,9 @@ import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { CreateQuests } from '@/components/CreateChain/CreateQuests';
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
+import { QuestsForm } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -44,7 +44,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
   const [isPremium, setIsPremium] = useState(true);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -331,7 +331,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         gap={8}
       >
         <Flex flexGrow={1} flexDir="column" gap={8}>
-          <CreateQuests
+          <QuestsForm
             onPublishQuestChain={onPublishQuestChain}
             isPremium={isPremium}
             isApproved={isApproved}

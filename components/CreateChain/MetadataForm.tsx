@@ -124,8 +124,14 @@ export const MetadataForm: React.FC<{
         </Text>
       </HStack>
       <form>
-        <Flex w="100%" align="flex-start" gap={20} mb={14}>
-          <VStack w="50%" spacing={4}>
+        <Flex
+          w="100%"
+          align="flex-start"
+          gap={{ base: 0, md: 20 }}
+          mb={14}
+          flexDirection={{ base: 'column', md: 'row' }}
+        >
+          <VStack w={{ base: 'full', md: '50%' }} spacing={4}>
             <Flex w="full" flexDir="column" gap={2}>
               <Flex alignSelf="start">Name</Flex>
               <Input
@@ -147,7 +153,11 @@ export const MetadataForm: React.FC<{
               />
             </Flex>
           </VStack>
-          <FormControl w="50%" position="relative" top="1.5rem">
+          <FormControl
+            w={{ base: 'full', md: '50%' }}
+            position="relative"
+            top="1.5rem"
+          >
             <Flex alignSelf="start">Cover Image (optional)</Flex>
 
             {myFiles.length ? (
@@ -226,7 +236,9 @@ export const MetadataForm: React.FC<{
               w="full"
             >
               <Image src={Edit.src} alt="Edit" mr={3} />
-              To continue, enter Name and Description
+              <Text fontSize={{ base: 12, md: 16 }}>
+                To continue, enter Name and Description
+              </Text>
             </Button>
           )}
           {!isDisabled && (

@@ -111,27 +111,27 @@ export const RolesForm: React.FC<{
         >
           <GridItem bgColor="" />
           <GridItem bgColor="rgba(255, 255, 255, 0.04)">
-            <Text fontSize={14} fontWeight="bold">
+            <Text fontWeight="bold" fontSize={{ base: 8, md: 14 }}>
               Owner
             </Text>
           </GridItem>
           <GridItem>
-            <Text fontSize={14} fontWeight="bold">
+            <Text fontWeight="bold" fontSize={{ base: 8, md: 14 }}>
               Admin
             </Text>
           </GridItem>
           <GridItem bgColor="rgba(255, 255, 255, 0.04)">
-            <Text fontSize={14} fontWeight="bold">
+            <Text fontWeight="bold" fontSize={{ base: 8, md: 14 }}>
               Editor
             </Text>
           </GridItem>
           <GridItem>
-            <Text fontSize={14} fontWeight="bold">
+            <Text fontWeight="bold" fontSize={{ base: 8, md: 14 }}>
               Reviewer
             </Text>
           </GridItem>
           <GridItem bgColor="rgba(255, 255, 255, 0.04)">
-            <Text fontSize={14} fontWeight="bold" p={4}>
+            <Text fontWeight="bold" p={4} fontSize={{ base: 8, md: 14 }}>
               Add/remove owners & upgrade to premium chain
             </Text>
           </GridItem>
@@ -148,7 +148,7 @@ export const RolesForm: React.FC<{
             <CloseIcon color="gray.600" />
           </GridItem>
           <GridItem>
-            <Text fontSize={14} fontWeight="bold" p={4}>
+            <Text fontWeight="bold" p={4} fontSize={{ base: 8, md: 14 }}>
               Add/remove admins, editors and reviewers
             </Text>
           </GridItem>
@@ -166,7 +166,7 @@ export const RolesForm: React.FC<{
           </GridItem>
 
           <GridItem bgColor="rgba(255, 255, 255, 0.04)">
-            <Text fontSize={14} fontWeight="bold" p={4}>
+            <Text fontWeight="bold" p={4} fontSize={{ base: 8, md: 14 }}>
               Add/edit/delete quests
             </Text>
           </GridItem>
@@ -183,7 +183,7 @@ export const RolesForm: React.FC<{
             <CloseIcon color="gray.600" />
           </GridItem>
           <GridItem>
-            <Text fontSize={14} fontWeight="bold" p={4}>
+            <Text fontWeight="bold" p={4} fontSize={{ base: 8, md: 14 }}>
               Approve/decline submissions
             </Text>
           </GridItem>
@@ -241,7 +241,9 @@ const Roles: React.FC<{
 
   return (
     <Flex flexDir="column" w="full" gap={4}>
-      <Text>Add a member</Text>
+      <Text fontSize={14} fontWeight="bold">
+        Add a member
+      </Text>
       <Flex bgColor="gray.800" alignItems="center" p={1} borderRadius={8}>
         <InputGroup flexGrow={1}>
           <InputLeftElement

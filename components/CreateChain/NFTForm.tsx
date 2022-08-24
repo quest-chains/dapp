@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   IconButton,
+  Image,
   Link,
   Modal,
   ModalBody,
@@ -13,6 +14,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useBreakpointValue,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -33,6 +35,7 @@ const NFTForm: React.FC<{
   const [tab, setTab] = useState('2D'); // 3D, custom
   const [didOpenPremiumTab, setDidOpenPremiumTab] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   const switchTab = (tab: string) => {
     setTab(tab);
@@ -92,7 +95,7 @@ const NFTForm: React.FC<{
           borderRadius={0}
           variant="ghost"
         >
-          2D NFT
+          {isSmallScreen ? '2D' : '2D NFT'}
         </Button>
         <Button
           onClick={() => switchTab('3D')}
@@ -103,19 +106,23 @@ const NFTForm: React.FC<{
           borderRadius={0}
           variant="ghost"
         >
-          3D NFT
-          <Box
-            ml={2}
-            fontSize={11}
-            fontWeight={900}
-            borderRadius={3}
-            py={1}
-            px={2}
-            color="gray.800"
-            background="linear-gradient(121.54deg, #D03CB8 27.46%, #FFA500 69.02%)"
-          >
-            PREMIUM
-          </Box>
+          {isSmallScreen ? '3D' : '3D NFT'}
+          {isSmallScreen ? (
+            <Image src="/CreateChain/gem-premium.svg" alt="circles3" w={8} />
+          ) : (
+            <Box
+              ml={2}
+              fontSize={11}
+              fontWeight={900}
+              borderRadius={3}
+              py={1}
+              px={2}
+              color="gray.800"
+              background="linear-gradient(121.54deg, #D03CB8 27.46%, #FFA500 69.02%)"
+            >
+              PREMIUM
+            </Box>
+          )}
         </Button>
         <Button
           onClick={() => switchTab('custom')}
@@ -126,19 +133,24 @@ const NFTForm: React.FC<{
           borderRadius={0}
           variant="ghost"
         >
-          Custom Image
-          <Box
-            ml={2}
-            fontSize={11}
-            fontWeight={900}
-            borderRadius={3}
-            py={1}
-            px={2}
-            color="gray.800"
-            background="linear-gradient(121.54deg, #D03CB8 27.46%, #FFA500 69.02%)"
-          >
-            PREMIUM
-          </Box>
+          {isSmallScreen ? 'Custom' : 'Custom NFT'}
+
+          {isSmallScreen ? (
+            <Image src="/CreateChain/gem-premium.svg" alt="circles3" w={8} />
+          ) : (
+            <Box
+              ml={2}
+              fontSize={11}
+              fontWeight={900}
+              borderRadius={3}
+              py={1}
+              px={2}
+              color="gray.800"
+              background="linear-gradient(121.54deg, #D03CB8 27.46%, #FFA500 69.02%)"
+            >
+              PREMIUM
+            </Box>
+          )}
         </Button>
       </Flex>
       {tab === '2D' && <NFTForm2D chainName={chainName} onSubmit={onSubmit} />}
