@@ -147,7 +147,7 @@ export const RolesForm: React.FC<{
                   Reviewer
                 </Text>
                 <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Add/remove owners & upgrade to premium chain
+                  Add/remove owners or admins, and upgrade to premium chain
                 </Text>
                 <CheckIcon />
                 <CloseIcon color="gray.600" />
