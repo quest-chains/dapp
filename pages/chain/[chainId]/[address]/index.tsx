@@ -251,7 +251,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       !!address &&
       questChain?.token &&
       !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
-      Object.values(userStatus).length > 0 &&
+      Object.values(userStatus).length === questChain.quests.length &&
       Object.values(userStatus).reduce(
         (t, v) => t && v.status === Status.Pass,
         true,
