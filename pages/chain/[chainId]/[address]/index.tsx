@@ -1,5 +1,6 @@
 import { AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
+  Accordion,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -32,8 +33,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
-import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { Quest } from '@/components/CreateChain/CreateQuests';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -698,66 +699,57 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   separating the whole quest actions logic into its own component, so:
                   - edit quest
                   - upload proof */}
-                    {questChain.quests.map((quest, index) => (
-                      <Flex
-                        w="full"
-                        p={8}
-                        gap={3}
-                        borderRadius={10}
-                        align="stretch"
-                        bgColor={
-                          userStatus[quest.questId]?.status === 'pass'
-                            ? 'main.300'
-                            : userStatus[quest.questId]?.status === 'review'
-                            ? '#EFFF8F30'
-                            : 'whiteAlpha.100'
-                        }
-                        key={quest.questId}
-                        justifyContent="space-between"
-                        position="relative"
-                      >
-                        {!(isEditingQuest && questEditId === quest.questId) && (
-                          <>
-                            {index + 1}.
-                            <Flex justifyContent="space-between" w="full">
-                              <CollapsableQuestDisplay
-                                quest={quest}
-                                questChain={questChain}
-                                userStatus={userStatus}
-                                refresh={refresh}
-                              />
-                              {mode === Mode.MEMBER && (isAdmin || isEditor) && (
-                                <Button
-                                  variant="ghost"
-                                  onClick={() => {
+                    <Accordion allowMultiple w="full">
+                      {questChain.quests.map(
+                        ({ name, description, questId, paused }, index) =>
+                          name &&
+                          description && (
+                            <>
+                              {!(isEditingQuest && questEditId === questId) && (
+                                <Quest
+                                  key={questId}
+                                  name={`${index + 1}. ${name}`}
+                                  description={description}
+                                  bgColor={
+                                    userStatus[questId]?.status === 'pass'
+                                      ? 'main.300'
+                                      : userStatus[questId]?.status === 'review'
+                                      ? '#EFFF8F30'
+                                      : 'whiteAlpha.100'
+                                  }
+                                  onEditQuest={() => {
                                     setEditingQuest(true);
-                                    setQuestEditId(quest.questId);
+                                    setQuestEditId(questId);
                                   }}
-                                  fontSize="xs"
-                                  position="absolute"
-                                  right={20}
-                                  margin={0}
-                                  top={6}
-                                >
-                                  <Image src={Edit.src} alt="Edit" mr={3} />
-                                  Edit
-                                </Button>
+                                  isMember={
+                                    mode === Mode.MEMBER &&
+                                    (isAdmin || isEditor)
+                                  }
+                                  questId={questId}
+                                  questChain={questChain}
+                                  userStatus={userStatus}
+                                  refresh={refresh}
+                                />
                               )}
-                            </Flex>
-                          </>
-                        )}
 
-                        {/* Edit quest components */}
-                        {isEditingQuest && questEditId === quest.questId && (
-                          <QuestEditor
-                            refresh={refresh}
-                            questChain={questChain}
-                            quest={quest}
-                            setEditingQuest={setEditingQuest}
-                          />
-                        )}
-                      </Flex>
-                    ))}
+                              {/* Edit quest components */}
+                              {isEditingQuest && questEditId === questId && (
+                                <QuestEditor
+                                  refresh={refresh}
+                                  questChain={questChain}
+                                  quest={{
+                                    name,
+                                    description,
+                                    questId,
+                                    paused,
+                                  }}
+                                  setEditingQuest={setEditingQuest}
+                                />
+                              )}
+                            </>
+                          ),
+                      )}
+                    </Accordion>
                   </>
                 )}
               </VStack>

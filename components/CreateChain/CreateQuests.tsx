@@ -20,9 +20,12 @@ import {
 import { useState } from 'react';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { QuestChainInfoFragment } from '@/graphql/types';
+import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
 
 import { MarkdownEditor } from '../MarkdownEditor';
 import { SubmitButton } from '../SubmitButton';
+import { UploadProofButton } from '../UploadProofButton';
 import { AddQuestBlock } from './AddQuestBlock';
 
 export const CreateQuests: React.FC<{
@@ -234,14 +237,31 @@ export const CreateQuests: React.FC<{
   );
 };
 
-const Quest: React.FC<{
+export const Quest: React.FC<{
   name: string;
   description: string;
-  onRemoveQuest: () => void;
+  onRemoveQuest?: () => void;
   onEditQuest: () => void;
-}> = ({ name, description, onRemoveQuest, onEditQuest }) => {
+  isMember?: boolean;
+  bgColor?: string;
+  questId?: string;
+  userStatus?: UserStatusType;
+  questChain?: QuestChainInfoFragment;
+  refresh?: () => void;
+}> = ({
+  name,
+  description,
+  onRemoveQuest,
+  onEditQuest,
+  isMember = true,
+  bgColor = 'gray.900',
+  questId,
+  userStatus,
+  questChain,
+  refresh,
+}) => {
   return (
-    <AccordionItem bg="gray.900" borderRadius={10} px={4} mb={3} border={0}>
+    <AccordionItem bg={bgColor} borderRadius={10} px={4} mb={3} border={0}>
       <Flex alignItems="center">
         <AccordionButton py={6}>
           <Box flex="1" textAlign="left" fontWeight="bold">
@@ -249,31 +269,44 @@ const Quest: React.FC<{
           </Box>
           <AccordionIcon />
         </AccordionButton>
-        <Tooltip label="Delete Quest">
-          <IconButton
-            icon={<SmallCloseIcon />}
-            onClick={onRemoveQuest}
-            aria-label=""
-            bg="transparent"
-          />
-        </Tooltip>
-        <Tooltip label="Edit Quest">
-          <IconButton
-            icon={<EditIcon />}
-            onClick={onEditQuest}
-            aria-label=""
-            bg="transparent"
-          />
-        </Tooltip>
+        {isMember && (
+          <>
+            <Tooltip label="Delete Quest">
+              <IconButton
+                icon={<SmallCloseIcon />}
+                onClick={onRemoveQuest}
+                aria-label=""
+                bg="transparent"
+              />
+            </Tooltip>
+            <Tooltip label="Edit Quest">
+              <IconButton
+                icon={<EditIcon />}
+                onClick={onEditQuest}
+                aria-label=""
+                bg="transparent"
+              />
+            </Tooltip>
+          </>
+        )}
       </Flex>
       <AccordionPanel>
         <MarkdownViewer markdown={description} />
+        {questId && userStatus && questChain && refresh && (
+          <UploadProofButton
+            questId={questId}
+            name={name}
+            questChain={questChain}
+            userStatus={userStatus}
+            refresh={refresh}
+          />
+        )}
       </AccordionPanel>
     </AccordionItem>
   );
 };
 
-const EditingQuest: React.FC<{
+export const EditingQuest: React.FC<{
   name: string;
   description: string;
   setName: (name: string) => void;
