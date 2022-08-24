@@ -154,7 +154,7 @@ export const RolesForm: React.FC<{
                 <CloseIcon color="gray.600" />
                 <CloseIcon color="gray.600" />
                 <Text fontSize={14} fontWeight="bold" pr={8}>
-                  Add/remove admins, editors and reviewers
+                  Add/remove editors or reviewers
                 </Text>
                 <CheckIcon />
                 <CheckIcon />
