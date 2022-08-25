@@ -265,7 +265,7 @@ const NFTForm2D: React.FC<{
               >
                 <SliderFilledTrack bg="#4E0B84" opacity="1" />
               </SliderTrack>
-              <SliderThumb boxSize={5} ml={1} />
+              <SliderThumb boxSize={5} ml={-1} />
             </Slider>
           </FormControl>
         </Flex>

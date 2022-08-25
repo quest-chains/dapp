@@ -162,23 +162,24 @@ const NFTForm: React.FC<{
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent maxW="40rem">
-          <ModalHeader>About 3D NFTs</ModalHeader>
+          <ModalHeader>Premium NFTs</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             Are you ready to take your quest chain to the next level? Make it
-            stand out with this amazing 3D NFT badge or a custom image that can
-            be added to your chain’s overview page, and will look equally as
+            stand out with this amazing 3D NFT or a Custom NFT badge that can be
+            added to your chain’s overview page, and will look equally as
             amazing on the chain’s questers’ profiles. This premium feature
             costs 2 SEED tokens (~10$), which are MetaGame’s native tokens. Read
-            how to acquire them
+            how to acquire them{' '}
             <Link
-              mx={1}
               isExternal
               href="https://metagame.wtf/seeds"
               textDecoration="underline"
+              color="main"
             >
-              here.
+              here
             </Link>
+            .
           </ModalBody>
 
           <ModalFooter alignItems="baseline">

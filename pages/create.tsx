@@ -231,19 +231,19 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     <Flex
       w="full"
       align="stretch"
-      px={{ base: 0, lg: 12 }}
+      px={{ base: 0, md: 12, lg: 40 }}
       gap={8}
       flexDir="column"
     >
       <Box
         bgImage={ipfsUriToHttp(imageUrl)}
         position="fixed"
-        height="120%"
-        top="-200px"
+        height="100vh"
+        width="100vw"
+        top="0"
         left="0"
-        width="150%"
         opacity="0.05"
-        bgPos="top"
+        bgPos="center"
         bgSize="cover"
         zIndex={-1}
       />
@@ -252,7 +252,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {step === 0 && (
-        <Flex w="full" flexDir="column">
+        <Flex w="full" flexDir="column" gap={8}>
           <Step0 />
           <Flex w="full" justifyContent="center">
             <SubmitButton onClick={() => setStep(1)} px={32}>

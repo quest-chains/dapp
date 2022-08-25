@@ -9,22 +9,31 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Select,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import AddUser from '@/assets/add-user.svg';
+import TrashOutlined from '@/assets/delete-outline.svg';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
+enum Role {
+  Owner = 'owner',
+  Admin = 'admin',
+  Editor = 'editor',
+  Reviewer = 'reviewer',
+}
+
 export interface Member {
-  role: string;
+  role: Role | null;
   address: string;
 }
 
@@ -36,26 +45,39 @@ export const RolesForm: React.FC<{
 
   const [members, setMembers] = useState<Member[]>([]);
 
-  const setRole = (role: string, address: string) => {
-    const newMembers = members.map(member => {
-      if (member.address === address) return { address, role };
-      else return member;
-    });
+  const setRole = useCallback(
+    (role: Role, address: string) =>
+      setMembers(old =>
+        old.map(m => {
+          if (m.address !== address) return m;
+          m.role = role;
+          return m;
+        }),
+      ),
+    [],
+  );
 
-    setMembers(newMembers);
-  };
+  const onAdd = useCallback((address: string) => {
+    setMembers(old => old.concat({ address, role: null }));
+  }, []);
 
-  const addNewAddress = (address: string) => {
-    setMembers(members.concat({ address, role: '' }));
-  };
+  const onRemove = useCallback((address: string) => {
+    setMembers(old => old.filter(m => m.address !== address));
+  }, []);
 
   useEffect(() => {
     if (address && !members.length) {
-      setMembers([{ role: 'owner', address }]);
+      setMembers([{ role: Role.Owner, address }]);
     }
   }, [address, members.length]);
 
-  const isDisabled = !isConnected || !isSupportedNetwork(chainId);
+  const isDisabled = useMemo(
+    () =>
+      !isConnected ||
+      !isSupportedNetwork(chainId) ||
+      members.some(member => member.role === null),
+    [isConnected, chainId, members],
+  );
 
   return (
     <VStack
@@ -99,7 +121,8 @@ export const RolesForm: React.FC<{
             members={members}
             setRole={setRole}
             ownerAddress={address}
-            addNewAddress={addNewAddress}
+            onAdd={onAdd}
+            onRemove={onRemove}
           />
         </VStack>
         <Grid
@@ -234,9 +257,10 @@ const GridItem: React.FC<{
 const Roles: React.FC<{
   members: Member[];
   ownerAddress?: string | undefined | null;
-  setRole: (role: string, address: string) => void;
-  addNewAddress: (address: string) => void;
-}> = ({ members, setRole, ownerAddress, addNewAddress }) => {
+  setRole: (role: Role, address: string) => void;
+  onAdd: (address: string) => void;
+  onRemove: (address: string) => void;
+}> = ({ members, setRole, ownerAddress, onAdd, onRemove }) => {
   const [newAddress, setNewAddress] = useState('');
 
   return (
@@ -255,54 +279,63 @@ const Roles: React.FC<{
             border={0}
             pl={16}
             type="address"
-            placeholder="Paste or write in ETH address..."
+            placeholder="Paste or write an ETH address..."
             value={newAddress}
             onChange={e => setNewAddress(e.target.value)}
           />
+          <InputRightElement w="4.5rem">
+            <Tooltip
+              isDisabled={ethers.utils.isAddress(newAddress)}
+              label="Please input a valid address"
+              shouldWrapChildren
+            >
+              <IconButton
+                isDisabled={!ethers.utils.isAddress(newAddress)}
+                onClick={() => {
+                  if (members.find(member => member.address === newAddress)) {
+                    toast.error('Address has already been added');
+                  } else {
+                    onAdd(newAddress);
+                  }
+                  setNewAddress('');
+                }}
+                icon={<CheckIcon />}
+                aria-label="Add"
+                height={9}
+                w={16}
+              />
+            </Tooltip>
+          </InputRightElement>
         </InputGroup>
-        <Tooltip
-          isDisabled={ethers.utils.isAddress(newAddress)}
-          label="Please input a valid address"
-          shouldWrapChildren
-        >
-          <IconButton
-            isDisabled={!ethers.utils.isAddress(newAddress)}
-            onClick={() => {
-              if (members.find(member => member.address === newAddress)) {
-                setNewAddress('');
-                toast.error('Address has already been added');
-                return;
-              }
-              addNewAddress(newAddress);
-              setNewAddress('');
-            }}
-            icon={<CheckIcon />}
-            aria-label="Add"
-            height={9}
-            w={16}
-          />
-        </Tooltip>
       </Flex>
 
       {members.map(({ role, address }) => (
-        <Flex key={role + address}>
-          {address && (
-            <Flex w="full" justifyContent="space-between" alignItems="center">
-              <UserDisplay address={address} full />
+        <Flex key={address}>
+          <Flex w="full" justifyContent="space-between" alignItems="center">
+            <UserDisplay address={address} full />
+            <Flex alignItems="center" gap={2}>
               <Select
-                onChange={e => setRole(e.target.value, address)}
-                value={role}
+                onChange={e => setRole(e.target.value as Role, address)}
+                value={role || undefined}
                 placeholder="Select role"
                 isDisabled={ownerAddress === address}
                 w="auto"
               >
-                <option value="owner">Owner</option>
-                <option value="admin">Admin</option>
-                <option value="editor">Editor</option>
-                <option value="reviewer">Reviewer</option>
+                <option value={Role.Owner}>Owner</option>
+                <option value={Role.Admin}>Admin</option>
+                <option value={Role.Editor}>Editor</option>
+                <option value={Role.Reviewer}>Reviewer</option>
               </Select>
+              <IconButton
+                aria-label="remove address"
+                variant="outline"
+                icon={<Image src={TrashOutlined.src} alt="trash" />}
+                onClick={() => onRemove(address)}
+                isDisabled={ownerAddress === address}
+                visibility={ownerAddress === address ? 'hidden' : 'visible'}
+              />
             </Flex>
-          )}
+          </Flex>
         </Flex>
       ))}
     </Flex>
