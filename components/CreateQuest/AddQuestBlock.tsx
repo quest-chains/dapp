@@ -169,6 +169,7 @@ export const AddQuestBlock: React.FC<{
                         </FormLabel>
                         <Input
                           color="white"
+                          bg="#0F172A"
                           {...field}
                           id="name"
                           placeholder="Quest Name"

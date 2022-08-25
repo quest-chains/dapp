@@ -102,12 +102,13 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
   );
 
   return (
-    <Flex flexDirection="column" w="full">
+    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Flex>
         <Input
           mb={3}
           value={questName ?? ''}
           onChange={e => setQuestName(e.target.value)}
+          bg="#0F172A"
         />
         <IconButton
           borderRadius="full"

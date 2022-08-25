@@ -16,6 +16,7 @@ export const MarkdownEditor: React.FC<{
     style={{
       height: height ?? '20rem',
       width: '100%',
+      background: '#0F172A',
     }}
     value={value}
     placeholder={placeholder}

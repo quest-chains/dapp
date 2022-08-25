@@ -2,6 +2,9 @@ query GlobalInfo {
   globals {
     chainId: id
     factoryAddress
+    tokenAddress
+    paymentTokenAddress
+    upgradeFee
   }
 }
 

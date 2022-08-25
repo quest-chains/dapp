@@ -33,15 +33,13 @@ import { getQuestChainContract } from '@/web3/contract';
 import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
 
-type ArrayElement<ArrayType extends readonly unknown[]> =
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
-
 export const UploadProof: React.FC<{
   refresh: () => void;
-  quest: ArrayElement<QuestChainInfoFragment['quests']>;
+  questId: string;
+  name: string;
   questChain: QuestChainInfoFragment;
   profile?: boolean;
-}> = ({ refresh, quest, questChain, profile }) => {
+}> = ({ refresh, questId, name, questChain, profile }) => {
   const { chainId, provider, address } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -82,7 +80,7 @@ export const UploadProof: React.FC<{
       try {
         let hash = myFiles.length ? await uploadFiles(myFiles) : '';
         const metadata: Metadata = {
-          name: `Submission - QuestChain - ${questChain.name} - Quest - ${quest.questId}. ${quest.name} User - ${address}`,
+          name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
           description: proofDescription,
           external_url: hash ? `ipfs://${hash}` : undefined,
         };
@@ -101,8 +99,8 @@ export const UploadProof: React.FC<{
         );
 
         const tx = await (questChain.version === '1'
-          ? (contract as QuestChainV1).submitProofs([quest.questId], [details])
-          : (contract as QuestChainV0).submitProof(quest.questId, details));
+          ? (contract as QuestChainV1).submitProofs([questId], [details])
+          : (contract as QuestChainV0).submitProof(questId, details));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -127,7 +125,8 @@ export const UploadProof: React.FC<{
     questChain,
     proofDescription,
     myFiles,
-    quest,
+    questId,
+    name,
     onModalClose,
     refresh,
     address,
@@ -169,7 +168,7 @@ export const UploadProof: React.FC<{
       <Modal isOpen={isOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
         <ModalContent maxW="40rem">
-          <ModalHeader>Upload Proof - {quest.name}</ModalHeader>
+          <ModalHeader>Upload Proof - {name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl isRequired>

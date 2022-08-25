@@ -301,7 +301,7 @@ const Review: React.FC<Props> = ({
   }
 
   return (
-    <VStack px={{ base: 0, lg: 40 }} spacing={8}>
+    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
       <Head>
         <title>
           Review - {questChain.name} -{' '}

@@ -6,9 +6,14 @@ import {
 } from '@/graphql/types';
 import { SUPPORTED_NETWORK_INFO } from '@/web3';
 
-export const getFactoryAddress = async (
+export const getChainInfo = async (
   chainId: string,
-): Promise<string | null> => {
+): Promise<{
+  factoryAddress: string;
+  tokenAddress: string;
+  paymentTokenAddress: string;
+  upgradeFee: number;
+} | null> => {
   const { data, error } = await clients[chainId]
     .query<GlobalInfoQuery, GlobalInfoQueryVariables>(GlobalInfoDocument)
     .toPromise();
@@ -18,17 +23,44 @@ export const getFactoryAddress = async (
     }
     return null;
   }
-  return data.globals[0].factoryAddress;
+
+  const { factoryAddress, tokenAddress, paymentTokenAddress, upgradeFee } =
+    data.globals[0];
+
+  return {
+    factoryAddress,
+    tokenAddress,
+    paymentTokenAddress,
+    upgradeFee,
+  };
 };
 
-export const getGlobalInfo = async (): Promise<Record<string, string>> => {
-  const globalInfo: Record<string, string> = {};
+export const getGlobalInfo = async (): Promise<
+  Record<
+    string,
+    {
+      factoryAddress: string;
+      tokenAddress: string;
+      paymentTokenAddress: string;
+      upgradeFee: number;
+    }
+  >
+> => {
+  const globalInfo: Record<
+    string,
+    {
+      factoryAddress: string;
+      tokenAddress: string;
+      paymentTokenAddress: string;
+      upgradeFee: number;
+    }
+  > = {};
 
   await Promise.all(
     Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
-      const address = await getFactoryAddress(chainId);
-      if (address) {
-        globalInfo[chainId] = address;
+      const info = await getChainInfo(chainId);
+      if (info !== null) {
+        globalInfo[chainId] = info;
       }
     }),
   );

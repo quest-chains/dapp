@@ -40,12 +40,15 @@ export const QuestRejectedStatus: React.FC<{
     <Text fontWeight="bold" mb={3}>
       {statusInfo.reviews.slice(-1)[0].description}
     </Text>
-    <UploadProof
-      quest={statusInfo.quest}
-      questChain={statusInfo.questChain}
-      refresh={refresh}
-      profile
-    />
+    {statusInfo.quest.name && (
+      <UploadProof
+        questId={statusInfo.quest.questId}
+        name={statusInfo.quest.name}
+        questChain={statusInfo.questChain}
+        refresh={refresh}
+        profile
+      />
+    )}
   </Box>
 );
 
