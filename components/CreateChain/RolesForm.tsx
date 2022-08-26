@@ -278,6 +278,8 @@ const Roles: React.FC<{
           <Input
             border={0}
             pl={16}
+            w="calc(100% - 4.5rem)"
+            textOverflow="ellipsis"
             type="address"
             placeholder="Paste or write an ETH address..."
             value={newAddress}
