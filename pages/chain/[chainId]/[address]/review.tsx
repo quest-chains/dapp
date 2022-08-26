@@ -97,7 +97,7 @@ const StatusDisplay: React.FC<{
         )}
         <SubmitButton
           borderColor="rejected"
-          color="rejected"
+          // color="rejected"
           isDisabled={isDisabled}
           onClick={() =>
             onSelect({
@@ -407,7 +407,7 @@ const Review: React.FC<Props> = ({
               </Button>
               <SubmitButton
                 borderColor="rejected"
-                color="rejected"
+                // color="rejected"
                 isLoading={rejecting}
                 isDisabled={!reviewDescription}
                 onClick={() => onSubmit(false)}
@@ -416,7 +416,7 @@ const Review: React.FC<Props> = ({
               </SubmitButton>
               <SubmitButton
                 borderColor="main"
-                color="main"
+                // color="main"
                 isLoading={accepting}
                 isDisabled={!reviewDescription}
                 onClick={() => onSubmit(true)}
