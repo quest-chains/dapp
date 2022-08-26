@@ -233,7 +233,7 @@ export const QuestsForm: React.FC<{
             flex={1}
             fontSize={{ base: 12, md: 16 }}
           >
-            Approve tokens
+            APPROVE TOKENS
           </SubmitButton>
         )}
         <SubmitButton
