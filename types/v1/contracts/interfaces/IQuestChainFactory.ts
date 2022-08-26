@@ -69,7 +69,7 @@ export interface IQuestChainFactoryInterface extends utils.Interface {
     "getQuestChainAddress(uint256)": FunctionFragment;
     "paymentToken()": FunctionFragment;
     "questChainCount()": FunctionFragment;
-    "questChainImpl()": FunctionFragment;
+    "questChainTemplate()": FunctionFragment;
     "questChainToken()": FunctionFragment;
     "treasury()": FunctionFragment;
     "upgradeFee()": FunctionFragment;
@@ -86,7 +86,7 @@ export interface IQuestChainFactoryInterface extends utils.Interface {
       | "getQuestChainAddress"
       | "paymentToken"
       | "questChainCount"
-      | "questChainImpl"
+      | "questChainTemplate"
       | "questChainToken"
       | "treasury"
       | "upgradeFee"
@@ -125,7 +125,7 @@ export interface IQuestChainFactoryInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "questChainImpl",
+    functionFragment: "questChainTemplate",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -173,7 +173,7 @@ export interface IQuestChainFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "questChainImpl",
+    functionFragment: "questChainTemplate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -192,25 +192,40 @@ export interface IQuestChainFactoryInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "AdminReplaceProposed(address)": EventFragment;
     "AdminReplaced(address)": EventFragment;
-    "FactoryInit()": EventFragment;
-    "ImplReplaced(address)": EventFragment;
+    "FactorySetup()": EventFragment;
+    "PaymentTokenReplaceProposed(address)": EventFragment;
     "PaymentTokenReplaced(address)": EventFragment;
     "QuestChainCreated(uint256,address)": EventFragment;
     "QuestChainUpgraded(address,address)": EventFragment;
-    "TreasuryReplaced(address)": EventFragment;
+    "UpgradeFeeReplaceProposed(uint256)": EventFragment;
     "UpgradeFeeReplaced(uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AdminReplaceProposed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AdminReplaced"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "FactoryInit"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ImplReplaced"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FactorySetup"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "PaymentTokenReplaceProposed"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentTokenReplaced"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QuestChainCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QuestChainUpgraded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TreasuryReplaced"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpgradeFeeReplaceProposed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpgradeFeeReplaced"): EventFragment;
 }
+
+export interface AdminReplaceProposedEventObject {
+  proposedAdmin: string;
+}
+export type AdminReplaceProposedEvent = TypedEvent<
+  [string],
+  AdminReplaceProposedEventObject
+>;
+
+export type AdminReplaceProposedEventFilter =
+  TypedEventFilter<AdminReplaceProposedEvent>;
 
 export interface AdminReplacedEventObject {
   admin: string;
@@ -219,17 +234,21 @@ export type AdminReplacedEvent = TypedEvent<[string], AdminReplacedEventObject>;
 
 export type AdminReplacedEventFilter = TypedEventFilter<AdminReplacedEvent>;
 
-export interface FactoryInitEventObject {}
-export type FactoryInitEvent = TypedEvent<[], FactoryInitEventObject>;
+export interface FactorySetupEventObject {}
+export type FactorySetupEvent = TypedEvent<[], FactorySetupEventObject>;
 
-export type FactoryInitEventFilter = TypedEventFilter<FactoryInitEvent>;
+export type FactorySetupEventFilter = TypedEventFilter<FactorySetupEvent>;
 
-export interface ImplReplacedEventObject {
-  impl: string;
+export interface PaymentTokenReplaceProposedEventObject {
+  proposedPaymentToken: string;
 }
-export type ImplReplacedEvent = TypedEvent<[string], ImplReplacedEventObject>;
+export type PaymentTokenReplaceProposedEvent = TypedEvent<
+  [string],
+  PaymentTokenReplaceProposedEventObject
+>;
 
-export type ImplReplacedEventFilter = TypedEventFilter<ImplReplacedEvent>;
+export type PaymentTokenReplaceProposedEventFilter =
+  TypedEventFilter<PaymentTokenReplaceProposedEvent>;
 
 export interface PaymentTokenReplacedEventObject {
   paymentToken: string;
@@ -266,16 +285,16 @@ export type QuestChainUpgradedEvent = TypedEvent<
 export type QuestChainUpgradedEventFilter =
   TypedEventFilter<QuestChainUpgradedEvent>;
 
-export interface TreasuryReplacedEventObject {
-  treasury: string;
+export interface UpgradeFeeReplaceProposedEventObject {
+  proposedUpgradeFee: BigNumber;
 }
-export type TreasuryReplacedEvent = TypedEvent<
-  [string],
-  TreasuryReplacedEventObject
+export type UpgradeFeeReplaceProposedEvent = TypedEvent<
+  [BigNumber],
+  UpgradeFeeReplaceProposedEventObject
 >;
 
-export type TreasuryReplacedEventFilter =
-  TypedEventFilter<TreasuryReplacedEvent>;
+export type UpgradeFeeReplaceProposedEventFilter =
+  TypedEventFilter<UpgradeFeeReplaceProposedEvent>;
 
 export interface UpgradeFeeReplacedEventObject {
   upgradeFee: BigNumber;
@@ -346,7 +365,7 @@ export interface IQuestChainFactory extends BaseContract {
 
     questChainCount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<[string]>;
+    questChainTemplate(overrides?: CallOverrides): Promise<[string]>;
 
     questChainToken(overrides?: CallOverrides): Promise<[string]>;
 
@@ -398,7 +417,7 @@ export interface IQuestChainFactory extends BaseContract {
 
   questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-  questChainImpl(overrides?: CallOverrides): Promise<string>;
+  questChainTemplate(overrides?: CallOverrides): Promise<string>;
 
   questChainToken(overrides?: CallOverrides): Promise<string>;
 
@@ -450,7 +469,7 @@ export interface IQuestChainFactory extends BaseContract {
 
     questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<string>;
+    questChainTemplate(overrides?: CallOverrides): Promise<string>;
 
     questChainToken(overrides?: CallOverrides): Promise<string>;
 
@@ -472,14 +491,23 @@ export interface IQuestChainFactory extends BaseContract {
   };
 
   filters: {
+    "AdminReplaceProposed(address)"(
+      proposedAdmin?: null
+    ): AdminReplaceProposedEventFilter;
+    AdminReplaceProposed(proposedAdmin?: null): AdminReplaceProposedEventFilter;
+
     "AdminReplaced(address)"(admin?: null): AdminReplacedEventFilter;
     AdminReplaced(admin?: null): AdminReplacedEventFilter;
 
-    "FactoryInit()"(): FactoryInitEventFilter;
-    FactoryInit(): FactoryInitEventFilter;
+    "FactorySetup()"(): FactorySetupEventFilter;
+    FactorySetup(): FactorySetupEventFilter;
 
-    "ImplReplaced(address)"(impl?: null): ImplReplacedEventFilter;
-    ImplReplaced(impl?: null): ImplReplacedEventFilter;
+    "PaymentTokenReplaceProposed(address)"(
+      proposedPaymentToken?: null
+    ): PaymentTokenReplaceProposedEventFilter;
+    PaymentTokenReplaceProposed(
+      proposedPaymentToken?: null
+    ): PaymentTokenReplaceProposedEventFilter;
 
     "PaymentTokenReplaced(address)"(
       paymentToken?: null
@@ -504,8 +532,12 @@ export interface IQuestChainFactory extends BaseContract {
       questChain?: null
     ): QuestChainUpgradedEventFilter;
 
-    "TreasuryReplaced(address)"(treasury?: null): TreasuryReplacedEventFilter;
-    TreasuryReplaced(treasury?: null): TreasuryReplacedEventFilter;
+    "UpgradeFeeReplaceProposed(uint256)"(
+      proposedUpgradeFee?: null
+    ): UpgradeFeeReplaceProposedEventFilter;
+    UpgradeFeeReplaceProposed(
+      proposedUpgradeFee?: null
+    ): UpgradeFeeReplaceProposedEventFilter;
 
     "UpgradeFeeReplaced(uint256)"(
       upgradeFee?: null
@@ -545,7 +577,7 @@ export interface IQuestChainFactory extends BaseContract {
 
     questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<BigNumber>;
+    questChainTemplate(overrides?: CallOverrides): Promise<BigNumber>;
 
     questChainToken(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -598,7 +630,9 @@ export interface IQuestChainFactory extends BaseContract {
 
     questChainCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    questChainTemplate(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     questChainToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

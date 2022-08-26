@@ -140,12 +140,6 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "uint256[]",
-        name: "questIdList",
-        type: "uint256[]",
-      },
-      {
-        indexed: false,
         internalType: "string[]",
         name: "detailsList",
         type: "string[]",
