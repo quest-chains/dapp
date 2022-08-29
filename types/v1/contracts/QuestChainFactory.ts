@@ -63,21 +63,28 @@ export declare namespace QuestChainCommons {
 export interface QuestChainFactoryInterface extends utils.Interface {
   functions: {
     "admin()": FunctionFragment;
+    "adminProposalTimestamp()": FunctionFragment;
     "create((address[],address[],address[],address[],string[],bool,string,string),bytes32)": FunctionFragment;
     "createAndUpgrade((address[],address[],address[],address[],string[],bool,string,string),bytes32)": FunctionFragment;
     "createAndUpgradeWithPermit((address[],address[],address[],address[],string[],bool,string,string),bytes32,uint256,bytes)": FunctionFragment;
+    "executeAdminReplace()": FunctionFragment;
+    "executePaymentTokenReplace()": FunctionFragment;
+    "executeUpgradeFeeReplace()": FunctionFragment;
     "getQuestChainAddress(uint256)": FunctionFragment;
     "paymentToken()": FunctionFragment;
+    "paymentTokenProposalTimestamp()": FunctionFragment;
+    "proposeAdminReplace(address)": FunctionFragment;
+    "proposePaymentTokenReplace(address)": FunctionFragment;
+    "proposeUpgradeFeeReplace(uint256)": FunctionFragment;
+    "proposedAdmin()": FunctionFragment;
+    "proposedPaymentToken()": FunctionFragment;
+    "proposedUpgradeFee()": FunctionFragment;
     "questChainCount()": FunctionFragment;
-    "questChainImpl()": FunctionFragment;
+    "questChainTemplate()": FunctionFragment;
     "questChainToken()": FunctionFragment;
-    "replaceAdmin(address)": FunctionFragment;
-    "replaceChainImpl(address)": FunctionFragment;
-    "replacePaymentToken(address)": FunctionFragment;
-    "replaceTreasury(address)": FunctionFragment;
-    "replaceUpgradeFee(uint256)": FunctionFragment;
     "treasury()": FunctionFragment;
     "upgradeFee()": FunctionFragment;
+    "upgradeFeeProposalTimestamp()": FunctionFragment;
     "upgradeQuestChain(address)": FunctionFragment;
     "upgradeQuestChainWithPermit(address,uint256,bytes)": FunctionFragment;
   };
@@ -85,26 +92,37 @@ export interface QuestChainFactoryInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "admin"
+      | "adminProposalTimestamp"
       | "create"
       | "createAndUpgrade"
       | "createAndUpgradeWithPermit"
+      | "executeAdminReplace"
+      | "executePaymentTokenReplace"
+      | "executeUpgradeFeeReplace"
       | "getQuestChainAddress"
       | "paymentToken"
+      | "paymentTokenProposalTimestamp"
+      | "proposeAdminReplace"
+      | "proposePaymentTokenReplace"
+      | "proposeUpgradeFeeReplace"
+      | "proposedAdmin"
+      | "proposedPaymentToken"
+      | "proposedUpgradeFee"
       | "questChainCount"
-      | "questChainImpl"
+      | "questChainTemplate"
       | "questChainToken"
-      | "replaceAdmin"
-      | "replaceChainImpl"
-      | "replacePaymentToken"
-      | "replaceTreasury"
-      | "replaceUpgradeFee"
       | "treasury"
       | "upgradeFee"
+      | "upgradeFeeProposalTimestamp"
       | "upgradeQuestChain"
       | "upgradeQuestChainWithPermit"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "adminProposalTimestamp",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "create",
     values: [QuestChainCommons.QuestChainInfoStruct, PromiseOrValue<BytesLike>]
@@ -123,6 +141,18 @@ export interface QuestChainFactoryInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "executeAdminReplace",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executePaymentTokenReplace",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeUpgradeFeeReplace",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getQuestChainAddress",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -131,40 +161,52 @@ export interface QuestChainFactoryInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "paymentTokenProposalTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposeAdminReplace",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposePaymentTokenReplace",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposeUpgradeFeeReplace",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedAdmin",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedPaymentToken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedUpgradeFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "questChainCount",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "questChainImpl",
+    functionFragment: "questChainTemplate",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "questChainToken",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "replaceAdmin",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "replaceChainImpl",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "replacePaymentToken",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "replaceTreasury",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "replaceUpgradeFee",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
   encodeFunctionData(functionFragment: "treasury", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "upgradeFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upgradeFeeProposalTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -181,6 +223,10 @@ export interface QuestChainFactoryInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "adminProposalTimestamp",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "create", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "createAndUpgrade",
@@ -188,6 +234,18 @@ export interface QuestChainFactoryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "createAndUpgradeWithPermit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeAdminReplace",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executePaymentTokenReplace",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeUpgradeFeeReplace",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -199,39 +257,51 @@ export interface QuestChainFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "paymentTokenProposalTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposeAdminReplace",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposePaymentTokenReplace",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposeUpgradeFeeReplace",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedPaymentToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedUpgradeFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "questChainCount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "questChainImpl",
+    functionFragment: "questChainTemplate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "questChainToken",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "replaceAdmin",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "replaceChainImpl",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "replacePaymentToken",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "replaceTreasury",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "replaceUpgradeFee",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "treasury", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "upgradeFee", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "upgradeFeeProposalTimestamp",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "upgradeQuestChain",
     data: BytesLike
@@ -242,25 +312,40 @@ export interface QuestChainFactoryInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "AdminReplaceProposed(address)": EventFragment;
     "AdminReplaced(address)": EventFragment;
-    "FactoryInit()": EventFragment;
-    "ImplReplaced(address)": EventFragment;
+    "FactorySetup()": EventFragment;
+    "PaymentTokenReplaceProposed(address)": EventFragment;
     "PaymentTokenReplaced(address)": EventFragment;
     "QuestChainCreated(uint256,address)": EventFragment;
     "QuestChainUpgraded(address,address)": EventFragment;
-    "TreasuryReplaced(address)": EventFragment;
+    "UpgradeFeeReplaceProposed(uint256)": EventFragment;
     "UpgradeFeeReplaced(uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AdminReplaceProposed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AdminReplaced"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "FactoryInit"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ImplReplaced"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FactorySetup"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "PaymentTokenReplaceProposed"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentTokenReplaced"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QuestChainCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QuestChainUpgraded"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TreasuryReplaced"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpgradeFeeReplaceProposed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpgradeFeeReplaced"): EventFragment;
 }
+
+export interface AdminReplaceProposedEventObject {
+  proposedAdmin: string;
+}
+export type AdminReplaceProposedEvent = TypedEvent<
+  [string],
+  AdminReplaceProposedEventObject
+>;
+
+export type AdminReplaceProposedEventFilter =
+  TypedEventFilter<AdminReplaceProposedEvent>;
 
 export interface AdminReplacedEventObject {
   admin: string;
@@ -269,17 +354,21 @@ export type AdminReplacedEvent = TypedEvent<[string], AdminReplacedEventObject>;
 
 export type AdminReplacedEventFilter = TypedEventFilter<AdminReplacedEvent>;
 
-export interface FactoryInitEventObject {}
-export type FactoryInitEvent = TypedEvent<[], FactoryInitEventObject>;
+export interface FactorySetupEventObject {}
+export type FactorySetupEvent = TypedEvent<[], FactorySetupEventObject>;
 
-export type FactoryInitEventFilter = TypedEventFilter<FactoryInitEvent>;
+export type FactorySetupEventFilter = TypedEventFilter<FactorySetupEvent>;
 
-export interface ImplReplacedEventObject {
-  impl: string;
+export interface PaymentTokenReplaceProposedEventObject {
+  proposedPaymentToken: string;
 }
-export type ImplReplacedEvent = TypedEvent<[string], ImplReplacedEventObject>;
+export type PaymentTokenReplaceProposedEvent = TypedEvent<
+  [string],
+  PaymentTokenReplaceProposedEventObject
+>;
 
-export type ImplReplacedEventFilter = TypedEventFilter<ImplReplacedEvent>;
+export type PaymentTokenReplaceProposedEventFilter =
+  TypedEventFilter<PaymentTokenReplaceProposedEvent>;
 
 export interface PaymentTokenReplacedEventObject {
   paymentToken: string;
@@ -316,16 +405,16 @@ export type QuestChainUpgradedEvent = TypedEvent<
 export type QuestChainUpgradedEventFilter =
   TypedEventFilter<QuestChainUpgradedEvent>;
 
-export interface TreasuryReplacedEventObject {
-  treasury: string;
+export interface UpgradeFeeReplaceProposedEventObject {
+  proposedUpgradeFee: BigNumber;
 }
-export type TreasuryReplacedEvent = TypedEvent<
-  [string],
-  TreasuryReplacedEventObject
+export type UpgradeFeeReplaceProposedEvent = TypedEvent<
+  [BigNumber],
+  UpgradeFeeReplaceProposedEventObject
 >;
 
-export type TreasuryReplacedEventFilter =
-  TypedEventFilter<TreasuryReplacedEvent>;
+export type UpgradeFeeReplaceProposedEventFilter =
+  TypedEventFilter<UpgradeFeeReplaceProposedEvent>;
 
 export interface UpgradeFeeReplacedEventObject {
   upgradeFee: BigNumber;
@@ -367,6 +456,8 @@ export interface QuestChainFactory extends BaseContract {
   functions: {
     admin(overrides?: CallOverrides): Promise<[string]>;
 
+    adminProposalTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     create(
       _info: QuestChainCommons.QuestChainInfoStruct,
       _salt: PromiseOrValue<BytesLike>,
@@ -387,6 +478,18 @@ export interface QuestChainFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    executeAdminReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    executePaymentTokenReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    executeUpgradeFeeReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getQuestChainAddress(
       _index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -394,40 +497,44 @@ export interface QuestChainFactory extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<[string]>;
 
-    questChainCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+    paymentTokenProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<[string]>;
-
-    questChainToken(overrides?: CallOverrides): Promise<[string]>;
-
-    replaceAdmin(
+    proposeAdminReplace(
       _admin: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    replaceChainImpl(
-      _impl: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    replacePaymentToken(
+    proposePaymentTokenReplace(
       _paymentToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    replaceTreasury(
-      _treasury: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    replaceUpgradeFee(
+    proposeUpgradeFeeReplace(
       _upgradeFee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    proposedAdmin(overrides?: CallOverrides): Promise<[string]>;
+
+    proposedPaymentToken(overrides?: CallOverrides): Promise<[string]>;
+
+    proposedUpgradeFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    questChainCount(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    questChainTemplate(overrides?: CallOverrides): Promise<[string]>;
+
+    questChainToken(overrides?: CallOverrides): Promise<[string]>;
+
     treasury(overrides?: CallOverrides): Promise<[string]>;
 
     upgradeFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    upgradeFeeProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     upgradeQuestChain(
       _questChainAddress: PromiseOrValue<string>,
@@ -443,6 +550,8 @@ export interface QuestChainFactory extends BaseContract {
   };
 
   admin(overrides?: CallOverrides): Promise<string>;
+
+  adminProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   create(
     _info: QuestChainCommons.QuestChainInfoStruct,
@@ -464,6 +573,18 @@ export interface QuestChainFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  executeAdminReplace(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  executePaymentTokenReplace(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  executeUpgradeFeeReplace(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getQuestChainAddress(
     _index: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -471,40 +592,40 @@ export interface QuestChainFactory extends BaseContract {
 
   paymentToken(overrides?: CallOverrides): Promise<string>;
 
-  questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+  paymentTokenProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
-  questChainImpl(overrides?: CallOverrides): Promise<string>;
-
-  questChainToken(overrides?: CallOverrides): Promise<string>;
-
-  replaceAdmin(
+  proposeAdminReplace(
     _admin: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  replaceChainImpl(
-    _impl: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  replacePaymentToken(
+  proposePaymentTokenReplace(
     _paymentToken: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  replaceTreasury(
-    _treasury: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  replaceUpgradeFee(
+  proposeUpgradeFeeReplace(
     _upgradeFee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  proposedAdmin(overrides?: CallOverrides): Promise<string>;
+
+  proposedPaymentToken(overrides?: CallOverrides): Promise<string>;
+
+  proposedUpgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+  questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+  questChainTemplate(overrides?: CallOverrides): Promise<string>;
+
+  questChainToken(overrides?: CallOverrides): Promise<string>;
+
   treasury(overrides?: CallOverrides): Promise<string>;
 
   upgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+  upgradeFeeProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   upgradeQuestChain(
     _questChainAddress: PromiseOrValue<string>,
@@ -520,6 +641,8 @@ export interface QuestChainFactory extends BaseContract {
 
   callStatic: {
     admin(overrides?: CallOverrides): Promise<string>;
+
+    adminProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     create(
       _info: QuestChainCommons.QuestChainInfoStruct,
@@ -541,6 +664,12 @@ export interface QuestChainFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    executeAdminReplace(overrides?: CallOverrides): Promise<void>;
+
+    executePaymentTokenReplace(overrides?: CallOverrides): Promise<void>;
+
+    executeUpgradeFeeReplace(overrides?: CallOverrides): Promise<void>;
+
     getQuestChainAddress(
       _index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -548,40 +677,42 @@ export interface QuestChainFactory extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<string>;
 
-    questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+    paymentTokenProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<string>;
-
-    questChainToken(overrides?: CallOverrides): Promise<string>;
-
-    replaceAdmin(
+    proposeAdminReplace(
       _admin: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    replaceChainImpl(
-      _impl: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    replacePaymentToken(
+    proposePaymentTokenReplace(
       _paymentToken: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    replaceTreasury(
-      _treasury: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    replaceUpgradeFee(
+    proposeUpgradeFeeReplace(
       _upgradeFee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    proposedAdmin(overrides?: CallOverrides): Promise<string>;
+
+    proposedPaymentToken(overrides?: CallOverrides): Promise<string>;
+
+    proposedUpgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    questChainTemplate(overrides?: CallOverrides): Promise<string>;
+
+    questChainToken(overrides?: CallOverrides): Promise<string>;
+
     treasury(overrides?: CallOverrides): Promise<string>;
 
     upgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    upgradeFeeProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     upgradeQuestChain(
       _questChainAddress: PromiseOrValue<string>,
@@ -597,14 +728,23 @@ export interface QuestChainFactory extends BaseContract {
   };
 
   filters: {
+    "AdminReplaceProposed(address)"(
+      proposedAdmin?: null
+    ): AdminReplaceProposedEventFilter;
+    AdminReplaceProposed(proposedAdmin?: null): AdminReplaceProposedEventFilter;
+
     "AdminReplaced(address)"(admin?: null): AdminReplacedEventFilter;
     AdminReplaced(admin?: null): AdminReplacedEventFilter;
 
-    "FactoryInit()"(): FactoryInitEventFilter;
-    FactoryInit(): FactoryInitEventFilter;
+    "FactorySetup()"(): FactorySetupEventFilter;
+    FactorySetup(): FactorySetupEventFilter;
 
-    "ImplReplaced(address)"(impl?: null): ImplReplacedEventFilter;
-    ImplReplaced(impl?: null): ImplReplacedEventFilter;
+    "PaymentTokenReplaceProposed(address)"(
+      proposedPaymentToken?: null
+    ): PaymentTokenReplaceProposedEventFilter;
+    PaymentTokenReplaceProposed(
+      proposedPaymentToken?: null
+    ): PaymentTokenReplaceProposedEventFilter;
 
     "PaymentTokenReplaced(address)"(
       paymentToken?: null
@@ -629,8 +769,12 @@ export interface QuestChainFactory extends BaseContract {
       questChain?: null
     ): QuestChainUpgradedEventFilter;
 
-    "TreasuryReplaced(address)"(treasury?: null): TreasuryReplacedEventFilter;
-    TreasuryReplaced(treasury?: null): TreasuryReplacedEventFilter;
+    "UpgradeFeeReplaceProposed(uint256)"(
+      proposedUpgradeFee?: null
+    ): UpgradeFeeReplaceProposedEventFilter;
+    UpgradeFeeReplaceProposed(
+      proposedUpgradeFee?: null
+    ): UpgradeFeeReplaceProposedEventFilter;
 
     "UpgradeFeeReplaced(uint256)"(
       upgradeFee?: null
@@ -640,6 +784,8 @@ export interface QuestChainFactory extends BaseContract {
 
   estimateGas: {
     admin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    adminProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     create(
       _info: QuestChainCommons.QuestChainInfoStruct,
@@ -661,6 +807,18 @@ export interface QuestChainFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    executeAdminReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    executePaymentTokenReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    executeUpgradeFeeReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getQuestChainAddress(
       _index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -668,40 +826,42 @@ export interface QuestChainFactory extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<BigNumber>;
 
-    questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+    paymentTokenProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<BigNumber>;
-
-    questChainToken(overrides?: CallOverrides): Promise<BigNumber>;
-
-    replaceAdmin(
+    proposeAdminReplace(
       _admin: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    replaceChainImpl(
-      _impl: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    replacePaymentToken(
+    proposePaymentTokenReplace(
       _paymentToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    replaceTreasury(
-      _treasury: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    replaceUpgradeFee(
+    proposeUpgradeFeeReplace(
       _upgradeFee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    proposedAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proposedPaymentToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proposedUpgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    questChainCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    questChainTemplate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    questChainToken(overrides?: CallOverrides): Promise<BigNumber>;
+
     treasury(overrides?: CallOverrides): Promise<BigNumber>;
 
     upgradeFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    upgradeFeeProposalTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     upgradeQuestChain(
       _questChainAddress: PromiseOrValue<string>,
@@ -719,6 +879,10 @@ export interface QuestChainFactory extends BaseContract {
   populateTransaction: {
     admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    adminProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     create(
       _info: QuestChainCommons.QuestChainInfoStruct,
       _salt: PromiseOrValue<BytesLike>,
@@ -739,6 +903,18 @@ export interface QuestChainFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    executeAdminReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    executePaymentTokenReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    executeUpgradeFeeReplace(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getQuestChainAddress(
       _index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -746,40 +922,50 @@ export interface QuestChainFactory extends BaseContract {
 
     paymentToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    questChainCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    paymentTokenProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    questChainImpl(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    questChainToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    replaceAdmin(
+    proposeAdminReplace(
       _admin: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    replaceChainImpl(
-      _impl: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    replacePaymentToken(
+    proposePaymentTokenReplace(
       _paymentToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    replaceTreasury(
-      _treasury: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    replaceUpgradeFee(
+    proposeUpgradeFeeReplace(
       _upgradeFee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    proposedAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proposedPaymentToken(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    proposedUpgradeFee(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    questChainCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    questChainTemplate(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    questChainToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     treasury(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     upgradeFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    upgradeFeeProposalTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     upgradeQuestChain(
       _questChainAddress: PromiseOrValue<string>,

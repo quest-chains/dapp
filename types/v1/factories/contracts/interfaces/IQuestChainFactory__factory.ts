@@ -16,6 +16,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "address",
+        name: "proposedAdmin",
+        type: "address",
+      },
+    ],
+    name: "AdminReplaceProposed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
         name: "admin",
         type: "address",
       },
@@ -26,7 +39,7 @@ const _abi = [
   {
     anonymous: false,
     inputs: [],
-    name: "FactoryInit",
+    name: "FactorySetup",
     type: "event",
   },
   {
@@ -35,11 +48,11 @@ const _abi = [
       {
         indexed: false,
         internalType: "address",
-        name: "impl",
+        name: "proposedPaymentToken",
         type: "address",
       },
     ],
-    name: "ImplReplaced",
+    name: "PaymentTokenReplaceProposed",
     type: "event",
   },
   {
@@ -47,7 +60,7 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
+        internalType: "contract IERC20Token",
         name: "paymentToken",
         type: "address",
       },
@@ -98,12 +111,12 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
-        name: "treasury",
-        type: "address",
+        internalType: "uint256",
+        name: "proposedUpgradeFee",
+        type: "uint256",
       },
     ],
-    name: "TreasuryReplaced",
+    name: "UpgradeFeeReplaceProposed",
     type: "event",
   },
   {
@@ -364,7 +377,7 @@ const _abi = [
     name: "paymentToken",
     outputs: [
       {
-        internalType: "address",
+        internalType: "contract IERC20Token",
         name: "",
         type: "address",
       },
@@ -387,7 +400,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "questChainImpl",
+    name: "questChainTemplate",
     outputs: [
       {
         internalType: "address",
@@ -403,7 +416,7 @@ const _abi = [
     name: "questChainToken",
     outputs: [
       {
-        internalType: "address",
+        internalType: "contract IQuestChainToken",
         name: "",
         type: "address",
       },

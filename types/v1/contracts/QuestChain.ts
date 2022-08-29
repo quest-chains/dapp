@@ -65,7 +65,6 @@ export interface QuestChainInterface extends utils.Interface {
     "ADMIN_ROLE()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "EDITOR_ROLE()": FunctionFragment;
-    "OWNER_ROLE()": FunctionFragment;
     "REVIEWER_ROLE()": FunctionFragment;
     "burnToken()": FunctionFragment;
     "createQuests(string[])": FunctionFragment;
@@ -102,7 +101,6 @@ export interface QuestChainInterface extends utils.Interface {
       | "ADMIN_ROLE"
       | "DEFAULT_ADMIN_ROLE"
       | "EDITOR_ROLE"
-      | "OWNER_ROLE"
       | "REVIEWER_ROLE"
       | "burnToken"
       | "createQuests"
@@ -144,10 +142,6 @@ export interface QuestChainInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "EDITOR_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "OWNER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -260,7 +254,6 @@ export interface QuestChainInterface extends utils.Interface {
     functionFragment: "EDITOR_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "REVIEWER_ROLE",
     data: BytesLike
@@ -344,7 +337,7 @@ export interface QuestChainInterface extends utils.Interface {
     "QuestChainTokenURIUpdated(string)": EventFragment;
     "QuestProofsReviewed(address,address[],uint256[],bool[],string[])": EventFragment;
     "QuestProofsSubmitted(address,uint256[],string[])": EventFragment;
-    "QuestsCreated(address,uint256[],string[])": EventFragment;
+    "QuestsCreated(address,string[])": EventFragment;
     "QuestsEdited(address,uint256[],string[])": EventFragment;
     "QuestsPaused(address,uint256[],bool[])": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -448,11 +441,10 @@ export type QuestProofsSubmittedEventFilter =
 
 export interface QuestsCreatedEventObject {
   creator: string;
-  questIdList: BigNumber[];
   detailsList: string[];
 }
 export type QuestsCreatedEvent = TypedEvent<
-  [string, BigNumber[], string[]],
+  [string, string[]],
   QuestsCreatedEventObject
 >;
 
@@ -559,8 +551,6 @@ export interface QuestChain extends BaseContract {
 
     EDITOR_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    OWNER_ROLE(overrides?: CallOverrides): Promise<[string]>;
-
     REVIEWER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     burnToken(
@@ -588,11 +578,11 @@ export interface QuestChain extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getTokenURI(overrides?: CallOverrides): Promise<[string]>;
+    getTokenURI(overrides?: CallOverrides): Promise<[string] & { uri: string }>;
 
     grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -659,8 +649,8 @@ export interface QuestChain extends BaseContract {
     ): Promise<ContractTransaction>;
 
     revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -695,8 +685,6 @@ export interface QuestChain extends BaseContract {
 
   EDITOR_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
-
   REVIEWER_ROLE(overrides?: CallOverrides): Promise<string>;
 
   burnToken(
@@ -727,8 +715,8 @@ export interface QuestChain extends BaseContract {
   getTokenURI(overrides?: CallOverrides): Promise<string>;
 
   grantRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
+    _role: PromiseOrValue<BytesLike>,
+    _account: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -795,8 +783,8 @@ export interface QuestChain extends BaseContract {
   ): Promise<ContractTransaction>;
 
   revokeRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
+    _role: PromiseOrValue<BytesLike>,
+    _account: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -831,8 +819,6 @@ export interface QuestChain extends BaseContract {
 
     EDITOR_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    OWNER_ROLE(overrides?: CallOverrides): Promise<string>;
-
     REVIEWER_ROLE(overrides?: CallOverrides): Promise<string>;
 
     burnToken(overrides?: CallOverrides): Promise<void>;
@@ -861,8 +847,8 @@ export interface QuestChain extends BaseContract {
     getTokenURI(overrides?: CallOverrides): Promise<string>;
 
     grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -925,8 +911,8 @@ export interface QuestChain extends BaseContract {
     ): Promise<void>;
 
     revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1011,16 +997,11 @@ export interface QuestChain extends BaseContract {
       proofList?: null
     ): QuestProofsSubmittedEventFilter;
 
-    "QuestsCreated(address,uint256[],string[])"(
+    "QuestsCreated(address,string[])"(
       creator?: null,
-      questIdList?: null,
       detailsList?: null
     ): QuestsCreatedEventFilter;
-    QuestsCreated(
-      creator?: null,
-      questIdList?: null,
-      detailsList?: null
-    ): QuestsCreatedEventFilter;
+    QuestsCreated(creator?: null, detailsList?: null): QuestsCreatedEventFilter;
 
     "QuestsEdited(address,uint256[],string[])"(
       editor?: null,
@@ -1088,8 +1069,6 @@ export interface QuestChain extends BaseContract {
 
     EDITOR_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    OWNER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
-
     REVIEWER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
     burnToken(
@@ -1120,8 +1099,8 @@ export interface QuestChain extends BaseContract {
     getTokenURI(overrides?: CallOverrides): Promise<BigNumber>;
 
     grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1188,8 +1167,8 @@ export interface QuestChain extends BaseContract {
     ): Promise<BigNumber>;
 
     revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1227,8 +1206,6 @@ export interface QuestChain extends BaseContract {
 
     EDITOR_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    OWNER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     REVIEWER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     burnToken(
@@ -1259,8 +1236,8 @@ export interface QuestChain extends BaseContract {
     getTokenURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1327,8 +1304,8 @@ export interface QuestChain extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+      _role: PromiseOrValue<BytesLike>,
+      _account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

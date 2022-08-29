@@ -214,7 +214,7 @@ export interface IQuestChainInterface extends utils.Interface {
     "QuestChainTokenURIUpdated(string)": EventFragment;
     "QuestProofsReviewed(address,address[],uint256[],bool[],string[])": EventFragment;
     "QuestProofsSubmitted(address,uint256[],string[])": EventFragment;
-    "QuestsCreated(address,uint256[],string[])": EventFragment;
+    "QuestsCreated(address,string[])": EventFragment;
     "QuestsEdited(address,uint256[],string[])": EventFragment;
     "QuestsPaused(address,uint256[],bool[])": EventFragment;
   };
@@ -294,11 +294,10 @@ export type QuestProofsSubmittedEventFilter =
 
 export interface QuestsCreatedEventObject {
   creator: string;
-  questIdList: BigNumber[];
   detailsList: string[];
 }
 export type QuestsCreatedEvent = TypedEvent<
-  [string, BigNumber[], string[]],
+  [string, string[]],
   QuestsCreatedEventObject
 >;
 
@@ -622,16 +621,11 @@ export interface IQuestChain extends BaseContract {
       proofList?: null
     ): QuestProofsSubmittedEventFilter;
 
-    "QuestsCreated(address,uint256[],string[])"(
+    "QuestsCreated(address,string[])"(
       creator?: null,
-      questIdList?: null,
       detailsList?: null
     ): QuestsCreatedEventFilter;
-    QuestsCreated(
-      creator?: null,
-      questIdList?: null,
-      detailsList?: null
-    ): QuestsCreatedEventFilter;
+    QuestsCreated(creator?: null, detailsList?: null): QuestsCreatedEventFilter;
 
     "QuestsEdited(address,uint256[],string[])"(
       editor?: null,
