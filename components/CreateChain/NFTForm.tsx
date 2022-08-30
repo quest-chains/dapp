@@ -18,11 +18,14 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
 import NFTForm2D from '@/components/CreateChain/NFTForm2D';
 import NFTForm3D from '@/components/CreateChain/NFTForm3D';
 import NFTFormCustom from '@/components/CreateChain/NFTFormCustom';
+import { GlobalInfoFragment } from '@/graphql/types';
+import { getAddressUrl, useWallet } from '@/web3';
 
 const NFTForm: React.FC<{
   onSubmit: (
@@ -31,7 +34,8 @@ const NFTForm: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
   chainName: string;
-}> = ({ onSubmit, chainName }) => {
+  globalInfo: Record<string, GlobalInfoFragment>;
+}> = ({ onSubmit, chainName, globalInfo }) => {
   const [tab, setTab] = useState('2D'); // 3D, custom
   const [didOpenPremiumTab, setDidOpenPremiumTab] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,6 +48,14 @@ const NFTForm: React.FC<{
     onOpen();
     setDidOpenPremiumTab(true);
   };
+
+  const { chainId } = useWallet();
+  const paymentToken = chainId
+    ? globalInfo[chainId].paymentToken
+    : { decimals: 18, address: constants.AddressZero, symbol: 'TOKEN' };
+  const upgradeFee = chainId ? globalInfo[chainId].upgradeFee : '0';
+
+  const upgradeFeeAmount = utils.formatUnits(upgradeFee, paymentToken.decimals);
 
   return (
     <VStack
@@ -169,8 +181,18 @@ const NFTForm: React.FC<{
             stand out with this amazing 3D NFT or a Custom NFT badge that can be
             added to your chain’s overview page, and will look equally as
             amazing on the chain’s questers’ profiles. This premium feature
-            costs 2 SEED tokens (~10$), which are MetaGame’s native tokens. Read
-            how to acquire them{' '}
+            costs {upgradeFeeAmount}{' '}
+            <Link
+              isExternal
+              href={getAddressUrl(paymentToken.address, chainId)}
+              textDecoration="underline"
+              color="main"
+            >
+              {paymentToken.symbol}
+            </Link>
+            {' tokens.'}
+            {/*, which are MetaGame’s native tokens. Read how to
+            acquire them{' '}
             <Link
               isExternal
               href="https://metagame.wtf/seeds"
@@ -179,7 +201,7 @@ const NFTForm: React.FC<{
             >
               here
             </Link>
-            .
+            . */}
           </ModalBody>
 
           <ModalFooter alignItems="baseline">

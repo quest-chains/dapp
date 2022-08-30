@@ -104,10 +104,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       return;
     let tid;
     try {
-      const { factoryAddress, paymentTokenAddress, upgradeFee } =
-        globalInfo[chainId];
+      const { factoryAddress, paymentToken, upgradeFee } = globalInfo[chainId];
       const tokenContract: IERC20V1 = IERC20V1__factory.connect(
-        paymentTokenAddress,
+        paymentToken.address,
         provider.getSigner(),
       );
       const tokenAllowance = await tokenContract.allowance(
@@ -309,7 +308,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
         flexDir="column"
         gap={8}
       >
-        <NFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
+        <NFTForm
+          onSubmit={onSubmitNFTMeta}
+          chainName={chainName}
+          globalInfo={globalInfo}
+        />
         <Step3 />
         <Step4 />
       </Flex>
@@ -337,6 +340,7 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
             isApproved={isApproved}
             approveTokens={approveTokens}
             goBackToNFTSelection={goBackToNFTSelection}
+            globalInfo={globalInfo}
           />
         </Flex>
         <Flex w={373}>

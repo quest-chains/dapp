@@ -1,3 +1,20 @@
+fragment ERC20TokenInfo on ERC20Token {
+  address: id
+  name
+  symbol
+  decimals
+}
+
+fragment GlobalInfo on Global {
+  chainId: id
+  factoryAddress
+  tokenAddress
+  paymentToken {
+    ...ERC20TokenInfo
+  }
+  upgradeFee
+}
+
 fragment QuestChainInfo on QuestChain {
   address: id
   version
