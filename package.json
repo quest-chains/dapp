@@ -9,9 +9,7 @@
     "typecheck": "tsc",
     "lint": "eslint --ignore-path .gitignore \"*/**/*.{js,jsx,ts,tsx}\" --fix",
     "format": "prettier --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md,css,scss,sol}\"",
-    "root:prepare": "yarn --cwd ../../ root:prepare",
-    "prepare": "yarn generate && patch-package && husky install",
-    "generate": "graphql-codegen --config=codegen.yml"
+    "prepare": "patch-package && husky install"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
