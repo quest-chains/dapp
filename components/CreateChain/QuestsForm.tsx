@@ -18,11 +18,13 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
-import { QuestChainInfoFragment } from '@/graphql/types';
+import { GlobalInfoFragment, QuestChainInfoFragment } from '@/graphql/types';
 import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
+import { getAddressUrl, useWallet } from '@/web3';
 
 import { MarkdownEditor } from '../MarkdownEditor';
 import { SubmitButton } from '../SubmitButton';
@@ -38,7 +40,9 @@ export const QuestsForm: React.FC<{
   approveTokens: () => void | Promise<void>;
   isApproved: boolean;
   goBackToNFTSelection: () => void;
+  globalInfo: Record<string, GlobalInfoFragment>;
 }> = ({
+  globalInfo,
   onPublishQuestChain,
   isPremium,
   approveTokens,
@@ -67,6 +71,15 @@ export const QuestsForm: React.FC<{
     setIsEditingQuest(false);
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
+
+  const { chainId } = useWallet();
+
+  const paymentToken = chainId
+    ? globalInfo[chainId].paymentToken
+    : { decimals: 18, address: constants.AddressZero, symbol: 'TOKEN' };
+  const upgradeFee = chainId ? globalInfo[chainId].upgradeFee : '0';
+
+  const upgradeFeeAmount = utils.formatUnits(upgradeFee, paymentToken.decimals);
 
   return (
     <>
@@ -200,17 +213,17 @@ export const QuestsForm: React.FC<{
           <Image src="/CreateChain/gem-premium.svg" alt="circles3" w={16} />
           <Box>
             <Text fontSize={18} fontWeight="bold" mb={3}>
-              This quest chain has a 3D completion NFT, which is a PREMIUM
-              feature and costs 2{' '}
+              This quest chain has a 3D/Custom completion NFT, which is a
+              PREMIUM feature and costs {upgradeFeeAmount}{' '}
               <Link
-                mx={1}
                 isExternal
-                href="https://metagame.wtf/seeds"
+                href={getAddressUrl(paymentToken.address, chainId)}
                 textDecoration="underline"
+                color="main"
               >
-                SEED tokens
+                {paymentToken.symbol}
               </Link>
-              .
+              {' tokens.'}
             </Text>
             <Text
               fontSize={14}
