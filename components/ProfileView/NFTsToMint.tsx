@@ -14,12 +14,12 @@ import {
 } from '@chakra-ui/react';
 
 import { useNFTsToMintForAllChains } from '@/hooks/useNFTsToMintForAllChains';
+import { useWallet } from '@/web3';
 
 import { MintNFTTile } from '../MintNFTTile';
 
-export const NFTsToMint: React.FC<{
-  address: string;
-}> = ({ address }) => {
+export const NFTsToMint: React.FC = () => {
+  const { address } = useWallet();
   const {
     isOpen: isOpenSeeAll,
     onOpen: onOpenSeeAll,
@@ -30,7 +30,7 @@ export const NFTsToMint: React.FC<{
     results: nftsToMint,
     fetching,
     refresh,
-  } = useNFTsToMintForAllChains(address ?? '');
+  } = useNFTsToMintForAllChains(address);
 
   return (
     <VStack spacing={4} align="stretch">
@@ -59,7 +59,7 @@ export const NFTsToMint: React.FC<{
             {nftsToMint.slice(0, 2).map(ns => (
               <MintNFTTile
                 {...ns}
-                key={ns.address + ns.chainId}
+                key={ns.questChain.address + ns.questChain.chainId}
                 onSuccess={refresh}
               />
             ))}
@@ -77,7 +77,7 @@ export const NFTsToMint: React.FC<{
               {nftsToMint.slice(0, 2).map(ns => (
                 <MintNFTTile
                   {...ns}
-                  key={ns.address + ns.chainId}
+                  key={ns.questChain.address + ns.questChain.chainId}
                   onSuccess={refresh}
                 />
               ))}

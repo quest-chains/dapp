@@ -12,8 +12,6 @@ import {
   SliderMark,
   SliderThumb,
   SliderTrack,
-  Stack,
-  Text,
   Textarea,
   Tooltip,
   VStack,
@@ -36,10 +34,14 @@ import {
 import { SubmitButton } from '../SubmitButton';
 import { ImageTemplate } from './ImageTemplate';
 
-const NFTMetadataForm: React.FC<{
+const NFTForm2D: React.FC<{
   chainName?: string;
   onBack?: () => void;
-  onSubmit: (metadataUri: string) => void | Promise<void>;
+  onSubmit: (
+    metadataUri: string,
+    nftUrl: string | undefined,
+    isPremium: boolean,
+  ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
@@ -91,7 +93,7 @@ const NFTMetadataForm: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details);
+      onSubmit(details, metadata.image_url, false);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
@@ -101,24 +103,11 @@ const NFTMetadataForm: React.FC<{
   }, [onSubmit, bgIndex, gemIndex, starLength, name, description]);
 
   return (
-    <VStack
-      w="100%"
-      align="stretch"
-      spacing={8}
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      borderRadius={30}
-      px={{ base: 4, md: 8 }}
-      py={8}
-    >
-      <HStack justify="space-between" w="100%">
-        <Text color="main" fontSize={20}>
-          QUEST CHAIN NFT
-        </Text>
-      </HStack>
-      <Stack
+    <VStack w="100%" align="stretch" spacing={8}>
+      <Flex
         w="100%"
-        direction={{ base: 'column', lg: 'row-reverse' }}
-        spacing={{ base: 8, lg: 0 }}
+        flexDirection={{ base: 'column', lg: 'row-reverse' }}
+        mb={12}
       >
         <Flex
           justify="center"
@@ -127,6 +116,9 @@ const NFTMetadataForm: React.FC<{
           backdropFilter="blur(8px)"
           zIndex={2}
           borderRadius="md"
+          gap={4}
+          maxW={{ base: '100%', lg: '50%' }}
+          flexDir="column"
         >
           <ImageTemplate
             bgIndex={bgIndex}
@@ -136,23 +128,53 @@ const NFTMetadataForm: React.FC<{
             description={description}
             ref={componentRef}
           />
+          <FormControl isRequired>
+            <FormLabel htmlFor="name" fontWeight="bold">
+              Name
+            </FormLabel>
+            <Input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              minLength={1}
+              maxLength={35}
+              id="name"
+              bg="#0F172A"
+              placeholder="NFT Badge Name"
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel htmlFor="description" fontWeight="bold">
+              Description
+            </FormLabel>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              minLength={1}
+              maxLength={100}
+              bg="#0F172A"
+              placeholder="NFT Badge Description"
+            />
+          </FormControl>
         </Flex>
-        <VStack
-          spacing={4}
+        <Flex
+          gap={8}
+          flex={1}
           align="flex-start"
+          flexDir="column"
           w="100%"
-          maxW={{ base: '100%', lg: '60%' }}
+          maxW={{ base: '100%', lg: '50%' }}
+          pr={{ base: 0, md: 40 }}
         >
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
+            <FormLabel htmlFor="description" fontWeight="bold">
               Background Shape
             </FormLabel>
-            <HStack>
+            <HStack spacing={6}>
               {backgrounds.map((bg, bgId) => (
                 <Tooltip label={`${backgroundNames[bgId]} Background`} key={bg}>
                   <Button
-                    w="6rem"
-                    h="6rem"
+                    w={{ base: '3rem', md: '6rem', xl: '7rem' }}
+                    h={{ base: '3rem', md: '6rem', xl: '7rem' }}
                     isDisabled={bgId === bgIndex}
                     _disabled={{
                       boxShadow: 'inset 0px 0px 0px 1px #AD90FF',
@@ -174,16 +196,16 @@ const NFTMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
+            <FormLabel htmlFor="description" fontWeight="bold">
               Gem
             </FormLabel>
             <HStack>
-              <Wrap maxW="45rem">
+              <Wrap spacing={6}>
                 {gems.map((gem, gemId) => (
                   <Tooltip label={`${gemNames[gemId]} Gem`} key={gem}>
                     <AspectRatio
                       ratio={1}
-                      w={{ base: '3rem', md: '5rem', xl: '6rem' }}
+                      w={{ base: '3rem', md: '6rem', xl: '7rem' }}
                     >
                       <Button
                         w="100%"
@@ -212,7 +234,7 @@ const NFTMetadataForm: React.FC<{
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
+            <FormLabel htmlFor="description" fontWeight="bold">
               Number of Stars
             </FormLabel>
             <Slider
@@ -222,7 +244,7 @@ const NFTMetadataForm: React.FC<{
               max={3}
               step={1}
               w="100%"
-              maxW="20rem"
+              maxW="25rem"
               mb={2}
             >
               <SliderMark value={1} mt={3} fontSize="sm">
@@ -234,43 +256,21 @@ const NFTMetadataForm: React.FC<{
               <SliderMark value={3} mt={3} fontSize="sm">
                 3
               </SliderMark>
-              <SliderTrack bg="#444444" h={2} borderRadius="full">
-                <SliderFilledTrack bg="#AD90FF" opacity="1" />
+              <SliderTrack
+                borderWidth={1}
+                borderColor="white"
+                bg="#444444"
+                h={3}
+                borderRadius={3}
+              >
+                <SliderFilledTrack bg="#4E0B84" opacity="1" />
               </SliderTrack>
               <SliderThumb boxSize={5} ml={-1} />
             </Slider>
           </FormControl>
-          <Wrap>
-            <FormControl isRequired>
-              <FormLabel color="main" htmlFor="name">
-                Name
-              </FormLabel>
-              <Input
-                value={name}
-                onChange={e => setName(e.target.value)}
-                minLength={1}
-                maxLength={35}
-                id="name"
-                placeholder="NFT Badge Name"
-              />
-            </FormControl>
-          </Wrap>
-          <FormControl isRequired>
-            <FormLabel color="main" htmlFor="description">
-              Description
-            </FormLabel>
-            <Textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              minLength={1}
-              maxLength={100}
-              placeholder="NFT Badge Description"
-            />
-          </FormControl>
-        </VStack>
-      </Stack>
+        </Flex>
+      </Flex>
       <Flex
-        mt={4}
         w="100%"
         justify={onBack ? 'space-between' : 'flex-end'}
         align="center"
@@ -281,7 +281,7 @@ const NFTMetadataForm: React.FC<{
             mr={3}
             onClick={onBack}
             borderRadius="full"
-            boxShadow="inset 0px 0px 0px 1px #AD90FF"
+            boxShadow="inset 0px 0px 0px 1px white"
           >
             Back
           </Button>
@@ -290,12 +290,13 @@ const NFTMetadataForm: React.FC<{
           isLoading={isLoading}
           type="submit"
           onClick={exportMetadata}
+          w="full"
         >
-          Next
+          Continue to Step 3
         </SubmitButton>
       </Flex>
     </VStack>
   );
 };
 
-export default NFTMetadataForm;
+export default NFTForm2D;

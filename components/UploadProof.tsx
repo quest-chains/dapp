@@ -17,39 +17,30 @@ import {
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
-import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
-import { QuestChain, QuestChain__factory } from '@/types/v0';
-import { ZERO_ADDRESS } from '@/utils/constants';
+import { QuestChainInfoFragment } from '@/graphql/types';
+import { QuestChain as QuestChainV0 } from '@/types/v0';
+import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { useWallet } from '@/web3';
+import { getQuestChainContract } from '@/web3/contract';
 
 import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
 
 export const UploadProof: React.FC<{
-  address: string | null | undefined;
   refresh: () => void;
   questId: string;
-  questChainId: string;
-  questChainAddress: string;
-  name: string | null | undefined;
+  name: string;
+  questChain: QuestChainInfoFragment;
   profile?: boolean;
-}> = ({
-  address,
-  refresh,
-  questId,
-  questChainId,
-  questChainAddress,
-  name,
-  profile,
-}) => {
-  const { chainId, provider } = useWallet();
+}> = ({ refresh, questId, name, questChain, profile }) => {
+  const { chainId, provider, address } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [isSubmitting, setSubmitting] = useState(false);
@@ -81,20 +72,15 @@ export const UploadProof: React.FC<{
     setMyFiles(newFiles);
   };
 
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChainAddress ?? ZERO_ADDRESS,
-    provider?.getSigner() as Signer,
-  );
-
   const onSubmit = useCallback(async () => {
-    if (!chainId || chainId !== questChainId) return;
+    if (!chainId || chainId !== questChain.chainId || !provider) return;
     if (proofDescription) {
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
         let hash = myFiles.length ? await uploadFiles(myFiles) : '';
         const metadata: Metadata = {
-          name: `Submission - Quest - ${name} - User - ${address}`,
+          name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
           description: proofDescription,
           external_url: hash ? `ipfs://${hash}` : undefined,
         };
@@ -105,7 +91,16 @@ export const UploadProof: React.FC<{
         tid = toast.loading(
           'Waiting for Confirmation - Confirm the transaction in your Wallet',
         );
-        const tx = await contract.submitProof(questId, details);
+
+        const contract = getQuestChainContract(
+          questChain.address,
+          questChain.version,
+          provider.getSigner(),
+        );
+
+        const tx = await (questChain.version === '1'
+          ? (contract as QuestChainV1).submitProofs([questId], [details])
+          : (contract as QuestChainV0).submitProof(questId, details));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -127,15 +122,15 @@ export const UploadProof: React.FC<{
     }
   }, [
     chainId,
-    questChainId,
+    questChain,
     proofDescription,
     myFiles,
-    name,
-    address,
-    contract,
     questId,
+    name,
     onModalClose,
     refresh,
+    address,
+    provider,
   ]);
 
   return (
@@ -143,12 +138,12 @@ export const UploadProof: React.FC<{
       <Tooltip
         shouldWrapChildren
         label="Please connect or switch to the correct chain"
-        isDisabled={chainId === questChainId}
+        isDisabled={chainId === questChain.chainId}
       >
         {!profile && (
           <Button
             onClick={onOpen}
-            isDisabled={chainId !== questChainId || !address}
+            isDisabled={chainId !== questChain.chainId || !address}
             borderWidth={1}
             borderColor="white"
             px={5}
@@ -162,7 +157,7 @@ export const UploadProof: React.FC<{
           <Button
             w="full"
             onClick={onOpen}
-            isDisabled={chainId !== questChainId || !address}
+            isDisabled={chainId !== questChain.chainId || !address}
             variant="outline"
           >
             Re-submit Proof

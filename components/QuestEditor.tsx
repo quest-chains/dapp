@@ -1,16 +1,16 @@
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Input, useDisclosure } from '@chakra-ui/react';
-import { Signer } from 'ethers';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain, QuestChain__factory } from '@/types/v0';
-import { ZERO_ADDRESS } from '@/utils/constants';
+import { QuestChain as QuestChainV0 } from '@/types/v0';
+import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { useWallet } from '@/web3';
+import { getQuestChainContract } from '@/web3/contract';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { MarkdownEditor } from './MarkdownEditor';
@@ -20,16 +20,14 @@ type ArrayElement<ArrayType extends readonly unknown[]> =
 
 type QuestEditorProps = {
   refresh: () => void;
-  questChainAddress?: string;
-  questChainId?: string;
+  questChain: QuestChainInfoFragment;
   quest: ArrayElement<QuestChainInfoFragment['quests']>;
   setEditingQuest: (sth: boolean) => void;
 };
 
 export const QuestEditor: React.FC<QuestEditorProps> = ({
   refresh,
-  questChainAddress,
-  questChainId,
+  questChain,
   quest,
   setEditingQuest,
 }) => {
@@ -42,10 +40,6 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
   const [isSubmittingQuest, setSubmittingQuest] = useState(false);
   const { chainId, provider } = useWallet();
 
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChainAddress ?? ZERO_ADDRESS,
-    provider?.getSigner() as Signer,
-  );
   const [questDescription, setQuestDescription] = useState(quest.description);
 
   const onSubmitQuest = useCallback(
@@ -58,7 +52,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       description: string;
       questId: number;
     }) => {
-      if (!chainId || chainId !== questChainId) {
+      if (!chainId || chainId !== questChain.chainId || !provider) {
         toast.error('Wrong Chain, please switch!');
         return;
       }
@@ -76,7 +70,15 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
         tid = toast.loading(
           'Waiting for Confirmation - Confirm the transaction in your Wallet',
         );
-        const tx = await contract.editQuest(questId, details);
+        const contract = getQuestChainContract(
+          questChain.address,
+          questChain.version,
+          provider.getSigner(),
+        );
+
+        const tx = await (questChain.version === '1'
+          ? (contract as QuestChainV1).editQuests([questId], [details])
+          : (contract as QuestChainV0).editQuest(questId, details));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -96,16 +98,17 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       setEditingQuest(false);
       setSubmittingQuest(false);
     },
-    [chainId, questChainId, setEditingQuest, contract, refresh],
+    [chainId, questChain, setEditingQuest, provider, refresh],
   );
 
   return (
-    <Flex flexDirection="column" w="full">
+    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Flex>
         <Input
           mb={3}
           value={questName ?? ''}
           onChange={e => setQuestName(e.target.value)}
+          bg="#0F172A"
         />
         <IconButton
           borderRadius="full"

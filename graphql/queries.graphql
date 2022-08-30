@@ -1,7 +1,6 @@
 query GlobalInfo {
   globals {
-    chainId: id
-    factoryAddress
+    ...GlobalInfo
   }
 }
 

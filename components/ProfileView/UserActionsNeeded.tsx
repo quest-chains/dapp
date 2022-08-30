@@ -49,9 +49,9 @@ export const UserActionsNeeded: React.FC = () => {
           To be reviewed
         </Button>
       </Flex>
-      {tab === Tab.NFTS && <NFTsToMint address={address} />}
-      {tab === Tab.SUBMISSIONS && <QuestsRejected address={address} />}
-      {tab === Tab.REVIEWS && <QuestsToReview address={address} />}
+      {tab === Tab.NFTS && <NFTsToMint />}
+      {tab === Tab.SUBMISSIONS && <QuestsRejected />}
+      {tab === Tab.REVIEWS && <QuestsToReview />}
     </Flex>
   );
 };

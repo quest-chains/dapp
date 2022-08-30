@@ -10,6 +10,7 @@ import { getEthersProvider } from '@/web3/providers';
 export const UserDisplay: React.FC<{
   address: string;
   color?: string;
+  full?: boolean;
 }> = ({ address, color = 'white' }) => {
   const { ens } = useENS(address);
   return (

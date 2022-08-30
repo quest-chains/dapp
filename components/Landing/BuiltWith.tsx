@@ -72,12 +72,7 @@ export const BuiltWith: React.FC = () => {
                 with
               </Text>
             </Heading>
-            <Grid
-              gap={8}
-              alignSelf="center"
-              display={{ base: 'grid' }}
-              templateColumns="repeat(3, 1fr)"
-            >
+            <Grid gap={8} alignSelf="center" templateColumns="repeat(3, 1fr)">
               <Image
                 src="/Landing/Logos/thegraph.svg"
                 alt="thegraph"
@@ -136,12 +131,7 @@ export const BuiltWith: React.FC = () => {
               <Text color="white">Supported</Text>
               Networks
             </Heading>
-            <Grid
-              gap={8}
-              alignSelf="center"
-              display={{ base: 'grid' }}
-              templateColumns="repeat(4, 1fr)"
-            >
+            <Grid gap={8} alignSelf="center" templateColumns="repeat(4, 1fr)">
               {Object.keys(SUPPORTED_NETWORK_INFO).map(chainId => (
                 <Box textAlign="center" key={chainId}>
                   <Text mb={3}>{SUPPORTED_NETWORK_INFO[chainId].label}</Text>

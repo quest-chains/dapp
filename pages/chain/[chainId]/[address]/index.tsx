@@ -1,5 +1,6 @@
 import { AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
+  Accordion,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -24,7 +25,6 @@ import {
   useTimeout,
   VStack,
 } from '@chakra-ui/react';
-import { Signer } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -33,8 +33,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
-import { CollapsableQuestDisplay } from '@/components/CollapsableQuestDisplay';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -51,13 +51,12 @@ import {
 import { QuestChainInfoFragment, Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
-import { QuestChain, QuestChain__factory } from '@/types/v0';
-import { ZERO_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
+import { getQuestChainContract } from '@/web3/contract';
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -78,6 +77,11 @@ export type UserStatusType = {
     status: Status;
   };
 };
+
+enum Mode {
+  MEMBER = 'MEMBER',
+  QUESTER = 'QUESTER',
+}
 
 const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const { isFallback } = useRouter();
@@ -193,7 +197,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const isUser = !(isOwner || isAdmin || isEditor || isReviewer);
 
-  const [mode, setMode] = useState(isUser ? 'QUESTER' : 'MEMBER');
+  const [mode, setMode] = useState<Mode>(isUser ? Mode.QUESTER : Mode.MEMBER);
 
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
@@ -247,7 +251,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       !!address &&
       questChain?.token &&
       !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
-      Object.values(userStatus).length > 0 &&
+      Object.values(userStatus).length === questChain.quests.length &&
       Object.values(userStatus).reduce(
         (t, v) => t && v.status === Status.Pass,
         true,
@@ -262,16 +266,17 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     refreshQuests();
   }, [refreshQuests, refreshStatus]);
 
-  const contract: QuestChain = QuestChain__factory.connect(
-    questChain?.address ?? ZERO_ADDRESS,
-    provider?.getSigner() as Signer,
-  );
-
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
-      if (!chainId || chainId !== questChain?.chainId) return;
+      if (
+        !chainId ||
+        !questChain ||
+        !provider ||
+        chainId !== questChain.chainId
+      )
+        return;
       setSubmittingQuestChain(true);
       const metadata: Metadata = {
         name,
@@ -284,6 +289,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         toast.dismiss(tid);
         tid = toast.loading(
           'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const contract = getQuestChainContract(
+          questChain.address,
+          questChain.version,
+          provider.getSigner(),
         );
         const tx = await contract.edit(details);
         toast.dismiss(tid);
@@ -305,7 +315,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       setEditingQuestChain(false);
       setSubmittingQuestChain(false);
     },
-    [contract, refresh, chainId, questChain],
+    [refresh, chainId, questChain, provider],
   );
 
   if (isFallback) {
@@ -324,15 +334,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   }
 
   return (
-    <VStack w="100%" px={{ base: 0, lg: 40 }}>
+    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }}>
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
         position="fixed"
-        height="150%"
-        top="-200px"
-        width="150%"
+        height="100vh"
+        width="100vw"
+        top="0"
+        left="0"
         opacity="0.05"
-        bgPos="top"
+        bgPos="center"
         bgSize="cover"
         zIndex={-1}
       />
@@ -369,8 +380,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             >
               <Flex
                 w={32}
-                onClick={() => setMode('QUESTER')}
-                bgColor={mode === 'QUESTER' ? 'main.200' : 'whiteAlpha.100'}
+                onClick={() => setMode(Mode.QUESTER)}
+                bgColor={mode === Mode.QUESTER ? 'main.200' : 'whiteAlpha.100'}
                 h={8}
                 alignItems="center"
                 justifyContent="center"
@@ -386,8 +397,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               </Flex>
               <Flex
                 w={32}
-                onClick={() => setMode('MEMBER')}
-                bgColor={mode === 'MEMBER' ? 'main.200' : 'whiteAlpha.100'}
+                onClick={() => setMode(Mode.MEMBER)}
+                bgColor={mode === Mode.MEMBER ? 'main.200' : 'whiteAlpha.100'}
                 h={8}
                 alignItems="center"
                 justifyContent="center"
@@ -539,7 +550,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Text color="whiteAlpha.600" fontSize="xs">
                     CREATED BY
                   </Text>
-                  <UserDisplay address={questChain.createdBy.id} />
+                  {questChain.createdBy.id && (
+                    <UserDisplay address={questChain.createdBy.id} />
+                  )}
                 </Box>
               </Flex>
 
@@ -586,7 +599,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               <Flex>
                 {/* to be implemented eventually */}
                 {/* 
-                {mode === 'QUESTER' &&
+                {mode === Mode.QUESTER &&
                   progress.completeCount === 0 &&
                   progress.inReviewCount === 0 &&
                   progress.total !== 0 && (
@@ -605,7 +618,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       START PLAYING
                     </Button>
                   )} */}
-                {mode === 'MEMBER' && (
+                {mode === Mode.MEMBER && (
                   <NextLink
                     as={`/chain/${questChain.chainId}/${questChain.address}/review`}
                     href={`/chain/[chainId]/[address]/review`}
@@ -626,13 +639,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 )}
 
                 {/* Mint Tile */}
-                {canMint && (
+                {canMint && mode === Mode.QUESTER && (
                   <Flex pt={6} w="100%">
                     <MintNFTTile
                       {...{
-                        address: questChain.address,
-                        chainId: questChain.chainId,
-                        name: questChain.name,
+                        questChain,
                         onSuccess: refresh,
                         completed: questChain.quests.filter(q => !q.paused)
                           .length,
@@ -648,16 +659,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   <Spinner />
                 ) : (
                   <>
-                    <Flex justifyContent="space-between" w="full">
+                    <Flex
+                      justifyContent="space-between"
+                      w="full"
+                      alignItems="center"
+                    >
                       <Text fontSize={40} fontFamily="heading">
                         QUESTS
                       </Text>
-                      {mode === 'MEMBER' && (isAdmin || isEditor) && (
-                        <Button
-                          variant="ghost"
-                          onClick={onOpenCreateQuest}
-                          fontSize="xs"
-                        >
+                      {mode === Mode.MEMBER && (isAdmin || isEditor) && (
+                        <Button onClick={onOpenCreateQuest} fontSize="xs">
                           <AddIcon fontSize="sm" mr={2} />
                           Create Quest
                         </Button>
@@ -689,69 +700,57 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   separating the whole quest actions logic into its own component, so:
                   - edit quest
                   - upload proof */}
-                    {questChain.quests.map((quest, index) => (
-                      <Flex
-                        w="full"
-                        p={8}
-                        gap={3}
-                        borderRadius={10}
-                        align="stretch"
-                        bgColor={
-                          userStatus[quest.questId]?.status === 'pass'
-                            ? 'main.300'
-                            : userStatus[quest.questId]?.status === 'review'
-                            ? '#EFFF8F30'
-                            : 'whiteAlpha.100'
-                        }
-                        key={quest.questId}
-                        justifyContent="space-between"
-                        position="relative"
-                      >
-                        {!(isEditingQuest && questEditId === quest.questId) && (
-                          <>
-                            {index + 1}.
-                            <Flex justifyContent="space-between" w="full">
-                              <CollapsableQuestDisplay
-                                {...quest}
-                                address={address}
-                                questChainAddress={questChain.address}
-                                chainId={questChain.chainId}
-                                userStatus={userStatus}
-                                refresh={refresh}
-                              />
-                              {mode === 'MEMBER' && (isAdmin || isEditor) && (
-                                <Button
-                                  variant="ghost"
-                                  onClick={() => {
+                    <Accordion allowMultiple w="full">
+                      {questChain.quests.map(
+                        ({ name, description, questId, paused }, index) =>
+                          name &&
+                          description && (
+                            <>
+                              {!(isEditingQuest && questEditId === questId) && (
+                                <Quest
+                                  key={questId}
+                                  name={`${index + 1}. ${name}`}
+                                  description={description}
+                                  bgColor={
+                                    userStatus[questId]?.status === 'pass'
+                                      ? 'main.300'
+                                      : userStatus[questId]?.status === 'review'
+                                      ? '#EFFF8F30'
+                                      : 'whiteAlpha.100'
+                                  }
+                                  onEditQuest={() => {
                                     setEditingQuest(true);
-                                    setQuestEditId(quest.questId);
+                                    setQuestEditId(questId);
                                   }}
-                                  fontSize="xs"
-                                  position="absolute"
-                                  right={20}
-                                  margin={0}
-                                  top={6}
-                                >
-                                  <Image src={Edit.src} alt="Edit" mr={3} />
-                                  Edit
-                                </Button>
+                                  isMember={
+                                    mode === Mode.MEMBER &&
+                                    (isAdmin || isEditor)
+                                  }
+                                  questId={questId}
+                                  questChain={questChain}
+                                  userStatus={userStatus}
+                                  refresh={refresh}
+                                />
                               )}
-                            </Flex>
-                          </>
-                        )}
 
-                        {/* Edit quest components */}
-                        {isEditingQuest && questEditId === quest.questId && (
-                          <QuestEditor
-                            refresh={refresh}
-                            questChainId={questChain.chainId}
-                            questChainAddress={questChain.address}
-                            quest={quest}
-                            setEditingQuest={setEditingQuest}
-                          />
-                        )}
-                      </Flex>
-                    ))}
+                              {/* Edit quest components */}
+                              {isEditingQuest && questEditId === questId && (
+                                <QuestEditor
+                                  refresh={refresh}
+                                  questChain={questChain}
+                                  quest={{
+                                    name,
+                                    description,
+                                    questId,
+                                    paused,
+                                  }}
+                                  setEditingQuest={setEditingQuest}
+                                />
+                              )}
+                            </>
+                          ),
+                      )}
+                    </Accordion>
                   </>
                 )}
               </VStack>
@@ -778,22 +777,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 />
               </Flex>
               {/* Quest Chain Members */}
-              <Flex flexDir="column" px={5}>
-                <Text fontFamily="heading" fontSize="xl" mb={5}>
-                  Members
-                </Text>
-                <Divider />
-                <MemberSection role="OWNERS" addresses={owners} />
-                {admins.length !== 0 && (
-                  <MemberSection role="ADMINS" addresses={admins} />
-                )}
-                {editors.length !== 0 && (
-                  <MemberSection role="EDITORS" addresses={editors} />
-                )}
-                {reviewers.length !== 0 && (
-                  <MemberSection role="REVIEWERS" addresses={reviewers} />
-                )}
-              </Flex>
+              <Members
+                owners={owners}
+                admins={admins}
+                editors={editors}
+                reviewers={reviewers}
+              />
             </Flex>
           </Flex>
         </Flex>
@@ -823,7 +812,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
 }) => (
   <>
     {/* Actions */}
-    {mode === 'MEMBER' &&
+    {mode === Mode.MEMBER &&
       chainId &&
       chainId === questChain.chainId &&
       (isAdmin || isOwner) && (
@@ -856,6 +845,13 @@ type RolesProps = {
   addresses: string[];
 };
 
+type MembersProps = {
+  owners: string[];
+  admins: string[];
+  editors: string[];
+  reviewers: string[];
+};
+
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
   <>
     <Flex justify="space-between" alignItems="center" my={3} pl={4}>
@@ -863,13 +859,35 @@ const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
       <Flex flexDir="column">
         {addresses.map(address => (
           <Box key={address}>
-            <UserDisplay address={address} />
+            {address && <UserDisplay address={address} />}
           </Box>
         ))}
       </Flex>
     </Flex>
     <Divider />
   </>
+);
+
+export const Members: React.FC<MembersProps> = ({
+  owners,
+  admins,
+  editors,
+  reviewers,
+}) => (
+  <Flex flexDir="column" px={5} width="full">
+    <Text fontFamily="heading" fontSize="xl" mb={5}>
+      Members
+    </Text>
+    <Divider />
+    <MemberSection role="OWNERS" addresses={owners} />
+    {admins.length !== 0 && <MemberSection role="ADMINS" addresses={admins} />}
+    {editors.length !== 0 && (
+      <MemberSection role="EDITORS" addresses={editors} />
+    )}
+    {reviewers.length !== 0 && (
+      <MemberSection role="REVIEWERS" addresses={reviewers} />
+    )}
+  </Flex>
 );
 
 type QueryParams = { address: string; chainId: string };
