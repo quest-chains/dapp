@@ -99,8 +99,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     let tid;
     try {
       const { factoryAddress, paymentToken, upgradeFee } = globalInfo[chainId];
-      const tokenContract: contracts.V1.IERC20 =
-        contracts.V1.IERC20__factory.connect(
+      const tokenContract: contracts.V1.IERC20Token =
+        contracts.V1.IERC20Token__factory.connect(
           paymentToken.address,
           provider.getSigner(),
         );
