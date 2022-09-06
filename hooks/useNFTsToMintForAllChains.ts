@@ -1,13 +1,12 @@
+import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { getStatusForUser } from '@/graphql/statusForUser';
-import { QuestChainInfoFragment } from '@/graphql/types';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 import { useRefresh } from './useRefresh';
 
 export type UserNFTStatus = {
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
   completed: number;
 };
 
@@ -37,7 +36,7 @@ export const useNFTsToMintForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            getStatusForUser(chainId, address ?? ''),
+            graphql.getStatusForUser(chainId, address ?? ''),
           ),
         );
         if (!isMounted) return;

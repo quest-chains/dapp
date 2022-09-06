@@ -1,11 +1,9 @@
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Input, useDisclosure } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain as QuestChainV0 } from '@/types/v0';
-import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -20,8 +18,8 @@ type ArrayElement<ArrayType extends readonly unknown[]> =
 
 type QuestEditorProps = {
   refresh: () => void;
-  questChain: QuestChainInfoFragment;
-  quest: ArrayElement<QuestChainInfoFragment['quests']>;
+  questChain: graphql.QuestChainInfoFragment;
+  quest: ArrayElement<graphql.QuestChainInfoFragment['quests']>;
   setEditingQuest: (sth: boolean) => void;
 };
 
@@ -77,8 +75,11 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
         );
 
         const tx = await (questChain.version === '1'
-          ? (contract as QuestChainV1).editQuests([questId], [details])
-          : (contract as QuestChainV0).editQuest(questId, details));
+          ? (contract as contracts.V1.QuestChain).editQuests(
+              [questId],
+              [details],
+            )
+          : (contract as contracts.V0.QuestChain).editQuest(questId, details));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);

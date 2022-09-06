@@ -16,15 +16,15 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import NextLink from 'next/link';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { QuestChainReviewInfoFragment } from '@/graphql/types';
 import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllChains';
 import { useWallet } from '@/web3';
 
 const QuestChainStatusView: React.FC<{
-  questChain: QuestChainReviewInfoFragment;
+  questChain: graphql.QuestChainReviewInfoFragment;
 }> = ({ questChain: chain }) => (
   <NextLink
     as={`/chain/${chain.chainId}/${chain.address}/review`}

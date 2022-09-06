@@ -18,13 +18,13 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
 import NFTForm2D from '@/components/CreateChain/NFTForm2D';
 import NFTForm3D from '@/components/CreateChain/NFTForm3D';
 import NFTFormCustom from '@/components/CreateChain/NFTFormCustom';
-import { GlobalInfoFragment } from '@/graphql/types';
 import { getAddressUrl, useWallet } from '@/web3';
 
 const NFTForm: React.FC<{
@@ -34,7 +34,7 @@ const NFTForm: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
   chainName: string;
-  globalInfo: Record<string, GlobalInfoFragment>;
+  globalInfo: Record<string, graphql.GlobalInfoFragment>;
 }> = ({ onSubmit, chainName, globalInfo }) => {
   const [tab, setTab] = useState('2D'); // 3D, custom
   const [didOpenPremiumTab, setDidOpenPremiumTab] = useState(false);
