@@ -134,10 +134,10 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
         return;
 
-      let tid = toast.loading('Uploading Quests, please wait...');
-
+      let tid;
       let questsDetails: string[] = [];
       if (quests.length) {
+        tid = toast.loading('Uploading Quests, please wait...');
         const metadata: Metadata[] = quests;
         const hashes = await Promise.all(
           metadata.map(quest => uploadMetadata(quest)),
