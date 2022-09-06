@@ -1,11 +1,11 @@
 import { Box, Flex, Image, Text } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
+import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
 import { randomBytes } from 'ethers/lib/utils';
-import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
@@ -16,6 +16,7 @@ import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -24,10 +25,16 @@ import { isSupportedNetwork, useWallet } from '@/web3';
 
 import { Members } from './chain/[chainId]/[address]';
 
-type Props = InferGetStaticPropsType<typeof getStaticProps>;
-
-const Create: React.FC<Props> = ({ globalInfo }) => {
+const Create: React.FC = () => {
   const router = useRouter();
+
+  const [globalInfo, setGlobalInfo] = useState<
+    Record<string, GlobalInfoFragment>
+  >({});
+
+  useEffect(() => {
+    graphql.getGlobalInfo().then(setGlobalInfo);
+  }, []);
 
   const { address, provider, chainId } = useWallet();
 
@@ -221,6 +228,9 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     setNFTUrl('');
   };
 
+  // temporary fix to wait till globalInfo is loaded
+  if (!globalInfo[SUPPORTED_NETWORKS[0]]) return null;
+
   return (
     <Flex
       w="full"
@@ -384,13 +394,5 @@ const Step: React.FC<{
 const Step2 = () => <Step number={2} title="Chain completion NFT" />;
 const Step3 = () => <Step number={3} title="Members" />;
 const Step4 = () => <Step number={4} title="Quests" />;
-
-export const getStaticProps = async () => {
-  return {
-    props: {
-      globalInfo: await graphql.getGlobalInfo(),
-    },
-  };
-};
 
 export default Create;
