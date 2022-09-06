@@ -41,9 +41,6 @@ output
 # typescript
 *.tsbuildinfo
 
-# graphql
-graphql/types.ts
-
 # yarn
 .yarn
 .yarnrc.yml

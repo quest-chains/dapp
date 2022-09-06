@@ -15,6 +15,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { Framework } from '@superfluid-finance/sdk-core';
 import {
   Field,
@@ -29,9 +30,6 @@ import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
-import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain as QuestChainV0 } from '@/types/v0';
-import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -49,7 +47,7 @@ interface FormValues {
 const ENABLE_SUPERFLUID = false;
 
 export const AddQuestBlock: React.FC<{
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
   refresh: () => void;
   onClose: () => void;
 }> = ({ questChain, refresh, onClose }) => {
@@ -126,8 +124,8 @@ export const AddQuestBlock: React.FC<{
         );
 
         const tx = await (questChain.version === '1'
-          ? (contract as QuestChainV1).createQuests([details])
-          : (contract as QuestChainV0).createQuest(details));
+          ? (contract as contracts.V1.QuestChain).createQuests([details])
+          : (contract as contracts.V0.QuestChain).createQuest(details));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);

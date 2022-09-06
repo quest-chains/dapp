@@ -1,20 +1,19 @@
+import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { getCreatedQuestChains } from '@/graphql/questChains';
-import { QuestChainInfoFragment } from '@/graphql/types';
 import { useRefresh } from '@/hooks/useRefresh';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { useWallet } from '@/web3';
 
 export const useLatestCreatedQuestChainsDataForAllChains = (): {
-  questChains: QuestChainInfoFragment[];
+  questChains: graphql.QuestChainInfoFragment[];
   refresh: () => void;
   fetching: boolean;
   error: unknown;
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
 
   const { address } = useWallet();
   const [refreshCount, refresh] = useRefresh();
@@ -27,7 +26,7 @@ export const useLatestCreatedQuestChainsDataForAllChains = (): {
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            getCreatedQuestChains(chainId, address),
+            graphql.getCreatedQuestChains(chainId, address),
           ),
         );
         if (!isMounted) return;

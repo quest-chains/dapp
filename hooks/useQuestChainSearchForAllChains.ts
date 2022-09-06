@@ -1,7 +1,6 @@
+import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { getQuestChainsFromSearch } from '@/graphql/questChains';
-import { QuestChainInfoFragment } from '@/graphql/types';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestChainSearchForAllChains = (
@@ -9,11 +8,11 @@ export const useQuestChainSearchForAllChains = (
 ): {
   error: unknown;
   fetching: boolean;
-  results: QuestChainInfoFragment[];
+  results: graphql.QuestChainInfoFragment[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -22,7 +21,7 @@ export const useQuestChainSearchForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            getQuestChainsFromSearch(chainId, search),
+            graphql.getQuestChainsFromSearch(chainId, search),
           ),
         );
         if (!isMounted) return;

@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/rules-of-hooks, react-hooks/exhaustive-deps */
+import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { getQuestChainsToReview } from '@/graphql/questReviews';
-import { QuestChainReviewInfoFragment } from '@/graphql/types';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestsToReviewForAllChains = (
@@ -10,11 +8,13 @@ export const useQuestsToReviewForAllChains = (
 ): {
   error: unknown;
   fetching: boolean;
-  results: QuestChainReviewInfoFragment[];
+  results: graphql.QuestChainReviewInfoFragment[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<QuestChainReviewInfoFragment[]>([]);
+  const [results, setResults] = useState<
+    graphql.QuestChainReviewInfoFragment[]
+  >([]);
 
   useEffect(() => {
     if (!address) {
@@ -29,7 +29,7 @@ export const useQuestsToReviewForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            getQuestChainsToReview(chainId, address),
+            graphql.getQuestChainsToReview(chainId, address),
           ),
         );
         if (!isMounted) return;

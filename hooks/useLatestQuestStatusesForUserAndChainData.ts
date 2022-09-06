@@ -1,7 +1,5 @@
+import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
-
-import { getStatusesForUserAndChain } from '@/graphql/questStatuses';
-import { QuestStatusInfoFragment } from '@/graphql/types';
 
 import { useRefresh } from './useRefresh';
 
@@ -10,16 +8,16 @@ export const useLatestQuestStatusesForUserAndChainData = (
   chain: string | undefined | null,
   user: string | undefined | null,
 ): {
-  questStatuses: QuestStatusInfoFragment[];
+  questStatuses: graphql.QuestStatusInfoFragment[];
   refresh: () => void;
   fetching: boolean;
   error: unknown;
 } => {
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<unknown>();
-  const [questStatuses, setQuestStatuses] = useState<QuestStatusInfoFragment[]>(
-    [],
-  );
+  const [questStatuses, setQuestStatuses] = useState<
+    graphql.QuestStatusInfoFragment[]
+  >([]);
 
   const [refreshCount, refresh] = useRefresh();
 
@@ -29,7 +27,11 @@ export const useLatestQuestStatusesForUserAndChainData = (
       if (!chainId || !chain || !user) return;
       try {
         setFetching(true);
-        const data = await getStatusesForUserAndChain(chainId, chain, user);
+        const data = await graphql.getStatusesForUserAndChain(
+          chainId,
+          chain,
+          user,
+        );
         if (!isMounted) return;
         setQuestStatuses(data);
       } catch (err) {

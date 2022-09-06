@@ -14,15 +14,15 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import React from 'react';
 
-import { UserStatus } from '@/graphql/statusForUser';
 import { useUserProgressForAllChains } from '@/hooks/useUserProgressForAllChains';
 import { useWallet } from '@/web3';
 
 import { QuestChainTile } from '../QuestChainTile';
 
-const QuestChainWithProgress: React.FC<{ userStatus: UserStatus }> = ({
+const QuestChainWithProgress: React.FC<{ userStatus: graphql.UserStatus }> = ({
   userStatus: {
     chain: { chainId, address, name, description, imageUrl },
     completed,

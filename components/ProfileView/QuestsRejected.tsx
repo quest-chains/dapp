@@ -15,14 +15,14 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 
 import { UploadProof } from '@/components/UploadProof';
-import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
 import { useWallet } from '@/web3';
 
 export const QuestRejectedStatus: React.FC<{
-  statusInfo: QuestStatusInfoFragment;
+  statusInfo: graphql.QuestStatusInfoFragment;
   refresh: () => void;
 }> = ({ statusInfo, refresh }) => (
   <Box background="rgba(180, 83, 9, 0.3)" p={8} maxW="32rem">
