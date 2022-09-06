@@ -1,18 +1,16 @@
 import { Button, Image, Text, VStack } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import VictoryCupImage from '@/assets/victory-cup.svg';
-import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain as QuestChainV0 } from '@/types/v0';
-import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 type QuestChainTileProps = {
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
   completed: number;
   onSuccess?: () => void;
 };
@@ -40,8 +38,8 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
       );
 
       const tx = await (questChain.version === '1'
-        ? (contract as QuestChainV1).mintToken()
-        : (contract as QuestChainV0).mintToken(address));
+        ? (contract as contracts.V1.QuestChain).mintToken()
+        : (contract as contracts.V0.QuestChain).mintToken(address));
       toast.dismiss(tid);
       tid = handleTxLoading(tx.hash, questChain.chainId);
       const receipt = await tx.wait(1);

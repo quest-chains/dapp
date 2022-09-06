@@ -18,11 +18,11 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
-import { GlobalInfoFragment, QuestChainInfoFragment } from '@/graphql/types';
 import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
 import { getAddressUrl, useWallet } from '@/web3';
 
@@ -40,7 +40,7 @@ export const QuestsForm: React.FC<{
   approveTokens: () => void | Promise<void>;
   isApproved: boolean;
   goBackToNFTSelection: () => void;
-  globalInfo: Record<string, GlobalInfoFragment>;
+  globalInfo: Record<string, graphql.GlobalInfoFragment>;
 }> = ({
   globalInfo,
   onPublishQuestChain,
@@ -272,7 +272,7 @@ export const Quest: React.FC<{
   bgColor?: string;
   questId?: string;
   userStatus?: UserStatusType;
-  questChain?: QuestChainInfoFragment;
+  questChain?: graphql.QuestChainInfoFragment;
   refresh?: () => void;
   isCreatingChain?: boolean;
 }> = ({

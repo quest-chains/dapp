@@ -21,6 +21,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -33,16 +34,8 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
-import {
-  getQuestChainAddresses,
-  getQuestChainInfo,
-} from '@/graphql/questChains';
-import { getStatusesForChain } from '@/graphql/questStatuses';
-import { QuestStatusInfoFragment } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { QuestChain as QuestChainV0 } from '@/types/v0';
-import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -50,10 +43,13 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
+  graphql;
+
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const StatusDisplay: React.FC<{
-  review: QuestStatusInfoFragment;
+  review: graphql.QuestStatusInfoFragment;
   onSelect: (quest: ModalQuestType) => void;
   isDisabled: boolean;
 }> = ({ review, onSelect, isDisabled }) => {
@@ -237,13 +233,13 @@ const Review: React.FC<Props> = ({
             provider.getSigner(),
           );
           const tx = await (questChain.version === '1'
-            ? (contract as QuestChainV1).reviewProofs(
+            ? (contract as contracts.V1.QuestChain).reviewProofs(
                 [quest.userId],
                 [quest.questId],
                 [success],
                 [details],
               )
-            : (contract as QuestChainV0).reviewProof(
+            : (contract as contracts.V0.QuestChain).reviewProof(
                 quest.userId,
                 quest.questId,
                 success,
@@ -457,7 +453,7 @@ export const getStaticProps = async (
   const address = context.params?.address;
   const chainId = context.params?.chainId;
 
-  let questStatuses: QuestStatusInfoFragment[] = [];
+  let questStatuses: graphql.QuestStatusInfoFragment[] = [];
   let questChain = null;
   if (chainId && address) {
     try {

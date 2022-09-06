@@ -17,13 +17,11 @@ import {
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
-import { QuestChainInfoFragment } from '@/graphql/types';
-import { QuestChain as QuestChainV0 } from '@/types/v0';
-import { QuestChain as QuestChainV1 } from '@/types/v1';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -37,7 +35,7 @@ export const UploadProof: React.FC<{
   refresh: () => void;
   questId: string;
   name: string;
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
   profile?: boolean;
 }> = ({ refresh, questId, name, questChain, profile }) => {
   const { chainId, provider, address } = useWallet();
@@ -99,8 +97,14 @@ export const UploadProof: React.FC<{
         );
 
         const tx = await (questChain.version === '1'
-          ? (contract as QuestChainV1).submitProofs([questId], [details])
-          : (contract as QuestChainV0).submitProof(questId, details));
+          ? (contract as contracts.V1.QuestChain).submitProofs(
+              [questId],
+              [details],
+            )
+          : (contract as contracts.V0.QuestChain).submitProof(
+              questId,
+              details,
+            ));
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);

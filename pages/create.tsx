@@ -1,4 +1,6 @@
 import { Box, Flex, Image, Text } from '@chakra-ui/react';
+import { contracts, graphql } from '@quest-chains/sdk';
+import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
 import { randomBytes } from 'ethers/lib/utils';
 import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -14,14 +16,6 @@ import Step0 from '@/components/CreateChain/Step0';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
-import { getGlobalInfo } from '@/graphql/globalInfo';
-import {
-  IERC20 as IERC20V1,
-  IERC20__factory as IERC20V1__factory,
-  QuestChainFactory as QuestChainFactoryV1,
-  QuestChainFactory__factory as QuestChainFactoryV1__factory,
-} from '@/types/v1';
-import { QuestChainCommons } from '@/types/v1/contracts/QuestChainFactory';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -105,10 +99,11 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
     let tid;
     try {
       const { factoryAddress, paymentToken, upgradeFee } = globalInfo[chainId];
-      const tokenContract: IERC20V1 = IERC20V1__factory.connect(
-        paymentToken.address,
-        provider.getSigner(),
-      );
+      const tokenContract: contracts.V1.IERC20 =
+        contracts.V1.IERC20__factory.connect(
+          paymentToken.address,
+          provider.getSigner(),
+        );
       const tokenAllowance = await tokenContract.allowance(
         address,
         factoryAddress,
@@ -164,8 +159,8 @@ const Create: React.FC<Props> = ({ globalInfo }) => {
           quests: questsDetails,
           paused: startAsDisabled,
         };
-        const factoryContract: QuestChainFactoryV1 =
-          QuestChainFactoryV1__factory.connect(
+        const factoryContract: contracts.V1.QuestChainFactory =
+          contracts.V1.QuestChainFactory__factory.connect(
             factoryAddress,
             provider.getSigner(),
           );
@@ -393,7 +388,7 @@ const Step4 = () => <Step number={4} title="Quests" />;
 export const getStaticProps = async () => {
   return {
     props: {
-      globalInfo: await getGlobalInfo(),
+      globalInfo: await graphql.getGlobalInfo(),
     },
   };
 };

@@ -25,6 +25,7 @@ import {
   useTimeout,
   VStack,
 } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -44,11 +45,6 @@ import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { Role } from '@/components/RoleTag';
 import { UserDisplay } from '@/components/UserDisplay';
-import {
-  getQuestChainAddresses,
-  getQuestChainInfo,
-} from '@/graphql/questChains';
-import { QuestChainInfoFragment, Status } from '@/graphql/types';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -57,6 +53,8 @@ import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+const { getQuestChainAddresses, getQuestChainInfo } = graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -74,7 +72,7 @@ export type UserStatusType = {
       reviewer: string;
       accepted: boolean;
     }[];
-    status: Status;
+    status: graphql.Status;
   };
 };
 
@@ -253,7 +251,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
       Object.values(userStatus).length === questChain.quests.length &&
       Object.values(userStatus).reduce(
-        (t, v) => t && v.status === Status.Pass,
+        (t, v) => t && v.status === graphql.Status.Pass,
         true,
       ),
     [questChain, address, userStatus],
@@ -798,7 +796,7 @@ type ActionsAndImageProps = {
   onEdit: () => void;
   refresh: () => void;
   chainId: string | null | undefined;
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
 };
 
 const ActionsAndImage: React.FC<ActionsAndImageProps> = ({

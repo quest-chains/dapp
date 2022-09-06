@@ -1,15 +1,15 @@
 import { Button, Image } from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Power from '@/assets/Power.svg';
-import { QuestChainInfoFragment } from '@/graphql/types';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 export const QuestChainPauseStatus: React.FC<{
-  questChain: QuestChainInfoFragment;
+  questChain: graphql.QuestChainInfoFragment;
   refresh: () => void | Promise<void>;
 }> = ({ questChain, refresh }) => {
   const { provider, chainId } = useWallet();
