@@ -116,7 +116,7 @@ export const QuestsForm: React.FC<{
           alignItems="center"
           flexDir="column"
         >
-          <Accordion allowMultiple w="full">
+          <Accordion allowMultiple w="full" defaultIndex={[]}>
             {quests &&
               quests.map(({ name, description }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (

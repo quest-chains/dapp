@@ -94,7 +94,7 @@ export const globalStyles = css`
       background: #444444;
       border-radius: 0px;
     }
-    background: #0d1117;
+    background: #111312;
     overflow-x: hidden;
   }
   html,

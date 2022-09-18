@@ -1,4 +1,4 @@
-import { AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { AddIcon, CheckIcon, CloseIcon, InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Alert,
@@ -44,6 +44,7 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { Role } from '@/components/RoleTag';
+import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
@@ -594,7 +595,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   )}%`}
                 </Text>
               </Flex>
-              <Flex>
+              <Flex mb={12}>
                 {/* to be implemented eventually */}
                 {/* 
                 {mode === Mode.QUESTER &&
@@ -617,23 +618,34 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     </Button>
                   )} */}
                 {mode === Mode.MEMBER && (
-                  <NextLink
-                    as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                    href={`/chain/[chainId]/[address]/review`}
-                    passHref
+                  <Flex
+                    w="full"
+                    bgColor="rgba(29, 78, 216, 0.3)"
+                    p={6}
+                    borderRadius={3}
+                    justifyContent="space-between"
                   >
-                    <ChakraLink display="block" _hover={{}}>
-                      <Button
-                        borderWidth={1}
-                        borderColor="white"
-                        px={12}
-                        py={2}
-                        borderRadius="full"
-                      >
-                        REVIEW SUBMISSIONS
-                      </Button>
-                    </ChakraLink>
-                  </NextLink>
+                    <Flex justifyContent="center" alignItems="center">
+                      <InfoIcon mr={2} color="#3B82F6" />3 proof submissions are
+                      awaiting review Description
+                    </Flex>
+                    <NextLink
+                      as={`/chain/${questChain.chainId}/${questChain.address}/review`}
+                      href={`/chain/[chainId]/[address]/review`}
+                      passHref
+                    >
+                      <ChakraLink display="block" _hover={{}}>
+                        <SubmitButton
+                          fontSize={14}
+                          fontWeight="bold"
+                          height={10}
+                          px={6}
+                        >
+                          Review Submissions
+                        </SubmitButton>
+                      </ChakraLink>
+                    </NextLink>
+                  </Flex>
                 )}
 
                 {/* Mint Tile */}
@@ -698,7 +710,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   separating the whole quest actions logic into its own component, so:
                   - edit quest
                   - upload proof */}
-                    <Accordion allowMultiple w="full">
+                    <Accordion allowMultiple w="full" defaultIndex={[]}>
                       {questChain.quests.map(
                         ({ name, description, questId, paused }, index) =>
                           name &&
