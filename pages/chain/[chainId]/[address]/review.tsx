@@ -101,6 +101,16 @@ const Review: React.FC<Props> = ({
   const [rejecting, setRejecting] = useState(false);
   const [accepting, setAccepting] = useState(false);
 
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+
+  const setCheckedItem = (index: number) => {
+    checkedItems[index] = !checkedItems[index];
+    setCheckedItems([...checkedItems]);
+  };
+
+  const allChecked = checkedItems.every(Boolean);
+  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+
   const { provider, address, chainId } = useWallet();
 
   useEffect(() => {
@@ -396,7 +406,14 @@ const Review: React.FC<Props> = ({
                 bgColor="rgba(255, 255, 255, 0.06)"
                 px={8}
               >
-                <Checkbox py={3}></Checkbox>
+                <Checkbox
+                  py={3}
+                  isChecked={allChecked}
+                  isIndeterminate={isIndeterminate}
+                  onChange={e =>
+                    setCheckedItems(reviews.map(() => e.target.checked))
+                  }
+                ></Checkbox>
               </Flex>
               <Flex gap={4}>
                 <Select
@@ -440,12 +457,14 @@ const Review: React.FC<Props> = ({
             <TabPanels>
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
-                  {reviews.map(review => (
+                  {reviews.map((review, index) => (
                     <SubmissionTile
                       review={review}
                       onReview={onReview}
                       key={review.id}
                       isDisabled={chainId !== questChain?.chainId}
+                      checked={checkedItems[index]}
+                      onCheck={() => setCheckedItem(index)}
                     />
                   ))}
                 </Accordion>

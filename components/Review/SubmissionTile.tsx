@@ -41,7 +41,9 @@ export const SubmissionTile: React.FC<{
   review: ModalQuestType;
   onReview: (quest: any) => void;
   isDisabled: boolean;
-}> = ({ review, onReview, isDisabled }) => {
+  checked?: boolean;
+  onCheck?: () => void;
+}> = ({ review, onReview, isDisabled, checked, onCheck }) => {
   const {
     userId,
     questId,
@@ -84,7 +86,11 @@ export const SubmissionTile: React.FC<{
         <>
           <Flex alignItems="center" justifyContent="space-between" h={20}>
             <Flex>
-              <Checkbox pr={4}></Checkbox>
+              <Checkbox
+                isChecked={checked}
+                pr={4}
+                onChange={onCheck}
+              ></Checkbox>
               <Text fontWeight="bold">{`${1 + Number(questId)}. ${name}`}</Text>
             </Flex>
 
