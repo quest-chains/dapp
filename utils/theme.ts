@@ -94,6 +94,7 @@ export const globalStyles = css`
       background: #444444;
       border-radius: 0px;
     }
+    overflow-y: scroll;
     background: #111312;
     overflow-x: hidden;
   }
