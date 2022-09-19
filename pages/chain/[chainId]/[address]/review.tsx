@@ -1,16 +1,6 @@
-import {
-  ArrowBackIcon,
-  CheckIcon,
-  CloseIcon,
-  ExternalLinkIcon,
-  SmallCloseIcon,
-} from '@chakra-ui/icons';
+import { ArrowBackIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Checkbox,
@@ -19,9 +9,7 @@ import {
   FormLabel,
   HStack,
   IconButton,
-  Image,
   Link as ChakraLink,
-  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -29,10 +17,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Select,
   Spinner,
   Tab,
@@ -41,8 +25,6 @@ import {
   TabPanels,
   Tabs,
   Text,
-  Tooltip,
-  useBreakpointValue,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -51,22 +33,19 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
-import CommentCheck from '@/assets/CommentCheck.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
-import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { SubmissionTile } from '@/components/Review/SubmissionTile';
 import { SubmitButton } from '@/components/SubmitButton';
-import { UserDisplay } from '@/components/UserDisplay';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
-import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
@@ -75,284 +54,16 @@ const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-const StatusDisplay: React.FC<{
-  review: graphql.QuestStatusInfoFragment;
-  onSelect: (quest: ModalQuestType) => void;
-  isDisabled: boolean;
-}> = ({ review, onSelect, isDisabled }) => {
-  const { quest, submissions, user } = review;
-
-  const { description, externalUrl, timestamp } =
-    submissions[submissions.length - 1];
-
-  const date = new Date(timestamp * 1000);
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-
-  const url = ipfsUriToHttp(externalUrl);
-
-  const isSmallerScreen = useBreakpointValue({ base: true, md: false });
-  const {
-    onOpen: onOpenAccept,
-    onClose: onCloseAccept,
-    isOpen: isOpenAccept,
-  } = useDisclosure();
-  const {
-    onOpen: onOpenReject,
-    onClose: onCloseReject,
-    isOpen: isOpenReject,
-  } = useDisclosure();
-
-  return (
-    <AccordionItem
-      borderRadius={10}
-      mb={3}
-      border={0}
-      bgColor="#1E2025"
-      pl={8}
-      role="group"
-      pb={6}
-    >
-      {({ isExpanded }) => (
-        <>
-          <Flex alignItems="center" justifyContent="space-between" h={20}>
-            <Flex>
-              <Checkbox pr={4}></Checkbox>
-              <Text fontWeight="bold">{`${1 + Number(quest.questId)}. ${
-                quest.name
-              }`}</Text>
-            </Flex>
-
-            <Flex alignItems="center" gap={6}>
-              <UserDisplay address={user.id} />
-              <Text>
-                {year}-{month}-{day}
-              </Text>
-              <AccordionButton
-                py={6}
-                w="auto"
-                pr={8}
-                _focus-visible={{
-                  boxShadow: 'none',
-                }}
-              >
-                <AccordionIcon />
-              </AccordionButton>
-            </Flex>
-          </Flex>
-          {!isExpanded && (
-            <Flex w="full" position="relative" h={12}>
-              {url && (
-                <Link isExternal href={url} _hover={{}}>
-                  <Image src={url} alt="submission pic" maxH={12} pr={5} />
-                </Link>
-              )}
-              <Text
-                overflow="hidden"
-                textOverflow="ellipsis"
-                display="-webkit-box"
-                css={{
-                  '-webkit-line-clamp': '2',
-                  '-webkit-box-orient': 'vertical',
-                }}
-                mr={10}
-                h={12}
-              >
-                {description}
-              </Text>
-              <Flex
-                opacity={0}
-                _groupHover={{
-                  opacity: 1,
-                }}
-                transition="opacity 0.25s"
-                position="absolute"
-                right={6}
-                top={1}
-                height={12}
-                pl={14}
-                gap={2}
-                bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
-              >
-                <Popover
-                  isOpen={isOpenReject}
-                  onOpen={() => {
-                    onOpenReject();
-                    onCloseAccept();
-                  }}
-                  onClose={onCloseReject}
-                  isLazy
-                  lazyBehavior="keepMounted"
-                >
-                  <PopoverTrigger>
-                    <Button
-                      borderRadius={24}
-                      bgColor="gray.900"
-                      px={6}
-                      borderColor="gray.600"
-                      borderWidth={1}
-                    >
-                      <CloseIcon w={4} mr={2} />
-                      Reject
-                    </Button>
-                  </PopoverTrigger>
-
-                  <PopoverContent
-                    background="gray.900"
-                    borderColor="transparent"
-                    position="absolute"
-                    top="-57px"
-                    left="-74px"
-                    w="xxs"
-                  >
-                    <PopoverBody
-                      background="transparent"
-                      borderColor="transparent"
-                    >
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={onCloseReject}
-                      >
-                        <CloseIcon w={4} mr={2} />
-                        Reject
-                      </Button>
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={onCloseReject}
-                      >
-                        <Image
-                          src={CommentCheck.src}
-                          alt="comment check"
-                          mr={2}
-                          w={4}
-                        />
-                        Reject and comment
-                      </Button>
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-
-                <Popover
-                  isOpen={isOpenAccept}
-                  onOpen={() => {
-                    onCloseReject();
-                    onOpenAccept();
-                  }}
-                  onClose={onCloseAccept}
-                  isLazy
-                  lazyBehavior="keepMounted"
-                >
-                  <PopoverTrigger>
-                    <Button
-                      borderRadius={24}
-                      bgColor="gray.900"
-                      px={6}
-                      borderColor="gray.600"
-                      borderWidth={1}
-                    >
-                      <CheckIcon w={4} mr={2} />
-                      Accept
-                    </Button>
-                  </PopoverTrigger>
-
-                  <PopoverContent
-                    background="gray.900"
-                    borderColor="transparent"
-                    position="absolute"
-                    top="-57px"
-                    left="-74px"
-                    w="xxs"
-                  >
-                    <PopoverBody
-                      background="transparent"
-                      borderColor="transparent"
-                    >
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={onCloseAccept}
-                      >
-                        <CheckIcon w={4} mr={2} />
-                        Accept
-                      </Button>
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={onCloseAccept}
-                      >
-                        <Image
-                          src={CommentCheck.src}
-                          alt="comment check"
-                          mr={2}
-                          w={4}
-                        />
-                        Accept and comment
-                      </Button>
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-              </Flex>
-            </Flex>
-          )}
-
-          {isExpanded && (
-            <AccordionPanel pr={8} pl={0}>
-              <Flex w="full" fontSize="lg">
-                <MarkdownViewer markdown={description ?? ''} />
-              </Flex>
-              <HStack justify="space-between" w="full">
-                {url ? (
-                  <Link isExternal href={url} _hover={{}}>
-                    <SubmitButton
-                      color="white"
-                      rightIcon={<ExternalLinkIcon />}
-                    >
-                      {isSmallerScreen ? 'Attachments' : 'View Attachments'}
-                    </SubmitButton>
-                  </Link>
-                ) : (
-                  <Box />
-                )}
-                <Tooltip
-                  shouldWrapChildren
-                  label="Please switch to the correct chain"
-                  isDisabled={!isDisabled}
-                >
-                  <SubmitButton
-                    isDisabled={isDisabled}
-                    onClick={() =>
-                      onSelect({
-                        userId: user.id,
-                        questId: quest.questId,
-                        name: quest.name,
-                        description: quest.description,
-                      })
-                    }
-                  >
-                    {isSmallerScreen ? 'Review' : 'Review Submission'}
-                  </SubmitButton>
-                </Tooltip>
-              </HStack>
-            </AccordionPanel>
-          )}
-        </>
-      )}
-    </AccordionItem>
-  );
-};
-
 type ModalQuestType = {
+  id: string;
   userId: string;
   questId: string;
   name: string | null | undefined;
   description: string | null | undefined;
+  success?: boolean;
+  submissionDescription: string;
+  submissionUrl?: string;
+  submissionTimestamp: number;
 };
 
 const Review: React.FC<Props> = ({
@@ -364,8 +75,10 @@ const Review: React.FC<Props> = ({
     fetching: fetchingQuests,
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useDisclosure();
   const [quest, setQuest] = useState<ModalQuestType | null>(null);
+  const [reviews, setReviews] = useState<ModalQuestType[]>([]);
+  const [reviewed, setReviewed] = useState<ModalQuestType[] | null>([]);
 
   const {
     questStatuses,
@@ -390,10 +103,32 @@ const Review: React.FC<Props> = ({
 
   const { provider, address, chainId } = useWallet();
 
-  const reviews = useMemo(() => {
-    if (questStatuses) return questStatuses.filter(q => q.status === 'review');
-    return [];
-  }, [questStatuses]);
+  useEffect(() => {
+    if (questStatuses) {
+      setReviews(
+        questStatuses
+          .filter(q => q.status === 'review')
+          .filter(q =>
+            reviewed ? reviewed?.every(review => review.id !== q.id) : true,
+          )
+          .map(q => ({
+            id: q.id,
+            userId: q.user.id,
+            questId: q.quest.questId,
+            name: q.quest.name,
+            description: q.quest.description,
+            submissionDescription: String(
+              q.submissions[q.submissions.length - 1].description,
+            ),
+            submissionUrl:
+              q.submissions[q.submissions.length - 1]?.externalUrl || undefined,
+            submissionTimestamp: Number(
+              q.submissions[q.submissions.length - 1].timestamp,
+            ),
+          })),
+      );
+    } else setReviews([]);
+  }, [questStatuses, reviewed]);
 
   const [reviewDescription, setReviewDescription] = useState('');
   const [myFiles, setMyFiles] = useState<File[]>([]);
@@ -425,12 +160,11 @@ const Review: React.FC<Props> = ({
     onClose();
   }, [onClose]);
 
-  const onSelect = useCallback(
+  const onReview = useCallback(
     (selected: ModalQuestType) => {
-      setQuest(selected);
-      onOpen();
+      setReviewed((reviewed || []).concat(selected));
     },
-    [onOpen],
+    [reviewed],
   );
 
   const onSubmit = useCallback(
@@ -613,7 +347,7 @@ const Review: React.FC<Props> = ({
                   ml={2}
                   fontSize={11}
                 >
-                  {0}
+                  {reviewed?.length || 0}
                 </Text>
               </Tab>
               <Tab
@@ -707,16 +441,28 @@ const Review: React.FC<Props> = ({
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
                   {reviews.map(review => (
-                    <StatusDisplay
+                    <SubmissionTile
                       review={review}
-                      onSelect={onSelect}
+                      onReview={onReview}
                       key={review.id}
                       isDisabled={chainId !== questChain?.chainId}
                     />
                   ))}
                 </Accordion>
               </TabPanel>
-              <TabPanel>Reviewed</TabPanel>
+              <TabPanel>
+                <Accordion allowMultiple defaultIndex={[]}>
+                  {reviewed &&
+                    reviewed.map(review => (
+                      <SubmissionTile
+                        review={review}
+                        onReview={onReview}
+                        key={review.id}
+                        isDisabled={chainId !== questChain?.chainId}
+                      />
+                    ))}
+                </Accordion>
+              </TabPanel>
               <TabPanel>Submitted</TabPanel>
               <TabPanel>All</TabPanel>
             </TabPanels>
