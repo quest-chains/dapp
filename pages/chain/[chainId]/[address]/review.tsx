@@ -29,6 +29,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   Spinner,
   Tab,
@@ -51,6 +55,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
+import CommentCheck from '@/assets/CommentCheck.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
@@ -88,6 +93,16 @@ const StatusDisplay: React.FC<{
   const url = ipfsUriToHttp(externalUrl);
 
   const isSmallerScreen = useBreakpointValue({ base: true, md: false });
+  const {
+    onOpen: onOpenAccept,
+    onClose: onCloseAccept,
+    isOpen: isOpenAccept,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenReject,
+    onClose: onCloseReject,
+    isOpen: isOpenReject,
+  } = useDisclosure();
 
   return (
     <AccordionItem
@@ -160,26 +175,129 @@ const StatusDisplay: React.FC<{
                 gap={2}
                 bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
               >
-                <Button
-                  borderRadius={24}
-                  bgColor="gray.900"
-                  px={6}
-                  borderColor="gray.600"
-                  borderWidth={1}
+                <Popover
+                  isOpen={isOpenReject}
+                  onOpen={() => {
+                    onOpenReject();
+                    onCloseAccept();
+                  }}
+                  onClose={onCloseReject}
+                  isLazy
+                  lazyBehavior="keepMounted"
                 >
-                  <CloseIcon w={4} mr={2} />
-                  Reject
-                </Button>
-                <Button
-                  borderRadius={24}
-                  bgColor="gray.900"
-                  px={6}
-                  borderColor="gray.600"
-                  borderWidth={1}
+                  <PopoverTrigger>
+                    <Button
+                      borderRadius={24}
+                      bgColor="gray.900"
+                      px={6}
+                      borderColor="gray.600"
+                      borderWidth={1}
+                    >
+                      <CloseIcon w={4} mr={2} />
+                      Reject
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent
+                    background="gray.900"
+                    borderColor="transparent"
+                    position="absolute"
+                    top="-57px"
+                    left="-74px"
+                    w="xxs"
+                  >
+                    <PopoverBody
+                      background="transparent"
+                      borderColor="transparent"
+                    >
+                      <Button
+                        borderRadius={24}
+                        bgColor="gray.900"
+                        px={6}
+                        onClick={onCloseReject}
+                      >
+                        <CloseIcon w={4} mr={2} />
+                        Reject
+                      </Button>
+                      <Button
+                        borderRadius={24}
+                        bgColor="gray.900"
+                        px={6}
+                        onClick={onCloseReject}
+                      >
+                        <Image
+                          src={CommentCheck.src}
+                          alt="comment check"
+                          mr={2}
+                          w={4}
+                        />
+                        Reject and comment
+                      </Button>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+
+                <Popover
+                  isOpen={isOpenAccept}
+                  onOpen={() => {
+                    onCloseReject();
+                    onOpenAccept();
+                  }}
+                  onClose={onCloseAccept}
+                  isLazy
+                  lazyBehavior="keepMounted"
                 >
-                  <CheckIcon w={4} mr={2} />
-                  Accept
-                </Button>
+                  <PopoverTrigger>
+                    <Button
+                      borderRadius={24}
+                      bgColor="gray.900"
+                      px={6}
+                      borderColor="gray.600"
+                      borderWidth={1}
+                    >
+                      <CheckIcon w={4} mr={2} />
+                      Accept
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent
+                    background="gray.900"
+                    borderColor="transparent"
+                    position="absolute"
+                    top="-57px"
+                    left="-74px"
+                    w="xxs"
+                  >
+                    <PopoverBody
+                      background="transparent"
+                      borderColor="transparent"
+                    >
+                      <Button
+                        borderRadius={24}
+                        bgColor="gray.900"
+                        px={6}
+                        onClick={onCloseAccept}
+                      >
+                        <CheckIcon w={4} mr={2} />
+                        Accept
+                      </Button>
+                      <Button
+                        borderRadius={24}
+                        bgColor="gray.900"
+                        px={6}
+                        onClick={onCloseAccept}
+                      >
+                        <Image
+                          src={CommentCheck.src}
+                          alt="comment check"
+                          mr={2}
+                          w={4}
+                        />
+                        Accept and comment
+                      </Button>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
               </Flex>
             </Flex>
           )}
