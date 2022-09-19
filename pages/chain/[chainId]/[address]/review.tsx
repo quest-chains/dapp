@@ -1,12 +1,26 @@
-import { ExternalLinkIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import {
+  ArrowBackIcon,
+  CheckIcon,
+  CloseIcon,
+  ExternalLinkIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
+  Checkbox,
   Flex,
   FormControl,
   FormLabel,
   HStack,
   IconButton,
+  Image,
+  Link as ChakraLink,
   Link,
   Modal,
   ModalBody,
@@ -15,8 +29,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
+  Tooltip,
   useBreakpointValue,
   useDisclosure,
   VStack,
@@ -24,14 +45,15 @@ import {
 import { contracts, graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
-import { CollapsableText } from '@/components/CollapsableText';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
@@ -55,59 +77,156 @@ const StatusDisplay: React.FC<{
 }> = ({ review, onSelect, isDisabled }) => {
   const { quest, submissions, user } = review;
 
-  const { description, externalUrl } = submissions[submissions.length - 1];
+  const { description, externalUrl, timestamp } =
+    submissions[submissions.length - 1];
+
+  const date = new Date(timestamp * 1000);
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
 
   const url = ipfsUriToHttp(externalUrl);
 
   const isSmallerScreen = useBreakpointValue({ base: true, md: false });
 
   return (
-    <VStack
-      w="100%"
-      boxShadow="inset 0px 0px 0px 1px #AD90FF"
-      p={8}
-      spacing={2}
-      borderRadius={20}
-      align="stretch"
+    <AccordionItem
+      borderRadius={10}
+      mb={3}
+      border={0}
+      bgColor="#1E2025"
+      pl={8}
+      role="group"
+      pb={6}
     >
-      <HStack align="flex-start" justify="space-between" w="100%">
-        <CollapsableText title={quest.name}>
-          <Box mt={2} color="white">
-            <MarkdownViewer markdown={description ?? ''} />
-          </Box>
-        </CollapsableText>
-        <UserDisplay address={user.id} />
-      </HStack>
-      <Flex w="100%" fontSize="lg">
-        <MarkdownViewer markdown={description ?? ''} />
-      </Flex>
-      <HStack justify="space-between" w="100%" pt={4}>
-        {url ? (
-          <Link isExternal href={url} _hover={{}}>
-            <SubmitButton color="white" rightIcon={<ExternalLinkIcon />}>
-              {isSmallerScreen ? 'Attachments' : 'View Attachments'}
-            </SubmitButton>
-          </Link>
-        ) : (
-          <Box />
-        )}
-        <SubmitButton
-          borderColor="rejected"
-          // color="rejected"
-          isDisabled={isDisabled}
-          onClick={() =>
-            onSelect({
-              userId: user.id,
-              questId: quest.questId,
-              name: quest.name,
-              description: quest.description,
-            })
-          }
-        >
-          {isSmallerScreen ? 'Review' : 'Review Submission'}
-        </SubmitButton>
-      </HStack>
-    </VStack>
+      {({ isExpanded }) => (
+        <>
+          <Flex alignItems="center" justifyContent="space-between" h={20}>
+            <Flex>
+              <Checkbox pr={4}></Checkbox>
+              <Text fontWeight="bold">{`${1 + Number(quest.questId)}. ${
+                quest.name
+              }`}</Text>
+            </Flex>
+
+            <Flex alignItems="center" gap={6}>
+              <UserDisplay address={user.id} />
+              <Text>
+                {year}-{month}-{day}
+              </Text>
+              <AccordionButton
+                py={6}
+                w="auto"
+                pr={8}
+                _focus-visible={{
+                  boxShadow: 'none',
+                }}
+              >
+                <AccordionIcon />
+              </AccordionButton>
+            </Flex>
+          </Flex>
+          {!isExpanded && (
+            <Flex w="full" position="relative" h={12}>
+              {url && (
+                <Link isExternal href={url} _hover={{}}>
+                  <Image src={url} alt="submission pic" maxH={12} pr={5} />
+                </Link>
+              )}
+              <Text
+                overflow="hidden"
+                textOverflow="ellipsis"
+                display="-webkit-box"
+                css={{
+                  '-webkit-line-clamp': '2',
+                  '-webkit-box-orient': 'vertical',
+                }}
+                mr={10}
+                h={12}
+              >
+                {description}
+              </Text>
+              <Flex
+                opacity={0}
+                _groupHover={{
+                  opacity: 1,
+                }}
+                transition="opacity 0.25s"
+                position="absolute"
+                right={6}
+                top={1}
+                height={12}
+                pl={14}
+                gap={2}
+                bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+              >
+                <Button
+                  borderRadius={24}
+                  bgColor="gray.900"
+                  px={6}
+                  borderColor="gray.600"
+                  borderWidth={1}
+                >
+                  <CloseIcon w={4} mr={2} />
+                  Reject
+                </Button>
+                <Button
+                  borderRadius={24}
+                  bgColor="gray.900"
+                  px={6}
+                  borderColor="gray.600"
+                  borderWidth={1}
+                >
+                  <CheckIcon w={4} mr={2} />
+                  Accept
+                </Button>
+              </Flex>
+            </Flex>
+          )}
+
+          {isExpanded && (
+            <AccordionPanel pr={8} pl={0}>
+              <Flex w="full" fontSize="lg">
+                <MarkdownViewer markdown={description ?? ''} />
+              </Flex>
+              <HStack justify="space-between" w="full">
+                {url ? (
+                  <Link isExternal href={url} _hover={{}}>
+                    <SubmitButton
+                      color="white"
+                      rightIcon={<ExternalLinkIcon />}
+                    >
+                      {isSmallerScreen ? 'Attachments' : 'View Attachments'}
+                    </SubmitButton>
+                  </Link>
+                ) : (
+                  <Box />
+                )}
+                <Tooltip
+                  shouldWrapChildren
+                  label="Please switch to the correct chain"
+                  isDisabled={!isDisabled}
+                >
+                  <SubmitButton
+                    isDisabled={isDisabled}
+                    onClick={() =>
+                      onSelect({
+                        userId: user.id,
+                        questId: quest.questId,
+                        name: quest.name,
+                        description: quest.description,
+                      })
+                    }
+                  >
+                    {isSmallerScreen ? 'Review' : 'Review Submission'}
+                  </SubmitButton>
+                </Tooltip>
+              </HStack>
+            </AccordionPanel>
+          )}
+        </>
+      )}
+    </AccordionItem>
   );
 };
 
@@ -305,35 +424,185 @@ const Review: React.FC<Props> = ({
         </title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <VStack w="100%" align="flex-start" color="main">
-        <Text fontSize="2xl" fontWeight="bold">
-          {questChain.name}
-        </Text>
+      <Flex w="full">
+        <NextLink
+          as={`/chain/${questChain.chainId}/${questChain.address}`}
+          href="/chain/[chainId]/[address]"
+          passHref
+        >
+          <ChakraLink display="block" _hover={{}} w="full">
+            <Flex alignItems="center" _hover={{ textDecor: 'underline' }}>
+              <ArrowBackIcon mr={2} />
+              <Text fontSize={14}>Back to quest chain details</Text>
+            </Flex>
+          </ChakraLink>
+        </NextLink>
+      </Flex>
+      <VStack w="100%" align="flex-start">
+        <Flex flexDirection="column" mb={8}>
+          <Text
+            fontSize="5xl"
+            fontWeight="bold"
+            lineHeight="3.5rem"
+            fontFamily="heading"
+            mb={3}
+          >
+            {questChain.name}
+          </Text>
+          <Box>
+            <NetworkDisplay chainId={questChain.chainId} />
+          </Box>
+        </Flex>
       </VStack>
       <VStack w="100%" spacing={6}>
         {fetching ? (
           <Spinner color="main" />
         ) : (
-          <>
-            <Text
-              fontSize={20}
-              textTransform="uppercase"
-              color="white"
-              w="100%"
-            >
-              {`${reviews.length} Quest Submission${
-                reviews.length === 1 ? '' : 's'
-              } found`}
-            </Text>
-            {reviews.map(review => (
-              <StatusDisplay
-                review={review}
-                onSelect={onSelect}
-                key={review.id}
-                isDisabled={chainId !== questChain?.chainId}
-              />
-            ))}
-          </>
+          <Tabs w="full" p={0}>
+            <TabList>
+              <Tab
+                color="gray.500"
+                _selected={{
+                  color: 'blue.50',
+                  borderBottom: 'solid 2px white',
+                }}
+              >
+                Awaiting review{' '}
+                <Text
+                  bgColor="whiteAlpha.300"
+                  borderRadius={10}
+                  py="2px"
+                  px={1.5}
+                  ml={2}
+                  fontSize={11}
+                >
+                  {reviews.length}
+                </Text>
+              </Tab>
+              <Tab
+                color="gray.500"
+                _selected={{
+                  color: 'blue.50',
+                  borderBottom: 'solid 2px white',
+                }}
+              >
+                Reviewed
+                <Text
+                  bgColor="whiteAlpha.300"
+                  borderRadius={10}
+                  py="2px"
+                  px={1.5}
+                  ml={2}
+                  fontSize={11}
+                >
+                  {0}
+                </Text>
+              </Tab>
+              <Tab
+                color="gray.500"
+                _selected={{
+                  color: 'blue.50',
+                  borderBottom: 'solid 2px white',
+                }}
+              >
+                Submitted
+                <Text
+                  bgColor="whiteAlpha.300"
+                  borderRadius={10}
+                  py="2px"
+                  px={1.5}
+                  ml={2}
+                  fontSize={11}
+                >
+                  {0}
+                </Text>
+              </Tab>
+              <Tab
+                color="gray.500"
+                _selected={{
+                  color: 'blue.50',
+                  borderBottom: 'solid 2px white',
+                }}
+              >
+                All
+                <Text
+                  bgColor="whiteAlpha.300"
+                  borderRadius={10}
+                  py="2px"
+                  px={1.5}
+                  ml={2}
+                  fontSize={11}
+                >
+                  {0}
+                </Text>
+              </Tab>
+            </TabList>
+
+            <Flex py={4} w="full" justifyContent="space-between">
+              <Flex
+                borderRadius={24}
+                bgColor="rgba(255, 255, 255, 0.06)"
+                px={8}
+              >
+                <Checkbox py={3}></Checkbox>
+              </Flex>
+              <Flex gap={4}>
+                <Select
+                  placeholder="Sort"
+                  fontSize={14}
+                  fontWeight="bold"
+                  bgColor="whiteAlpha.100"
+                  borderRadius={24}
+                  borderColor="transparent"
+                >
+                  <option value="date-asc">Date Asc</option>
+                  <option value="date-desc">Date Desc</option>
+                </Select>
+                <Select
+                  placeholder="Filter"
+                  fontSize={14}
+                  fontWeight="bold"
+                  bgColor="whiteAlpha.100"
+                  borderRadius={24}
+                  borderColor="transparent"
+                >
+                  {questChain.quests.map(({ questId }) => (
+                    <option key={questId} value={questId}>
+                      Quest {Number(questId) + 1}
+                    </option>
+                  ))}
+                </Select>
+                <Button
+                  px={12}
+                  color="gray.200"
+                  fontSize={14}
+                  fontWeight="bold"
+                  bgColor="whiteAlpha.100"
+                  borderRadius={24}
+                >
+                  Expand all
+                </Button>
+              </Flex>
+            </Flex>
+
+            <TabPanels>
+              <TabPanel p={0}>
+                <Accordion allowMultiple defaultIndex={[]}>
+                  {reviews.map(review => (
+                    <StatusDisplay
+                      review={review}
+                      onSelect={onSelect}
+                      key={review.id}
+                      isDisabled={chainId !== questChain?.chainId}
+                    />
+                  ))}
+                </Accordion>
+              </TabPanel>
+              <TabPanel>Reviewed</TabPanel>
+              <TabPanel>Submitted</TabPanel>
+              <TabPanel>All</TabPanel>
+            </TabPanels>
+          </Tabs>
         )}
       </VStack>
       <Modal isOpen={!!quest && isOpen} onClose={onModalClose} size="xl">
@@ -463,10 +732,6 @@ export const getStaticProps = async (
       questChain = address ? await getQuestChainInfo(chainId, address) : null;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(
-        `Could not fetch Quest Chain/Statuses for address ${address}`,
-        error,
-      );
     }
   }
 
