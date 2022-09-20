@@ -25,7 +25,7 @@ export type SubmissionType = {
 };
 
 export const PopoverButton: React.FC<{
-  review: SubmissionType;
+  review: SubmissionType[];
   onReview: (quest: any) => void;
   isDisabled: boolean;
   onOpen: () => void;
@@ -89,10 +89,12 @@ export const PopoverButton: React.FC<{
             bgColor="gray.900"
             px={6}
             onClick={() => {
-              onReview({
-                ...review,
-                success: true,
-              });
+              onReview(
+                review.map(r => ({
+                  ...r,
+                  success,
+                })),
+              );
               onClose();
             }}
           >
@@ -105,10 +107,12 @@ export const PopoverButton: React.FC<{
             bgColor="gray.900"
             px={6}
             onClick={() => {
-              onReview({
-                ...review,
-                success: true,
-              });
+              onReview(
+                review.map(r => ({
+                  ...r,
+                  success,
+                })),
+              );
               onClose();
             }}
           >

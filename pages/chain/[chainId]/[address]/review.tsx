@@ -39,6 +39,7 @@ import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { PopoverButton } from '@/components/Review/PopoverButton';
 import {
   SubmissionTile,
   SubmissionType,
@@ -99,10 +100,9 @@ const Review: React.FC<Props> = ({
     setCheckedItems([...checkedItems]);
   };
 
-  const allChecked = checkedItems.every(Boolean);
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
-
   const { provider, address, chainId } = useWallet();
+
+  const isDisabled = chainId !== questChain?.chainId;
 
   useEffect(() => {
     if (questStatuses) {
@@ -130,6 +130,11 @@ const Review: React.FC<Props> = ({
       );
     } else setAwaitingReview([]);
   }, [questStatuses, reviewed]);
+
+  const allChecked =
+    checkedItems.length === awaitingReview.length &&
+    checkedItems.every(item => item);
+  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
 
   const [reviewDescription, setReviewDescription] = useState('');
   const [myFiles, setMyFiles] = useState<File[]>([]);
@@ -167,6 +172,24 @@ const Review: React.FC<Props> = ({
     },
     [reviewed],
   );
+
+  const onReviewMultiple = useCallback(
+    (selected: SubmissionType[]) => {
+      setReviewed((reviewed || []).concat(selected));
+    },
+    [reviewed],
+  );
+
+  const {
+    onOpen: onOpenAccept,
+    onClose: onCloseAccept,
+    isOpen: isOpenAccept,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenReject,
+    onClose: onCloseReject,
+    isOpen: isOpenReject,
+  } = useDisclosure();
 
   const onSubmit = useCallback(
     async (success: boolean) => {
@@ -392,7 +415,7 @@ const Review: React.FC<Props> = ({
             </TabList>
 
             <Flex py={4} w="full" justifyContent="space-between">
-              <Flex>
+              <Flex gap={4}>
                 <Box
                   borderRadius={24}
                   bgColor="rgba(255, 255, 255, 0.06)"
@@ -409,6 +432,32 @@ const Review: React.FC<Props> = ({
                     }
                   ></Checkbox>
                 </Box>
+
+                {checkedItems.some(item => item) && (
+                  <PopoverButton
+                    review={awaitingReview.filter((_, i) => checkedItems[i])}
+                    onReview={onReviewMultiple}
+                    isDisabled={isDisabled}
+                    onOpen={onOpenReject}
+                    onClose={onCloseReject}
+                    isOpen={isOpenReject}
+                    onCloseOther={onCloseAccept}
+                    success={false}
+                  />
+                )}
+
+                {checkedItems.some(item => item) && (
+                  <PopoverButton
+                    review={awaitingReview.filter((_, i) => checkedItems[i])}
+                    onReview={onReviewMultiple}
+                    isDisabled={isDisabled}
+                    onOpen={onOpenAccept}
+                    onClose={onCloseAccept}
+                    isOpen={isOpenAccept}
+                    onCloseOther={onCloseReject}
+                    success={true}
+                  />
+                )}
               </Flex>
               <Flex gap={4}>
                 <Select
@@ -457,7 +506,7 @@ const Review: React.FC<Props> = ({
                       review={review}
                       onReview={onReview}
                       key={review.id}
-                      isDisabled={chainId !== questChain?.chainId}
+                      isDisabled={isDisabled}
                       checked={checkedItems[index]}
                       onCheck={() => setCheckedItem(index)}
                     />
@@ -472,7 +521,7 @@ const Review: React.FC<Props> = ({
                         review={review}
                         onReview={onReview}
                         key={review.id}
-                        isDisabled={chainId !== questChain?.chainId}
+                        isDisabled={isDisabled}
                       />
                     ))}
                 </Accordion>

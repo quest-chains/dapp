@@ -138,7 +138,7 @@ export const SubmissionTile: React.FC<{
                 bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
               >
                 <PopoverButton
-                  review={review}
+                  review={[review]}
                   onReview={onReview}
                   isDisabled={isDisabled}
                   onOpen={onOpenReject}
@@ -149,7 +149,7 @@ export const SubmissionTile: React.FC<{
                 />
 
                 <PopoverButton
-                  review={review}
+                  review={[review]}
                   onReview={onReview}
                   isDisabled={isDisabled}
                   onOpen={onOpenAccept}
