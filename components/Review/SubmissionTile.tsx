@@ -1,3 +1,4 @@
+import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
@@ -130,7 +131,33 @@ export const SubmissionTile: React.FC<{
               </Text>
 
               {review.success !== undefined && (
-                <Flex>{review.success ? 'Success' : 'Fail'}</Flex>
+                <Flex pr={8}>
+                  {review.success ? (
+                    <Flex
+                      bg="#171923"
+                      justifyContent="center"
+                      alignItems="center"
+                      h="2.75rem"
+                      w="2.75rem"
+                      borderRadius="full"
+                      border="1px solid #10B981"
+                    >
+                      <CheckIcon color="#10B981" />
+                    </Flex>
+                  ) : (
+                    <Flex
+                      bg="#171923"
+                      justifyContent="center"
+                      alignItems="center"
+                      h="2.75rem"
+                      w="2.75rem"
+                      borderRadius="full"
+                      border="1px solid #F43F5E"
+                    >
+                      <CloseIcon color="#F43F5E" />
+                    </Flex>
+                  )}
+                </Flex>
               )}
               {review.success === undefined && (
                 <Flex
