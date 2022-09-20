@@ -93,11 +93,13 @@ const Review: React.FC<Props> = ({
   const [rejecting, setRejecting] = useState(false);
   const [accepting, setAccepting] = useState(false);
 
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+  const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
+    [],
+  );
 
   const setCheckedItem = (index: number) => {
-    checkedItems[index] = !checkedItems[index];
-    setCheckedItems([...checkedItems]);
+    checkedAwaitingReview[index] = !checkedAwaitingReview[index];
+    setCheckedAwaitingReview([...checkedAwaitingReview]);
   };
 
   const { provider, address, chainId } = useWallet();
@@ -131,10 +133,13 @@ const Review: React.FC<Props> = ({
     } else setAwaitingReview([]);
   }, [questStatuses, reviewed]);
 
-  const allChecked =
-    checkedItems.length === awaitingReview.length &&
-    checkedItems.every(item => item);
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+  const allAwaitingReviewChecked =
+    checkedAwaitingReview.length !== 0 &&
+    checkedAwaitingReview.length === awaitingReview.length &&
+    checkedAwaitingReview.every(item => item);
+
+  const isAwaitingReviewIndeterminate =
+    checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
 
   const [reviewDescription, setReviewDescription] = useState('');
   const [myFiles, setMyFiles] = useState<File[]>([]);
@@ -441,40 +446,43 @@ const Review: React.FC<Props> = ({
                 >
                   <Checkbox
                     py={3}
-                    isChecked={allChecked}
-                    isIndeterminate={isIndeterminate}
+                    isChecked={allAwaitingReviewChecked}
+                    isIndeterminate={isAwaitingReviewIndeterminate}
                     onChange={e =>
-                      setCheckedItems(
+                      setCheckedAwaitingReview(
                         awaitingReview.map(() => e.target.checked),
                       )
                     }
                   ></Checkbox>
                 </Box>
 
-                {checkedItems.some(item => item) && (
-                  <PopoverButton
-                    review={awaitingReview.filter((_, i) => checkedItems[i])}
-                    onReview={onReviewMultiple}
-                    isDisabled={isDisabled}
-                    onOpen={onOpenReject}
-                    onClose={onCloseReject}
-                    isOpen={isOpenReject}
-                    onCloseOther={onCloseAccept}
-                    success={false}
-                  />
-                )}
-
-                {checkedItems.some(item => item) && (
-                  <PopoverButton
-                    review={awaitingReview.filter((_, i) => checkedItems[i])}
-                    onReview={onReviewMultiple}
-                    isDisabled={isDisabled}
-                    onOpen={onOpenAccept}
-                    onClose={onCloseAccept}
-                    isOpen={isOpenAccept}
-                    onCloseOther={onCloseReject}
-                    success={true}
-                  />
+                {checkedAwaitingReview.some(item => item) && (
+                  <>
+                    <PopoverButton
+                      review={awaitingReview.filter(
+                        (_, i) => checkedAwaitingReview[i],
+                      )}
+                      onReview={onReviewMultiple}
+                      isDisabled={isDisabled}
+                      onOpen={onOpenReject}
+                      onClose={onCloseReject}
+                      isOpen={isOpenReject}
+                      onCloseOther={onCloseAccept}
+                      success={false}
+                    />
+                    <PopoverButton
+                      review={awaitingReview.filter(
+                        (_, i) => checkedAwaitingReview[i],
+                      )}
+                      onReview={onReviewMultiple}
+                      isDisabled={isDisabled}
+                      onOpen={onOpenAccept}
+                      onClose={onCloseAccept}
+                      isOpen={isOpenAccept}
+                      onCloseOther={onCloseReject}
+                      success={true}
+                    />
+                  </>
                 )}
               </Flex>
               <Flex gap={4}>
@@ -525,7 +533,7 @@ const Review: React.FC<Props> = ({
                       onReview={onReview}
                       key={review.id}
                       isDisabled={isDisabled}
-                      checked={checkedItems[index]}
+                      checked={checkedAwaitingReview[index]}
                       onCheck={() => setCheckedItem(index)}
                     />
                   ))}

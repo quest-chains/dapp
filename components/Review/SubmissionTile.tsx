@@ -104,7 +104,12 @@ export const SubmissionTile: React.FC<{
             </Flex>
           </Flex>
           {!isExpanded && (
-            <Flex w="full" position="relative" h={12}>
+            <Flex
+              w="full"
+              position="relative"
+              h={12}
+              justifyContent="space-between"
+            >
               {url && (
                 <Link isExternal href={url} _hover={{}}>
                   <Image src={url} alt="submission pic" maxH={12} pr={5} />
@@ -123,42 +128,48 @@ export const SubmissionTile: React.FC<{
               >
                 {submissionDescription}
               </Text>
-              <Flex
-                opacity={0}
-                _groupHover={{
-                  opacity: 1,
-                }}
-                transition="opacity 0.25s"
-                position="absolute"
-                right={6}
-                top={1}
-                height={12}
-                pl={14}
-                gap={2}
-                bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
-              >
-                <PopoverButton
-                  review={[review]}
-                  onReview={onReview}
-                  isDisabled={isDisabled}
-                  onOpen={onOpenReject}
-                  onClose={onCloseReject}
-                  isOpen={isOpenReject}
-                  onCloseOther={onCloseAccept}
-                  success={false}
-                />
 
-                <PopoverButton
-                  review={[review]}
-                  onReview={onReview}
-                  isDisabled={isDisabled}
-                  onOpen={onOpenAccept}
-                  onClose={onCloseAccept}
-                  isOpen={isOpenAccept}
-                  onCloseOther={onCloseReject}
-                  success={true}
-                />
-              </Flex>
+              {review.success !== undefined && (
+                <Flex>{review.success ? 'Success' : 'Fail'}</Flex>
+              )}
+              {review.success === undefined && (
+                <Flex
+                  opacity={0}
+                  _groupHover={{
+                    opacity: 1,
+                  }}
+                  transition="opacity 0.25s"
+                  position="absolute"
+                  right={6}
+                  top={1}
+                  height={12}
+                  pl={14}
+                  gap={2}
+                  bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+                >
+                  <PopoverButton
+                    review={[review]}
+                    onReview={onReview}
+                    isDisabled={isDisabled}
+                    onOpen={onOpenReject}
+                    onClose={onCloseReject}
+                    isOpen={isOpenReject}
+                    onCloseOther={onCloseAccept}
+                    success={false}
+                  />
+
+                  <PopoverButton
+                    review={[review]}
+                    onReview={onReview}
+                    isDisabled={isDisabled}
+                    onOpen={onOpenAccept}
+                    onClose={onCloseAccept}
+                    isOpen={isOpenAccept}
+                    onCloseOther={onCloseReject}
+                    success={true}
+                  />
+                </Flex>
+              )}
             </Flex>
           )}
 
