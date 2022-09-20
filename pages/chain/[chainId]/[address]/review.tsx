@@ -314,7 +314,7 @@ const Review: React.FC<Props> = ({
           </ChakraLink>
         </NextLink>
       </Flex>
-      <VStack w="100%" align="flex-start">
+      <Flex w="100%" justifyContent="space-between">
         <Flex flexDirection="column" mb={8}>
           <Text
             fontSize="5xl"
@@ -329,7 +329,25 @@ const Review: React.FC<Props> = ({
             <NetworkDisplay chainId={questChain.chainId} />
           </Box>
         </Flex>
-      </VStack>
+        {reviewed?.length ? (
+          <Flex
+            bgColor="whiteAlpha.100"
+            borderRadius="full"
+            borderColor="transparent"
+            height={16}
+            alignItems="center"
+            pr={2}
+            pl={16}
+          >
+            <Text mr={6}>
+              {reviewed.length} Review{reviewed.length > 1 ? 's' : ''} ready
+            </Text>
+            <SubmitButton>Submit</SubmitButton>
+          </Flex>
+        ) : (
+          <></>
+        )}
+      </Flex>
       <VStack w="100%" spacing={6}>
         {fetching ? (
           <Spinner color="main" />
