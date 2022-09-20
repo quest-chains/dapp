@@ -124,7 +124,7 @@ export const SubmissionTile: React.FC<{
                 display="-webkit-box"
                 css={{
                   WebkitLineClamp: '2',
-                  '-webkit-box-orient': 'vertical',
+                  WebkitBoxOrient: 'vertical',
                 }}
                 mr={10}
                 h={12}
@@ -155,13 +155,13 @@ export const SubmissionTile: React.FC<{
                   isLazy
                   lazyBehavior="keepMounted"
                 >
-                  <PopoverTrigger>
-                    <Tooltip
-                      shouldWrapChildren
-                      label="Please switch to the correct chain"
-                      isDisabled={!isDisabled}
-                      color="black"
-                    >
+                  <Tooltip
+                    shouldWrapChildren
+                    label="Please switch to the correct chain"
+                    isDisabled={!isDisabled}
+                    color="black"
+                  >
+                    <PopoverTrigger>
                       <Button
                         borderRadius={24}
                         bgColor="gray.900"
@@ -173,8 +173,8 @@ export const SubmissionTile: React.FC<{
                         <CloseIcon w={4} mr={2} />
                         Reject
                       </Button>
-                    </Tooltip>
-                  </PopoverTrigger>
+                    </PopoverTrigger>
+                  </Tooltip>
 
                   <PopoverContent
                     background="gray.900"
@@ -237,13 +237,13 @@ export const SubmissionTile: React.FC<{
                   isLazy
                   lazyBehavior="keepMounted"
                 >
-                  <PopoverTrigger>
-                    <Tooltip
-                      shouldWrapChildren
-                      label="Please switch to the correct chain"
-                      isDisabled={!isDisabled}
-                      color="black"
-                    >
+                  <Tooltip
+                    shouldWrapChildren
+                    label="Please switch to the correct chain"
+                    isDisabled={!isDisabled}
+                    color="black"
+                  >
+                    <PopoverTrigger>
                       <Button
                         borderRadius={24}
                         bgColor="gray.900"
@@ -255,8 +255,8 @@ export const SubmissionTile: React.FC<{
                         <CheckIcon w={4} mr={2} />
                         Accept
                       </Button>
-                    </Tooltip>
-                  </PopoverTrigger>
+                    </PopoverTrigger>
+                  </Tooltip>
 
                   <PopoverContent
                     background="gray.900"
