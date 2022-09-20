@@ -1,29 +1,21 @@
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Button,
   Checkbox,
   Flex,
   Image,
   Link,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Text,
-  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
 
-import CommentCheck from '@/assets/CommentCheck.svg';
-import CommentClose from '@/assets/CommentClose.svg';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 
 import { MarkdownViewer } from '../MarkdownViewer';
 import { UserDisplay } from '../UserDisplay';
+import { PopoverButton } from './PopoverButton';
 
 export type SubmissionType = {
   id: string;
@@ -145,170 +137,27 @@ export const SubmissionTile: React.FC<{
                 gap={2}
                 bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
               >
-                <Popover
-                  isOpen={isOpenReject}
-                  onOpen={() => {
-                    onOpenReject();
-                    onCloseAccept();
-                  }}
+                <PopoverButton
+                  review={review}
+                  onReview={onReview}
+                  isDisabled={isDisabled}
+                  onOpen={onOpenReject}
                   onClose={onCloseReject}
-                  isLazy
-                  lazyBehavior="keepMounted"
-                >
-                  <Tooltip
-                    shouldWrapChildren
-                    label="Please switch to the correct chain"
-                    isDisabled={!isDisabled}
-                    color="black"
-                  >
-                    <PopoverTrigger>
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        borderColor="gray.600"
-                        borderWidth={1}
-                        isDisabled={isDisabled}
-                      >
-                        <CloseIcon w={4} mr={2} />
-                        Reject
-                      </Button>
-                    </PopoverTrigger>
-                  </Tooltip>
+                  isOpen={isOpenReject}
+                  onCloseOther={onCloseAccept}
+                  success={false}
+                />
 
-                  <PopoverContent
-                    background="gray.900"
-                    borderColor="transparent"
-                    position="absolute"
-                    top="-57px"
-                    left="-74px"
-                    w="xxs"
-                  >
-                    <PopoverBody
-                      background="transparent"
-                      borderColor="transparent"
-                    >
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={() => {
-                          onReview({
-                            ...review,
-                            success: false,
-                          });
-                          onCloseReject();
-                        }}
-                      >
-                        <CloseIcon w={4} mr={2} />
-                        Reject
-                      </Button>
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={() => {
-                          onReview({
-                            ...review,
-                            success: false,
-                          });
-                          onCloseReject();
-                        }}
-                      >
-                        <Image
-                          src={CommentClose.src}
-                          alt="comment check"
-                          mr={2}
-                          w={4}
-                        />
-                        Reject and comment
-                      </Button>
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-
-                <Popover
-                  isOpen={isOpenAccept}
-                  onOpen={() => {
-                    onCloseReject();
-                    onOpenAccept();
-                  }}
+                <PopoverButton
+                  review={review}
+                  onReview={onReview}
+                  isDisabled={isDisabled}
+                  onOpen={onOpenAccept}
                   onClose={onCloseAccept}
-                  isLazy
-                  lazyBehavior="keepMounted"
-                >
-                  <Tooltip
-                    shouldWrapChildren
-                    label="Please switch to the correct chain"
-                    isDisabled={!isDisabled}
-                    color="black"
-                  >
-                    <PopoverTrigger>
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        borderColor="gray.600"
-                        borderWidth={1}
-                        isDisabled={isDisabled}
-                      >
-                        <CheckIcon w={4} mr={2} />
-                        Accept
-                      </Button>
-                    </PopoverTrigger>
-                  </Tooltip>
-
-                  <PopoverContent
-                    background="gray.900"
-                    borderColor="transparent"
-                    position="absolute"
-                    top="-57px"
-                    left="-74px"
-                    w="xxs"
-                  >
-                    <PopoverBody
-                      background="transparent"
-                      borderColor="transparent"
-                    >
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={() => {
-                          onReview({
-                            ...review,
-                            success: true,
-                          });
-                          onCloseAccept();
-                        }}
-                      >
-                        <CheckIcon w={4} mr={2} />
-                        Accept
-                      </Button>
-
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        onClick={() => {
-                          onReview({
-                            ...review,
-                            success: true,
-                          });
-                          onCloseAccept();
-                        }}
-                      >
-                        <Image
-                          src={CommentCheck.src}
-                          alt="comment check"
-                          mr={2}
-                          w={4}
-                        />
-                        Accept and comment
-                      </Button>
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
+                  isOpen={isOpenAccept}
+                  onCloseOther={onCloseReject}
+                  success={true}
+                />
               </Flex>
             </Flex>
           )}

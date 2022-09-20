@@ -392,19 +392,23 @@ const Review: React.FC<Props> = ({
             </TabList>
 
             <Flex py={4} w="full" justifyContent="space-between">
-              <Flex
-                borderRadius={24}
-                bgColor="rgba(255, 255, 255, 0.06)"
-                px={8}
-              >
-                <Checkbox
-                  py={3}
-                  isChecked={allChecked}
-                  isIndeterminate={isIndeterminate}
-                  onChange={e =>
-                    setCheckedItems(awaitingReview.map(() => e.target.checked))
-                  }
-                ></Checkbox>
+              <Flex>
+                <Box
+                  borderRadius={24}
+                  bgColor="rgba(255, 255, 255, 0.06)"
+                  px={8}
+                >
+                  <Checkbox
+                    py={3}
+                    isChecked={allChecked}
+                    isIndeterminate={isIndeterminate}
+                    onChange={e =>
+                      setCheckedItems(
+                        awaitingReview.map(() => e.target.checked),
+                      )
+                    }
+                  ></Checkbox>
+                </Box>
               </Flex>
               <Flex gap={4}>
                 <Select
