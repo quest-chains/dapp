@@ -25,7 +25,7 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { MarkdownViewer } from '../MarkdownViewer';
 import { UserDisplay } from '../UserDisplay';
 
-type ModalQuestType = {
+export type SubmissionType = {
   id: string;
   userId: string;
   questId: string;
@@ -38,7 +38,7 @@ type ModalQuestType = {
 };
 
 export const SubmissionTile: React.FC<{
-  review: ModalQuestType;
+  review: SubmissionType;
   onReview: (quest: any) => void;
   isDisabled: boolean;
   checked?: boolean;

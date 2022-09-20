@@ -39,7 +39,10 @@ import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { SubmissionTile } from '@/components/Review/SubmissionTile';
+import {
+  SubmissionTile,
+  SubmissionType,
+} from '@/components/Review/SubmissionTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
@@ -54,18 +57,6 @@ const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-type ModalQuestType = {
-  id: string;
-  userId: string;
-  questId: string;
-  name: string | null | undefined;
-  description: string | null | undefined;
-  success?: boolean;
-  submissionDescription: string;
-  submissionUrl?: string;
-  submissionTimestamp: number;
-};
-
 const Review: React.FC<Props> = ({
   questStatuses: inputQuestStatues,
   questChain: inputQuestChain,
@@ -76,9 +67,9 @@ const Review: React.FC<Props> = ({
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
   const { isOpen, onClose } = useDisclosure();
-  const [quest, setQuest] = useState<ModalQuestType | null>(null);
-  const [reviews, setReviews] = useState<ModalQuestType[]>([]);
-  const [reviewed, setReviewed] = useState<ModalQuestType[] | null>([]);
+  const [quest, setQuest] = useState<SubmissionType | null>(null);
+  const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
+  const [reviewed, setReviewed] = useState<SubmissionType[] | null>([]);
 
   const {
     questStatuses,
@@ -115,7 +106,7 @@ const Review: React.FC<Props> = ({
 
   useEffect(() => {
     if (questStatuses) {
-      setReviews(
+      setAwaitingReview(
         questStatuses
           .filter(q => q.status === 'review')
           .filter(q =>
@@ -137,7 +128,7 @@ const Review: React.FC<Props> = ({
             ),
           })),
       );
-    } else setReviews([]);
+    } else setAwaitingReview([]);
   }, [questStatuses, reviewed]);
 
   const [reviewDescription, setReviewDescription] = useState('');
@@ -171,7 +162,7 @@ const Review: React.FC<Props> = ({
   }, [onClose]);
 
   const onReview = useCallback(
-    (selected: ModalQuestType) => {
+    (selected: SubmissionType) => {
       setReviewed((reviewed || []).concat(selected));
     },
     [reviewed],
@@ -338,7 +329,7 @@ const Review: React.FC<Props> = ({
                   ml={2}
                   fontSize={11}
                 >
-                  {reviews.length}
+                  {awaitingReview.length}
                 </Text>
               </Tab>
               <Tab
@@ -411,7 +402,7 @@ const Review: React.FC<Props> = ({
                   isChecked={allChecked}
                   isIndeterminate={isIndeterminate}
                   onChange={e =>
-                    setCheckedItems(reviews.map(() => e.target.checked))
+                    setCheckedItems(awaitingReview.map(() => e.target.checked))
                   }
                 ></Checkbox>
               </Flex>
@@ -457,7 +448,7 @@ const Review: React.FC<Props> = ({
             <TabPanels>
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
-                  {reviews.map((review, index) => (
+                  {awaitingReview.map((review, index) => (
                     <SubmissionTile
                       review={review}
                       onReview={onReview}
