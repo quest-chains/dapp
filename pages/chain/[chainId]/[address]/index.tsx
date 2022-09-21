@@ -52,7 +52,7 @@ import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
-import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 const { getQuestChainAddresses, getQuestChainInfo } = graphql;
@@ -349,8 +349,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
       <Fade in={visible}>
         <Head>
           <title>
-            {questChain.name} -{' '}
-            {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
+            {`${questChain.name} - ${
+              AVAILABLE_NETWORK_INFO[questChain.chainId].name
+            }`}
           </title>
           <meta
             name="viewport"
@@ -906,7 +907,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
+    graphql.SUPPORTED_NETWORKS.map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(
