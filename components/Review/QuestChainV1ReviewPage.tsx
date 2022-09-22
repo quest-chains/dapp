@@ -160,10 +160,29 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     onClose();
   }, [onClose, onResetFiles]);
 
+  const removeSelectedFromReviews = (
+    r: SubmissionType[],
+    selected: SubmissionType[],
+  ) => r.filter(r => !selected.map(s => s.id).includes(r.id));
+
   const onReview = useCallback(
-    (selected: SubmissionType[]) => setReviewed(r => [...r, ...selected]),
+    (selected: SubmissionType[]) =>
+      setReviewed(reviewed => [
+        ...removeSelectedFromReviews(reviewed, selected),
+        ...selected,
+      ]),
     [],
   );
+
+  const clearReview = useCallback((selected: SubmissionType[]) => {
+    setReviewed(r => [...removeSelectedFromReviews(r, selected)]);
+  }, []);
+
+  const addAwaitingReview = useCallback((selected: SubmissionType[]) => {
+    setAwaitingReview(previous =>
+      previous.concat(selected.map(r => ({ ...r, success: undefined }))),
+    );
+  }, []);
 
   const onSubmit = useCallback(async () => {
     if (
@@ -310,6 +329,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             />
 
             <TabPanels>
+              {/* awaiting review */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
                   {awaitingReview.map((review, index) => (
@@ -324,7 +344,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   ))}
                 </Accordion>
               </TabPanel>
-              <TabPanel>
+              {/* reviewed */}
+              <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
                   {reviewed &&
                     reviewed.map(review => (
@@ -333,12 +354,20 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                         onReview={onReview}
                         key={review.id}
                         isDisabled={isDisabled}
+                        clearReview={(selected: SubmissionType[]) =>
+                          clearReview(selected)
+                        }
+                        addAwaitingReview={(selected: SubmissionType[]) =>
+                          addAwaitingReview(selected)
+                        }
                       />
                     ))}
                 </Accordion>
               </TabPanel>
-              <TabPanel>Submitted</TabPanel>
-              <TabPanel>All</TabPanel>
+              {/* reviewed */}
+              <TabPanel p={0}>Submitted</TabPanel>
+              {/* reviewed */}
+              <TabPanel p={0}>All</TabPanel>
             </TabPanels>
           </Tabs>
         )}

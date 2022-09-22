@@ -4,6 +4,7 @@ import {
   AccordionIcon,
   AccordionItem,
   Box,
+  Button,
   Checkbox,
   Flex,
   Image,
@@ -35,7 +36,17 @@ export const SubmissionTile: React.FC<{
   isDisabled: boolean;
   checked?: boolean;
   onCheck?: () => void;
-}> = ({ submission, onReview, isDisabled, checked, onCheck }) => {
+  clearReview?: (selected: SubmissionType[]) => void;
+  addAwaitingReview?: (selected: SubmissionType[]) => void;
+}> = ({
+  submission,
+  onReview,
+  isDisabled,
+  checked,
+  onCheck,
+  clearReview,
+  addAwaitingReview,
+}) => {
   const {
     userId,
     questId,
@@ -144,8 +155,8 @@ export const SubmissionTile: React.FC<{
                     bg="#171923"
                     justifyContent="center"
                     alignItems="center"
-                    h="2.75rem"
-                    w="2.75rem"
+                    h={10}
+                    w={10}
                     borderRadius="full"
                     border="1px solid #10B981"
                   >
@@ -156,16 +167,66 @@ export const SubmissionTile: React.FC<{
                     bg="#171923"
                     justifyContent="center"
                     alignItems="center"
-                    h="2.75rem"
-                    w="2.75rem"
+                    h={10}
+                    w={10}
                     borderRadius="full"
                     border="1px solid #F43F5E"
                   >
                     <CloseIcon color="#F43F5E" />
                   </Flex>
                 )}
+                <Flex
+                  opacity={0}
+                  _groupHover={{
+                    opacity: 1,
+                  }}
+                  transition="opacity 0.25s"
+                  position="absolute"
+                  right={0}
+                  top={0}
+                  height={12}
+                  pl={14}
+                  gap={2}
+                  bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+                >
+                  {addAwaitingReview && clearReview && (
+                    <>
+                      {submission.success && (
+                        <PopoverButton
+                          toReview={[submission]}
+                          onReview={onReview}
+                          isDisabled={isDisabled}
+                          success={false}
+                        />
+                      )}
+                      {!submission.success && (
+                        <PopoverButton
+                          toReview={[submission]}
+                          onReview={onReview}
+                          isDisabled={isDisabled}
+                          success={true}
+                        />
+                      )}
+                      <Button
+                        borderRadius={24}
+                        bgColor="gray.900"
+                        px={6}
+                        borderColor="gray.600"
+                        borderWidth={1}
+                        isDisabled={isDisabled}
+                        onClick={() => {
+                          clearReview([submission]);
+                          addAwaitingReview([submission]);
+                        }}
+                      >
+                        Clear Review
+                      </Button>
+                    </>
+                  )}
+                </Flex>
               </Flex>
             )}
+
             {submission.success === undefined && (
               <Flex
                 opacity={0}
