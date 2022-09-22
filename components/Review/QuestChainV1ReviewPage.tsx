@@ -290,163 +290,24 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
           <Spinner color="main" />
         ) : (
           <Tabs w="full" p={0}>
-            <TabList>
-              <Tab
-                color="gray.500"
-                _selected={{
-                  color: 'blue.50',
-                  borderBottom: 'solid 2px white',
-                }}
-              >
-                Awaiting review{' '}
-                <Text
-                  bgColor="whiteAlpha.300"
-                  borderRadius={10}
-                  py="2px"
-                  px={1.5}
-                  ml={2}
-                  fontSize={11}
-                >
-                  {awaitingReview.length}
-                </Text>
-              </Tab>
-              <Tab
-                color="gray.500"
-                _selected={{
-                  color: 'blue.50',
-                  borderBottom: 'solid 2px white',
-                }}
-              >
-                Reviewed
-                <Text
-                  bgColor="whiteAlpha.300"
-                  borderRadius={10}
-                  py="2px"
-                  px={1.5}
-                  ml={2}
-                  fontSize={11}
-                >
-                  {reviewed.length}
-                </Text>
-              </Tab>
-              <Tab
-                color="gray.500"
-                _selected={{
-                  color: 'blue.50',
-                  borderBottom: 'solid 2px white',
-                }}
-              >
-                Submitted
-                <Text
-                  bgColor="whiteAlpha.300"
-                  borderRadius={10}
-                  py="2px"
-                  px={1.5}
-                  ml={2}
-                  fontSize={11}
-                >
-                  {submitted.length}
-                </Text>
-              </Tab>
-              <Tab
-                color="gray.500"
-                _selected={{
-                  color: 'blue.50',
-                  borderBottom: 'solid 2px white',
-                }}
-              >
-                All
-                <Text
-                  bgColor="whiteAlpha.300"
-                  borderRadius={10}
-                  py="2px"
-                  px={1.5}
-                  ml={2}
-                  fontSize={11}
-                >
-                  {allSubmissions.length}
-                </Text>
-              </Tab>
-            </TabList>
+            <TabsList
+              awaitingReviewLength={awaitingReview.length}
+              reviewedLength={reviewed.length}
+              submittedLength={submitted.length}
+              allSubmissionsLength={allSubmissions.length}
+            />
 
-            <Flex py={4} w="full" justifyContent="space-between">
-              <Flex gap={4}>
-                <Box
-                  borderRadius={24}
-                  bgColor="rgba(255, 255, 255, 0.06)"
-                  px={8}
-                >
-                  <Checkbox
-                    py={3}
-                    isChecked={allAwaitingReviewChecked}
-                    isIndeterminate={isAwaitingReviewIndeterminate}
-                    onChange={e =>
-                      setCheckedAwaitingReview(
-                        awaitingReview.map(() => e.target.checked),
-                      )
-                    }
-                  ></Checkbox>
-                </Box>
-
-                {checkedAwaitingReview.some(item => item) && (
-                  <>
-                    <PopoverButton
-                      toReview={awaitingReview.filter(
-                        (_, i) => checkedAwaitingReview[i],
-                      )}
-                      onReview={onReview}
-                      isDisabled={isDisabled}
-                      success={false}
-                    />
-                    <PopoverButton
-                      toReview={awaitingReview.filter(
-                        (_, i) => checkedAwaitingReview[i],
-                      )}
-                      onReview={onReview}
-                      isDisabled={isDisabled}
-                      success={true}
-                    />
-                  </>
-                )}
-              </Flex>
-              <Flex gap={4}>
-                <Select
-                  placeholder="Sort"
-                  fontSize={14}
-                  fontWeight="bold"
-                  bgColor="whiteAlpha.100"
-                  borderRadius={24}
-                  borderColor="transparent"
-                >
-                  <option value="date-asc">Date Asc</option>
-                  <option value="date-desc">Date Desc</option>
-                </Select>
-                <Select
-                  placeholder="Filter"
-                  fontSize={14}
-                  fontWeight="bold"
-                  bgColor="whiteAlpha.100"
-                  borderRadius={24}
-                  borderColor="transparent"
-                >
-                  {questChain.quests.map(({ questId }) => (
-                    <option key={questId} value={questId}>
-                      Quest {Number(questId) + 1}
-                    </option>
-                  ))}
-                </Select>
-                <Button
-                  px={12}
-                  color="gray.200"
-                  fontSize={14}
-                  fontWeight="bold"
-                  bgColor="whiteAlpha.100"
-                  borderRadius={24}
-                >
-                  Expand all
-                </Button>
-              </Flex>
-            </Flex>
+            {/* Toolbar */}
+            <Toolbar
+              allAwaitingReviewChecked={allAwaitingReviewChecked}
+              isAwaitingReviewIndeterminate={isAwaitingReviewIndeterminate}
+              setCheckedAwaitingReview={setCheckedAwaitingReview}
+              awaitingReview={awaitingReview}
+              checkedAwaitingReview={checkedAwaitingReview}
+              onReview={onReview}
+              isDisabled={isDisabled}
+              questChain={questChain}
+            />
 
             <TabPanels>
               <TabPanel p={0}>
@@ -561,5 +422,197 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         </ModalContent>
       </Modal>
     </VStack>
+  );
+};
+
+const TabsList: React.FC<{
+  awaitingReviewLength: number;
+  reviewedLength: number;
+  submittedLength: number;
+  allSubmissionsLength: number;
+}> = ({
+  awaitingReviewLength,
+  reviewedLength,
+  submittedLength,
+  allSubmissionsLength,
+}) => {
+  return (
+    <TabList>
+      <Tab
+        color="gray.500"
+        _selected={{
+          color: 'blue.50',
+          borderBottom: 'solid 2px white',
+        }}
+      >
+        Awaiting review{' '}
+        <Text
+          bgColor="whiteAlpha.300"
+          borderRadius={10}
+          py="2px"
+          px={1.5}
+          ml={2}
+          fontSize={11}
+        >
+          {awaitingReviewLength}
+        </Text>
+      </Tab>
+      <Tab
+        color="gray.500"
+        _selected={{
+          color: 'blue.50',
+          borderBottom: 'solid 2px white',
+        }}
+      >
+        Reviewed
+        <Text
+          bgColor="whiteAlpha.300"
+          borderRadius={10}
+          py="2px"
+          px={1.5}
+          ml={2}
+          fontSize={11}
+        >
+          {reviewedLength}
+        </Text>
+      </Tab>
+      <Tab
+        color="gray.500"
+        _selected={{
+          color: 'blue.50',
+          borderBottom: 'solid 2px white',
+        }}
+      >
+        Submitted
+        <Text
+          bgColor="whiteAlpha.300"
+          borderRadius={10}
+          py="2px"
+          px={1.5}
+          ml={2}
+          fontSize={11}
+        >
+          {submittedLength}
+        </Text>
+      </Tab>
+      <Tab
+        color="gray.500"
+        _selected={{
+          color: 'blue.50',
+          borderBottom: 'solid 2px white',
+        }}
+      >
+        All
+        <Text
+          bgColor="whiteAlpha.300"
+          borderRadius={10}
+          py="2px"
+          px={1.5}
+          ml={2}
+          fontSize={11}
+        >
+          {allSubmissionsLength}
+        </Text>
+      </Tab>
+    </TabList>
+  );
+};
+
+const Toolbar: React.FC<{
+  allAwaitingReviewChecked: boolean;
+  isAwaitingReviewIndeterminate: boolean;
+  setCheckedAwaitingReview: (submission: boolean[]) => void;
+  awaitingReview: SubmissionType[];
+  checkedAwaitingReview: boolean[];
+  onReview: (selected: SubmissionType[]) => void;
+  isDisabled: boolean;
+  questChain: graphql.QuestChainInfoFragment;
+}> = ({
+  allAwaitingReviewChecked,
+  isAwaitingReviewIndeterminate,
+  setCheckedAwaitingReview,
+  awaitingReview,
+  checkedAwaitingReview,
+  onReview,
+  isDisabled,
+  questChain,
+}) => {
+  return (
+    <>
+      <Flex py={4} w="full" justifyContent="space-between">
+        <Flex gap={4}>
+          <Box borderRadius={24} bgColor="rgba(255, 255, 255, 0.06)" px={8}>
+            <Checkbox
+              py={3}
+              isChecked={allAwaitingReviewChecked}
+              isIndeterminate={isAwaitingReviewIndeterminate}
+              onChange={e =>
+                setCheckedAwaitingReview(
+                  awaitingReview.map(() => e.target.checked),
+                )
+              }
+            ></Checkbox>
+          </Box>
+
+          {checkedAwaitingReview.some(item => item) && (
+            <>
+              <PopoverButton
+                toReview={awaitingReview.filter(
+                  (_, i) => checkedAwaitingReview[i],
+                )}
+                onReview={onReview}
+                isDisabled={isDisabled}
+                success={false}
+              />
+              <PopoverButton
+                toReview={awaitingReview.filter(
+                  (_, i) => checkedAwaitingReview[i],
+                )}
+                onReview={onReview}
+                isDisabled={isDisabled}
+                success={true}
+              />
+            </>
+          )}
+        </Flex>
+        <Flex gap={4}>
+          <Select
+            placeholder="Sort"
+            fontSize={14}
+            fontWeight="bold"
+            bgColor="whiteAlpha.100"
+            borderRadius={24}
+            borderColor="transparent"
+          >
+            <option value="date-asc">Date Asc</option>
+            <option value="date-desc">Date Desc</option>
+          </Select>
+          <Select
+            placeholder="Filter"
+            fontSize={14}
+            fontWeight="bold"
+            bgColor="whiteAlpha.100"
+            borderRadius={24}
+            borderColor="transparent"
+          >
+            {questChain.quests.map(({ questId }) => (
+              <option key={questId} value={questId}>
+                Quest {Number(questId) + 1}
+              </option>
+            ))}
+          </Select>
+          <Button
+            px={12}
+            color="gray.200"
+            fontSize={14}
+            fontWeight="bold"
+            bgColor="whiteAlpha.100"
+            borderRadius={24}
+          >
+            Expand all
+          </Button>
+        </Flex>
+      </Flex>
+    </>
   );
 };
