@@ -47,6 +47,7 @@ import { Role } from '@/components/RoleTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
+import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -219,6 +220,17 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     });
     return userStat;
   }, [questStatuses]);
+
+  const { questStatuses: allQuestStatuses } =
+    useLatestQuestStatusesForChainData(
+      questChain?.chainId,
+      questChain?.address,
+      [],
+    );
+
+  const numSubmissionsToReview = allQuestStatuses.filter(
+    q => q.status === graphql.Status.Review,
+  ).length;
 
   const [progress, setProgress] = useState({
     total: 0,
@@ -618,7 +630,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       START PLAYING
                     </Button>
                   )} */}
-                {mode === Mode.MEMBER && (
+                {mode === Mode.MEMBER && numSubmissionsToReview != 0 && (
                   <Flex
                     w="full"
                     bgColor="rgba(29, 78, 216, 0.3)"
@@ -627,8 +639,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                     justifyContent="space-between"
                   >
                     <Flex justifyContent="center" alignItems="center">
-                      <InfoIcon mr={2} color="#3B82F6" />3 proof submissions are
-                      awaiting review Description
+                      <InfoIcon mr={2} color="#3B82F6" />
+                      {numSubmissionsToReview} proof submissions are awaiting
+                      review Description
                     </Flex>
                     <NextLink
                       as={`/chain/${questChain.chainId}/${questChain.address}/review`}
