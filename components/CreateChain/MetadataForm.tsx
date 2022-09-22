@@ -1,11 +1,10 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
   FormControl,
+  FormLabel,
   HStack,
-  IconButton,
   Image,
   Input,
   Text,
@@ -22,6 +21,8 @@ import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
+import { UploadImageForm } from '../UploadImageForm';
+
 export const MetadataForm: React.FC<{
   onBack?: () => void;
   onSubmit: (
@@ -34,13 +35,13 @@ export const MetadataForm: React.FC<{
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { files, onRemoveFile, inputProps, dropzoneProps, onOpenFiles } =
-    useDropFiles({
-      multiple: false,
-      accept: {
-        'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-      },
-    });
+  const uploadImageProps = useDropFiles({
+    multiple: false,
+    accept: {
+      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
+    },
+  });
+  const { files } = uploadImageProps;
 
   const { isConnected, chainId } = useWallet();
 
@@ -117,8 +118,8 @@ export const MetadataForm: React.FC<{
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <VStack w={{ base: 'full', md: '50%' }} spacing={4}>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Name</Flex>
+            <FormControl w="full" isRequired={true}>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 color="white"
                 value={name}
@@ -127,71 +128,34 @@ export const MetadataForm: React.FC<{
                 onChange={e => setName(e.target.value)}
                 placeholder="Quest Chain Name"
               />
-            </Flex>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Description</Flex>
+            </FormControl>
+            <FormControl w="full" isRequired={true}>
+              <FormLabel htmlFor="description">Description</FormLabel>
               <MarkdownEditor
                 height="12rem"
                 value={description}
                 placeholder="Quest Chain Description"
                 onChange={setDescription}
               />
-            </Flex>
+            </FormControl>
           </VStack>
-          <FormControl
-            w={{ base: 'full', md: '50%' }}
-            position="relative"
-            top="1.5rem"
-          >
-            <Flex alignSelf="start">Cover Image (optional)</Flex>
-
-            {files.length ? (
-              <>
-                {files.map((file: File) => (
-                  <Flex key={file.name} pos="relative">
-                    {typeof window !== 'undefined' && (
-                      <Image
-                        alt=""
-                        maxH="17rem"
-                        w="auto"
-                        src={window.URL.createObjectURL(file)}
-                      />
-                    )}
-                    <IconButton
-                      pos="absolute"
-                      size="sm"
-                      top={2}
-                      left={2}
-                      borderRadius="full"
-                      onClick={() => onRemoveFile(file)}
-                      icon={<SmallCloseIcon boxSize="1.5rem" />}
-                      aria-label={''}
-                      backdropFilter="blur(40px)"
-                      boxShadow="inset 0px 0px 0px 1px white"
-                    />
-                  </Flex>
-                ))}
-              </>
-            ) : (
-              <Flex
-                {...dropzoneProps}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                h="16.5rem"
-                onClick={onOpenFiles}
-              >
-                <input {...inputProps} color="white" />
-                <Flex
-                  height="16rem"
-                  alignSelf="center"
-                  alignItems="center"
-                >{`Drag 'n' drop an image here`}</Flex>
-              </Flex>
-            )}
-          </FormControl>
+          <UploadImageForm
+            {...uploadImageProps}
+            label="Cover Image (optional)"
+            formControlProps={{
+              w: { base: 'full', md: '50%' },
+              position: 'relative',
+              top: '1.5rem',
+            }}
+            imageProps={{
+              maxHeight: '16rem',
+              w: 'auto',
+            }}
+            dropzoneProps={{
+              ...uploadImageProps.dropzoneProps,
+              height: '16rem',
+            }}
+          />
         </Flex>
         <Flex
           mt={4}

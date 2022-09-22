@@ -1,16 +1,17 @@
+import { BoxProps } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { DropzoneInputProps, DropzoneProps, useDropzone } from 'react-dropzone';
 
-export const useDropFiles = (
-  options: DropzoneProps = {},
-): {
+export type DropFilesType = {
   onOpenFiles: () => void;
   onResetFiles: () => void;
-  dropzoneProps: { className: string };
+  dropzoneProps: { className: string } & BoxProps;
   inputProps: DropzoneInputProps;
   onRemoveFile: (file: File) => void;
   files: File[];
-} => {
+};
+
+export const useDropFiles = (options: DropzoneProps = {}): DropFilesType => {
   const [files, setFiles] = useState<File[]>([]);
 
   const onResetFiles = useCallback(() => setFiles([]), []);

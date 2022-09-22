@@ -1,11 +1,8 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
-  IconButton,
   Image,
   Input,
   Textarea,
@@ -19,6 +16,7 @@ import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
 import { SubmitButton } from '../SubmitButton';
+import { UploadImageForm } from '../UploadImageForm';
 
 const CustomNFTForm2D: React.FC<{
   chainName?: string;
@@ -29,13 +27,13 @@ const CustomNFTForm2D: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
-  const { files, onRemoveFile, inputProps, dropzoneProps, onOpenFiles } =
-    useDropFiles({
-      multiple: false,
-      accept: {
-        'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-      },
-    });
+  const uploadImageProps = useDropFiles({
+    multiple: false,
+    accept: {
+      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
+    },
+  });
+  const { files } = uploadImageProps;
 
   const isDisabled = !files.length;
 
@@ -81,47 +79,11 @@ const CustomNFTForm2D: React.FC<{
   return (
     <Flex w="100%" gap={8} mb={12} flexDir="column">
       <Flex flexDir="column" w={{ md: 'xl' }} alignSelf="center">
-        {files.length ? (
-          <>
-            {files.map((file: File) => (
-              <Flex key={file.name} pos="relative">
-                {typeof window !== 'undefined' && (
-                  <Image
-                    alt=""
-                    src={window.URL.createObjectURL(file)}
-                    height="16rem"
-                  />
-                )}
-                <IconButton
-                  pos="absolute"
-                  size="sm"
-                  top={2}
-                  left={2}
-                  borderRadius="full"
-                  onClick={() => onRemoveFile(file)}
-                  icon={<SmallCloseIcon boxSize="1.5rem" />}
-                  aria-label={''}
-                  backdropFilter="blur(40px)"
-                  boxShadow="inset 0px 0px 0px 1px white"
-                />
-              </Flex>
-            ))}
-          </>
-        ) : (
-          <Flex
-            {...dropzoneProps}
-            flexDir="column"
-            borderWidth={1}
-            borderStyle="dashed"
-            borderRadius={20}
-            p={10}
-            mb={4}
-            onClick={onOpenFiles}
-          >
-            <input {...inputProps} color="white" />
-            <Box alignSelf="center">{`Drag 'n' drop an image here`}</Box>
-          </Flex>
-        )}
+        <UploadImageForm
+          {...uploadImageProps}
+          imageProps={{ height: '16rem' }}
+          formControlProps={{ mb: '4' }}
+        />
         <FormControl isRequired>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input

@@ -1,11 +1,9 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
-  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,7 +11,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -30,6 +27,7 @@ import { getQuestChainContract } from '@/web3/contract';
 
 import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
+import { UploadFilesForm } from './UploadFilesForm';
 
 export const UploadProof: React.FC<{
   refresh: () => void;
@@ -45,14 +43,9 @@ export const UploadProof: React.FC<{
 
   const [proofDescription, setProofDescription] = useState('');
 
-  const {
-    files,
-    onRemoveFile,
-    inputProps,
-    dropzoneProps,
-    onResetFiles,
-    onOpenFiles,
-  } = useDropFiles();
+  const dropFileProps = useDropFiles();
+
+  const { files, onResetFiles } = dropFileProps;
 
   const onModalClose = useCallback(() => {
     setProofDescription('');
@@ -176,39 +169,7 @@ export const UploadProof: React.FC<{
                 />
               </Flex>
             </FormControl>
-            <FormControl>
-              <FormLabel color="main" htmlFor="file">
-                Upload file
-              </FormLabel>
-              <Flex
-                {...dropzoneProps}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                mb={4}
-                onClick={onOpenFiles}
-              >
-                <input {...inputProps} color="white" />
-                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
-              </Flex>
-            </FormControl>
-            <Text mb={1}>Files:</Text>
-            {files.map((file: File) => (
-              <Flex key={file.name} w="100%" mb={1}>
-                <IconButton
-                  size="xs"
-                  borderRadius="full"
-                  onClick={() => onRemoveFile(file)}
-                  icon={<SmallCloseIcon boxSize="1rem" />}
-                  aria-label={''}
-                />
-                <Text ml={1} alignSelf="center">
-                  {file.name} - {file.size} bytes
-                </Text>
-              </Flex>
-            ))}
+            <UploadFilesForm {...dropFileProps} />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">
