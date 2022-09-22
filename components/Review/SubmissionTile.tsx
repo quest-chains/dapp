@@ -9,7 +9,6 @@ import {
   Image,
   Link,
   Text,
-  useDisclosure,
 } from '@chakra-ui/react';
 
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
@@ -31,12 +30,12 @@ export type SubmissionType = {
 };
 
 export const SubmissionTile: React.FC<{
-  review: SubmissionType;
-  onReview: (quest: any) => void;
+  submission: SubmissionType;
+  onReview: (quest: SubmissionType[]) => void;
   isDisabled: boolean;
   checked?: boolean;
   onCheck?: () => void;
-}> = ({ review, onReview, isDisabled, checked, onCheck }) => {
+}> = ({ submission, onReview, isDisabled, checked, onCheck }) => {
   const {
     userId,
     questId,
@@ -45,7 +44,7 @@ export const SubmissionTile: React.FC<{
     submissionDescription,
     submissionUrl,
     submissionTimestamp,
-  } = review;
+  } = submission;
 
   const date = new Date(submissionTimestamp * 1000);
   const year = date.getFullYear();
@@ -53,17 +52,6 @@ export const SubmissionTile: React.FC<{
   const day = date.getDate();
 
   const url = ipfsUriToHttp(submissionUrl);
-
-  const {
-    onOpen: onOpenAccept,
-    onClose: onCloseAccept,
-    isOpen: isOpenAccept,
-  } = useDisclosure();
-  const {
-    onOpen: onOpenReject,
-    onClose: onCloseReject,
-    isOpen: isOpenReject,
-  } = useDisclosure();
 
   return (
     <AccordionItem
@@ -130,9 +118,9 @@ export const SubmissionTile: React.FC<{
                 {submissionDescription}
               </Text>
 
-              {review.success !== undefined && (
+              {submission.success !== undefined && (
                 <Flex pr={8}>
-                  {review.success ? (
+                  {submission.success ? (
                     <Flex
                       bg="#171923"
                       justifyContent="center"
@@ -159,7 +147,7 @@ export const SubmissionTile: React.FC<{
                   )}
                 </Flex>
               )}
-              {review.success === undefined && (
+              {submission.success === undefined && (
                 <Flex
                   opacity={0}
                   _groupHover={{
@@ -175,24 +163,16 @@ export const SubmissionTile: React.FC<{
                   bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
                 >
                   <PopoverButton
-                    review={[review]}
+                    toReview={[submission]}
                     onReview={onReview}
                     isDisabled={isDisabled}
-                    onOpen={onOpenReject}
-                    onClose={onCloseReject}
-                    isOpen={isOpenReject}
-                    onCloseOther={onCloseAccept}
                     success={false}
                   />
 
                   <PopoverButton
-                    review={[review]}
+                    toReview={[submission]}
                     onReview={onReview}
                     isDisabled={isDisabled}
-                    onOpen={onOpenAccept}
-                    onClose={onCloseAccept}
-                    isOpen={isOpenAccept}
-                    onCloseOther={onCloseReject}
                     success={true}
                   />
                 </Flex>

@@ -44,7 +44,7 @@ import {
 import { SubmitButton } from '@/components/SubmitButton';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
+// import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { formatAddress, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
@@ -55,6 +55,30 @@ type Props = {
   refresh: () => void;
 };
 
+const statusToSubmission = (
+  q: graphql.QuestStatusInfoFragment,
+): SubmissionType => ({
+  id: q.id,
+  userId: q.user.id,
+  questId: q.quest.questId,
+  name: q.quest.name,
+  description: q.quest.description,
+  submissionDescription: String(
+    q.submissions[q.submissions.length - 1].description,
+  ),
+  submissionUrl:
+    q.submissions[q.submissions.length - 1]?.externalUrl || undefined,
+  submissionTimestamp: Number(
+    q.submissions[q.submissions.length - 1].timestamp,
+  ),
+  success:
+    q.status === graphql.Status.Pass
+      ? true
+      : q.status === graphql.Status.Fail
+      ? false
+      : undefined,
+});
+
 export const QuestChainV1ReviewPage: React.FC<Props> = ({
   questStatuses,
   questChain,
@@ -62,12 +86,12 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   refresh,
 }) => {
   const { isOpen, onClose } = useDisclosure();
-  const [quest, setQuest] = useState<SubmissionType | null>(null);
+  const [allSubmissions, setAllSubmissions] = useState<SubmissionType[]>([]);
+  const [submitted, setSubmitted] = useState<SubmissionType[]>([]);
   const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
-  const [reviewed, setReviewed] = useState<SubmissionType[] | null>([]);
+  const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
 
-  const [rejecting, setRejecting] = useState(false);
-  const [accepting, setAccepting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
     [],
@@ -83,31 +107,31 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const isDisabled = chainId !== questChain?.chainId;
 
   useEffect(() => {
-    if (questStatuses) {
-      setAwaitingReview(
-        questStatuses
-          .filter(q => q.status === 'review')
-          .filter(q =>
-            reviewed ? reviewed?.every(review => review.id !== q.id) : true,
-          )
-          .map(q => ({
-            id: q.id,
-            userId: q.user.id,
-            questId: q.quest.questId,
-            name: q.quest.name,
-            description: q.quest.description,
-            submissionDescription: String(
-              q.submissions[q.submissions.length - 1].description,
-            ),
-            submissionUrl:
-              q.submissions[q.submissions.length - 1]?.externalUrl || undefined,
-            submissionTimestamp: Number(
-              q.submissions[q.submissions.length - 1].timestamp,
-            ),
-          })),
+    setAllSubmissions(questStatuses.map(statusToSubmission));
+    setSubmitted(
+      questStatuses
+        .filter(
+          q =>
+            q.status === graphql.Status.Pass ||
+            q.status === graphql.Status.Fail,
+        )
+        .map(statusToSubmission),
+    );
+    setAwaitingReview(
+      questStatuses
+        .filter(q => q.status === graphql.Status.Review)
+        .map(statusToSubmission),
+    );
+    setReviewed([]);
+  }, [questStatuses]);
+
+  useEffect(() => {
+    if (reviewed.length > 0) {
+      setAwaitingReview(previous =>
+        previous.filter(q => reviewed.every(r => r.id !== q.id)),
       );
-    } else setAwaitingReview([]);
-  }, [questStatuses, reviewed]);
+    }
+  }, [reviewed]);
 
   const allAwaitingReviewChecked =
     checkedAwaitingReview.length !== 0 &&
@@ -140,122 +164,89 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     setMyFiles(newFiles);
   };
 
+  const [quest, setQuest] = useState<SubmissionType | null>(null);
+
   const onModalClose = useCallback(() => {
+    setQuest(null);
     setReviewDescription('');
     setMyFiles([]);
-    setQuest(null);
     onClose();
   }, [onClose]);
 
   const onReview = useCallback(
-    (selected: SubmissionType) => {
-      setReviewed((reviewed || []).concat(selected));
-    },
-    [reviewed],
+    (selected: SubmissionType[]) => setReviewed(r => [...r, ...selected]),
+    [],
   );
 
-  const onReviewMultiple = useCallback(
-    (selected: SubmissionType[]) => {
-      setReviewed((reviewed || []).concat(selected));
-    },
-    [reviewed],
-  );
+  const onSubmit = useCallback(async () => {
+    if (
+      !chainId ||
+      !questChain ||
+      !provider ||
+      chainId !== questChain.chainId ||
+      reviewed.length == 0
+    )
+      return;
 
-  const {
-    onOpen: onOpenAccept,
-    onClose: onCloseAccept,
-    isOpen: isOpenAccept,
-  } = useDisclosure();
-  const {
-    onOpen: onOpenReject,
-    onClose: onCloseReject,
-    isOpen: isOpenReject,
-  } = useDisclosure();
+    let tid;
+    try {
+      setSubmitting(true);
+      // tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      // const metadata: Metadata = {
+      //   name: `Review - Quest - ${quest.name} - User - ${quest.userId} - Reviewer - ${address}`,
+      //   description: reviewDescription,
+      // };
+      // if (myFiles.length > 0) {
+      //   const filesHash = await uploadFiles(myFiles);
+      //   metadata.external_url = `ipfs://${filesHash}`;
+      // }
 
-  const onSubmit = useCallback(
-    async (success: boolean) => {
-      if (
-        !chainId ||
-        !questChain ||
-        !provider ||
-        chainId !== questChain.chainId
-      )
-        return;
-      if (quest && reviewDescription) {
-        setRejecting(!success);
-        setAccepting(success);
+      // const hash = await uploadMetadata(metadata);
+      // const details = `ipfs://${hash}`;
+      // toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
 
-        let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-        try {
-          const metadata: Metadata = {
-            name: `Review - Quest - ${quest.name} - User - ${quest.userId} - Reviewer - ${address}`,
-            description: reviewDescription,
-          };
-          if (myFiles.length > 0) {
-            const filesHash = await uploadFiles(myFiles);
-            metadata.external_url = `ipfs://${filesHash}`;
-          }
-
-          const hash = await uploadMetadata(metadata);
-          const details = `ipfs://${hash}`;
-          toast.dismiss(tid);
-          tid = toast.loading(
-            'Waiting for Confirmation - Confirm the transaction in your Wallet',
-          );
-
-          const contract = getQuestChainContract(
-            questChain.address,
-            questChain.version,
-            provider.getSigner(),
-          );
-          const tx = await (questChain.version === '1'
-            ? (contract as contracts.V1.QuestChain).reviewProofs(
-                [quest.userId],
-                [quest.questId],
-                [success],
-                [details],
-              )
-            : (contract as contracts.V0.QuestChain).reviewProof(
-                quest.userId,
-                quest.questId,
-                success,
-                details,
-              ));
-          toast.dismiss(tid);
-          tid = handleTxLoading(tx.hash, chainId);
-          const receipt = await tx.wait(1);
-          toast.dismiss(tid);
-          tid = toast.loading(
-            'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-          );
-          await waitUntilBlock(chainId, receipt.blockNumber);
-          toast.dismiss(tid);
-          toast.success(
-            `Successfully ${success ? 'Accepted' : 'Rejected'} the Submission!`,
-          );
-          refresh();
-          onModalClose();
-        } catch (error) {
-          toast.dismiss(tid);
-          handleError(error);
-        }
-
-        setRejecting(false);
-        setAccepting(false);
-      }
-    },
-    [
-      refresh,
-      quest,
-      reviewDescription,
-      myFiles,
-      onModalClose,
-      address,
-      chainId,
-      questChain,
-      provider,
-    ],
-  );
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      );
+      const tx = await (contract as contracts.V1.QuestChain).reviewProofs(
+        reviewed.map(q => q.userId),
+        reviewed.map(q => q.questId),
+        reviewed.map(q => !!q.success),
+        reviewed.map(() => ''),
+      );
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
+      toast.success(`Successfully Reviewed the Submissions!`);
+      refresh();
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [
+    refresh,
+    // quest,
+    // reviewDescription,
+    // myFiles,
+    // address,
+    chainId,
+    questChain,
+    provider,
+    reviewed,
+  ]);
 
   return (
     <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
@@ -288,7 +279,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             <NetworkDisplay chainId={questChain.chainId} />
           </Box>
         </Flex>
-        {reviewed?.length ? (
+        {reviewed.length != 0 && (
           <Flex
             bgColor="whiteAlpha.100"
             borderRadius="full"
@@ -301,10 +292,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             <Text mr={6}>
               {reviewed.length} Review{reviewed.length > 1 ? 's' : ''} ready
             </Text>
-            <SubmitButton>Submit</SubmitButton>
+            <SubmitButton isLoading={submitting} onClick={onSubmit}>
+              Submit
+            </SubmitButton>
           </Flex>
-        ) : (
-          <></>
         )}
       </Flex>
       <VStack w="100%" spacing={6}>
@@ -348,7 +339,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   ml={2}
                   fontSize={11}
                 >
-                  {reviewed?.length || 0}
+                  {reviewed.length}
                 </Text>
               </Tab>
               <Tab
@@ -367,7 +358,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   ml={2}
                   fontSize={11}
                 >
-                  {0}
+                  {submitted.length}
                 </Text>
               </Tab>
               <Tab
@@ -386,7 +377,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   ml={2}
                   fontSize={11}
                 >
-                  {0}
+                  {allSubmissions.length}
                 </Text>
               </Tab>
             </TabList>
@@ -413,27 +404,19 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 {checkedAwaitingReview.some(item => item) && (
                   <>
                     <PopoverButton
-                      review={awaitingReview.filter(
+                      toReview={awaitingReview.filter(
                         (_, i) => checkedAwaitingReview[i],
                       )}
-                      onReview={onReviewMultiple}
+                      onReview={onReview}
                       isDisabled={isDisabled}
-                      onOpen={onOpenReject}
-                      onClose={onCloseReject}
-                      isOpen={isOpenReject}
-                      onCloseOther={onCloseAccept}
                       success={false}
                     />
                     <PopoverButton
-                      review={awaitingReview.filter(
+                      toReview={awaitingReview.filter(
                         (_, i) => checkedAwaitingReview[i],
                       )}
-                      onReview={onReviewMultiple}
+                      onReview={onReview}
                       isDisabled={isDisabled}
-                      onOpen={onOpenAccept}
-                      onClose={onCloseAccept}
-                      isOpen={isOpenAccept}
-                      onCloseOther={onCloseReject}
                       success={true}
                     />
                   </>
@@ -483,7 +466,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 <Accordion allowMultiple defaultIndex={[]}>
                   {awaitingReview.map((review, index) => (
                     <SubmissionTile
-                      review={review}
+                      submission={review}
                       onReview={onReview}
                       key={review.id}
                       isDisabled={isDisabled}
@@ -498,7 +481,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   {reviewed &&
                     reviewed.map(review => (
                       <SubmissionTile
-                        review={review}
+                        submission={review}
                         onReview={onReview}
                         key={review.id}
                         isDisabled={isDisabled}
@@ -578,22 +561,13 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 Close
               </Button>
               <SubmitButton
-                borderColor="rejected"
-                // color="rejected"
-                isLoading={rejecting}
-                isDisabled={!reviewDescription}
-                onClick={() => onSubmit(false)}
+              // borderColor="rejected"
+              // borderColor="main"
+              // isLoading={submitting}
+              // isDisabled={!reviewDescription}
+              // onClick={() => onSubmit(false)}
               >
-                Reject
-              </SubmitButton>
-              <SubmitButton
-                borderColor="main"
-                // color="main"
-                isLoading={accepting}
-                isDisabled={!reviewDescription}
-                onClick={() => onSubmit(true)}
-              >
-                Accept
+                Confirm
               </SubmitButton>
             </HStack>
           </ModalFooter>

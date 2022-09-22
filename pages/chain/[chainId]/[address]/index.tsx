@@ -151,7 +151,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   );
   const isReviewer: boolean = useMemo(
     () =>
-      questChain?.editors.some(
+      questChain?.reviewers.some(
         ({ address: a }) => a === address?.toLowerCase(),
       ) ?? false,
     [questChain, address],

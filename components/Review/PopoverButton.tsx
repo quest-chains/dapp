@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Tooltip,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 import CommentCheck from '@/assets/CommentCheck.svg';
@@ -25,31 +26,16 @@ export type SubmissionType = {
 };
 
 export const PopoverButton: React.FC<{
-  review: SubmissionType[];
-  onReview: (quest: any) => void;
+  toReview: SubmissionType[];
+  onReview: (quest: SubmissionType[]) => void;
   isDisabled: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  isOpen: boolean;
-  onCloseOther: () => void;
   success: boolean;
-}> = ({
-  review,
-  onReview,
-  isDisabled,
-  onOpen,
-  onClose,
-  isOpen,
-  onCloseOther,
-  success,
-}) => {
+}> = ({ toReview, onReview, isDisabled, success }) => {
+  const { onOpen, onClose, isOpen } = useDisclosure();
   return (
     <Popover
       isOpen={isOpen}
-      onOpen={() => {
-        onCloseOther();
-        onOpen();
-      }}
+      onOpen={onOpen}
       onClose={onClose}
       isLazy
       lazyBehavior="keepMounted"
@@ -90,7 +76,7 @@ export const PopoverButton: React.FC<{
             px={6}
             onClick={() => {
               onReview(
-                review.map(r => ({
+                toReview.map(r => ({
                   ...r,
                   success,
                 })),
@@ -108,7 +94,7 @@ export const PopoverButton: React.FC<{
             px={6}
             onClick={() => {
               onReview(
-                review.map(r => ({
+                toReview.map(r => ({
                   ...r,
                   success,
                 })),

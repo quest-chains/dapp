@@ -3,13 +3,13 @@ import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { QuestChainV0ReviewPage } from '@/components/Review/QuestChainV0ReviewPage';
 import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPage';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { AVAILABLE_NETWORK_INFO } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
   graphql;
@@ -43,6 +43,14 @@ const Review: React.FC<Props> = ({
   const fetching = fetchingStatuses || fetchingQuests;
 
   const { isFallback } = useRouter();
+  const { address } = useWallet();
+  const isReviewer: boolean = useMemo(
+    () =>
+      questChain?.reviewers.some(
+        ({ address: a }) => a === address?.toLowerCase(),
+      ) ?? false,
+    [questChain, address],
+  );
 
   if (isFallback) {
     return (
@@ -69,6 +77,15 @@ const Review: React.FC<Props> = ({
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
   );
+
+  if (!isReviewer) {
+    return (
+      <VStack>
+        <ReviewHead />
+        <Text> Cannot review quest chain! </Text>
+      </VStack>
+    );
+  }
 
   if (questChain.version === '0') {
     return (
