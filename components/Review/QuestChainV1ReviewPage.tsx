@@ -44,7 +44,6 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { useDropFiles } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-// import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { formatAddress, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 

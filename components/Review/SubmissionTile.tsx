@@ -3,7 +3,7 @@ import {
   AccordionButton,
   AccordionIcon,
   AccordionItem,
-  AccordionPanel,
+  Box,
   Checkbox,
   Flex,
   Image,
@@ -40,7 +40,6 @@ export const SubmissionTile: React.FC<{
     userId,
     questId,
     name,
-    description,
     submissionDescription,
     submissionUrl,
     submissionTimestamp,
@@ -92,19 +91,30 @@ export const SubmissionTile: React.FC<{
               </AccordionButton>
             </Flex>
           </Flex>
-          {!isExpanded && (
-            <Flex
-              w="full"
-              position="relative"
-              h={12}
-              justifyContent="space-between"
-            >
-              {url && (
+          <Flex w="full" position="relative" h={12}>
+            {url && (
+              <Box>
                 <Link isExternal href={url} _hover={{}}>
-                  <Image src={url} alt="submission pic" maxH={12} pr={5} />
+                  <Image
+                    src={url}
+                    alt="submission pic"
+                    w="full"
+                    h={12}
+                    minW="fit-content"
+                    pr={4}
+                  />
                 </Link>
-              )}
+              </Box>
+            )}
+
+            {isExpanded && (
+              <Box pl={1}>
+                <MarkdownViewer markdown={submissionDescription ?? ''} />
+              </Box>
+            )}
+            {!isExpanded && (
               <Text
+                pl={1}
                 overflow="hidden"
                 textOverflow="ellipsis"
                 display="-webkit-box"
@@ -117,76 +127,76 @@ export const SubmissionTile: React.FC<{
               >
                 {submissionDescription}
               </Text>
+            )}
 
-              {submission.success !== undefined && (
-                <Flex pr={8}>
-                  {submission.success ? (
-                    <Flex
-                      bg="#171923"
-                      justifyContent="center"
-                      alignItems="center"
-                      h="2.75rem"
-                      w="2.75rem"
-                      borderRadius="full"
-                      border="1px solid #10B981"
-                    >
-                      <CheckIcon color="#10B981" />
-                    </Flex>
-                  ) : (
-                    <Flex
-                      bg="#171923"
-                      justifyContent="center"
-                      alignItems="center"
-                      h="2.75rem"
-                      w="2.75rem"
-                      borderRadius="full"
-                      border="1px solid #F43F5E"
-                    >
-                      <CloseIcon color="#F43F5E" />
-                    </Flex>
-                  )}
-                </Flex>
-              )}
-              {submission.success === undefined && (
-                <Flex
-                  opacity={0}
-                  _groupHover={{
-                    opacity: 1,
-                  }}
-                  transition="opacity 0.25s"
-                  position="absolute"
-                  right={6}
-                  top={1}
-                  height={12}
-                  pl={14}
-                  gap={2}
-                  bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
-                >
-                  <PopoverButton
-                    toReview={[submission]}
-                    onReview={onReview}
-                    isDisabled={isDisabled}
-                    success={false}
-                  />
-
-                  <PopoverButton
-                    toReview={[submission]}
-                    onReview={onReview}
-                    isDisabled={isDisabled}
-                    success={true}
-                  />
-                </Flex>
-              )}
-            </Flex>
-          )}
-
-          {isExpanded && (
-            <AccordionPanel pr={8} pl={0}>
-              <Flex w="full" fontSize="lg">
-                <MarkdownViewer markdown={description ?? ''} />
+            {submission.success !== undefined && (
+              <Flex
+                position="absolute"
+                right={6}
+                top={1}
+                height={12}
+                pl={14}
+                gap={2}
+                bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+              >
+                {submission.success ? (
+                  <Flex
+                    bg="#171923"
+                    justifyContent="center"
+                    alignItems="center"
+                    h="2.75rem"
+                    w="2.75rem"
+                    borderRadius="full"
+                    border="1px solid #10B981"
+                  >
+                    <CheckIcon color="#10B981" />
+                  </Flex>
+                ) : (
+                  <Flex
+                    bg="#171923"
+                    justifyContent="center"
+                    alignItems="center"
+                    h="2.75rem"
+                    w="2.75rem"
+                    borderRadius="full"
+                    border="1px solid #F43F5E"
+                  >
+                    <CloseIcon color="#F43F5E" />
+                  </Flex>
+                )}
               </Flex>
-            </AccordionPanel>
-          )}
+            )}
+            {submission.success === undefined && (
+              <Flex
+                opacity={0}
+                _groupHover={{
+                  opacity: 1,
+                }}
+                transition="opacity 0.25s"
+                position="absolute"
+                right={6}
+                top={1}
+                height={12}
+                pl={14}
+                gap={2}
+                bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+              >
+                <PopoverButton
+                  toReview={[submission]}
+                  onReview={onReview}
+                  isDisabled={isDisabled}
+                  success={false}
+                />
+
+                <PopoverButton
+                  toReview={[submission]}
+                  onReview={onReview}
+                  isDisabled={isDisabled}
+                  success={true}
+                />
+              </Flex>
+            )}
+          </Flex>
         </>
       )}
     </AccordionItem>
