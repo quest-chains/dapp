@@ -34,6 +34,7 @@ export const AddQuestBlock: React.FC<{
               value={name}
               bg="#0F172A"
               id="name"
+              maxLength={60}
               onChange={e => setName(e.target.value)}
               placeholder="Quest Name"
             />

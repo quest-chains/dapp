@@ -292,10 +292,10 @@ export const Quest: React.FC<{
     <AccordionItem bg={bgColor} borderRadius={10} px={4} mb={3} border={0}>
       <Flex alignItems="center">
         <AccordionButton py={6}>
-          <Box flex="1" textAlign="left" fontWeight="bold">
+          <Box flex="1" textAlign="left" fontWeight="bold" whiteSpace="nowrap">
             {name}
           </Box>
-          <AccordionIcon />
+          <AccordionIcon ml={4} />
         </AccordionButton>
         {isMember && (
           <>
@@ -349,6 +349,7 @@ export const EditingQuest: React.FC<{
       <Input
         bg="#0F172A"
         value={name}
+        maxLength={60}
         onChange={e => setName(e.target.value)}
       />
       <MarkdownEditor value={description ?? ''} onChange={setDescription} />
