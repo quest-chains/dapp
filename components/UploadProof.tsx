@@ -19,9 +19,9 @@ import {
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
+import { useDropFiles } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -43,32 +43,22 @@ export const UploadProof: React.FC<{
 
   const [isSubmitting, setSubmitting] = useState(false);
 
+  const [proofDescription, setProofDescription] = useState('');
+
+  const {
+    files,
+    onRemoveFile,
+    inputProps,
+    dropzoneProps,
+    onResetFiles,
+    onOpenFiles,
+  } = useDropFiles();
+
   const onModalClose = useCallback(() => {
     setProofDescription('');
-    setMyFiles([]);
+    onResetFiles;
     onClose();
-  }, [onClose]);
-  const [proofDescription, setProofDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    // Disable click and keydown behavior
-    noClick: true,
-    noKeyboard: true,
-    onDrop,
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
+  }, [onClose, onResetFiles]);
 
   const onSubmit = useCallback(async () => {
     if (!chainId || chainId !== questChain.chainId || !provider) return;
@@ -76,7 +66,7 @@ export const UploadProof: React.FC<{
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
-        let hash = myFiles.length ? await uploadFiles(myFiles) : '';
+        let hash = files.length ? await uploadFiles(files) : '';
         const metadata: Metadata = {
           name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
           description: proofDescription,
@@ -128,7 +118,7 @@ export const UploadProof: React.FC<{
     chainId,
     questChain,
     proofDescription,
-    myFiles,
+    files,
     questId,
     name,
     onModalClose,
@@ -191,26 +181,26 @@ export const UploadProof: React.FC<{
                 Upload file
               </FormLabel>
               <Flex
-                {...getRootProps({ className: 'dropzone' })}
+                {...dropzoneProps}
                 flexDir="column"
                 borderWidth={1}
                 borderStyle="dashed"
                 borderRadius={20}
                 p={10}
                 mb={4}
-                onClick={open}
+                onClick={onOpenFiles}
               >
-                <input {...getInputProps()} color="white" />
+                <input {...inputProps} color="white" />
                 <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
               </Flex>
             </FormControl>
             <Text mb={1}>Files:</Text>
-            {myFiles.map((file: File) => (
+            {files.map((file: File) => (
               <Flex key={file.name} w="100%" mb={1}>
                 <IconButton
                   size="xs"
                   borderRadius="full"
-                  onClick={removeFile(file)}
+                  onClick={() => onRemoveFile(file)}
                   icon={<SmallCloseIcon boxSize="1rem" />}
                   aria-label={''}
                 />

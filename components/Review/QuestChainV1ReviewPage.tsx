@@ -31,7 +31,6 @@ import {
 import { contracts, graphql } from '@quest-chains/sdk';
 import NextLink from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -42,6 +41,7 @@ import {
   SubmissionType,
 } from '@/components/Review/SubmissionTile';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useDropFiles } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 // import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -102,7 +102,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     setCheckedAwaitingReview([...checkedAwaitingReview]);
   };
 
-  const { provider, address, chainId } = useWallet();
+  const { provider, chainId } = useWallet();
 
   const isDisabled = chainId !== questChain?.chainId;
 
@@ -142,36 +142,24 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
 
   const [reviewDescription, setReviewDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    // Disable click and keydown behavior
-    noClick: true,
-    noKeyboard: true,
-    onDrop,
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
+  const {
+    files,
+    onRemoveFile,
+    inputProps,
+    dropzoneProps,
+    onResetFiles,
+    onOpenFiles,
+  } = useDropFiles();
 
   const [quest, setQuest] = useState<SubmissionType | null>(null);
 
   const onModalClose = useCallback(() => {
     setQuest(null);
     setReviewDescription('');
-    setMyFiles([]);
+    onResetFiles();
     onClose();
-  }, [onClose]);
+  }, [onClose, onResetFiles]);
 
   const onReview = useCallback(
     (selected: SubmissionType[]) => setReviewed(r => [...r, ...selected]),
@@ -196,8 +184,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       //   name: `Review - Quest - ${quest.name} - User - ${quest.userId} - Reviewer - ${address}`,
       //   description: reviewDescription,
       // };
-      // if (myFiles.length > 0) {
-      //   const filesHash = await uploadFiles(myFiles);
+      // if (files.length > 0) {
+      //   const filesHash = await uploadFiles(files);
       //   metadata.external_url = `ipfs://${filesHash}`;
       // }
 
@@ -240,7 +228,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     refresh,
     // quest,
     // reviewDescription,
-    // myFiles,
+    // files,
     // address,
     chainId,
     questChain,
@@ -520,26 +508,26 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 Upload file
               </FormLabel>
               <Flex
-                {...getRootProps({ className: 'dropzone' })}
+                {...dropzoneProps}
                 flexDir="column"
                 borderWidth={1}
                 borderStyle="dashed"
                 borderRadius={20}
                 p={10}
                 mb={4}
-                onClick={open}
+                onClick={onOpenFiles}
               >
-                <input {...getInputProps()} color="white" />
+                <input {...inputProps} color="white" />
                 <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
               </Flex>
             </FormControl>
             <Text mb={1}>Files:</Text>
-            {myFiles.map((file: File) => (
+            {files.map((file: File) => (
               <Flex key={file.name} w="100%" mb={1}>
                 <IconButton
                   size="xs"
                   borderRadius="full"
-                  onClick={removeFile(file)}
+                  onClick={() => onRemoveFile(file)}
                   icon={<SmallCloseIcon boxSize="1rem" />}
                   aria-label={''}
                 />

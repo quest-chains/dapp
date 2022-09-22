@@ -23,7 +23,6 @@ import {
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useMemo, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
 import { CollapsableText } from '@/components/CollapsableText';
@@ -31,6 +30,7 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
+import { useDropFiles } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -134,36 +134,24 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
   }, [questStatuses]);
 
   const [reviewDescription, setReviewDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    // Disable click and keydown behavior
-    noClick: true,
-    noKeyboard: true,
-    onDrop,
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
+  const {
+    files,
+    onRemoveFile,
+    inputProps,
+    dropzoneProps,
+    onResetFiles,
+    onOpenFiles,
+  } = useDropFiles();
 
   const { onOpen, onClose, isOpen } = useDisclosure();
 
   const onModalClose = useCallback(() => {
     setReviewDescription('');
-    setMyFiles([]);
+    onResetFiles();
     setQuest(null);
     onClose();
-  }, [onClose]);
+  }, [onClose, onResetFiles]);
 
   const onSelect = useCallback(
     (selected: ModalQuestType) => {
@@ -192,8 +180,8 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
             name: `Review - Quest - ${quest.name} - User - ${quest.userId} - Reviewer - ${address}`,
             description: reviewDescription,
           };
-          if (myFiles.length > 0) {
-            const filesHash = await uploadFiles(myFiles);
+          if (files.length > 0) {
+            const filesHash = await uploadFiles(files);
             metadata.external_url = `ipfs://${filesHash}`;
           }
 
@@ -242,7 +230,7 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
       refresh,
       quest,
       reviewDescription,
-      myFiles,
+      files,
       onModalClose,
       address,
       chainId,
@@ -309,26 +297,26 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
                 Upload file
               </FormLabel>
               <Flex
-                {...getRootProps({ className: 'dropzone' })}
+                {...dropzoneProps}
                 flexDir="column"
                 borderWidth={1}
                 borderStyle="dashed"
                 borderRadius={20}
                 p={10}
                 mb={4}
-                onClick={open}
+                onClick={onOpenFiles}
               >
-                <input {...getInputProps()} color="white" />
+                <input {...inputProps} color="white" />
                 <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
               </Flex>
             </FormControl>
             <Text mb={1}>Files:</Text>
-            {myFiles.map((file: File) => (
+            {files.map((file: File) => (
               <Flex key={file.name} w="100%" mb={1}>
                 <IconButton
                   size="xs"
                   borderRadius="full"
-                  onClick={removeFile(file)}
+                  onClick={() => onRemoveFile(file)}
                   icon={<SmallCloseIcon boxSize="1rem" />}
                   aria-label={''}
                 />

@@ -11,10 +11,10 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
+import { useDropFiles } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
@@ -29,30 +29,15 @@ const CustomNFTForm2D: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-  const isDisabled = !myFiles.length;
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
+  const { files, onRemoveFile, inputProps, dropzoneProps, onOpenFiles } =
+    useDropFiles({
+      multiple: false,
+      accept: {
+        'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
+      },
+    });
 
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-    multiple: false,
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-    },
-  });
+  const isDisabled = !files.length;
 
   const [name, setName] = useState<string>('Special Chain');
   const [description, setDescription] = useState<string>(
@@ -70,7 +55,7 @@ const CustomNFTForm2D: React.FC<{
     setLoading(true);
     let tid = toast.loading('Uploading image to IPFS via web3.storage');
     try {
-      const file = myFiles[0];
+      const file = files[0];
       let hash = await uploadFiles([file]);
 
       const metadata: Metadata = {
@@ -91,14 +76,14 @@ const CustomNFTForm2D: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [myFiles, name, description, onSubmit]);
+  }, [files, name, description, onSubmit]);
 
   return (
     <Flex w="100%" gap={8} mb={12} flexDir="column">
       <Flex flexDir="column" w={{ md: 'xl' }} alignSelf="center">
-        {myFiles.length ? (
+        {files.length ? (
           <>
-            {myFiles.map((file: File) => (
+            {files.map((file: File) => (
               <Flex key={file.name} pos="relative">
                 {typeof window !== 'undefined' && (
                   <Image
@@ -113,7 +98,7 @@ const CustomNFTForm2D: React.FC<{
                   top={2}
                   left={2}
                   borderRadius="full"
-                  onClick={removeFile(file)}
+                  onClick={() => onRemoveFile(file)}
                   icon={<SmallCloseIcon boxSize="1.5rem" />}
                   aria-label={''}
                   backdropFilter="blur(40px)"
@@ -124,16 +109,16 @@ const CustomNFTForm2D: React.FC<{
           </>
         ) : (
           <Flex
-            {...getRootProps({ className: 'dropzone' })}
+            {...dropzoneProps}
             flexDir="column"
             borderWidth={1}
             borderStyle="dashed"
             borderRadius={20}
             p={10}
             mb={4}
-            onClick={open}
+            onClick={onOpenFiles}
           >
-            <input {...getInputProps()} color="white" />
+            <input {...inputProps} color="white" />
             <Box alignSelf="center">{`Drag 'n' drop an image here`}</Box>
           </Flex>
         )}
