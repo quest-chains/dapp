@@ -725,16 +725,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   - edit quest
                   - upload proof */}
                     <Accordion allowMultiple w="full" defaultIndex={[]}>
-                      {questChain.quests.map(
-                        ({ name, description, questId, paused }, index) =>
-                          name &&
-                          description && (
+                      {questChain.quests
+                        .filter(q => !!q.name)
+                        .map(
+                          ({ name, description, questId, paused }, index) => (
                             <>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <Quest
                                   key={questId}
                                   name={`${index + 1}. ${name}`}
-                                  description={description}
+                                  description={description ?? ''}
                                   bgColor={
                                     userStatus[questId]?.status === 'pass'
                                       ? 'main.300'
@@ -773,7 +773,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                               )}
                             </>
                           ),
-                      )}
+                        )}
                     </Accordion>
                   </>
                 )}
