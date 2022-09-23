@@ -84,29 +84,43 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   fetching,
   refresh,
 }) => {
+  const { provider, chainId } = useWallet();
+  const isDisabled = chainId !== questChain?.chainId;
   const { isOpen, onClose } = useDisclosure();
   const [allSubmissions, setAllSubmissions] = useState<SubmissionType[]>([]);
   const [submitted, setSubmitted] = useState<SubmissionType[]>([]);
   const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
   const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
-
   const [submitting, setSubmitting] = useState(false);
 
+  const [checkedReviewed, setCheckedReviewed] = useState<boolean[]>([]);
   const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
     [],
   );
 
-  const [checkedReviewed, setCheckedReviewed] = useState<boolean[]>([]);
+  const allAwaitingReviewChecked =
+    checkedAwaitingReview.length !== 0 &&
+    checkedAwaitingReview.length === awaitingReview.length &&
+    checkedAwaitingReview.every(item => item);
+  const allReviewedChecked =
+    checkedReviewed.length !== 0 &&
+    checkedReviewed.length === reviewed.length &&
+    checkedReviewed.every(item => item);
 
-  const setCheckedItem = (index: number) => {
+  const isAwaitingReviewIndeterminate =
+    checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
+  const isReviewedIndeterminate =
+    checkedReviewed.some(Boolean) && !allReviewedChecked;
+
+  const setCheckedItemAwaitingReview = (index: number) => {
     checkedAwaitingReview[index] = !checkedAwaitingReview[index];
     setCheckedAwaitingReview([...checkedAwaitingReview]);
   };
-
-  const { provider, chainId } = useWallet();
-
-  const isDisabled = chainId !== questChain?.chainId;
+  const setCheckedItemReviewed = (index: number) => {
+    checkedReviewed[index] = !checkedReviewed[index];
+    setCheckedReviewed([...checkedReviewed]);
+  };
 
   useEffect(() => {
     setAllSubmissions(questStatuses.map(statusToSubmission));
@@ -134,22 +148,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       );
     }
   }, [reviewed]);
-
-  const allAwaitingReviewChecked =
-    checkedAwaitingReview.length !== 0 &&
-    checkedAwaitingReview.length === awaitingReview.length &&
-    checkedAwaitingReview.every(item => item);
-
-  const isAwaitingReviewIndeterminate =
-    checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
-
-  const allReviewedChecked =
-    checkedReviewed.length !== 0 &&
-    checkedReviewed.length === reviewed.length &&
-    checkedReviewed.every(item => item);
-
-  const isReviewedIndeterminate =
-    checkedReviewed.some(Boolean) && !allAwaitingReviewChecked;
 
   const [reviewDescription, setReviewDescription] = useState('');
 
@@ -337,8 +335,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               <Toolbar
                 allChecked={allAwaitingReviewChecked}
                 isIndeterminate={isAwaitingReviewIndeterminate}
-                setChecked={setCheckedAwaitingReview}
                 submissions={awaitingReview}
+                setChecked={setCheckedAwaitingReview}
                 checkedSubmissions={checkedAwaitingReview}
                 onReview={onReview}
                 isDisabled={isDisabled}
@@ -370,7 +368,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                       key={review.id}
                       isDisabled={isDisabled}
                       checked={checkedAwaitingReview[index]}
-                      onCheck={() => setCheckedItem(index)}
+                      onCheck={() => setCheckedItemAwaitingReview(index)}
                     />
                   ))}
                 </Accordion>
@@ -379,16 +377,18 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
                   {reviewed &&
-                    reviewed.map(review => (
+                    reviewed.map((review, index) => (
                       <SubmissionTile
                         submission={review}
                         onReview={onReview}
                         key={review.id}
                         isDisabled={isDisabled}
+                        checked={checkedReviewed[index]}
                         clearReview={(selected: SubmissionType[]) => {
                           clearReview(selected);
                           addAwaitingReview(selected);
                         }}
+                        onCheck={() => setCheckedItemReviewed(index)}
                       />
                     ))}
                 </Accordion>
