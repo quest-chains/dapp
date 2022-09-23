@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { AttachmentIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
@@ -26,24 +26,35 @@ export type SubmissionType = {
   description: string | null | undefined;
   success?: boolean;
   submissionDescription: string;
-  submissionUrl?: string;
+  imageUri?: string;
+  externalUri?: string;
   submissionTimestamp: number;
 };
 
 export const SubmissionTile: React.FC<{
   submission: SubmissionType;
   onReview: (quest: SubmissionType[]) => void;
+  showButtons?: boolean;
   isDisabled: boolean;
   checked?: boolean;
   onCheck?: () => void;
   clearReview?: (selected: SubmissionType[]) => void;
-}> = ({ submission, onReview, isDisabled, checked, onCheck, clearReview }) => {
+}> = ({
+  submission,
+  onReview,
+  isDisabled,
+  checked,
+  onCheck,
+  clearReview,
+  showButtons = true,
+}) => {
   const {
     userId,
     questId,
     name,
     submissionDescription,
-    submissionUrl,
+    imageUri,
+    externalUri,
     submissionTimestamp,
   } = submission;
 
@@ -52,7 +63,8 @@ export const SubmissionTile: React.FC<{
   const month = date.getMonth();
   const day = date.getDate();
 
-  const url = ipfsUriToHttp(submissionUrl);
+  const imageUrl = ipfsUriToHttp(imageUri);
+  const externalUrl = ipfsUriToHttp(externalUri);
 
   return (
     <AccordionItem
@@ -67,13 +79,12 @@ export const SubmissionTile: React.FC<{
       {({ isExpanded }) => (
         <>
           <Flex alignItems="center" justifyContent="space-between" h={20}>
-            <Flex>
-              <Checkbox
-                isChecked={checked}
-                pr={4}
-                onChange={onCheck}
-              ></Checkbox>
+            <Flex gap={4}>
+              {onCheck && (
+                <Checkbox isChecked={checked} onChange={onCheck}></Checkbox>
+              )}
               <Text fontWeight="bold">{`${1 + Number(questId)}. ${name}`}</Text>
+              {externalUrl && <AttachmentIcon />}
             </Flex>
 
             <Flex alignItems="center" gap={6}>
@@ -93,15 +104,15 @@ export const SubmissionTile: React.FC<{
               </AccordionButton>
             </Flex>
           </Flex>
-          <Flex w="full" position="relative" h={12}>
-            {url && (
+          <Flex w="full" position="relative">
+            {imageUrl && (
               <Box>
-                <Link isExternal href={url} _hover={{}}>
+                <Link isExternal href={imageUrl} _hover={{}}>
                   <Image
-                    src={url}
+                    src={imageUrl}
                     alt="submission pic"
                     w="full"
-                    h={12}
+                    h={isExpanded ? '8rem' : 12}
                     minW="fit-content"
                     pr={4}
                   />
@@ -166,58 +177,60 @@ export const SubmissionTile: React.FC<{
                     <CloseIcon color="#F43F5E" />
                   </Flex>
                 )}
-                <Flex
-                  opacity={0}
-                  _groupHover={{
-                    opacity: 1,
-                  }}
-                  transition="opacity 0.25s"
-                  position="absolute"
-                  right={0}
-                  top={0}
-                  height={12}
-                  pl={14}
-                  gap={2}
-                  bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
-                >
-                  {clearReview && (
-                    <>
-                      {submission.success && (
-                        <PopoverButton
-                          toReview={[submission]}
-                          onReview={onReview}
+                {showButtons && (
+                  <Flex
+                    opacity={0}
+                    _groupHover={{
+                      opacity: 1,
+                    }}
+                    transition="opacity 0.25s"
+                    position="absolute"
+                    right={0}
+                    top={0}
+                    height={12}
+                    pl={14}
+                    gap={2}
+                    bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
+                  >
+                    {clearReview && (
+                      <>
+                        {submission.success && (
+                          <PopoverButton
+                            toReview={[submission]}
+                            onReview={onReview}
+                            isDisabled={isDisabled}
+                            success={false}
+                          />
+                        )}
+                        {!submission.success && (
+                          <PopoverButton
+                            toReview={[submission]}
+                            onReview={onReview}
+                            isDisabled={isDisabled}
+                            success={true}
+                          />
+                        )}
+                        <Button
+                          borderRadius={24}
+                          bgColor="gray.900"
+                          px={6}
+                          borderColor="gray.600"
+                          borderWidth={1}
                           isDisabled={isDisabled}
-                          success={false}
-                        />
-                      )}
-                      {!submission.success && (
-                        <PopoverButton
-                          toReview={[submission]}
-                          onReview={onReview}
-                          isDisabled={isDisabled}
-                          success={true}
-                        />
-                      )}
-                      <Button
-                        borderRadius={24}
-                        bgColor="gray.900"
-                        px={6}
-                        borderColor="gray.600"
-                        borderWidth={1}
-                        isDisabled={isDisabled}
-                        onClick={() => {
-                          clearReview([submission]);
-                        }}
-                      >
-                        Clear Review
-                      </Button>
-                    </>
-                  )}
-                </Flex>
+                          onClick={() => {
+                            clearReview([submission]);
+                          }}
+                        >
+                          Clear Review
+                        </Button>
+                      </>
+                    )}
+                  </Flex>
+                )}
               </Flex>
             )}
 
-            {submission.success === undefined && (
+            {submission.success === undefined && showButtons && (
               <Flex
                 opacity={0}
                 _groupHover={{
@@ -248,6 +261,14 @@ export const SubmissionTile: React.FC<{
               </Flex>
             )}
           </Flex>
+          {isExpanded && externalUrl && (
+            <Flex w="100%" mt={4}>
+              <Link isExternal color="main" href={externalUrl}>
+                <AttachmentIcon mr={2} />
+                {'Attachments'}
+              </Link>
+            </Flex>
+          )}
         </>
       )}
     </AccordionItem>

@@ -65,7 +65,8 @@ const statusToSubmission = (
   submissionDescription: String(
     q.submissions[q.submissions.length - 1].description,
   ),
-  submissionUrl:
+  imageUri: q.submissions[q.submissions.length - 1]?.imageUrl || undefined,
+  externalUri:
     q.submissions[q.submissions.length - 1]?.externalUrl || undefined,
   submissionTimestamp: Number(
     q.submissions[q.submissions.length - 1].timestamp,
@@ -352,7 +353,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             />
 
             {/* Toolbar */}
-            {tabIndex === 0 && (
+            {tabIndex === 0 && awaitingReview.length != 0 && (
               <Toolbar
                 allChecked={allAwaitingReviewChecked}
                 isIndeterminate={isAwaitingReviewIndeterminate}
@@ -365,7 +366,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               />
             )}
 
-            {tabIndex === 1 && (
+            {tabIndex === 1 && reviewed.length != 0 && (
               <Toolbar
                 checkedSubmissions={checkedReviewed}
                 allChecked={allReviewedChecked}
@@ -401,27 +402,52 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               {/* reviewed */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
-                  {reviewed &&
-                    reviewed.map((review, index) => (
-                      <SubmissionTile
-                        submission={review}
-                        onReview={onReview}
-                        key={review.id}
-                        isDisabled={isDisabled}
-                        checked={checkedReviewed[index]}
-                        clearReview={(selected: SubmissionType[]) => {
-                          clearReview(selected);
-                          addAwaitingReview(selected);
-                        }}
-                        onCheck={() => setCheckedItemReviewed(index)}
-                      />
-                    ))}
+                  {reviewed.map((review, index) => (
+                    <SubmissionTile
+                      submission={review}
+                      onReview={onReview}
+                      key={review.id}
+                      isDisabled={isDisabled}
+                      checked={checkedReviewed[index]}
+                      clearReview={(selected: SubmissionType[]) => {
+                        clearReview(selected);
+                        addAwaitingReview(selected);
+                      }}
+                      onCheck={() => setCheckedItemReviewed(index)}
+                    />
+                  ))}
                 </Accordion>
               </TabPanel>
-              {/* reviewed */}
-              <TabPanel p={0}>Submitted</TabPanel>
-              {/* reviewed */}
-              <TabPanel p={0}>All</TabPanel>
+              {/* submitted */}
+              <TabPanel p={0}>
+                <Accordion allowMultiple defaultIndex={[]} mt={4}>
+                  {submitted.map((review, index) => (
+                    <SubmissionTile
+                      submission={review}
+                      onReview={() => undefined}
+                      key={review.id}
+                      isDisabled={isDisabled}
+                      checked={checkedReviewed[index]}
+                      showButtons={false}
+                    />
+                  ))}
+                </Accordion>
+              </TabPanel>
+              {/* allSubmissions */}
+              <TabPanel p={0}>
+                <Accordion allowMultiple defaultIndex={[]} mt={4}>
+                  {allSubmissions.map((review, index) => (
+                    <SubmissionTile
+                      submission={review}
+                      onReview={() => undefined}
+                      key={review.id}
+                      isDisabled={isDisabled}
+                      checked={checkedReviewed[index]}
+                      showButtons={false}
+                    />
+                  ))}
+                </Accordion>
+              </TabPanel>
             </TabPanels>
           </Tabs>
         )}

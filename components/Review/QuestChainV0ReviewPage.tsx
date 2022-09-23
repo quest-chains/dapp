@@ -1,4 +1,9 @@
-import { ExternalLinkIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ExternalLinkIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -17,6 +22,7 @@ import {
   ModalOverlay,
   Spinner,
   Text,
+  useBoolean,
   useBreakpointValue,
   useDisclosure,
   VStack,
@@ -25,7 +31,6 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { CollapsableText } from '@/components/CollapsableText';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -37,6 +42,28 @@ import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+const CollapsableText: React.FC<{
+  title: string | null | undefined;
+  children: unknown;
+}> = ({ title, children }) => {
+  const [isOpen, { toggle }] = useBoolean(false);
+  return (
+    <Flex flexDir="column" w="full">
+      <Flex
+        onClick={toggle}
+        cursor="pointer"
+        w={isOpen ? 'full' : 'initial'}
+        justifyContent="space-between"
+      >
+        <Text fontWeight={700}>{title}</Text>
+        {isOpen && <ChevronUpIcon height={6} width={6} />}
+        {!isOpen && <ChevronDownIcon height={6} width={6} />}
+      </Flex>
+      <>{isOpen && children}</>
+    </Flex>
+  );
+};
 
 const StatusDisplay: React.FC<{
   review: graphql.QuestStatusInfoFragment;
