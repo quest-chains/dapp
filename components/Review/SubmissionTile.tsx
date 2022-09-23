@@ -37,16 +37,7 @@ export const SubmissionTile: React.FC<{
   checked?: boolean;
   onCheck?: () => void;
   clearReview?: (selected: SubmissionType[]) => void;
-  addAwaitingReview?: (selected: SubmissionType[]) => void;
-}> = ({
-  submission,
-  onReview,
-  isDisabled,
-  checked,
-  onCheck,
-  clearReview,
-  addAwaitingReview,
-}) => {
+}> = ({ submission, onReview, isDisabled, checked, onCheck, clearReview }) => {
   const {
     userId,
     questId,
@@ -189,7 +180,7 @@ export const SubmissionTile: React.FC<{
                   gap={2}
                   bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
                 >
-                  {addAwaitingReview && clearReview && (
+                  {clearReview && (
                     <>
                       {submission.success && (
                         <PopoverButton
@@ -216,7 +207,6 @@ export const SubmissionTile: React.FC<{
                         isDisabled={isDisabled}
                         onClick={() => {
                           clearReview([submission]);
-                          addAwaitingReview([submission]);
                         }}
                       >
                         Clear Review

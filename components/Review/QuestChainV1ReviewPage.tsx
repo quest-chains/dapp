@@ -89,6 +89,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const [submitted, setSubmitted] = useState<SubmissionType[]>([]);
   const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
   const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -308,7 +309,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         {fetching ? (
           <Spinner color="main" />
         ) : (
-          <Tabs w="full" p={0}>
+          <Tabs w="full" p={0} onChange={index => setTabIndex(index)}>
             <TabsList
               awaitingReviewLength={awaitingReview.length}
               reviewedLength={reviewed.length}
@@ -317,16 +318,31 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             />
 
             {/* Toolbar */}
-            <Toolbar
-              allAwaitingReviewChecked={allAwaitingReviewChecked}
-              isAwaitingReviewIndeterminate={isAwaitingReviewIndeterminate}
-              setCheckedAwaitingReview={setCheckedAwaitingReview}
-              awaitingReview={awaitingReview}
-              checkedAwaitingReview={checkedAwaitingReview}
-              onReview={onReview}
-              isDisabled={isDisabled}
-              questChain={questChain}
-            />
+            {tabIndex === 0 && (
+              <Toolbar
+                allChecked={allAwaitingReviewChecked}
+                isIndeterminate={isAwaitingReviewIndeterminate}
+                setChecked={setCheckedAwaitingReview}
+                submissions={awaitingReview}
+                checkedSubmissions={checkedAwaitingReview}
+                onReview={onReview}
+                isDisabled={isDisabled}
+                questChain={questChain}
+              />
+            )}
+
+            {tabIndex === 1 && (
+              <Toolbar
+                allChecked={allAwaitingReviewChecked}
+                isIndeterminate={isAwaitingReviewIndeterminate}
+                setChecked={setCheckedAwaitingReview}
+                submissions={awaitingReview}
+                checkedSubmissions={checkedAwaitingReview}
+                onReview={onReview}
+                isDisabled={isDisabled}
+                questChain={questChain}
+              />
+            )}
 
             <TabPanels>
               {/* awaiting review */}
@@ -354,12 +370,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                         onReview={onReview}
                         key={review.id}
                         isDisabled={isDisabled}
-                        clearReview={(selected: SubmissionType[]) =>
-                          clearReview(selected)
-                        }
-                        addAwaitingReview={(selected: SubmissionType[]) =>
-                          addAwaitingReview(selected)
-                        }
+                        clearReview={(selected: SubmissionType[]) => {
+                          clearReview(selected);
+                          addAwaitingReview(selected);
+                        }}
                       />
                     ))}
                 </Accordion>
@@ -548,20 +562,20 @@ const TabsList: React.FC<{
 };
 
 const Toolbar: React.FC<{
-  allAwaitingReviewChecked: boolean;
-  isAwaitingReviewIndeterminate: boolean;
-  setCheckedAwaitingReview: (submission: boolean[]) => void;
-  awaitingReview: SubmissionType[];
-  checkedAwaitingReview: boolean[];
+  allChecked: boolean;
+  isIndeterminate: boolean;
+  setChecked: (submission: boolean[]) => void;
+  submissions: SubmissionType[];
+  checkedSubmissions: boolean[];
   onReview: (selected: SubmissionType[]) => void;
   isDisabled: boolean;
   questChain: graphql.QuestChainInfoFragment;
 }> = ({
-  allAwaitingReviewChecked,
-  isAwaitingReviewIndeterminate,
-  setCheckedAwaitingReview,
-  awaitingReview,
-  checkedAwaitingReview,
+  allChecked,
+  isIndeterminate,
+  setChecked,
+  submissions,
+  checkedSubmissions,
   onReview,
   isDisabled,
   questChain,
@@ -573,30 +587,24 @@ const Toolbar: React.FC<{
           <Box borderRadius={24} bgColor="rgba(255, 255, 255, 0.06)" px={8}>
             <Checkbox
               py={3}
-              isChecked={allAwaitingReviewChecked}
-              isIndeterminate={isAwaitingReviewIndeterminate}
+              isChecked={allChecked}
+              isIndeterminate={isIndeterminate}
               onChange={e =>
-                setCheckedAwaitingReview(
-                  awaitingReview.map(() => e.target.checked),
-                )
+                setChecked(submissions.map(() => e.target.checked))
               }
             ></Checkbox>
           </Box>
 
-          {checkedAwaitingReview.some(item => item) && (
+          {checkedSubmissions.some(item => item) && (
             <>
               <PopoverButton
-                toReview={awaitingReview.filter(
-                  (_, i) => checkedAwaitingReview[i],
-                )}
+                toReview={submissions.filter((_, i) => checkedSubmissions[i])}
                 onReview={onReview}
                 isDisabled={isDisabled}
                 success={false}
               />
               <PopoverButton
-                toReview={awaitingReview.filter(
-                  (_, i) => checkedAwaitingReview[i],
-                )}
+                toReview={submissions.filter((_, i) => checkedSubmissions[i])}
                 onReview={onReview}
                 isDisabled={isDisabled}
                 success={true}
