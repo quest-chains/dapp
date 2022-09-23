@@ -18,7 +18,7 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { useDropFiles } from '@/hooks/useDropFiles';
+import { useDropFiles, useDropImage } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -28,6 +28,7 @@ import { getQuestChainContract } from '@/web3/contract';
 import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
 import { UploadFilesForm } from './UploadFilesForm';
+import { UploadImageForm } from './UploadImageForm';
 
 export const UploadProof: React.FC<{
   refresh: () => void;
@@ -43,15 +44,20 @@ export const UploadProof: React.FC<{
 
   const [proofDescription, setProofDescription] = useState('');
 
-  const dropFileProps = useDropFiles();
+  const dropFilesProps = useDropFiles();
 
-  const { files, onResetFiles } = dropFileProps;
+  const { files, onResetFiles } = dropFilesProps;
+
+  const dropImageProps = useDropImage();
+
+  const { imageFile, onResetImage } = dropImageProps;
 
   const onModalClose = useCallback(() => {
     setProofDescription('');
-    onResetFiles;
+    onResetFiles();
+    onResetImage();
     onClose();
-  }, [onClose, onResetFiles]);
+  }, [onClose, onResetFiles, onResetImage]);
 
   const onSubmit = useCallback(async () => {
     if (!chainId || chainId !== questChain.chainId || !provider) return;
@@ -59,14 +65,18 @@ export const UploadProof: React.FC<{
       setSubmitting(true);
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       try {
-        let hash = files.length ? await uploadFiles(files) : '';
+        const [filesHash, imageHash] = await Promise.all([
+          files.length ? await uploadFiles(files) : '',
+          imageFile ? await uploadFiles([imageFile]) : '',
+        ]);
         const metadata: Metadata = {
           name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
           description: proofDescription,
-          external_url: hash ? `ipfs://${hash}` : undefined,
+          image_url: imageHash ? `ipfs://${imageHash}` : undefined,
+          external_url: filesHash ? `ipfs://${filesHash}` : undefined,
         };
 
-        hash = await uploadMetadata(metadata);
+        const hash = await uploadMetadata(metadata);
         const details = `ipfs://${hash}`;
         toast.dismiss(tid);
         tid = toast.loading(
@@ -112,6 +122,7 @@ export const UploadProof: React.FC<{
     questChain,
     proofDescription,
     files,
+    imageFile,
     questId,
     name,
     onModalClose,
@@ -169,7 +180,13 @@ export const UploadProof: React.FC<{
                 />
               </Flex>
             </FormControl>
-            <UploadFilesForm {...dropFileProps} />
+            <UploadImageForm
+              {...dropImageProps}
+              labelColor="main"
+              imageProps={{ maxH: '12rem' }}
+              formControlProps={{ mb: 4 }}
+            />
+            <UploadFilesForm {...dropFilesProps} />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">

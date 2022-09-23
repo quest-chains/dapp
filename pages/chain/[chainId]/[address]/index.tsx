@@ -30,7 +30,7 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
@@ -198,6 +198,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   const isUser = !(isOwner || isAdmin || isEditor || isReviewer);
 
   const [mode, setMode] = useState<Mode>(isUser ? Mode.QUESTER : Mode.MEMBER);
+
+  useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
 
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
@@ -630,37 +632,39 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       START PLAYING
                     </Button>
                   )} */}
-                {mode === Mode.MEMBER && numSubmissionsToReview != 0 && (
-                  <Flex
-                    w="full"
-                    bgColor="rgba(29, 78, 216, 0.3)"
-                    p={6}
-                    borderRadius={3}
-                    justifyContent="space-between"
-                  >
-                    <Flex justifyContent="center" alignItems="center">
-                      <InfoIcon mr={2} color="#3B82F6" />
-                      {numSubmissionsToReview} proof submissions are awaiting
-                      review Description
-                    </Flex>
-                    <NextLink
-                      as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                      href={`/chain/[chainId]/[address]/review`}
-                      passHref
+                {mode === Mode.MEMBER &&
+                  numSubmissionsToReview != 0 &&
+                  isReviewer && (
+                    <Flex
+                      w="full"
+                      bgColor="rgba(29, 78, 216, 0.3)"
+                      p={6}
+                      borderRadius={3}
+                      justifyContent="space-between"
                     >
-                      <ChakraLink display="block" _hover={{}}>
-                        <SubmitButton
-                          fontSize={14}
-                          fontWeight="bold"
-                          height={10}
-                          px={6}
-                        >
-                          Review Submissions
-                        </SubmitButton>
-                      </ChakraLink>
-                    </NextLink>
-                  </Flex>
-                )}
+                      <Flex justifyContent="center" alignItems="center">
+                        <InfoIcon mr={2} color="#3B82F6" />
+                        {numSubmissionsToReview} proof submissions are awaiting
+                        review Description
+                      </Flex>
+                      <NextLink
+                        as={`/chain/${questChain.chainId}/${questChain.address}/review`}
+                        href={`/chain/[chainId]/[address]/review`}
+                        passHref
+                      >
+                        <ChakraLink display="block" _hover={{}}>
+                          <SubmitButton
+                            fontSize={14}
+                            fontWeight="bold"
+                            height={10}
+                            px={6}
+                          >
+                            Review Submissions
+                          </SubmitButton>
+                        </ChakraLink>
+                      </NextLink>
+                    </Flex>
+                  )}
 
                 {/* Mint Tile */}
                 {canMint && mode === Mode.QUESTER && (
@@ -729,10 +733,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         .filter(q => !!q.name)
                         .map(
                           ({ name, description, questId, paused }, index) => (
-                            <Flex key={questId} w="100%">
+                            <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <Quest
-                                  key={questId}
                                   name={`${index + 1}. ${name}`}
                                   description={description ?? ''}
                                   bgColor={
@@ -771,7 +774,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
-                            </Flex>
+                            </React.Fragment>
                           ),
                         )}
                     </Accordion>

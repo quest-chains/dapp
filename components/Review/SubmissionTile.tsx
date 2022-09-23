@@ -104,43 +104,38 @@ export const SubmissionTile: React.FC<{
               </AccordionButton>
             </Flex>
           </Flex>
-          <Flex w="full" position="relative">
+          <Flex w="full" gap={2} pr={8} position="relative">
             {imageUrl && (
-              <Box>
-                <Link isExternal href={imageUrl} _hover={{}}>
-                  <Image
-                    src={imageUrl}
-                    alt="submission pic"
-                    w="full"
-                    h={isExpanded ? '8rem' : 12}
-                    minW="fit-content"
-                    pr={4}
-                  />
-                </Link>
-              </Box>
+              <Link isExternal href={imageUrl} _hover={{}} minW="fit-content">
+                <Image
+                  src={imageUrl}
+                  alt="submission pic"
+                  w="full"
+                  h={isExpanded ? '12rem' : 12}
+                  minW="fit-content"
+                  pr={4}
+                />
+              </Link>
             )}
 
-            {isExpanded && (
-              <Box pl={1}>
+            <Box flexGrow={1}>
+              {isExpanded && (
                 <MarkdownViewer markdown={submissionDescription ?? ''} />
-              </Box>
-            )}
-            {!isExpanded && (
-              <Text
-                pl={1}
-                overflow="hidden"
-                textOverflow="ellipsis"
-                display="-webkit-box"
-                css={{
-                  WebkitLineClamp: '2',
-                  WebkitBoxOrient: 'vertical',
-                }}
-                mr={10}
-                h={12}
-              >
-                {submissionDescription}
-              </Text>
-            )}
+              )}
+              {!isExpanded && (
+                <Text
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  css={{
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                  h={12}
+                >
+                  {submissionDescription}
+                </Text>
+              )}
+            </Box>
 
             {submission.success !== undefined && (
               <Flex
@@ -265,7 +260,7 @@ export const SubmissionTile: React.FC<{
             <Flex w="100%" mt={4}>
               <Link isExternal color="main" href={externalUrl}>
                 <AttachmentIcon mr={2} />
-                {'Attachments'}
+                {'View attachments'}
               </Link>
             </Flex>
           )}
