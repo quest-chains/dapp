@@ -98,6 +98,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
     [],
   );
+  const [isAwaitingReviewIndeterminate, setIsAwaitingReviewIndeterminate] =
+    useState<boolean>(false);
+  const [isReviewedIndeterminate, setIsReviewedIndeterminate] =
+    useState<boolean>(false);
 
   const allAwaitingReviewChecked =
     checkedAwaitingReview.length !== 0 &&
@@ -108,10 +112,19 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     checkedReviewed.length === reviewed.length &&
     checkedReviewed.every(item => item);
 
-  const isAwaitingReviewIndeterminate =
-    checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
-  const isReviewedIndeterminate =
-    checkedReviewed.some(Boolean) && !allReviewedChecked;
+  useEffect(() => {
+    setIsAwaitingReviewIndeterminate(
+      checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked,
+    );
+    setIsReviewedIndeterminate(
+      checkedReviewed.some(Boolean) && !allReviewedChecked,
+    );
+  }, [
+    allAwaitingReviewChecked,
+    allReviewedChecked,
+    checkedAwaitingReview,
+    checkedReviewed,
+  ]);
 
   const setCheckedItemAwaitingReview = (index: number) => {
     checkedAwaitingReview[index] = !checkedAwaitingReview[index];
@@ -174,6 +187,11 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     selected: SubmissionType[],
   ) => r.filter(r => !selected.map(s => s.id).includes(r.id));
 
+  const clearChecked = useCallback(() => {
+    setCheckedAwaitingReview(awaitingReview.map(() => false));
+    setCheckedReviewed(reviewed.map(() => false));
+  }, [awaitingReview, reviewed]);
+
   const onReview = useCallback(
     (selected: SubmissionType[]) => {
       setReviewed(reviewed => [
@@ -182,15 +200,18 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         ...selected,
       ]);
       // clear current checked items
-      setCheckedAwaitingReview(awaitingReview.map(() => false));
-      setCheckedReviewed(reviewed.map(() => false));
+      clearChecked();
     },
-    [awaitingReview, reviewed],
+    [clearChecked],
   );
 
-  const clearReview = useCallback((selected: SubmissionType[]) => {
-    setReviewed(r => [...removeSelectedFromReviewed(r, selected)]);
-  }, []);
+  const clearReview = useCallback(
+    (selected: SubmissionType[]) => {
+      setReviewed(r => [...removeSelectedFromReviewed(r, selected)]);
+      clearChecked();
+    },
+    [clearChecked],
+  );
 
   const addAwaitingReview = useCallback((selected: SubmissionType[]) => {
     setAwaitingReview(previous =>
@@ -354,6 +375,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 onReview={onReview}
                 isDisabled={isDisabled}
                 questChain={questChain}
+                clearReview={(selected: SubmissionType[]) => {
+                  clearReview(selected);
+                  addAwaitingReview(selected);
+                }}
               />
             )}
 
@@ -585,6 +610,7 @@ const Toolbar: React.FC<{
   onReview: (selected: SubmissionType[]) => void;
   isDisabled: boolean;
   questChain: graphql.QuestChainInfoFragment;
+  clearReview?: (selected: SubmissionType[]) => void;
 }> = ({
   allChecked,
   isIndeterminate,
@@ -594,6 +620,7 @@ const Toolbar: React.FC<{
   onReview,
   isDisabled,
   questChain,
+  clearReview,
 }) => {
   return (
     <>
@@ -624,6 +651,23 @@ const Toolbar: React.FC<{
                 isDisabled={isDisabled}
                 success={true}
               />
+              {clearReview && (
+                <Button
+                  borderRadius={24}
+                  bgColor="gray.900"
+                  px={6}
+                  borderColor="gray.600"
+                  borderWidth={1}
+                  isDisabled={isDisabled}
+                  onClick={() => {
+                    clearReview(
+                      submissions.filter((_, i) => checkedSubmissions[i]),
+                    );
+                  }}
+                >
+                  Clear Review
+                </Button>
+              )}
             </>
           )}
         </Flex>
