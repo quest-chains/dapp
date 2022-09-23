@@ -97,6 +97,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     [],
   );
 
+  const [checkedReviewed, setCheckedReviewed] = useState<boolean[]>([]);
+
   const setCheckedItem = (index: number) => {
     checkedAwaitingReview[index] = !checkedAwaitingReview[index];
     setCheckedAwaitingReview([...checkedAwaitingReview]);
@@ -141,6 +143,14 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const isAwaitingReviewIndeterminate =
     checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked;
 
+  const allReviewedChecked =
+    checkedReviewed.length !== 0 &&
+    checkedReviewed.length === reviewed.length &&
+    checkedReviewed.every(item => item);
+
+  const isReviewedIndeterminate =
+    checkedReviewed.some(Boolean) && !allAwaitingReviewChecked;
+
   const [reviewDescription, setReviewDescription] = useState('');
 
   const {
@@ -161,22 +171,27 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     onClose();
   }, [onClose, onResetFiles]);
 
-  const removeSelectedFromReviews = (
+  const removeSelectedFromReviewed = (
     r: SubmissionType[],
     selected: SubmissionType[],
   ) => r.filter(r => !selected.map(s => s.id).includes(r.id));
 
   const onReview = useCallback(
-    (selected: SubmissionType[]) =>
+    (selected: SubmissionType[]) => {
       setReviewed(reviewed => [
-        ...removeSelectedFromReviews(reviewed, selected),
+        // first clear all of the reviewed items, then set the new reviews
+        ...removeSelectedFromReviewed(reviewed, selected),
         ...selected,
-      ]),
-    [],
+      ]);
+      // clear current checked items
+      setCheckedAwaitingReview(awaitingReview.map(() => false));
+      setCheckedReviewed(reviewed.map(() => false));
+    },
+    [awaitingReview, reviewed],
   );
 
   const clearReview = useCallback((selected: SubmissionType[]) => {
-    setReviewed(r => [...removeSelectedFromReviews(r, selected)]);
+    setReviewed(r => [...removeSelectedFromReviewed(r, selected)]);
   }, []);
 
   const addAwaitingReview = useCallback((selected: SubmissionType[]) => {
@@ -333,11 +348,11 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
 
             {tabIndex === 1 && (
               <Toolbar
-                allChecked={allAwaitingReviewChecked}
-                isIndeterminate={isAwaitingReviewIndeterminate}
-                setChecked={setCheckedAwaitingReview}
-                submissions={awaitingReview}
-                checkedSubmissions={checkedAwaitingReview}
+                checkedSubmissions={checkedReviewed}
+                allChecked={allReviewedChecked}
+                isIndeterminate={isReviewedIndeterminate}
+                setChecked={setCheckedReviewed}
+                submissions={reviewed}
                 onReview={onReview}
                 isDisabled={isDisabled}
                 questChain={questChain}
