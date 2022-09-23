@@ -2,7 +2,6 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   ExternalLinkIcon,
-  SmallCloseIcon,
 } from '@chakra-ui/icons';
 import {
   Box,
@@ -11,7 +10,6 @@ import {
   FormControl,
   FormLabel,
   HStack,
-  IconButton,
   Link,
   Modal,
   ModalBody,
@@ -34,6 +32,7 @@ import { toast } from 'react-hot-toast';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { SubmitButton } from '@/components/SubmitButton';
+import { UploadFilesForm } from '@/components/UploadFilesForm';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useDropFiles } from '@/hooks/useDropFiles';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -162,14 +161,9 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
 
   const [reviewDescription, setReviewDescription] = useState('');
 
-  const {
-    files,
-    onRemoveFile,
-    inputProps,
-    dropzoneProps,
-    onResetFiles,
-    onOpenFiles,
-  } = useDropFiles();
+  const dropFilesProps = useDropFiles();
+
+  const { files, onResetFiles } = dropFilesProps;
 
   const { onOpen, onClose, isOpen } = useDisclosure();
 
@@ -319,39 +313,7 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
                 />
               </Flex>
             </FormControl>
-            <FormControl>
-              <FormLabel color="main" htmlFor="file">
-                Upload file
-              </FormLabel>
-              <Flex
-                {...dropzoneProps}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                mb={4}
-                onClick={onOpenFiles}
-              >
-                <input {...inputProps} color="white" />
-                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
-              </Flex>
-            </FormControl>
-            <Text mb={1}>Files:</Text>
-            {files.map((file: File) => (
-              <Flex key={file.name} w="100%" mb={1}>
-                <IconButton
-                  size="xs"
-                  borderRadius="full"
-                  onClick={() => onRemoveFile(file)}
-                  icon={<SmallCloseIcon boxSize="1rem" />}
-                  aria-label={''}
-                />
-                <Text ml={1} alignSelf="center">
-                  {file.name} - {file.size} bytes
-                </Text>
-              </Flex>
-            ))}
+            <UploadFilesForm {...dropFilesProps} />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">

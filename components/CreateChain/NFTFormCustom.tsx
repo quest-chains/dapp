@@ -11,7 +11,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
-import { useDropFiles } from '@/hooks/useDropFiles';
+import { useDropImage } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
@@ -27,15 +27,10 @@ const CustomNFTForm2D: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
-  const uploadImageProps = useDropFiles({
-    multiple: false,
-    accept: {
-      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-    },
-  });
-  const { files } = uploadImageProps;
+  const uploadImageProps = useDropImage();
+  const { imageFile } = uploadImageProps;
 
-  const isDisabled = !files.length;
+  const isDisabled = !imageFile;
 
   const [name, setName] = useState<string>('Special Chain');
   const [description, setDescription] = useState<string>(
@@ -50,11 +45,11 @@ const CustomNFTForm2D: React.FC<{
 
   const [isLoading, setLoading] = useState(false);
   const exportMetadata = useCallback(async () => {
+    if (!imageFile) return;
     setLoading(true);
     let tid = toast.loading('Uploading image to IPFS via web3.storage');
     try {
-      const file = files[0];
-      let hash = await uploadFiles([file]);
+      let hash = await uploadFiles([imageFile]);
 
       const metadata: Metadata = {
         name,
@@ -74,7 +69,7 @@ const CustomNFTForm2D: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [files, name, description, onSubmit]);
+  }, [imageFile, name, description, onSubmit]);
 
   return (
     <Flex w="100%" gap={8} mb={12} flexDir="column">

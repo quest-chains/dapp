@@ -16,7 +16,7 @@ import { toast } from 'react-hot-toast';
 import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useDropFiles } from '@/hooks/useDropFiles';
+import { useDropImage } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
@@ -35,13 +35,8 @@ export const MetadataForm: React.FC<{
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const uploadImageProps = useDropFiles({
-    multiple: false,
-    accept: {
-      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-    },
-  });
-  const { files } = uploadImageProps;
+  const uploadImageProps = useDropImage();
+  const { imageFile } = uploadImageProps;
 
   const { isConnected, chainId } = useWallet();
 
@@ -59,10 +54,9 @@ export const MetadataForm: React.FC<{
         description,
       };
       let imageUrl;
-      if (files.length) {
+      if (imageFile) {
         tid = toast.loading('Uploading image to IPFS via web3.storage');
-        const file = files[0];
-        const imageHash = await uploadFiles([file]);
+        const imageHash = await uploadFiles([imageFile]);
         imageUrl = `ipfs://${imageHash}`;
         metadata.image_url = imageUrl;
         toast.dismiss(tid);
@@ -81,7 +75,7 @@ export const MetadataForm: React.FC<{
     } finally {
       setSubmitting(false);
     }
-  }, [name, description, onSubmit, files]);
+  }, [name, description, onSubmit, imageFile]);
 
   return (
     <VStack

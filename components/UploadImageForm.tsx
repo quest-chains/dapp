@@ -1,6 +1,5 @@
 import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
-  Box,
   BoxProps,
   Flex,
   FormControl,
@@ -11,19 +10,19 @@ import {
 } from '@chakra-ui/react';
 import { ImageProps } from 'next/image';
 
-import { DropFilesType } from '@/hooks/useDropFiles';
+import { DropImageType } from '@/hooks/useDropFiles';
 
 export const UploadImageForm = ({
   dropzoneProps,
   inputProps,
-  onOpenFiles,
-  onRemoveFile,
-  files,
+  onOpenImageInput,
+  onResetImage,
+  imageFile,
   label = 'Upload image',
   labelColor = 'white',
   formControlProps = {},
   imageProps = {},
-}: DropFilesType & {
+}: DropImageType & {
   label?: string;
   labelColor?: string;
   formControlProps?: FormControlProps;
@@ -33,32 +32,28 @@ export const UploadImageForm = ({
     <FormLabel color={labelColor} htmlFor="imageInput">
       {label}
     </FormLabel>
-    {files.length ? (
-      <>
-        {files.map((file: File) => (
-          <Flex key={file.name} pos="relative">
-            {typeof window !== 'undefined' && (
-              <Image
-                {...imageProps}
-                alt={`${label} image`}
-                src={window.URL.createObjectURL(file)}
-              />
-            )}
-            <IconButton
-              pos="absolute"
-              size="sm"
-              top={2}
-              left={2}
-              borderRadius="full"
-              onClick={() => onRemoveFile(file)}
-              icon={<SmallCloseIcon boxSize="1.5rem" />}
-              aria-label={''}
-              backdropFilter="blur(40px)"
-              boxShadow="inset 0px 0px 0px 1px white"
-            />
-          </Flex>
-        ))}
-      </>
+    {imageFile ? (
+      <Flex key={imageFile.name} pos="relative">
+        {typeof window !== 'undefined' && (
+          <Image
+            {...imageProps}
+            alt={`${label} imageFile`}
+            src={window.URL.createObjectURL(imageFile)}
+          />
+        )}
+        <IconButton
+          pos="absolute"
+          size="sm"
+          top={2}
+          left={2}
+          borderRadius="full"
+          onClick={onResetImage}
+          icon={<SmallCloseIcon boxSize="1.5rem" />}
+          aria-label={''}
+          backdropFilter="blur(40px)"
+          boxShadow="inset 0px 0px 0px 1px white"
+        />
+      </Flex>
     ) : (
       <Flex
         {...dropzoneProps}
@@ -67,7 +62,7 @@ export const UploadImageForm = ({
         borderStyle="dashed"
         borderRadius={20}
         p={10}
-        onClick={onOpenFiles}
+        onClick={onOpenImageInput}
       >
         <input {...inputProps} id="imageInput" color="white" />
         <Flex

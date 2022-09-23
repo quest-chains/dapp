@@ -13,7 +13,7 @@ import { DropFilesType } from '@/hooks/useDropFiles';
 export const UploadFilesForm = ({
   dropzoneProps,
   inputProps,
-  onOpenFiles,
+  onOpenFilesInput,
   onRemoveFile,
   files,
   label = 'Upload files',
@@ -32,7 +32,7 @@ export const UploadFilesForm = ({
         borderRadius={20}
         p={10}
         mb={4}
-        onClick={onOpenFiles}
+        onClick={onOpenFilesInput}
       >
         <input {...inputProps} id="fileInput" color="white" />
         <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>

@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { DropzoneInputProps, DropzoneProps, useDropzone } from 'react-dropzone';
 
 export type DropFilesType = {
-  onOpenFiles: () => void;
+  onOpenFilesInput: () => void;
   onResetFiles: () => void;
   dropzoneProps: { className: string } & BoxProps;
   inputProps: DropzoneInputProps;
@@ -46,6 +46,33 @@ export const useDropFiles = (options: DropzoneProps = {}): DropFilesType => {
     files,
     onRemoveFile,
     onResetFiles,
-    onOpenFiles: open,
+    onOpenFilesInput: open,
+  };
+};
+
+export type DropImageType = {
+  onOpenImageInput: () => void;
+  onResetImage: () => void;
+  dropzoneProps: { className: string } & BoxProps;
+  inputProps: DropzoneInputProps;
+  imageFile: File | null;
+};
+
+export const useDropImage = (options: DropzoneProps = {}): DropImageType => {
+  const { files, dropzoneProps, inputProps, onResetFiles, onOpenFilesInput } =
+    useDropFiles({
+      multiple: false,
+      accept: {
+        'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
+      },
+      ...options,
+    });
+
+  return {
+    imageFile: files[0] ?? null,
+    dropzoneProps,
+    inputProps,
+    onResetImage: onResetFiles,
+    onOpenImageInput: onOpenFilesInput,
   };
 };

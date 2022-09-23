@@ -729,7 +729,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                         .filter(q => !!q.name)
                         .map(
                           ({ name, description, questId, paused }, index) => (
-                            <>
+                            <Flex key={questId} w="100%">
                               {!(isEditingQuest && questEditId === questId) && (
                                 <Quest
                                   key={questId}
@@ -771,7 +771,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
-                            </>
+                            </Flex>
                           ),
                         )}
                     </Accordion>
