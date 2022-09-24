@@ -21,13 +21,16 @@ export type SubmissionType = {
   description: string | null | undefined;
   success?: boolean;
   submissionDescription: string;
-  submissionUrl?: string;
+  imageUri?: string;
+  externalUri?: string;
   submissionTimestamp: number;
+  reviewCommentUri?: string;
+  reviewComment?: string;
 };
 
 export const PopoverButton: React.FC<{
   toReview: SubmissionType[];
-  onReview: (quest: SubmissionType[]) => void;
+  onReview: (quest: SubmissionType[], withComment: boolean) => void;
   isDisabled: boolean;
   success: boolean;
 }> = ({ toReview, onReview, isDisabled, success }) => {
@@ -80,6 +83,7 @@ export const PopoverButton: React.FC<{
                   ...r,
                   success,
                 })),
+                false,
               );
               onClose();
             }}
@@ -98,6 +102,7 @@ export const PopoverButton: React.FC<{
                   ...r,
                   success,
                 })),
+                true,
               );
               onClose();
             }}

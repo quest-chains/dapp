@@ -16,24 +16,13 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 
 import { MarkdownViewer } from '../MarkdownViewer';
 import { UserDisplay } from '../UserDisplay';
-import { PopoverButton } from './PopoverButton';
+import { PopoverButton, SubmissionType } from './PopoverButton';
 
-export type SubmissionType = {
-  id: string;
-  userId: string;
-  questId: string;
-  name: string | null | undefined;
-  description: string | null | undefined;
-  success?: boolean;
-  submissionDescription: string;
-  imageUri?: string;
-  externalUri?: string;
-  submissionTimestamp: number;
-};
+export type { SubmissionType };
 
 export const SubmissionTile: React.FC<{
   submission: SubmissionType;
-  onReview: (quest: SubmissionType[]) => void;
+  onReview: (quest: SubmissionType[], withComment: boolean) => void;
   showButtons?: boolean;
   isDisabled: boolean;
   checked?: boolean;
