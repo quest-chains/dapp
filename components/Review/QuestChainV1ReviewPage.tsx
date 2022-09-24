@@ -54,6 +54,11 @@ type Props = {
   refresh: () => void;
 };
 
+const removeSelectedFromReviewed = (
+  r: SubmissionType[],
+  selected: SubmissionType[],
+) => r.filter(r => !selected.map(s => s.id).includes(r.id));
+
 const statusToSubmission = (
   q: graphql.QuestStatusInfoFragment,
 ): SubmissionType => ({
@@ -70,7 +75,9 @@ const statusToSubmission = (
   submissionTimestamp: Number(
     q.submissions[q.submissions.length - 1].timestamp,
   ),
-  reviewComment: q.reviews[q.reviews.length - 1].description ?? '',
+  reviewComment: q.reviews.length
+    ? q.reviews[q.reviews.length - 1].description ?? ''
+    : '',
   success:
     q.status === graphql.Status.Pass
       ? true
@@ -180,11 +187,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     setCommenting(false);
   }, [onCloseModal]);
 
-  const removeSelectedFromReviewed = (
-    r: SubmissionType[],
-    selected: SubmissionType[],
-  ) => r.filter(r => !selected.map(s => s.id).includes(r.id));
-
   const clearChecked = useCallback(() => {
     setCheckedAwaitingReview(awaitingReview.map(() => false));
     setCheckedReviewed(reviewed.map(() => false));
@@ -197,6 +199,19 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         ...removeSelectedFromReviewed(reviewed, selected),
         ...selected,
       ]);
+      if (selected[0]?.reviewComment) {
+        toast.success(
+          `Successfully added comment and ${
+            selected[0]?.success ? 'approved' : 'rejected'
+          } ${selected.length} submission${selected.length > 1 ? 's' : ''}!`,
+        );
+      } else {
+        toast.success(
+          `Successfully ${selected[0]?.success ? 'approved' : 'rejected'} ${
+            selected.length
+          } submission${selected.length > 1 ? 's' : ''}!`,
+        );
+      }
       // clear current checked items
       clearChecked();
     },
@@ -236,7 +251,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       setCommenting(true);
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       const metadata: Metadata = {
-        name: `Reviewing ${reviewing} submissions(s)`,
+        name: `Reviewing ${reviewing.length} submissions(s)`,
         description: reviewComment,
       };
 
@@ -250,7 +265,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         })),
       );
       toast.dismiss(tid);
-      tid = toast.success(`Successfully added comments!`);
       onModalClose();
     } catch (error) {
       toast.dismiss(tid);
@@ -348,8 +362,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             pr={2}
             pl={16}
           >
-            <Text mr={6}>
-              {reviewed.length} Review{reviewed.length > 1 ? 's' : ''} ready
+            <Text mr={12}>
+              {reviewed.length} review{reviewed.length > 1 ? 's' : ''} ready
             </Text>
             <SubmitButton isLoading={submitting} onClick={onSubmit}>
               Submit
@@ -471,19 +485,31 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       </VStack>
       <Modal isOpen={isModalOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
-        <ModalContent maxW="40rem">
-          <ModalHeader>
-            Reviewing proofs for {reviewing.length} submission(s)
+        <ModalContent
+          maxW="40rem"
+          background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
+          boxShadow="0 0.25rem 0.25rem rgba(0, 0, 0, 0.25)"
+          borderRadius="0.5rem"
+        >
+          <ModalHeader textTransform={'uppercase'} fontSize="md">
+            You are about to {reviewing[0]?.success ? 'approve' : 'reject'}{' '}
+            {reviewing.length} submission{reviewing.length > 1 ? 's' : ''} with
+            a comment
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton borderRadius="full" />
           <ModalBody>
             <FormControl isRequired>
-              <FormLabel color="main" htmlFor="reviewComment">
+              <FormLabel
+                color="gray.500"
+                htmlFor="reviewComment"
+                fontWeight="bold"
+              >
                 Comment
               </FormLabel>
               <Flex pb={4} w="100%">
                 <MarkdownEditor
                   value={reviewComment}
+                  placeholder="Write what you liked about the submissions..."
                   onChange={v => setReviewComment(v)}
                 />
               </Flex>
@@ -491,24 +517,27 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
           </ModalBody>
 
           <ModalFooter alignItems="baseline">
-            <HStack justify="space-between" spacing={4}>
+            <HStack justify="space-between" spacing={2}>
               <Button
                 variant="ghost"
-                px={6}
                 onClick={onModalClose}
                 borderRadius="full"
+                textTransform="uppercase"
+                size="sm"
               >
-                Close
+                CANCEL
               </Button>
               <Button
+                size="sm"
                 isLoading={commenting}
-                bgColor="gray.900"
-                borderRadius={24}
-                px={6}
+                variant="ghost"
+                borderRadius="full"
                 isDisabled={!reviewComment}
                 onClick={onSubmitComment}
+                textTransform="uppercase"
+                color={reviewing[0]?.success ? 'main' : 'rejected'}
               >
-                Confirm
+                Add comment and {reviewing[0]?.success ? 'approve' : 'reject'}
               </Button>
             </HStack>
           </ModalFooter>

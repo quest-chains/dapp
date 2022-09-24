@@ -12,6 +12,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+import { formatDate } from '@/utils/dateHelpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 
 import { MarkdownViewer } from '../MarkdownViewer';
@@ -48,9 +49,6 @@ export const SubmissionTile: React.FC<{
   } = submission;
 
   const date = new Date(submissionTimestamp * 1000);
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
 
   const imageUrl = ipfsUriToHttp(imageUri);
   const externalUrl = ipfsUriToHttp(externalUri);
@@ -78,9 +76,7 @@ export const SubmissionTile: React.FC<{
 
             <Flex alignItems="center" gap={6}>
               <UserDisplay address={userId} />
-              <Text>
-                {year}-{month}-{day}
-              </Text>
+              <Text>{formatDate(date)}</Text>
               <AccordionButton
                 py={6}
                 w="auto"
@@ -93,15 +89,20 @@ export const SubmissionTile: React.FC<{
               </AccordionButton>
             </Flex>
           </Flex>
-          <Flex w="full" gap={2} pr={8} position="relative">
+          <Flex w="full" h="full" gap={2} pr={8} position="relative">
             {imageUrl && (
-              <Link isExternal href={imageUrl} _hover={{}} minW="fit-content">
+              <Link
+                isExternal
+                href={imageUrl}
+                _hover={{}}
+                minW="fit-content"
+                minH="fit-content"
+              >
                 <Image
                   src={imageUrl}
                   alt="submission pic"
-                  w="full"
-                  h={isExpanded ? '12rem' : 12}
-                  minW="fit-content"
+                  w={isExpanded ? '18rem' : '6rem'}
+                  minH="fit-content"
                   pr={4}
                 />
               </Link>
