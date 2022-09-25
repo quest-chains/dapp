@@ -261,7 +261,7 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
   );
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
+    <VStack w="100%" spacing={8}>
       <VStack w="100%" align="flex-start" color="main">
         <Text fontSize="2xl" fontWeight="bold">
           {questChain.name}

@@ -1,7 +1,15 @@
-import { Spinner, Text, VStack } from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import {
+  Flex,
+  Link as ChakraLink,
+  Spinner,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 
@@ -43,7 +51,8 @@ const Review: React.FC<Props> = ({
   const fetching = fetchingStatuses || fetchingQuests;
 
   const { isFallback } = useRouter();
-  const { address } = useWallet();
+  const { address, isConnecting } = useWallet();
+
   const isReviewer: boolean = useMemo(
     () =>
       questChain?.reviewers.some(
@@ -52,13 +61,14 @@ const Review: React.FC<Props> = ({
     [questChain, address],
   );
 
-  if (isFallback) {
+  if (isFallback || fetching || isConnecting) {
     return (
       <VStack>
         <Spinner color="main" />
       </VStack>
     );
   }
+
   if (!questChain) {
     return (
       <VStack>
@@ -68,19 +78,35 @@ const Review: React.FC<Props> = ({
   }
 
   const ReviewHead = () => (
-    <Head>
-      <title>
-        {`Review - ${questChain.name} - ${
-          AVAILABLE_NETWORK_INFO[questChain.chainId].name
-        }`}
-      </title>
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
+    <>
+      <Head>
+        <title>
+          {`Review - ${questChain.name} - ${
+            AVAILABLE_NETWORK_INFO[questChain.chainId].name
+          }`}
+        </title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Flex w="full">
+        <NextLink
+          as={`/chain/${questChain.chainId}/${questChain.address}`}
+          href="/chain/[chainId]/[address]"
+          passHref
+        >
+          <ChakraLink display="block" _hover={{}} w="full">
+            <Flex alignItems="center" _hover={{ textDecor: 'underline' }}>
+              <ArrowBackIcon mr={2} />
+              <Text fontSize={14}>Back to quest chain details</Text>
+            </Flex>
+          </ChakraLink>
+        </NextLink>
+      </Flex>
+    </>
   );
 
   if (!isReviewer) {
     return (
-      <VStack>
+      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
         <ReviewHead />
         <Text> Cannot review quest chain! </Text>
       </VStack>
@@ -89,22 +115,22 @@ const Review: React.FC<Props> = ({
 
   if (questChain.version === '0') {
     return (
-      <>
+      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
         <ReviewHead />
         <QuestChainV0ReviewPage
           {...{ questChain, questStatuses, fetching, refresh }}
         />
-      </>
+      </VStack>
     );
   }
 
   return (
-    <>
+    <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
       <ReviewHead />
       <QuestChainV1ReviewPage
         {...{ questChain, questStatuses, fetching, refresh }}
       />
-    </>
+    </VStack>
   );
 };
 
