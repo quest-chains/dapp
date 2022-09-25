@@ -95,6 +95,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const [tabIndex, setTabIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
+  const [filterReviewed, setFilterReviewed] = useState<string>('');
+  const [filterAwaitingReview, setFilterAwaitingReview] = useState<string>('');
   const [checkedReviewed, setCheckedReviewed] = useState<boolean[]>([]);
   const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
     [],
@@ -201,19 +203,20 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     [clearChecked],
   );
 
-  const clearReview = useCallback(
-    (selected: SubmissionType[]) => {
-      setReviewed(r => [...removeSelectedFromReviewed(r, selected)]);
-      clearChecked();
-    },
-    [clearChecked],
-  );
-
   const addAwaitingReview = useCallback((selected: SubmissionType[]) => {
     setAwaitingReview(previous =>
       previous.concat(selected.map(r => ({ ...r, success: undefined }))),
     );
   }, []);
+
+  const clearReview = useCallback(
+    (selected: SubmissionType[]) => {
+      setReviewed(r => [...removeSelectedFromReviewed(r, selected)]);
+      clearChecked();
+      addAwaitingReview(selected);
+    },
+    [addAwaitingReview, clearChecked],
+  );
 
   const onSubmit = useCallback(async () => {
     if (
@@ -357,7 +360,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 checkedSubmissions={checkedAwaitingReview}
                 onReview={onReview}
                 isDisabled={isDisabled}
-                questChain={questChain}
+                setFilter={setFilterAwaitingReview}
+                filterValue={filterAwaitingReview}
               />
             )}
 
@@ -370,11 +374,11 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 submissions={reviewed}
                 onReview={onReview}
                 isDisabled={isDisabled}
-                questChain={questChain}
-                clearReview={(selected: SubmissionType[]) => {
-                  clearReview(selected);
-                  addAwaitingReview(selected);
-                }}
+                clearReview={(selected: SubmissionType[]) =>
+                  clearReview(selected)
+                }
+                setFilter={setFilterReviewed}
+                filterValue={filterReviewed}
               />
             )}
 
@@ -382,35 +386,50 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               {/* awaiting review */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
-                  {awaitingReview.map((review, index) => (
-                    <SubmissionTile
-                      submission={review}
-                      onReview={onReview}
-                      key={review.id}
-                      isDisabled={isDisabled}
-                      checked={checkedAwaitingReview[index]}
-                      onCheck={() => setCheckedItemAwaitingReview(index)}
-                    />
-                  ))}
+                  {awaitingReview.map((review, index) => {
+                    if (
+                      filterAwaitingReview !== '' &&
+                      filterAwaitingReview !== review.questId
+                    )
+                      return;
+
+                    return (
+                      <SubmissionTile
+                        submission={review}
+                        onReview={onReview}
+                        key={review.id}
+                        isDisabled={isDisabled}
+                        checked={checkedAwaitingReview[index]}
+                        onCheck={() => setCheckedItemAwaitingReview(index)}
+                      />
+                    );
+                  })}
                 </Accordion>
               </TabPanel>
               {/* reviewed */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]}>
-                  {reviewed.map((review, index) => (
-                    <SubmissionTile
-                      submission={review}
-                      onReview={onReview}
-                      key={review.id}
-                      isDisabled={isDisabled}
-                      checked={checkedReviewed[index]}
-                      clearReview={(selected: SubmissionType[]) => {
-                        clearReview(selected);
-                        addAwaitingReview(selected);
-                      }}
-                      onCheck={() => setCheckedItemReviewed(index)}
-                    />
-                  ))}
+                  {reviewed.map((review, index) => {
+                    if (
+                      filterReviewed !== '' &&
+                      filterReviewed !== review.questId
+                    )
+                      return;
+
+                    return (
+                      <SubmissionTile
+                        submission={review}
+                        onReview={onReview}
+                        key={review.id}
+                        isDisabled={isDisabled}
+                        checked={checkedReviewed[index]}
+                        clearReview={(selected: SubmissionType[]) =>
+                          clearReview(selected)
+                        }
+                        onCheck={() => setCheckedItemReviewed(index)}
+                      />
+                    );
+                  })}
                 </Accordion>
               </TabPanel>
               {/* submitted */}
@@ -598,8 +617,9 @@ const Toolbar: React.FC<{
   checkedSubmissions: boolean[];
   onReview: (selected: SubmissionType[]) => void;
   isDisabled: boolean;
-  questChain: graphql.QuestChainInfoFragment;
   clearReview?: (selected: SubmissionType[]) => void;
+  setFilter: (filter: string) => void;
+  filterValue: string;
 }> = ({
   allChecked,
   isIndeterminate,
@@ -608,9 +628,12 @@ const Toolbar: React.FC<{
   checkedSubmissions,
   onReview,
   isDisabled,
-  questChain,
   clearReview,
+  setFilter,
+  filterValue,
 }) => {
+  const selectOptions = [...new Set(submissions.map(({ questId }) => questId))];
+
   return (
     <>
       <Flex py={4} w="full" justifyContent="space-between">
@@ -621,7 +644,24 @@ const Toolbar: React.FC<{
               isChecked={allChecked}
               isIndeterminate={isIndeterminate}
               onChange={e =>
-                setChecked(submissions.map(() => e.target.checked))
+                setChecked(
+                  submissions.map((submission, index) => {
+                    // if the filter is not on, apply the checked to all
+                    if (filterValue === '') return e.target.checked;
+
+                    // if the filter is on, apply the checked boolean only to the submissions
+                    // with the same questId
+                    if (
+                      filterValue !== '' &&
+                      submission.questId === filterValue
+                    )
+                      return e.target.checked;
+
+                    // otherwise return the boolean of the value of this submission in the
+                    // checkedsubmission s array (need Boolean, because the value might be undefined)
+                    return Boolean(checkedSubmissions[index]);
+                  }),
+                )
               }
             ></Checkbox>
           </Box>
@@ -679,10 +719,11 @@ const Toolbar: React.FC<{
             bgColor="whiteAlpha.100"
             borderRadius={24}
             borderColor="transparent"
+            onChange={e => setFilter(e.target.value)}
           >
-            {questChain.quests.map(({ questId }) => (
-              <option key={questId} value={questId}>
-                Quest {Number(questId) + 1}
+            {selectOptions.map((value: string) => (
+              <option key={value} value={value}>
+                Quest {Number(value) + 1}
               </option>
             ))}
           </Select>
