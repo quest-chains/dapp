@@ -7,17 +7,24 @@ import {
   Button,
   Checkbox,
   Flex,
+  HStack,
   IconButton,
   Image,
   Link,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 import { formatDate } from '@/utils/dateHelpers';
+import { handleError } from '@/utils/helpers';
+import { uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { Metadata } from '@/utils/validate';
 
 import { CommentIcon } from '../icons/CommentIcon';
+import { MarkdownEditor } from '../MarkdownEditor';
 import { MarkdownViewer } from '../MarkdownViewer';
 import { UserDisplay } from '../UserDisplay';
 import { PopoverButton, SubmissionType } from './PopoverButton';
@@ -57,6 +64,7 @@ export const SubmissionTile: React.FC<{
 
   const imageUrl = ipfsUriToHttp(imageUri);
   const externalUrl = ipfsUriToHttp(externalUri);
+  const [isEditing, setEditing] = useState(false);
 
   return (
     <AccordionItem borderRadius={10} mb={3} border={0} bgColor="#1E2025">
@@ -134,7 +142,7 @@ export const SubmissionTile: React.FC<{
                 )}
               </Box>
 
-              {submission.success !== undefined && (
+              {success !== undefined && (
                 <Flex
                   position="absolute"
                   right={6}
@@ -144,7 +152,7 @@ export const SubmissionTile: React.FC<{
                   gap={2}
                   bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
                 >
-                  {submission.success ? (
+                  {success ? (
                     <Flex
                       bg="#171923"
                       justifyContent="center"
@@ -201,9 +209,10 @@ export const SubmissionTile: React.FC<{
                               aria-label="add-comment"
                               _hover={{ borderColor: 'white' }}
                               icon={<CommentIcon />}
+                              onClick={() => setEditing(true)}
                             />
                           )}
-                          {submission.success && (
+                          {success && (
                             <PopoverButton
                               toReview={[submission]}
                               onReview={onReview}
@@ -211,7 +220,7 @@ export const SubmissionTile: React.FC<{
                               success={false}
                             />
                           )}
-                          {!submission.success && (
+                          {!success && (
                             <PopoverButton
                               toReview={[submission]}
                               onReview={onReview}
@@ -240,7 +249,7 @@ export const SubmissionTile: React.FC<{
                 </Flex>
               )}
 
-              {submission.success === undefined && showButtons && (
+              {success === undefined && showButtons && (
                 <Flex
                   opacity={0}
                   _groupHover={{
@@ -273,7 +282,7 @@ export const SubmissionTile: React.FC<{
             </Flex>
             {isExpanded && externalUrl && (
               <Flex w="100%" mt={4}>
-                <Link isExternal color="main" href={externalUrl}>
+                <Link isExternal color="#10B981" href={externalUrl}>
                   <AttachmentIcon mr={2} />
                   {'View attachments'}
                 </Link>
@@ -281,7 +290,15 @@ export const SubmissionTile: React.FC<{
             )}
           </VStack>
           <ReviewComment
-            {...{ submission, onReview, showButtons, isDisabled, isExpanded }}
+            {...{
+              submission,
+              onReview,
+              showButtons,
+              isDisabled,
+              isExpanded,
+              isEditing,
+              setEditing,
+            }}
           />
         </>
       )}
@@ -295,10 +312,78 @@ const ReviewComment: React.FC<{
   onReview: (quest: SubmissionType[], withComment: boolean) => void;
   showButtons?: boolean;
   isDisabled: boolean;
-}> = ({ isExpanded, submission, showButtons }) => {
+  isEditing: boolean;
+  setEditing: (e: boolean) => void;
+}> = ({
+  isExpanded,
+  submission,
+  onReview,
+  showButtons,
+  setEditing,
+  isEditing,
+}) => {
   const { reviewComment, success } = submission;
 
-  if (!reviewComment || typeof success !== 'boolean') return null;
+  const [commenting, setCommenting] = useState(false);
+  const [newComment, setNewComment] = useState(reviewComment ?? '');
+
+  const onSubmitComment = useCallback(async () => {
+    let tid;
+    try {
+      setCommenting(true);
+      tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      const metadata: Metadata = {
+        name: `Reviewing 1 submission`,
+        description: newComment,
+      };
+
+      const hash = await uploadMetadata(metadata);
+      const details = `ipfs://${hash}`;
+      onReview(
+        [
+          {
+            ...submission,
+            reviewCommentUri: details,
+            reviewComment: newComment,
+          },
+        ],
+        false,
+      );
+      toast.dismiss(tid);
+      setEditing(false);
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
+    } finally {
+      setCommenting(false);
+    }
+  }, [submission, onReview, setEditing, newComment]);
+
+  useEffect(
+    () => setNewComment(reviewComment ?? ''),
+    [isEditing, reviewComment],
+  );
+
+  const [isRemoving, setRemoving] = useState(false);
+
+  const onRemoveComment = useCallback(() => {
+    onReview(
+      [
+        {
+          ...submission,
+          reviewCommentUri: '',
+          reviewComment: '',
+        },
+      ],
+      false,
+    );
+    setRemoving(false);
+    setEditing(false);
+    toast.success(`Successfully removed comment`);
+  }, [submission, onReview, setEditing]);
+
+  if ((!reviewComment && !isEditing) || typeof success !== 'boolean')
+    return null;
 
   return (
     <Flex
@@ -307,22 +392,30 @@ const ReviewComment: React.FC<{
       background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
       role="group"
       position="relative"
+      flexDirection="column"
+      gap="4"
     >
-      {isExpanded && <MarkdownViewer markdown={reviewComment} />}
-      {!isExpanded && (
-        <Text
-          overflow="hidden"
-          textOverflow="ellipsis"
-          css={{
-            WebkitLineClamp: '2',
-            WebkitBoxOrient: 'vertical',
-          }}
-          maxH={12}
-        >
-          {reviewComment}
-        </Text>
+      {isEditing ? (
+        <MarkdownEditor value={newComment} onChange={setNewComment} />
+      ) : (
+        <>
+          {isExpanded && <MarkdownViewer markdown={reviewComment ?? ''} />}
+          {!isExpanded && (
+            <Text
+              overflow="hidden"
+              textOverflow="ellipsis"
+              css={{
+                WebkitLineClamp: '2',
+                WebkitBoxOrient: 'vertical',
+              }}
+              maxH={12}
+            >
+              {reviewComment}
+            </Text>
+          )}
+        </>
       )}
-      {showButtons && (
+      {showButtons && !isEditing && (
         <Flex
           opacity={0}
           _groupHover={{
@@ -343,10 +436,76 @@ const ReviewComment: React.FC<{
             borderRadius={24}
             bgColor="none"
             borderColor="none"
+            onClick={() => setEditing(true)}
           >
             Edit
           </Button>
         </Flex>
+      )}
+      {showButtons && isEditing && !isRemoving && (
+        <Flex justify="space-between" align="center" w="100%">
+          {reviewComment ? (
+            <Button
+              variant="ghost"
+              onClick={() => setRemoving(true)}
+              borderRadius="full"
+              textTransform="uppercase"
+              size="sm"
+              color="#F43F5E"
+            >
+              REMOVE COMMENT
+            </Button>
+          ) : (
+            <Flex />
+          )}
+          <HStack spacing={2}>
+            <Button
+              variant="ghost"
+              onClick={() => setEditing(false)}
+              borderRadius="full"
+              textTransform="uppercase"
+              size="sm"
+            >
+              {reviewComment ? 'Cancel editing' : 'Cancel'}
+            </Button>
+            <Button
+              size="sm"
+              isLoading={commenting}
+              variant="ghost"
+              borderRadius="full"
+              isDisabled={!newComment || newComment === reviewComment}
+              onClick={onSubmitComment}
+              textTransform="uppercase"
+              color="#10B981"
+            >
+              {reviewComment ? 'Save Changes' : 'Add comment'}
+            </Button>
+          </HStack>
+        </Flex>
+      )}
+      {showButtons && isEditing && isRemoving && (
+        <HStack spacing={2}>
+          <Text color="gray.400">Remove comment? </Text>
+          <Button
+            variant="ghost"
+            onClick={() => setEditing(false)}
+            borderRadius="full"
+            textTransform="uppercase"
+            size="sm"
+          >
+            No, Keep it
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            borderRadius="full"
+            onClick={onRemoveComment}
+            textTransform="uppercase"
+            color="#F43F5E"
+          >
+            Yes, Remove it
+          </Button>
+        </HStack>
       )}
     </Flex>
   );

@@ -50,8 +50,8 @@ export const PopoverButton: React.FC<{
             borderColor="gray.600"
             borderWidth={1}
             _hover={{
-              borderColor: success ? 'main' : 'rejected',
-              color: success ? 'main' : 'rejected',
+              borderColor: success ? '#10B981' : '#F43F5E',
+              color: success ? '#10B981' : '#F43F5E',
             }}
             isDisabled={isDisabled}
             leftIcon={success ? <CheckIcon w={4} /> : <CloseIcon w={4} />}
@@ -75,14 +75,16 @@ export const PopoverButton: React.FC<{
             size="sm"
             p={4}
             _hover={{
-              borderColor: success ? 'main' : 'rejected',
-              color: success ? 'main' : 'rejected',
+              borderColor: success ? '#10B981' : '#F43F5E',
+              color: success ? '#10B981' : '#F43F5E',
             }}
             onClick={() => {
               onReview(
                 toReview.map(r => ({
                   ...r,
                   success,
+                  reviewComment: '',
+                  reviewCommentUri: '',
                 })),
                 false,
               );
@@ -96,8 +98,8 @@ export const PopoverButton: React.FC<{
           <Button
             bgColor="gray.900"
             _hover={{
-              borderColor: success ? 'main' : 'rejected',
-              color: success ? 'main' : 'rejected',
+              borderColor: success ? '#10B981' : '#F43F5E',
+              color: success ? '#10B981' : '#F43F5E',
             }}
             p={4}
             size="sm"
@@ -106,6 +108,8 @@ export const PopoverButton: React.FC<{
                 toReview.map(r => ({
                   ...r,
                   success,
+                  reviewComment: '',
+                  reviewCommentUri: '',
                 })),
                 true,
               );

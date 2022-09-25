@@ -255,7 +255,9 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       setCommenting(true);
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       const metadata: Metadata = {
-        name: `Reviewing ${reviewing.length} submissions(s)`,
+        name: `Reviewing ${reviewing.length} submission${
+          reviewing.length > 1 ? 's' : ''
+        }`,
         description: reviewComment,
       };
 
@@ -500,7 +502,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 <MarkdownEditor
                   value={reviewComment}
                   placeholder="Write what you liked about the submissions..."
-                  onChange={v => setReviewComment(v)}
+                  onChange={setReviewComment}
                 />
               </Flex>
             </FormControl>
@@ -688,6 +690,7 @@ const Toolbar: React.FC<{
                   borderColor="gray.600"
                   borderWidth={1}
                   isDisabled={isDisabled}
+                  _hover={{ borderColor: 'white' }}
                   onClick={() => {
                     clearReview(
                       submissions.filter((_, i) => checkedSubmissions[i]),
