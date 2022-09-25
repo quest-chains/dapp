@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   Flex,
+  IconButton,
   Image,
   Link,
   Text,
@@ -16,6 +17,7 @@ import {
 import { formatDate } from '@/utils/dateHelpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 
+import { CommentIcon } from '../icons/CommentIcon';
 import { MarkdownViewer } from '../MarkdownViewer';
 import { UserDisplay } from '../UserDisplay';
 import { PopoverButton, SubmissionType } from './PopoverButton';
@@ -184,6 +186,23 @@ export const SubmissionTile: React.FC<{
                     >
                       {clearReview && (
                         <>
+                          {!reviewComment && (
+                            <IconButton
+                              bg="gray.900"
+                              justifyContent="center"
+                              alignItems="center"
+                              h={10}
+                              w={10}
+                              borderRadius="full"
+                              borderStyle="solid"
+                              borderWidth={1}
+                              borderColor="gray.600"
+                              color="white"
+                              aria-label="add-comment"
+                              _hover={{ borderColor: 'white' }}
+                              icon={<CommentIcon />}
+                            />
+                          )}
                           {submission.success && (
                             <PopoverButton
                               toReview={[submission]}
@@ -207,6 +226,7 @@ export const SubmissionTile: React.FC<{
                             borderColor="gray.600"
                             borderWidth={1}
                             isDisabled={isDisabled}
+                            _hover={{ borderColor: 'white' }}
                             onClick={() => {
                               clearReview([submission]);
                             }}

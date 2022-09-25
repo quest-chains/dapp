@@ -1,4 +1,3 @@
-import { ArrowBackIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Box,
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormLabel,
   HStack,
-  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -28,7 +26,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import NextLink from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -241,7 +238,14 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
 
   const addAwaitingReview = useCallback((selected: SubmissionType[]) => {
     setAwaitingReview(previous =>
-      previous.concat(selected.map(r => ({ ...r, success: undefined }))),
+      previous.concat(
+        selected.map(r => ({
+          ...r,
+          success: undefined,
+          reviewComment: undefined,
+          reviewCommentUri: undefined,
+        })),
+      ),
     );
   }, []);
 
@@ -322,21 +326,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   }, [refresh, chainId, questChain, provider, reviewed]);
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
-      <Flex w="full">
-        <NextLink
-          as={`/chain/${questChain.chainId}/${questChain.address}`}
-          href="/chain/[chainId]/[address]"
-          passHref
-        >
-          <ChakraLink display="block" _hover={{}} w="full">
-            <Flex alignItems="center" _hover={{ textDecor: 'underline' }}>
-              <ArrowBackIcon mr={2} />
-              <Text fontSize={14}>Back to quest chain details</Text>
-            </Flex>
-          </ChakraLink>
-        </NextLink>
-      </Flex>
+    <VStack w="100%" spacing={8}>
       <Flex w="100%" justifyContent="space-between">
         <Flex flexDirection="column" mb={8}>
           <Text
@@ -743,6 +733,25 @@ const Toolbar: React.FC<{
             fontWeight="bold"
             bgColor="whiteAlpha.100"
             borderRadius={24}
+            borderWidth={'1px'}
+            borderStyle={'solid'}
+            borderColor={'transparent'}
+            _hover={{
+              borderColor: 'whiteAlpha.400',
+            }}
+            _active={{
+              borderColor: 'whiteAlpha.400',
+            }}
+            _focus={{
+              zIndex: 1,
+              borderColor: '#63b3ed',
+              boxShadow: '0 0 0 1px #63b3ed',
+            }}
+            _focusVisible={{
+              zIndex: 1,
+              borderColor: '#63b3ed',
+              boxShadow: '0 0 0 1px #63b3ed',
+            }}
           >
             Expand all
           </Button>
