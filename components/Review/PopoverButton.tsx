@@ -9,8 +9,8 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-import { CommentCheckIcon } from '../icons/CommentCheckIcon';
-import { CommentCloseIcon } from '../icons/CommentCloseIcon';
+import { CommentCheckIcon } from '@/components/icons/CommentCheckIcon';
+import { CommentCloseIcon } from '@/components/icons/CommentCloseIcon';
 
 export type SubmissionType = {
   id: string;

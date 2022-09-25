@@ -17,17 +17,19 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { CommentIcon } from '@/components/icons/CommentIcon';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { MarkdownViewer } from '@/components/MarkdownViewer';
+import {
+  PopoverButton,
+  SubmissionType,
+} from '@/components/Review/PopoverButton';
+import { UserDisplay } from '@/components/UserDisplay';
 import { formatDate } from '@/utils/dateHelpers';
 import { handleError } from '@/utils/helpers';
 import { uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { Metadata } from '@/utils/validate';
-
-import { CommentIcon } from '../icons/CommentIcon';
-import { MarkdownEditor } from '../MarkdownEditor';
-import { MarkdownViewer } from '../MarkdownViewer';
-import { UserDisplay } from '../UserDisplay';
-import { PopoverButton, SubmissionType } from './PopoverButton';
 
 export type { SubmissionType };
 

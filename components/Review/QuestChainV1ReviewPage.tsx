@@ -26,7 +26,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -96,10 +96,16 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     onOpen: onModalOpen,
     onClose: onCloseModal,
   } = useDisclosure();
+
   const [allSubmissions, setAllSubmissions] = useState<SubmissionType[]>([]);
   const [submitted, setSubmitted] = useState<SubmissionType[]>([]);
+
   const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
+  const [awaitingReviewIndex, setAwaitingReviewIndex] = useState<number[]>([]);
+
   const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
+  const [reviewedIndex, setReviewedIndex] = useState<number[]>([]);
+
   const [tabIndex, setTabIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -386,6 +392,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 onReview={onReview}
                 isDisabled={isDisabled}
                 questChain={questChain}
+                index={awaitingReviewIndex}
+                setIndex={setAwaitingReviewIndex}
               />
             )}
 
@@ -403,13 +411,23 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                   clearReview(selected);
                   addAwaitingReview(selected);
                 }}
+                index={reviewedIndex}
+                setIndex={setReviewedIndex}
               />
             )}
 
             <TabPanels>
               {/* awaiting review */}
               <TabPanel p={0}>
-                <Accordion allowMultiple defaultIndex={[]}>
+                <Accordion
+                  allowMultiple
+                  index={awaitingReviewIndex}
+                  onChange={idx =>
+                    setAwaitingReviewIndex(
+                      typeof idx === 'number' ? [idx] : idx,
+                    )
+                  }
+                >
                   {awaitingReview.map((submission, index) => (
                     <SubmissionTile
                       submission={submission}
@@ -424,7 +442,13 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               </TabPanel>
               {/* reviewed */}
               <TabPanel p={0}>
-                <Accordion allowMultiple defaultIndex={[]}>
+                <Accordion
+                  allowMultiple
+                  index={reviewedIndex}
+                  onChange={idx =>
+                    setReviewedIndex(typeof idx === 'number' ? [idx] : idx)
+                  }
+                >
                   {reviewed.map((submission, index) => (
                     <SubmissionTile
                       submission={submission}
@@ -642,6 +666,8 @@ const Toolbar: React.FC<{
   isDisabled: boolean;
   questChain: graphql.QuestChainInfoFragment;
   clearReview?: (selected: SubmissionType[]) => void;
+  index?: number[];
+  setIndex?: (idx: number[]) => void;
 }> = ({
   allChecked,
   isIndeterminate,
@@ -652,7 +678,21 @@ const Toolbar: React.FC<{
   isDisabled,
   questChain,
   clearReview,
+  index,
+  setIndex,
 }) => {
+  const expanded = useMemo(
+    () => submissions.length === index?.length,
+    [index, submissions],
+  );
+
+  const onToggleExpand = useCallback(() => {
+    if (expanded) {
+      setIndex?.([]);
+    } else {
+      setIndex?.(submissions.map((_, i) => i));
+    }
+  }, [setIndex, submissions, expanded]);
   return (
     <>
       <Flex py={4} w="full" justifyContent="space-between">
@@ -729,35 +769,38 @@ const Toolbar: React.FC<{
               </option>
             ))}
           </Select>
-          <Button
-            px={12}
-            color="gray.200"
-            fontSize={14}
-            fontWeight="bold"
-            bgColor="whiteAlpha.100"
-            borderRadius={24}
-            borderWidth={'1px'}
-            borderStyle={'solid'}
-            borderColor={'transparent'}
-            _hover={{
-              borderColor: 'whiteAlpha.400',
-            }}
-            _active={{
-              borderColor: 'whiteAlpha.400',
-            }}
-            _focus={{
-              zIndex: 1,
-              borderColor: '#63b3ed',
-              boxShadow: '0 0 0 1px #63b3ed',
-            }}
-            _focusVisible={{
-              zIndex: 1,
-              borderColor: '#63b3ed',
-              boxShadow: '0 0 0 1px #63b3ed',
-            }}
-          >
-            Expand all
-          </Button>
+          {setIndex && (
+            <Button
+              px={12}
+              color="gray.200"
+              fontSize={14}
+              fontWeight="bold"
+              bgColor="whiteAlpha.100"
+              borderRadius={24}
+              borderWidth={'1px'}
+              borderStyle={'solid'}
+              borderColor={'transparent'}
+              _hover={{
+                borderColor: 'whiteAlpha.400',
+              }}
+              _active={{
+                borderColor: 'whiteAlpha.400',
+              }}
+              _focus={{
+                zIndex: 1,
+                borderColor: '#63b3ed',
+                boxShadow: '0 0 0 1px #63b3ed',
+              }}
+              _focusVisible={{
+                zIndex: 1,
+                borderColor: '#63b3ed',
+                boxShadow: '0 0 0 1px #63b3ed',
+              }}
+              onClick={onToggleExpand}
+            >
+              {expanded ? 'Close all' : 'Expand all'}
+            </Button>
+          )}
         </Flex>
       </Flex>
     </>
