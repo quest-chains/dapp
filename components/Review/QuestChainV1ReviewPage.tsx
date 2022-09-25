@@ -813,6 +813,7 @@ const Toolbar: React.FC<{
             borderRadius={24}
             borderColor="transparent"
             onChange={e => setFilter(e.target.value)}
+            value={filterValue}
           >
             {selectOptions.map((value: string) => (
               <option key={value} value={value}>
