@@ -46,6 +46,7 @@ import { QuestEditor } from '@/components/QuestEditor';
 import { Role } from '@/components/RoleTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
+import { useInputText } from '@/hooks/useInputText';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
@@ -112,8 +113,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
 
-  const [chainName, setChainName] = useState(questChain?.name || '');
-  const [chainDescription, setChainDescription] = useState(
+  const [chainNameRef, setChainName] = useInputText(questChain?.name || '');
+  const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
 
@@ -462,12 +463,23 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       fontWeight="bold"
                       fontFamily="heading"
                       mb={3}
-                      value={chainName}
+                      defaultValue={chainNameRef.current}
                       onChange={e => setChainName(e.target.value)}
                     />
                     <IconButton
                       borderRadius="full"
-                      onClick={onUpdateQuestChainConfirmationOpen}
+                      onClick={() => {
+                        if (
+                          !chainNameRef.current ||
+                          !chainDescRef.current ||
+                          chainNameRef.current === questChain.name ||
+                          chainDescRef.current === questChain.description
+                        ) {
+                          toast.error('Empty name or description or no change');
+                          return;
+                        }
+                        onUpdateQuestChainConfirmationOpen();
+                      }}
                       isDisabled={isSubmittingQuestChain}
                       icon={<CheckIcon boxSize="1rem" />}
                       aria-label={''}
@@ -485,8 +497,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       onSubmit={() => {
                         onUpdateQuestChainConfirmationClose();
                         onSubmitQuestChain({
-                          name: chainName,
-                          description: chainDescription,
+                          name: chainNameRef.current,
+                          description: chainDescRef.current,
                         });
                       }}
                       title="Update Quest Chain"
@@ -524,7 +536,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 )}
                 {isEditingQuestChain && (
                   <MarkdownEditor
-                    value={chainDescription}
+                    value={chainDescRef.current}
                     onChange={setChainDescription}
                   />
                 )}

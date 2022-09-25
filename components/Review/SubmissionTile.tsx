@@ -25,6 +25,7 @@ import {
   SubmissionType,
 } from '@/components/Review/PopoverButton';
 import { UserDisplay } from '@/components/UserDisplay';
+import { useInputText } from '@/hooks/useInputText';
 import { formatDate } from '@/utils/dateHelpers';
 import { handleError } from '@/utils/helpers';
 import { uploadMetadata } from '@/utils/metadata';
@@ -327,16 +328,19 @@ const ReviewComment: React.FC<{
   const { reviewComment, success } = submission;
 
   const [commenting, setCommenting] = useState(false);
-  const [newComment, setNewComment] = useState(reviewComment ?? '');
+  const [newCommentRef, setNewComment] = useInputText(reviewComment);
 
   const onSubmitComment = useCallback(async () => {
     let tid;
     try {
-      setCommenting(true);
+      if (!newCommentRef.current || newCommentRef.current === reviewComment) {
+        toast.error('No change in comment');
+        return;
+      }
       tid = toast.loading('Uploading metadata to IPFS via web3.storage');
       const metadata: Metadata = {
         name: `Reviewing 1 submission`,
-        description: newComment,
+        description: newCommentRef.current,
       };
 
       const hash = await uploadMetadata(metadata);
@@ -346,7 +350,7 @@ const ReviewComment: React.FC<{
           {
             ...submission,
             reviewCommentUri: details,
-            reviewComment: newComment,
+            reviewComment: newCommentRef.current,
           },
         ],
         false,
@@ -359,12 +363,11 @@ const ReviewComment: React.FC<{
     } finally {
       setCommenting(false);
     }
-  }, [submission, onReview, setEditing, newComment]);
+  }, [submission, onReview, setEditing, newCommentRef, reviewComment]);
 
-  useEffect(
-    () => setNewComment(reviewComment ?? ''),
-    [isEditing, reviewComment],
-  );
+  useEffect(() => {
+    setNewComment(reviewComment ?? '');
+  }, [isEditing, reviewComment, setNewComment]);
 
   const [isRemoving, setRemoving] = useState(false);
 
@@ -398,7 +401,10 @@ const ReviewComment: React.FC<{
       gap="4"
     >
       {isEditing ? (
-        <MarkdownEditor value={newComment} onChange={setNewComment} />
+        <MarkdownEditor
+          value={newCommentRef.current}
+          onChange={setNewComment}
+        />
       ) : (
         <>
           {isExpanded && <MarkdownViewer markdown={reviewComment ?? ''} />}
@@ -475,8 +481,10 @@ const ReviewComment: React.FC<{
               isLoading={commenting}
               variant="ghost"
               borderRadius="full"
-              isDisabled={!newComment || newComment === reviewComment}
-              onClick={onSubmitComment}
+              onClick={() => {
+                setCommenting(true);
+                onSubmitComment();
+              }}
               textTransform="uppercase"
               color="#10B981"
             >

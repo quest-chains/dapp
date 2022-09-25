@@ -37,6 +37,7 @@ import {
   SubmissionType,
 } from '@/components/Review/SubmissionTile';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { uploadMetadata } from '@/utils/metadata';
@@ -179,7 +180,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
 
   const [commenting, setCommenting] = useState(false);
 
-  const [reviewComment, setReviewComment] = useState('');
+  const [reviewCommentRef, setReviewComment] = useInputText();
 
   const [reviewing, setReviewing] = useState<SubmissionType[]>([]);
 
@@ -188,7 +189,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     setReviewComment('');
     onCloseModal();
     setCommenting(false);
-  }, [onCloseModal]);
+  }, [onCloseModal, setReviewComment]);
 
   const clearChecked = useCallback(() => {
     setCheckedAwaitingReview(awaitingReview.map(() => false));
@@ -256,6 +257,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   }, []);
 
   const onSubmitComment = useCallback(async () => {
+    if (reviewCommentRef.current === '') {
+      toast.error('Empty comment');
+      return;
+    }
     let tid;
     try {
       setCommenting(true);
@@ -264,7 +269,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         name: `Reviewing ${reviewing.length} submission${
           reviewing.length > 1 ? 's' : ''
         }`,
-        description: reviewComment,
+        description: reviewCommentRef.current,
       };
 
       const hash = await uploadMetadata(metadata);
@@ -273,18 +278,25 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         reviewing.map(q => ({
           ...q,
           reviewCommentUri: details,
-          reviewComment,
+          reviewComment: metadata.description,
         })),
       );
       toast.dismiss(tid);
       onModalClose();
+      setReviewComment('');
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
     } finally {
       setCommenting(false);
     }
-  }, [reviewComment, reviewing, onSelectSubmissions, onModalClose]);
+  }, [
+    reviewCommentRef,
+    reviewing,
+    onSelectSubmissions,
+    onModalClose,
+    setReviewComment,
+  ]);
 
   const onSubmit = useCallback(async () => {
     if (
@@ -524,7 +536,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               </FormLabel>
               <Flex pb={4} w="100%">
                 <MarkdownEditor
-                  value={reviewComment}
+                  value={reviewCommentRef.current}
                   placeholder="Write what you liked about the submissions..."
                   onChange={setReviewComment}
                 />
@@ -548,7 +560,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 isLoading={commenting}
                 variant="ghost"
                 borderRadius="full"
-                isDisabled={!reviewComment}
                 onClick={onSubmitComment}
                 textTransform="uppercase"
                 color={reviewing[0]?.success ? 'main' : 'rejected'}

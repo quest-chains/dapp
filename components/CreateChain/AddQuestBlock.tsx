@@ -1,22 +1,22 @@
-import { Button, Flex, Image, Input, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Flex, Image, Input, VStack } from '@chakra-ui/react';
+import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useInputText } from '@/hooks/useInputText';
 
 export const AddQuestBlock: React.FC<{
   onClose: () => void;
-  onAdd: (name: string, description: string) => void;
+  onAdd: (name: string, desc: string) => void;
 }> = ({ onClose, onAdd }) => {
-  const [description, setDescription] = useState('');
-  const [name, setName] = useState('');
+  const [nameRef, setName] = useInputText();
+  const [descRef, setDescription] = useInputText();
+
   const onSubmit = () => {
-    onAdd(name, description);
+    onAdd(nameRef.current, descRef.current);
     onClose();
   };
-
-  const isDisabled = name === '' || description === '';
 
   return (
     <Flex
@@ -31,9 +31,9 @@ export const AddQuestBlock: React.FC<{
             <Flex alignSelf="start">Name</Flex>
             <Input
               color="white"
-              value={name}
+              defaultValue={nameRef.current}
               bg="#0F172A"
-              id="name"
+              id="nameRef.current"
               maxLength={60}
               onChange={e => setName(e.target.value)}
               placeholder="Quest Name"
@@ -43,40 +43,33 @@ export const AddQuestBlock: React.FC<{
             <Flex alignSelf="start">Description</Flex>
             <MarkdownEditor
               height="12rem"
-              value={description}
+              value={descRef.current}
               placeholder="Quest Description"
               onChange={setDescription}
             />
           </Flex>
         </VStack>
         <Flex w="100%" justify="flex-end" my={4}>
-          {isDisabled && (
-            <Button
-              borderWidth={1}
-              borderColor="white"
-              height={{ base: 10, md: 12 }}
-              fontSize={{ base: 9, md: 14 }}
-              px={5}
-              borderRadius="full"
-              isDisabled
-              w="full"
-            >
-              <Image src={Edit.src} alt="Edit" mr={3} />
-              To continue, enter the name and description for the quest
-            </Button>
-          )}
-          {!isDisabled && (
-            <SubmitButton
-              onClick={onSubmit}
-              type="submit"
-              isDisabled={isDisabled}
-              w="full"
-              fontWeight="bold"
-              fontSize={{ base: 12, md: 14 }}
-            >
-              ADD QUEST
-            </SubmitButton>
-          )}
+          <SubmitButton
+            onClick={() => {
+              if (!nameRef.current || !descRef.current) {
+                toast.error(
+                  <>
+                    <Image src={Edit.src} alt="Edit" mr={3} />
+                    To continue, enter the name and description for the quest
+                  </>,
+                );
+                return;
+              }
+              onSubmit();
+            }}
+            type="submit"
+            w="full"
+            fontWeight="bold"
+            fontSize={{ base: 12, md: 14 }}
+          >
+            ADD QUEST
+          </SubmitButton>
         </Flex>
       </Flex>
     </Flex>

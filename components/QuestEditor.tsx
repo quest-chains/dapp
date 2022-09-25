@@ -4,6 +4,7 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -34,11 +35,11 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
     onOpen: onUpdateQuestConfirmationOpen,
     onClose: onUpdateQuestConfirmationClose,
   } = useDisclosure();
-  const [questName, setQuestName] = useState(quest.name);
   const [isSubmittingQuest, setSubmittingQuest] = useState(false);
   const { chainId, provider } = useWallet();
 
-  const [questDescription, setQuestDescription] = useState(quest.description);
+  const [questNameRef, setQuestName] = useInputText(quest.name);
+  const [questDescRef, setQuestDescription] = useInputText(quest.description);
 
   const onSubmitQuest = useCallback(
     async ({
@@ -50,8 +51,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       description: string;
       questId: number;
     }) => {
-      if (!chainId || chainId !== questChain.chainId || !provider) {
-        toast.error('Wrong Chain, please switch!');
+      if (!chainId || !provider) {
         return;
       }
 
@@ -108,13 +108,28 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
         <Input
           mb={3}
           maxLength={60}
-          value={questName ?? ''}
+          value={questNameRef.current ?? ''}
           onChange={e => setQuestName(e.target.value)}
           bg="#0F172A"
         />
         <IconButton
           borderRadius="full"
-          onClick={onUpdateQuestConfirmationOpen}
+          onClick={() => {
+            if (!chainId || chainId !== questChain.chainId || !provider) {
+              toast.error('Wrong Chain, please switch!');
+              return;
+            }
+            if (
+              !questNameRef.current ||
+              !questDescRef.current ||
+              (quest.name === questNameRef.current &&
+                quest.description === questDescRef.current)
+            ) {
+              toast.error('Empty or no change!');
+              return;
+            }
+            onUpdateQuestConfirmationOpen();
+          }}
           isDisabled={isSubmittingQuest}
           icon={<CheckIcon boxSize="1rem" />}
           aria-label={''}
@@ -131,8 +146,8 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
           onSubmit={() => {
             onUpdateQuestConfirmationClose();
             onSubmitQuest({
-              name: questName ?? '',
-              description: questDescription ?? '',
+              name: questNameRef.current ?? '',
+              description: questDescRef.current ?? '',
               questId: quest.questId,
             });
           }}
@@ -146,7 +161,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       </Flex>
 
       <MarkdownEditor
-        value={questDescription ?? ''}
+        value={questDescRef.current ?? ''}
         onChange={setQuestDescription}
       />
     </Flex>

@@ -17,6 +17,7 @@ import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useDropImage } from '@/hooks/useDropFiles';
+import { useInputText } from '@/hooks/useInputText';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
@@ -32,8 +33,8 @@ export const MetadataForm: React.FC<{
     imageUrl?: string,
   ) => void | Promise<void>;
 }> = ({ onBack, onSubmit }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [nameRef, setName] = useInputText();
+  const [descRef, setDescription] = useInputText();
 
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
@@ -41,17 +42,21 @@ export const MetadataForm: React.FC<{
   const { isConnected, chainId } = useWallet();
 
   const isDisabled =
-    !isConnected || !isSupportedNetwork(chainId) || !description;
+    !isConnected ||
+    !isSupportedNetwork(chainId) ||
+    !descRef.current ||
+    !nameRef.current;
 
   const [isSubmitting, setSubmitting] = useState(false);
 
   const exportMetadata = useCallback(async () => {
+    if (nameRef.current === '' || descRef.current === '') return;
     let tid;
     try {
       setSubmitting(true);
       const metadata: Metadata = {
-        name,
-        description,
+        name: nameRef.current,
+        description: descRef.current,
       };
       let imageUrl;
       if (imageFile) {
@@ -66,7 +71,9 @@ export const MetadataForm: React.FC<{
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 
-      await onSubmit(name, description, metadataUri, imageUrl);
+      await onSubmit(nameRef.current, descRef.current, metadataUri, imageUrl);
+      setName('');
+      setDescription('');
     } catch (error) {
       if (tid) {
         toast.dismiss(tid);
@@ -75,7 +82,7 @@ export const MetadataForm: React.FC<{
     } finally {
       setSubmitting(false);
     }
-  }, [name, description, onSubmit, imageFile]);
+  }, [nameRef, descRef, onSubmit, imageFile, setName, setDescription]);
 
   return (
     <VStack
@@ -116,7 +123,7 @@ export const MetadataForm: React.FC<{
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 color="white"
-                value={name}
+                defaultValue={nameRef.current}
                 bg="#0F172A"
                 id="name"
                 onChange={e => setName(e.target.value)}
@@ -127,7 +134,7 @@ export const MetadataForm: React.FC<{
               <FormLabel htmlFor="description">Description</FormLabel>
               <MarkdownEditor
                 height="12rem"
-                value={description}
+                value={descRef.current}
                 placeholder="Quest Chain Description"
                 onChange={setDescription}
               />

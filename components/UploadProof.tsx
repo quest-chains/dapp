@@ -19,6 +19,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useDropFiles, useDropImage } from '@/hooks/useDropFiles';
+import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -42,7 +43,7 @@ export const UploadProof: React.FC<{
 
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const [proofDescription, setProofDescription] = useState('');
+  const [proofDescRef, setProofDescription] = useInputText();
 
   const dropFilesProps = useDropFiles();
 
@@ -57,70 +58,73 @@ export const UploadProof: React.FC<{
     onResetFiles();
     onResetImage();
     onClose();
-  }, [onClose, onResetFiles, onResetImage]);
+  }, [onClose, onResetFiles, onResetImage, setProofDescription]);
 
   const onSubmit = useCallback(async () => {
-    if (!chainId || chainId !== questChain.chainId || !provider) return;
-    if (proofDescription) {
-      setSubmitting(true);
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      try {
-        const [filesHash, imageHash] = await Promise.all([
-          files.length ? await uploadFiles(files) : '',
-          imageFile ? await uploadFiles([imageFile]) : '',
-        ]);
-        const metadata: Metadata = {
-          name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
-          description: proofDescription,
-          image_url: imageHash ? `ipfs://${imageHash}` : undefined,
-          external_url: filesHash ? `ipfs://${filesHash}` : undefined,
-        };
+    if (
+      !chainId ||
+      chainId !== questChain.chainId ||
+      !provider ||
+      !proofDescRef.current
+    )
+      return;
 
-        const hash = await uploadMetadata(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
+    setSubmitting(true);
+    let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+    try {
+      const [filesHash, imageHash] = await Promise.all([
+        files.length ? await uploadFiles(files) : '',
+        imageFile ? await uploadFiles([imageFile]) : '',
+      ]);
+      const metadata: Metadata = {
+        name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
+        description: proofDescRef.current,
+        image_url: imageHash ? `ipfs://${imageHash}` : undefined,
+        external_url: filesHash ? `ipfs://${filesHash}` : undefined,
+      };
 
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        );
+      const hash = await uploadMetadata(metadata);
+      const details = `ipfs://${hash}`;
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
 
-        const tx = await (questChain.version === '1'
-          ? (contract as contracts.V1.QuestChain).submitProofs(
-              [questId],
-              [details],
-            )
-          : (contract as contracts.V0.QuestChain).submitProof(
-              questId,
-              details,
-            ));
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success('Successfully submitted proof');
-        onModalClose();
-        refresh();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      }
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      );
 
-      setSubmitting(false);
+      const tx = await (questChain.version === '1'
+        ? (contract as contracts.V1.QuestChain).submitProofs(
+            [questId],
+            [details],
+          )
+        : (contract as contracts.V0.QuestChain).submitProof(questId, details));
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
+      toast.success('Successfully submitted proof');
+      onModalClose();
+      setProofDescription('');
+      refresh();
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
     }
+
+    setSubmitting(false);
   }, [
     chainId,
     questChain,
-    proofDescription,
+    proofDescRef,
     files,
     imageFile,
     questId,
@@ -129,6 +133,7 @@ export const UploadProof: React.FC<{
     refresh,
     address,
     provider,
+    setProofDescription,
   ]);
 
   return (
@@ -170,12 +175,12 @@ export const UploadProof: React.FC<{
           <ModalCloseButton />
           <ModalBody>
             <FormControl isRequired>
-              <FormLabel color="main" htmlFor="proofDescription">
+              <FormLabel color="main" htmlFor="proofDescRef.current">
                 Description
               </FormLabel>
               <Flex w="100%" pb={4}>
                 <MarkdownEditor
-                  value={proofDescription}
+                  value={proofDescRef.current}
                   onChange={value => setProofDescription(value)}
                 />
               </Flex>
@@ -202,7 +207,6 @@ export const UploadProof: React.FC<{
               mt={4}
               type="submit"
               onClick={onSubmit}
-              isDisabled={!proofDescription}
               isLoading={isSubmitting}
             >
               Submit

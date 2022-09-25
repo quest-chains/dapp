@@ -106,7 +106,7 @@ const Review: React.FC<Props> = ({
 
   if (!isReviewer) {
     return (
-      <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
+      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
         <ReviewHead />
         <Text> Cannot review quest chain! </Text>
       </VStack>
@@ -115,7 +115,7 @@ const Review: React.FC<Props> = ({
 
   if (questChain.version === '0') {
     return (
-      <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
+      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
         <ReviewHead />
         <QuestChainV0ReviewPage
           {...{ questChain, questStatuses, fetching, refresh }}
@@ -125,7 +125,7 @@ const Review: React.FC<Props> = ({
   }
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }} spacing={8}>
+    <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
       <ReviewHead />
       <QuestChainV1ReviewPage
         {...{ questChain, questStatuses, fetching, refresh }}
