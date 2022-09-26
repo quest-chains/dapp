@@ -136,12 +136,7 @@ const CustomNFTForm2D: React.FC<{
           </Button>
         )}
         {!isDisabled && (
-          <SubmitButton
-            isLoading={isLoading}
-            type="submit"
-            onClick={exportMetadata}
-            w="full"
-          >
+          <SubmitButton isLoading={isLoading} onClick={exportMetadata} w="full">
             Continue to Step 3
           </SubmitButton>
         )}

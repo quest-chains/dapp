@@ -206,7 +206,6 @@ export const AddQuestBlock: React.FC<{
                     mt={4}
                     isLoading={isSubmitting}
                     isDisabled={chainId !== questChain.chainId}
-                    type="submit"
                   >
                     Add
                   </SubmitButton>

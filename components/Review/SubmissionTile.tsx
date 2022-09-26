@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import removeMd from 'remove-markdown';
 
 import { CommentIcon } from '@/components/icons/CommentIcon';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -140,7 +141,7 @@ export const SubmissionTile: React.FC<{
                     }}
                     h={12}
                   >
-                    {submissionDescription}
+                    {removeMd(submissionDescription ?? '')}
                   </Text>
                 )}
               </Box>
@@ -394,6 +395,7 @@ const ReviewComment: React.FC<{
     <Flex
       w="100%"
       p={6}
+      pb={isEditing ? 4 : 6}
       background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
       role="group"
       position="relative"
@@ -404,6 +406,7 @@ const ReviewComment: React.FC<{
         <MarkdownEditor
           value={newCommentRef.current}
           onChange={setNewComment}
+          height="8rem"
         />
       ) : (
         <>
@@ -418,7 +421,7 @@ const ReviewComment: React.FC<{
               }}
               maxH={12}
             >
-              {reviewComment}
+              {removeMd(reviewComment ?? '')}
             </Text>
           )}
         </>

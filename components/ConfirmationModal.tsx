@@ -49,7 +49,6 @@ export const ConfirmationModal: React.FC<DialogProps> = ({
             </Button>
             <SubmitButton
               mt={4}
-              type="submit"
               onClick={onSubmit}
               isDisabled={isDisabled}
               isLoading={isLoading}

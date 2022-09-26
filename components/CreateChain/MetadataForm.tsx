@@ -5,7 +5,6 @@ import {
   FormControl,
   FormLabel,
   HStack,
-  Image,
   Input,
   Text,
   VStack,
@@ -13,7 +12,6 @@ import {
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useDropImage } from '@/hooks/useDropFiles';
@@ -41,16 +39,11 @@ export const MetadataForm: React.FC<{
 
   const { isConnected, chainId } = useWallet();
 
-  const isDisabled =
-    !isConnected ||
-    !isSupportedNetwork(chainId) ||
-    !descRef.current ||
-    !nameRef.current;
+  const isDisabled = !isConnected || !isSupportedNetwork(chainId);
 
   const [isSubmitting, setSubmitting] = useState(false);
 
   const exportMetadata = useCallback(async () => {
-    if (nameRef.current === '' || descRef.current === '') return;
     let tid;
     try {
       setSubmitting(true);
@@ -175,33 +168,20 @@ export const MetadataForm: React.FC<{
               Back
             </Button>
           )}
-          {isDisabled && (
-            <Button
-              borderWidth={1}
-              borderColor="white"
-              height={{ base: 10, md: 12 }}
-              px={5}
-              borderRadius="full"
-              isDisabled
-              w="full"
-            >
-              <Image src={Edit.src} alt="Edit" mr={3} />
-              <Text fontSize={{ base: 12, md: 16 }}>
-                To continue, enter Name and Description
-              </Text>
-            </Button>
-          )}
-          {!isDisabled && (
-            <SubmitButton
-              isLoading={isSubmitting}
-              type="submit"
-              isDisabled={isDisabled}
-              onClick={exportMetadata}
-              w="full"
-            >
-              Continue to Step 2
-            </SubmitButton>
-          )}
+          <SubmitButton
+            isLoading={isSubmitting}
+            isDisabled={isDisabled}
+            onClick={() => {
+              if (!nameRef.current || !descRef.current) {
+                toast.error('Please enter a name & description');
+                return;
+              }
+              exportMetadata();
+            }}
+            w="full"
+          >
+            Continue to Step 2
+          </SubmitButton>
         </Flex>
       </form>
     </VStack>

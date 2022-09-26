@@ -245,7 +245,6 @@ export const QuestsForm: React.FC<{
           <SubmitButton
             isDisabled={!(isPremium && !isApproved)}
             onClick={async () => approveTokens()}
-            type="submit"
             flex={1}
             fontSize={{ base: 12, md: 16 }}
           >
@@ -255,7 +254,6 @@ export const QuestsForm: React.FC<{
         <SubmitButton
           isDisabled={isPremium && !isApproved}
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
-          type="submit"
           flex={1}
           fontSize={{ base: 12, md: 16 }}
         >

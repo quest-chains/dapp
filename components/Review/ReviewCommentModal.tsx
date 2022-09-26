@@ -109,6 +109,7 @@ export const ReviewCommentModal: React.FC<{
                 value={reviewCommentRef.current}
                 placeholder="Write what you liked about the submissions..."
                 onChange={setReviewComment}
+                height="12rem"
               />
             </Flex>
           </FormControl>

@@ -203,12 +203,7 @@ export const UploadProof: React.FC<{
             >
               Close
             </Button>
-            <SubmitButton
-              mt={4}
-              type="submit"
-              onClick={onSubmit}
-              isLoading={isSubmitting}
-            >
+            <SubmitButton mt={4} onClick={onSubmit} isLoading={isSubmitting}>
               Submit
             </SubmitButton>
           </ModalFooter>

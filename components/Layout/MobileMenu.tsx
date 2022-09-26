@@ -74,18 +74,14 @@ export const MobileMenu: React.FC<{
                 <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
                   <Box
                     borderWidth={1}
-                    borderColor="white"
+                    borderColor={
+                      router.pathname === '/create' ? 'main' : 'white'
+                    }
                     px={5}
                     py={2}
                     borderRadius="full"
                   >
-                    <Text
-                      borderBottomWidth={router.pathname === '/create' ? 1 : 0}
-                      borderBottomColor="main"
-                      color="white"
-                    >
-                      Create a chain
-                    </Text>
+                    <Text color="white">Create a chain</Text>
                   </Box>
                 </ChakraLink>
               </NextLink>

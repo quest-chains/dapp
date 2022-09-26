@@ -457,7 +457,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                       onReview={() => undefined}
                       key={submission.id}
                       isDisabled={isDisabled}
-                      checked={false}
                       showButtons={false}
                     />
                   ))}
@@ -473,7 +472,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                       onReview={() => undefined}
                       key={submission.id}
                       isDisabled={isDisabled}
-                      checked={false}
                       showButtons={false}
                     />
                   ))}
