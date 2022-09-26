@@ -1,11 +1,5 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import {
-  Flex,
-  Link as ChakraLink,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Flex, Link as ChakraLink, Spinner, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
@@ -13,6 +7,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 
+import { Page } from '@/components/Layout/Page';
 import { QuestChainV0ReviewPage } from '@/components/Review/QuestChainV0ReviewPage';
 import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPage';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
@@ -63,17 +58,17 @@ const Review: React.FC<Props> = ({
 
   if (isFallback || fetching || isConnecting) {
     return (
-      <VStack>
+      <Page>
         <Spinner color="main" />
-      </VStack>
+      </Page>
     );
   }
 
   if (!questChain) {
     return (
-      <VStack>
+      <Page>
         <Text> Quest Chain not found! </Text>
-      </VStack>
+      </Page>
     );
   }
 
@@ -106,31 +101,31 @@ const Review: React.FC<Props> = ({
 
   if (!isReviewer) {
     return (
-      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
+      <Page>
         <ReviewHead />
         <Text> Cannot review quest chain! </Text>
-      </VStack>
+      </Page>
     );
   }
 
   if (questChain.version === '0') {
     return (
-      <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
+      <Page>
         <ReviewHead />
         <QuestChainV0ReviewPage
           {...{ questChain, questStatuses, fetching, refresh }}
         />
-      </VStack>
+      </Page>
     );
   }
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 4, lg: 12, xl: 40 }} spacing={8}>
+    <Page>
       <ReviewHead />
       <QuestChainV1ReviewPage
         {...{ questChain, questStatuses, fetching, refresh }}
       />
-    </VStack>
+    </Page>
   );
 };
 

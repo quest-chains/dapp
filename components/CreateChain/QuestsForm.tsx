@@ -290,7 +290,14 @@ export const Quest: React.FC<{
   isCreatingChain = false,
 }) => {
   return (
-    <AccordionItem bg={bgColor} borderRadius={10} px={4} mb={3} border={0}>
+    <AccordionItem
+      bg={bgColor}
+      borderRadius={10}
+      px={4}
+      mb={3}
+      border={0}
+      w="100%"
+    >
       <Flex alignItems="center">
         <AccordionButton py={6}>
           <Box flex="1" textAlign="left" fontWeight="bold" whiteSpace="nowrap">

@@ -33,7 +33,7 @@ export const NFTsToMint: React.FC = () => {
   } = useNFTsToMintForAllChains(address);
 
   return (
-    <VStack spacing={4} align="stretch">
+    <VStack spacing={4} align="stretch" borderRadius={8}>
       {fetching ? (
         <Spinner color="main" ml={4} />
       ) : (

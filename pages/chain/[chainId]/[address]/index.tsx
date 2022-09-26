@@ -37,6 +37,7 @@ import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
+import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MintNFTTile } from '@/components/MintNFTTile';
@@ -334,21 +335,21 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   if (isFallback) {
     return (
-      <VStack>
+      <Page>
         <Spinner color="main" />
-      </VStack>
+      </Page>
     );
   }
   if (!questChain) {
     return (
-      <VStack>
+      <Page>
         <Text> Quest Chain not found! </Text>
-      </VStack>
+      </Page>
     );
   }
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }}>
+    <Page>
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
         position="fixed"
@@ -361,7 +362,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         bgSize="cover"
         zIndex={-1}
       />
-      <Fade in={visible}>
+      <Fade in={visible} style={{ width: '100%' }}>
         <Head>
           <title>
             {`${questChain.name} - ${
@@ -374,7 +375,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           />
         </Head>
 
-        <Flex flexDirection="column" w="100%" justify="center" zIndex="10">
+        <Flex
+          direction="column"
+          w="100%"
+          justify="center"
+          zIndex="10"
+          align="stretch"
+        >
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
@@ -392,6 +399,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               alignItems="center"
               justifyContent="center"
               zIndex={100}
+              w="100%"
             >
               <Flex
                 w={32}
@@ -433,7 +441,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           <Flex
             gap={10}
             justifyContent="space-between"
-            direction={{ base: 'column', md: 'row' }}
+            direction={{ base: 'column', lg: 'row' }}
           >
             {/* Left */}
             <Flex flexDirection="column" w="full">
@@ -510,10 +518,25 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 )}
               </Flex>
 
+              {/* Quest Chain Description */}
+              <Flex mb={8}>
+                {!isEditingQuestChain && questChain.description && (
+                  <MarkdownViewer markdown={questChain.description} />
+                )}
+                {isEditingQuestChain && (
+                  <MarkdownEditor
+                    value={chainDescRef.current}
+                    onChange={setChainDescription}
+                  />
+                )}
+              </Flex>
+
               <Flex
-                flexDirection="column-reverse"
-                maxW={373}
-                display={{ base: 'flex', md: 'none' }}
+                direction="column"
+                display={{ base: 'flex', lg: 'none' }}
+                align="center"
+                w="100%"
+                mb={12}
               >
                 <ActionsAndImage
                   mode={mode}
@@ -527,19 +550,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   chainId={chainId}
                   questChain={questChain}
                 />
-              </Flex>
-
-              {/* Quest Chain Description */}
-              <Flex mb={8}>
-                {!isEditingQuestChain && questChain.description && (
-                  <MarkdownViewer markdown={questChain.description} />
-                )}
-                {isEditingQuestChain && (
-                  <MarkdownEditor
-                    value={chainDescRef.current}
-                    onChange={setChainDescription}
-                  />
-                )}
               </Flex>
 
               {/* Quest Chain Metadata */}
@@ -651,7 +661,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
                       p={6}
-                      borderRadius={3}
+                      borderRadius={8}
                       justifyContent="space-between"
                     >
                       <Flex justifyContent="center" alignItems="center">
@@ -796,11 +806,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </Flex>
 
             {/* Right */}
-            <Flex flexDirection="column" maxW={373}>
+            <Flex flexDirection="column" maxW={{ base: '100%', lg: 373 }}>
               <Flex
                 flexDirection="column"
-                maxW={373}
-                display={{ base: 'none', md: 'flex' }}
+                w="100%"
+                display={{ base: 'none', lg: 'flex' }}
               >
                 <ActionsAndImage
                   mode={mode}
@@ -826,7 +836,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           </Flex>
         </Flex>
       </Fade>
-    </VStack>
+    </Page>
   );
 };
 
@@ -855,7 +865,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
       chainId &&
       chainId === questChain.chainId &&
       (isAdmin || isOwner) && (
-        <Flex justifyContent="space-between" h={124}>
+        <Flex justifyContent="space-between" w="100%">
           {isAdmin && (
             <Button variant="ghost" onClick={onEdit} fontSize="xs">
               <Image src={Edit.src} alt="Edit" mr={2} />
@@ -873,7 +883,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
       <Image
         src={ipfsUriToHttp(questChain.token.imageUrl)}
         alt="Quest Chain NFT badge"
-        mb={14}
+        maxW={373}
       />
     )}
   </>
@@ -893,7 +903,7 @@ type MembersProps = {
 
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
   <>
-    <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+    <Flex justify="space-between" alignItems="center" my={3} pl={4} w="100%">
       <Text color="whiteAlpha.600">{role}</Text>
       <Flex flexDir="column">
         {addresses.map(address => (
@@ -913,7 +923,7 @@ export const Members: React.FC<MembersProps> = ({
   editors,
   reviewers,
 }) => (
-  <Flex flexDir="column" px={5} width="full">
+  <Flex flexDir="column" width="full">
     <Text fontFamily="heading" fontSize="xl" mb={5}>
       Members
     </Text>

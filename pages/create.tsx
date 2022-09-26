@@ -13,6 +13,7 @@ import NFTForm from '@/components/CreateChain/NFTForm';
 import { QuestsForm } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
+import { Page } from '@/components/Layout/Page';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -232,13 +233,7 @@ const Create: React.FC = () => {
   if (!globalInfo[SUPPORTED_NETWORKS[0]]) return null;
 
   return (
-    <Flex
-      w="full"
-      align="stretch"
-      px={{ base: 0, md: 12, lg: 40 }}
-      gap={8}
-      flexDir="column"
-    >
+    <Page>
       <Box
         bgImage={ipfsUriToHttp(imageUrl)}
         position="fixed"
@@ -359,7 +354,7 @@ const Create: React.FC = () => {
           )}
         </Flex>
       </Flex>
-    </Flex>
+    </Page>
   );
 };
 

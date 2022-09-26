@@ -14,6 +14,10 @@ const Input = {
   },
 };
 
+const Button = {
+  baseStyle: { borderRadius: 'full' },
+};
+
 const Form = {
   baseStyle: { container: { padding: '2px' } },
 };
@@ -62,6 +66,7 @@ export const theme = extendTheme({
   },
   components: {
     Input,
+    Button,
     Form,
   },
 });

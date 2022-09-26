@@ -1,6 +1,5 @@
 import { WarningTwoIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
   Flex,
   Modal,
@@ -16,41 +15,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
+import removeMd from 'remove-markdown';
 
 import { UploadProof } from '@/components/UploadProof';
 import { useUserQuestsRejectedForAllChains } from '@/hooks/useUserQuestsRejectedForAllChains';
 import { useWallet } from '@/web3';
-
-export const QuestRejectedStatus: React.FC<{
-  statusInfo: graphql.QuestStatusInfoFragment;
-  refresh: () => void;
-}> = ({ statusInfo, refresh }) => (
-  <Box background="rgba(180, 83, 9, 0.3)" p={8} maxW="32rem">
-    <Flex alignItems="center" mb={3}>
-      <WarningTwoIcon color="#F59E0B" mr={3} />
-
-      <Text fontWeight="bold" fontSize={16}>
-        Submission in {statusInfo.questChain.name} rejected
-      </Text>
-    </Flex>
-    <Text>
-      Your submission of proof for {statusInfo.quest.name} was rejected, with
-      the following explanation:{' '}
-    </Text>
-    <Text fontWeight="bold" mb={3}>
-      {statusInfo.reviews.slice(-1)[0].description}
-    </Text>
-    {statusInfo.quest.name && (
-      <UploadProof
-        questId={statusInfo.quest.questId}
-        name={statusInfo.quest.name}
-        questChain={statusInfo.questChain}
-        refresh={refresh}
-        profile
-      />
-    )}
-  </Box>
-);
 
 export const QuestsRejected: React.FC = () => {
   const { address } = useWallet();
@@ -122,3 +91,43 @@ export const QuestsRejected: React.FC = () => {
     </VStack>
   );
 };
+
+export const QuestRejectedStatus: React.FC<{
+  statusInfo: graphql.QuestStatusInfoFragment;
+  refresh: () => void;
+}> = ({ statusInfo, refresh }) => (
+  <VStack
+    background="rgba(180, 83, 9, 0.2)"
+    p={6}
+    maxW="32rem"
+    borderRadius={8}
+    align="stretch"
+    gap={2}
+  >
+    <Flex alignItems="center">
+      <WarningTwoIcon color="#F59E0B" mr={2} />
+
+      <Text fontWeight="bold" fontSize={16}>
+        Submission in {`"${statusInfo.questChain.name}"`} rejected
+      </Text>
+    </Flex>
+    <Text>
+      Your submission of proof for the quest {`"${statusInfo.quest.name}"`} was
+      rejected, with the following comment:{' '}
+    </Text>
+    <Flex bg="blackAlpha.400" w="A00%" my={2} p={4}>
+      <Text fontWeight="bold">
+        {removeMd(statusInfo.reviews.slice(-1)[0].description ?? '')}
+      </Text>
+    </Flex>
+    {statusInfo.quest.name && (
+      <UploadProof
+        questId={statusInfo.quest.questId}
+        name={statusInfo.quest.name}
+        questChain={statusInfo.questChain}
+        refresh={refresh}
+        profile
+      />
+    )}
+  </VStack>
+);

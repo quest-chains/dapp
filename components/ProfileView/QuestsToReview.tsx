@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Flex,
   Heading,
@@ -22,51 +21,6 @@ import NextLink from 'next/link';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllChains';
 import { useWallet } from '@/web3';
-
-const QuestChainStatusView: React.FC<{
-  questChain: graphql.QuestChainReviewInfoFragment;
-}> = ({ questChain: chain }) => (
-  <NextLink
-    as={`/chain/${chain.chainId}/${chain.address}/review`}
-    href={`/chain/[chainId]/[address]/review`}
-    passHref
-  >
-    <ChakraLink display="block" _hover={{}} p={0}>
-      <Box background="rgba(71, 31, 71, 0.3)" p={8}>
-        <Heading fontSize="xl" fontWeight="bold" mb={4}>
-          {chain.name}
-        </Heading>
-        <SimpleGrid columns={3} w="100%" mb={4}>
-          <VStack color="neutral">
-            <Text textAlign="center">Submitted</Text>
-          </VStack>
-          <VStack color="main">
-            <Text textAlign="center">Accepted</Text>
-          </VStack>
-          <VStack color="rejected">
-            <Text textAlign="center">Rejected</Text>
-          </VStack>
-          <VStack color="neutral">
-            <Text textAlign="center">
-              {chain.questsInReview.length +
-                chain.questsPassed.length +
-                chain.questsFailed.length}
-            </Text>
-          </VStack>
-          <VStack color="main">
-            <Text textAlign="center">{chain.questsPassed.length}</Text>
-          </VStack>
-          <VStack color="rejected">
-            <Text textAlign="center">{chain.questsFailed.length}</Text>
-          </VStack>
-        </SimpleGrid>
-        <Flex justifyContent="right">
-          <NetworkDisplay asTag chainId={chain.chainId} />
-        </Flex>
-      </Box>
-    </ChakraLink>
-  </NextLink>
-);
 
 export const QuestsToReview: React.FC = () => {
   const { address } = useWallet();
@@ -127,3 +81,51 @@ export const QuestsToReview: React.FC = () => {
     </VStack>
   );
 };
+
+const QuestChainStatusView: React.FC<{
+  questChain: graphql.QuestChainReviewInfoFragment;
+}> = ({ questChain: chain }) => (
+  <NextLink
+    as={`/chain/${chain.chainId}/${chain.address}/review`}
+    href={`/chain/[chainId]/[address]/review`}
+    passHref
+  >
+    <ChakraLink
+      display="block"
+      background="rgba(71, 31, 71, 0.3)"
+      _hover={{ background: 'rgba(71, 31, 71, 0.5)' }}
+      p={0}
+      borderRadius={8}
+      overflow="hidden"
+    >
+      <VStack p={6} align="stretch" gap={4}>
+        <Heading fontSize="xl" fontWeight="bold">
+          {chain.name}
+        </Heading>
+        <SimpleGrid columns={3} w="100%">
+          <VStack color="neutral">
+            <Text textAlign="center">Pending</Text>
+          </VStack>
+          <VStack color="main">
+            <Text textAlign="center">Accepted</Text>
+          </VStack>
+          <VStack color="rejected">
+            <Text textAlign="center">Rejected</Text>
+          </VStack>
+          <VStack color="neutral">
+            <Text textAlign="center">{chain.questsInReview.length}</Text>
+          </VStack>
+          <VStack color="main">
+            <Text textAlign="center">{chain.questsPassed.length}</Text>
+          </VStack>
+          <VStack color="rejected">
+            <Text textAlign="center">{chain.questsFailed.length}</Text>
+          </VStack>
+        </SimpleGrid>
+        <Flex justify="right">
+          <NetworkDisplay asTag chainId={chain.chainId} />
+        </Flex>
+      </VStack>
+    </ChakraLink>
+  </NextLink>
+);
