@@ -116,6 +116,10 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
     [],
   );
+
+  const [sortReviewed, setSortReviewed] = useState<string>('');
+  const [sortAwaitingReview, setSortAwaitingReview] = useState<string>('');
+
   const [isAwaitingReviewIndeterminate, setIsAwaitingReviewIndeterminate] =
     useState<boolean>(false);
   const [isReviewedIndeterminate, setIsReviewedIndeterminate] =
@@ -175,10 +179,28 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   useEffect(() => {
     if (reviewed.length > 0) {
       setAwaitingReview(previous =>
-        previous.filter(q => reviewed.every(r => r.id !== q.id)),
+        previous
+          .filter(q => reviewed.every(r => r.id !== q.id))
+          .sort((a, b) =>
+            sort(
+              a.submissionTimestamp,
+              b.submissionTimestamp,
+              sortAwaitingReview,
+            ),
+          ),
       );
     }
-  }, [reviewed]);
+  }, [reviewed, sortAwaitingReview]);
+
+  useEffect(() => {
+    if (reviewed.length) {
+      setReviewed(
+        reviewed.sort((a, b) =>
+          sort(a.submissionTimestamp, b.submissionTimestamp, sortReviewed),
+        ),
+      );
+    }
+  }, [reviewed, sortReviewed]);
 
   const [commenting, setCommenting] = useState(false);
 
@@ -348,6 +370,17 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     }
   }, [refresh, chainId, questChain, provider, reviewed]);
 
+  const sort = (a: number, b: number, sort: string) => {
+    switch (sort) {
+      case '':
+        return 0;
+      case 'date-asc':
+        return a - b;
+      default:
+        return b - a;
+    }
+  };
+
   return (
     <VStack w="100%" spacing={8}>
       <Flex w="100%" justifyContent="space-between">
@@ -408,6 +441,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 isDisabled={isDisabled}
                 setFilter={setFilterAwaitingReview}
                 filterValue={filterAwaitingReview}
+                setSort={setSortAwaitingReview}
+                sortValue={sortAwaitingReview}
                 index={awaitingReviewIndex}
                 setIndex={setAwaitingReviewIndex}
               />
@@ -427,6 +462,8 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                 }
                 setFilter={setFilterReviewed}
                 filterValue={filterReviewed}
+                setSort={setSortReviewed}
+                sortValue={sortReviewed}
                 index={reviewedIndex}
                 setIndex={setReviewedIndex}
               />
@@ -444,14 +481,20 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                     )
                   }
                 >
-                  {awaitingReview.map((submission, index) => {
-                    if (
-                      filterAwaitingReview !== '' &&
-                      filterAwaitingReview !== submission.questId
+                  {awaitingReview
+                    .filter(
+                      submission =>
+                        filterAwaitingReview === '' ||
+                        filterAwaitingReview === submission.questId,
                     )
-                      return;
-
-                    return (
+                    .sort((a, b) =>
+                      sort(
+                        a.submissionTimestamp,
+                        b.submissionTimestamp,
+                        sortAwaitingReview,
+                      ),
+                    )
+                    .map((submission, index) => (
                       <SubmissionTile
                         submission={submission}
                         onReview={onReview}
@@ -460,8 +503,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                         checked={checkedAwaitingReview[index]}
                         onCheck={() => setCheckedItemAwaitingReview(index)}
                       />
-                    );
-                  })}
+                    ))}
                 </Accordion>
               </TabPanel>
               {/* reviewed */}
@@ -473,14 +515,20 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                     setReviewedIndex(typeof idx === 'number' ? [idx] : idx)
                   }
                 >
-                  {reviewed.map((submission, index) => {
-                    if (
-                      filterReviewed !== '' &&
-                      filterReviewed !== submission.questId
+                  {reviewed
+                    .filter(
+                      submission =>
+                        filterReviewed === '' ||
+                        filterReviewed === submission.questId,
                     )
-                      return;
-
-                    return (
+                    .sort((a, b) =>
+                      sort(
+                        a.submissionTimestamp,
+                        b.submissionTimestamp,
+                        sortReviewed,
+                      ),
+                    )
+                    .map((submission, index) => (
                       <SubmissionTile
                         submission={submission}
                         onReview={onReview}
@@ -492,8 +540,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
                         }
                         onCheck={() => setCheckedItemReviewed(index)}
                       />
-                    );
-                  })}
+                    ))}
                 </Accordion>
               </TabPanel>
               {/* submitted */}
@@ -697,6 +744,8 @@ const Toolbar: React.FC<{
   clearReview?: (selected: SubmissionType[]) => void;
   setFilter: (filter: string) => void;
   filterValue: string;
+  setSort: (sort: string) => void;
+  sortValue: string;
   index?: number[];
   setIndex?: (idx: number[]) => void;
 }> = ({
@@ -710,6 +759,8 @@ const Toolbar: React.FC<{
   clearReview,
   setFilter,
   filterValue,
+  setSort,
+  sortValue,
   index,
   setIndex,
 }) => {
@@ -801,6 +852,8 @@ const Toolbar: React.FC<{
             bgColor="whiteAlpha.100"
             borderRadius={24}
             borderColor="transparent"
+            onChange={e => setSort(e.target.value)}
+            value={sortValue}
           >
             <option value="date-asc">Date Asc</option>
             <option value="date-desc">Date Desc</option>
