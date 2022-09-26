@@ -18,7 +18,7 @@ export const MarkdownEditor: React.FC<{
       width: '100%',
       background: '#0F172A',
     }}
-    value={value}
+    defaultValue={value}
     placeholder={placeholder}
     renderHTML={text => <MarkdownViewer markdown={text} />}
     onChange={({ text }) => onChange(text)}

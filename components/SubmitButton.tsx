@@ -5,7 +5,7 @@ export const SubmitButton: React.FC<ButtonProps> = props => (
     px={{ base: 6, md: 10 }}
     borderRadius="full"
     fontSize={props.fontSize || 16}
-    height={{ base: 10, md: 12 }}
+    height={props.height || { base: 10, md: 12 }}
     _hover={{
       bg: 'main.950',
     }}

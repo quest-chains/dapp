@@ -14,6 +14,10 @@ const Input = {
   },
 };
 
+const Button = {
+  baseStyle: { borderRadius: 'full' },
+};
+
 const Form = {
   baseStyle: { container: { padding: '2px' } },
 };
@@ -62,6 +66,7 @@ export const theme = extendTheme({
   },
   components: {
     Input,
+    Button,
     Form,
   },
 });
@@ -94,7 +99,8 @@ export const globalStyles = css`
       background: #444444;
       border-radius: 0px;
     }
-    background: #0d1117;
+    overflow-y: scroll;
+    background: #111312;
     overflow-x: hidden;
   }
   html,

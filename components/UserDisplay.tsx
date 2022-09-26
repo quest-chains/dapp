@@ -1,6 +1,5 @@
 import { Button, HStack, Link, Text } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
-import { utils } from 'ethers';
 import NextLink from 'next/link';
 
 import { useENS } from '@/hooks/useENS';
@@ -25,7 +24,7 @@ export const UserDisplay: React.FC<{
               provider={getEthersProvider('0x1')}
             />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {formatAddress(utils.getAddress(address), ens)}
+              {formatAddress(address, ens)}
             </Text>
           </HStack>
         </Button>

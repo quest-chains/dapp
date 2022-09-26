@@ -91,7 +91,11 @@ export const UserBadges: React.FC<{
         </VStack>
       ) : (
         <HStack spacing={4} align="stretch">
-          {badges.length === 0 && <Text color="white">No badges found</Text>}
+          {badges.length === 0 && (
+            <Text color="white" ml={4}>
+              No badges found
+            </Text>
+          )}
           {badges?.slice(0, 4).map(({ chainId, name, imageUrl }) => (
             <VStack
               key={address}

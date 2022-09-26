@@ -23,6 +23,7 @@ import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { useInputText } from '@/hooks/useInputText';
 import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
 import { getAddressUrl, useWallet } from '@/web3';
 
@@ -52,8 +53,10 @@ export const QuestsForm: React.FC<{
   const [isAddingQuest, setIsAddingQuest] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [editingQuestIndex, setEditingQuestIndex] = useState(0);
-  const [questDescription, setDescription] = useState('');
-  const [questName, setName] = useState('');
+
+  const [questNameRef, setQuestName] = useInputText();
+  const [questDescRef, setQuestDesc] = useInputText();
+
   const [startAsDisabled, setStartAsDisabled] = useState(false);
 
   const [quests, setQuests] = useState<{ name: string; description: string }[]>(
@@ -116,16 +119,16 @@ export const QuestsForm: React.FC<{
           alignItems="center"
           flexDir="column"
         >
-          <Accordion allowMultiple w="full">
+          <Accordion allowMultiple w="full" defaultIndex={[]}>
             {quests &&
               quests.map(({ name, description }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
-                    name={questName}
-                    description={questDescription}
-                    setName={setName}
-                    setDescription={setDescription}
+                    name={questNameRef.current}
+                    description={questDescRef.current}
+                    setQuestName={setQuestName}
+                    setQuestDesc={setQuestDesc}
                     onSave={onEditQuest}
                     index={index}
                   ></EditingQuest>
@@ -136,8 +139,8 @@ export const QuestsForm: React.FC<{
                     description={description}
                     onRemoveQuest={() => onRemoveQuest(index)}
                     onEditQuest={() => {
-                      setName(name);
-                      setDescription(description);
+                      setQuestName(name);
+                      setQuestDesc(description);
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
@@ -242,7 +245,6 @@ export const QuestsForm: React.FC<{
           <SubmitButton
             isDisabled={!(isPremium && !isApproved)}
             onClick={async () => approveTokens()}
-            type="submit"
             flex={1}
             fontSize={{ base: 12, md: 16 }}
           >
@@ -252,7 +254,6 @@ export const QuestsForm: React.FC<{
         <SubmitButton
           isDisabled={isPremium && !isApproved}
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
-          type="submit"
           flex={1}
           fontSize={{ base: 12, md: 16 }}
         >
@@ -289,13 +290,20 @@ export const Quest: React.FC<{
   isCreatingChain = false,
 }) => {
   return (
-    <AccordionItem bg={bgColor} borderRadius={10} px={4} mb={3} border={0}>
+    <AccordionItem
+      bg={bgColor}
+      borderRadius={10}
+      px={4}
+      mb={3}
+      border={0}
+      w="100%"
+    >
       <Flex alignItems="center">
         <AccordionButton py={6}>
-          <Box flex="1" textAlign="left" fontWeight="bold">
+          <Box flex="1" textAlign="left" fontWeight="bold" whiteSpace="nowrap">
             {name}
           </Box>
-          <AccordionIcon />
+          <AccordionIcon ml={4} />
         </AccordionButton>
         {isMember && (
           <>
@@ -339,19 +347,20 @@ export const Quest: React.FC<{
 export const EditingQuest: React.FC<{
   name: string;
   description: string;
-  setName: (name: string) => void;
-  setDescription: (description: string) => void;
+  setQuestName: (name: string) => void;
+  setQuestDesc: (description: string) => void;
   onSave: (name: string, description: string, index: number) => void;
   index: number;
-}> = ({ name, description, setName, setDescription, onSave, index }) => {
+}> = ({ name, description, setQuestName, setQuestDesc, onSave, index }) => {
   return (
     <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Input
         bg="#0F172A"
-        value={name}
-        onChange={e => setName(e.target.value)}
+        defaultValue={name}
+        maxLength={60}
+        onChange={e => setQuestName(e.target.value)}
       />
-      <MarkdownEditor value={description ?? ''} onChange={setDescription} />
+      <MarkdownEditor value={description ?? ''} onChange={setQuestDesc} />
       <Button onClick={() => onSave(name, description, index)}>Save</Button>
     </Flex>
   );

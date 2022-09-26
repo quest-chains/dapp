@@ -63,7 +63,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
     <VStack
       w="100%"
       p={8}
-      borderRadius="1rem"
+      borderRadius={8}
       bg="rgba(255,255,255, 0.1)"
       color="white"
       textAlign="center"

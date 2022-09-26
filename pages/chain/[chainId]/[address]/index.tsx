@@ -1,4 +1,4 @@
-import { AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { AddIcon, CheckIcon, CloseIcon, InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Alert,
@@ -30,13 +30,14 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
+import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MintNFTTile } from '@/components/MintNFTTile';
@@ -44,14 +45,17 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { Role } from '@/components/RoleTag';
+import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
+import { useInputText } from '@/hooks/useInputText';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
+import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
-import { SUPPORTED_NETWORK_INFO, useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 const { getQuestChainAddresses, getQuestChainInfo } = graphql;
@@ -110,8 +114,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     refresh: refreshQuests,
   } = useLatestQuestChainData(inputQuestChain);
 
-  const [chainName, setChainName] = useState(questChain?.name || '');
-  const [chainDescription, setChainDescription] = useState(
+  const [chainNameRef, setChainName] = useInputText(questChain?.name || '');
+  const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
 
@@ -150,7 +154,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
   );
   const isReviewer: boolean = useMemo(
     () =>
-      questChain?.editors.some(
+      questChain?.reviewers.some(
         ({ address: a }) => a === address?.toLowerCase(),
       ) ?? false,
     [questChain, address],
@@ -197,6 +201,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   const [mode, setMode] = useState<Mode>(isUser ? Mode.QUESTER : Mode.MEMBER);
 
+  useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
+
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
     questStatuses.forEach(item => {
@@ -218,6 +224,17 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     });
     return userStat;
   }, [questStatuses]);
+
+  const { questStatuses: allQuestStatuses } =
+    useLatestQuestStatusesForChainData(
+      questChain?.chainId,
+      questChain?.address,
+      [],
+    );
+
+  const numSubmissionsToReview = allQuestStatuses.filter(
+    q => q.status === graphql.Status.Review,
+  ).length;
 
   const [progress, setProgress] = useState({
     total: 0,
@@ -318,21 +335,21 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
   if (isFallback) {
     return (
-      <VStack>
+      <Page>
         <Spinner color="main" />
-      </VStack>
+      </Page>
     );
   }
   if (!questChain) {
     return (
-      <VStack>
+      <Page>
         <Text> Quest Chain not found! </Text>
-      </VStack>
+      </Page>
     );
   }
 
   return (
-    <VStack w="100%" px={{ base: 0, md: 12, lg: 40 }}>
+    <Page>
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
         position="fixed"
@@ -345,11 +362,12 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
         bgSize="cover"
         zIndex={-1}
       />
-      <Fade in={visible}>
+      <Fade in={visible} style={{ width: '100%' }}>
         <Head>
           <title>
-            {questChain.name} -{' '}
-            {SUPPORTED_NETWORK_INFO[questChain.chainId].name}
+            {`${questChain.name} - ${
+              AVAILABLE_NETWORK_INFO[questChain.chainId].name
+            }`}
           </title>
           <meta
             name="viewport"
@@ -357,7 +375,13 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           />
         </Head>
 
-        <Flex flexDirection="column" w="100%" justify="center" zIndex="10">
+        <Flex
+          direction="column"
+          w="100%"
+          justify="center"
+          zIndex="10"
+          align="stretch"
+        >
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
@@ -375,6 +399,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
               alignItems="center"
               justifyContent="center"
               zIndex={100}
+              w="100%"
             >
               <Flex
                 w={32}
@@ -416,7 +441,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           <Flex
             gap={10}
             justifyContent="space-between"
-            direction={{ base: 'column', md: 'row' }}
+            direction={{ base: 'column', lg: 'row' }}
           >
             {/* Left */}
             <Flex flexDirection="column" w="full">
@@ -446,12 +471,23 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       fontWeight="bold"
                       fontFamily="heading"
                       mb={3}
-                      value={chainName}
+                      defaultValue={chainNameRef.current}
                       onChange={e => setChainName(e.target.value)}
                     />
                     <IconButton
                       borderRadius="full"
-                      onClick={onUpdateQuestChainConfirmationOpen}
+                      onClick={() => {
+                        if (
+                          !chainNameRef.current ||
+                          !chainDescRef.current ||
+                          chainNameRef.current === questChain.name ||
+                          chainDescRef.current === questChain.description
+                        ) {
+                          toast.error('Empty name or description or no change');
+                          return;
+                        }
+                        onUpdateQuestChainConfirmationOpen();
+                      }}
                       isDisabled={isSubmittingQuestChain}
                       icon={<CheckIcon boxSize="1rem" />}
                       aria-label={''}
@@ -469,8 +505,8 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       onSubmit={() => {
                         onUpdateQuestChainConfirmationClose();
                         onSubmitQuestChain({
-                          name: chainName,
-                          description: chainDescription,
+                          name: chainNameRef.current,
+                          description: chainDescRef.current,
                         });
                       }}
                       title="Update Quest Chain"
@@ -482,10 +518,25 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                 )}
               </Flex>
 
+              {/* Quest Chain Description */}
+              <Flex mb={8}>
+                {!isEditingQuestChain && questChain.description && (
+                  <MarkdownViewer markdown={questChain.description} />
+                )}
+                {isEditingQuestChain && (
+                  <MarkdownEditor
+                    value={chainDescRef.current}
+                    onChange={setChainDescription}
+                  />
+                )}
+              </Flex>
+
               <Flex
-                flexDirection="column-reverse"
-                maxW={373}
-                display={{ base: 'flex', md: 'none' }}
+                direction="column"
+                display={{ base: 'flex', lg: 'none' }}
+                align="center"
+                w="100%"
+                mb={12}
               >
                 <ActionsAndImage
                   mode={mode}
@@ -499,19 +550,6 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   chainId={chainId}
                   questChain={questChain}
                 />
-              </Flex>
-
-              {/* Quest Chain Description */}
-              <Flex mb={8}>
-                {!isEditingQuestChain && questChain.description && (
-                  <MarkdownViewer markdown={questChain.description} />
-                )}
-                {isEditingQuestChain && (
-                  <MarkdownEditor
-                    value={chainDescription}
-                    onChange={setChainDescription}
-                  />
-                )}
               </Flex>
 
               {/* Quest Chain Metadata */}
@@ -594,7 +632,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   )}%`}
                 </Text>
               </Flex>
-              <Flex>
+              <Flex mb={12}>
                 {/* to be implemented eventually */}
                 {/* 
                 {mode === Mode.QUESTER &&
@@ -616,25 +654,39 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       START PLAYING
                     </Button>
                   )} */}
-                {mode === Mode.MEMBER && (
-                  <NextLink
-                    as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                    href={`/chain/[chainId]/[address]/review`}
-                    passHref
-                  >
-                    <ChakraLink display="block" _hover={{}}>
-                      <Button
-                        borderWidth={1}
-                        borderColor="white"
-                        px={12}
-                        py={2}
-                        borderRadius="full"
+                {mode === Mode.MEMBER &&
+                  numSubmissionsToReview != 0 &&
+                  isReviewer && (
+                    <Flex
+                      w="full"
+                      bgColor="rgba(29, 78, 216, 0.3)"
+                      p={6}
+                      borderRadius={8}
+                      justifyContent="space-between"
+                    >
+                      <Flex justifyContent="center" alignItems="center">
+                        <InfoIcon mr={2} color="#3B82F6" />
+                        {numSubmissionsToReview} proof submissions are awaiting
+                        review
+                      </Flex>
+                      <NextLink
+                        as={`/chain/${questChain.chainId}/${questChain.address}/review`}
+                        href={`/chain/[chainId]/[address]/review`}
+                        passHref
                       >
-                        REVIEW SUBMISSIONS
-                      </Button>
-                    </ChakraLink>
-                  </NextLink>
-                )}
+                        <ChakraLink display="block" _hover={{}}>
+                          <SubmitButton
+                            fontSize={14}
+                            fontWeight="bold"
+                            height={10}
+                            px={6}
+                          >
+                            Review Submissions
+                          </SubmitButton>
+                        </ChakraLink>
+                      </NextLink>
+                    </Flex>
+                  )}
 
                 {/* Mint Tile */}
                 {canMint && mode === Mode.QUESTER && (
@@ -698,17 +750,16 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   separating the whole quest actions logic into its own component, so:
                   - edit quest
                   - upload proof */}
-                    <Accordion allowMultiple w="full">
-                      {questChain.quests.map(
-                        ({ name, description, questId, paused }, index) =>
-                          name &&
-                          description && (
-                            <>
+                    <Accordion allowMultiple w="full" defaultIndex={[]}>
+                      {questChain.quests
+                        .filter(q => !!q.name)
+                        .map(
+                          ({ name, description, questId, paused }, index) => (
+                            <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <Quest
-                                  key={questId}
                                   name={`${index + 1}. ${name}`}
-                                  description={description}
+                                  description={description ?? ''}
                                   bgColor={
                                     userStatus[questId]?.status === 'pass'
                                       ? 'main.300'
@@ -745,9 +796,9 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
-                            </>
+                            </React.Fragment>
                           ),
-                      )}
+                        )}
                     </Accordion>
                   </>
                 )}
@@ -755,11 +806,11 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
             </Flex>
 
             {/* Right */}
-            <Flex flexDirection="column" maxW={373}>
+            <Flex flexDirection="column" maxW={{ base: '100%', lg: 373 }}>
               <Flex
                 flexDirection="column"
-                maxW={373}
-                display={{ base: 'none', md: 'flex' }}
+                w="100%"
+                display={{ base: 'none', lg: 'flex' }}
               >
                 <ActionsAndImage
                   mode={mode}
@@ -785,7 +836,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
           </Flex>
         </Flex>
       </Fade>
-    </VStack>
+    </Page>
   );
 };
 
@@ -814,7 +865,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
       chainId &&
       chainId === questChain.chainId &&
       (isAdmin || isOwner) && (
-        <Flex justifyContent="space-between" h={124}>
+        <Flex justifyContent="space-between" w="100%">
           {isAdmin && (
             <Button variant="ghost" onClick={onEdit} fontSize="xs">
               <Image src={Edit.src} alt="Edit" mr={2} />
@@ -832,7 +883,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
       <Image
         src={ipfsUriToHttp(questChain.token.imageUrl)}
         alt="Quest Chain NFT badge"
-        mb={14}
+        maxW={373}
       />
     )}
   </>
@@ -852,7 +903,7 @@ type MembersProps = {
 
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
   <>
-    <Flex justify="space-between" alignItems="center" my={3} pl={4}>
+    <Flex justify="space-between" alignItems="center" my={3} pl={4} w="100%">
       <Text color="whiteAlpha.600">{role}</Text>
       <Flex flexDir="column">
         {addresses.map(address => (
@@ -872,7 +923,7 @@ export const Members: React.FC<MembersProps> = ({
   editors,
   reviewers,
 }) => (
-  <Flex flexDir="column" px={5} width="full">
+  <Flex flexDir="column" width="full">
     <Text fontFamily="heading" fontSize="xl" mb={5}>
       Members
     </Text>
@@ -894,7 +945,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    Object.keys(SUPPORTED_NETWORK_INFO).map(async chainId => {
+    graphql.SUPPORTED_NETWORKS.map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(

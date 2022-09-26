@@ -1,26 +1,26 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
   FormControl,
+  FormLabel,
   HStack,
-  IconButton,
-  Image,
   Input,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
-import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useDropImage } from '@/hooks/useDropFiles';
+import { useInputText } from '@/hooks/useInputText';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
+
+import { UploadImageForm } from '../UploadImageForm';
 
 export const MetadataForm: React.FC<{
   onBack?: () => void;
@@ -31,36 +31,15 @@ export const MetadataForm: React.FC<{
     imageUrl?: string,
   ) => void | Promise<void>;
 }> = ({ onBack, onSubmit }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
+  const [nameRef, setName] = useInputText();
+  const [descRef, setDescription] = useInputText();
 
-  const { getRootProps, getInputProps, open } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-    multiple: false,
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-    },
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
+  const uploadImageProps = useDropImage();
+  const { imageFile } = uploadImageProps;
 
   const { isConnected, chainId } = useWallet();
 
-  const isDisabled =
-    !isConnected || !isSupportedNetwork(chainId) || !description;
+  const isDisabled = !isConnected || !isSupportedNetwork(chainId);
 
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -69,14 +48,13 @@ export const MetadataForm: React.FC<{
     try {
       setSubmitting(true);
       const metadata: Metadata = {
-        name,
-        description,
+        name: nameRef.current,
+        description: descRef.current,
       };
       let imageUrl;
-      if (myFiles.length) {
+      if (imageFile) {
         tid = toast.loading('Uploading image to IPFS via web3.storage');
-        const file = myFiles[0];
-        const imageHash = await uploadFiles([file]);
+        const imageHash = await uploadFiles([imageFile]);
         imageUrl = `ipfs://${imageHash}`;
         metadata.image_url = imageUrl;
         toast.dismiss(tid);
@@ -86,7 +64,9 @@ export const MetadataForm: React.FC<{
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 
-      await onSubmit(name, description, metadataUri, imageUrl);
+      await onSubmit(nameRef.current, descRef.current, metadataUri, imageUrl);
+      setName('');
+      setDescription('');
     } catch (error) {
       if (tid) {
         toast.dismiss(tid);
@@ -95,7 +75,7 @@ export const MetadataForm: React.FC<{
     } finally {
       setSubmitting(false);
     }
-  }, [name, description, onSubmit, myFiles]);
+  }, [nameRef, descRef, onSubmit, imageFile, setName, setDescription]);
 
   return (
     <VStack
@@ -132,81 +112,44 @@ export const MetadataForm: React.FC<{
           flexDirection={{ base: 'column', md: 'row' }}
         >
           <VStack w={{ base: 'full', md: '50%' }} spacing={4}>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Name</Flex>
+            <FormControl w="full" isRequired={true}>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 color="white"
-                value={name}
+                defaultValue={nameRef.current}
                 bg="#0F172A"
                 id="name"
                 onChange={e => setName(e.target.value)}
                 placeholder="Quest Chain Name"
               />
-            </Flex>
-            <Flex w="full" flexDir="column" gap={2}>
-              <Flex alignSelf="start">Description</Flex>
+            </FormControl>
+            <FormControl w="full" isRequired={true}>
+              <FormLabel htmlFor="description">Description</FormLabel>
               <MarkdownEditor
                 height="12rem"
-                value={description}
+                value={descRef.current}
                 placeholder="Quest Chain Description"
                 onChange={setDescription}
               />
-            </Flex>
+            </FormControl>
           </VStack>
-          <FormControl
-            w={{ base: 'full', md: '50%' }}
-            position="relative"
-            top="1.5rem"
-          >
-            <Flex alignSelf="start">Cover Image (optional)</Flex>
-
-            {myFiles.length ? (
-              <>
-                {myFiles.map((file: File) => (
-                  <Flex key={file.name} pos="relative">
-                    {typeof window !== 'undefined' && (
-                      <Image
-                        alt=""
-                        maxH="17rem"
-                        w="auto"
-                        src={window.URL.createObjectURL(file)}
-                      />
-                    )}
-                    <IconButton
-                      pos="absolute"
-                      size="sm"
-                      top={2}
-                      left={2}
-                      borderRadius="full"
-                      onClick={removeFile(file)}
-                      icon={<SmallCloseIcon boxSize="1.5rem" />}
-                      aria-label={''}
-                      backdropFilter="blur(40px)"
-                      boxShadow="inset 0px 0px 0px 1px white"
-                    />
-                  </Flex>
-                ))}
-              </>
-            ) : (
-              <Flex
-                {...getRootProps({ className: 'dropzone' })}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                h="16.5rem"
-                onClick={open}
-              >
-                <input {...getInputProps()} color="white" />
-                <Flex
-                  height="16rem"
-                  alignSelf="center"
-                  alignItems="center"
-                >{`Drag 'n' drop an image here`}</Flex>
-              </Flex>
-            )}
-          </FormControl>
+          <UploadImageForm
+            {...uploadImageProps}
+            label="Cover Image (optional)"
+            formControlProps={{
+              w: { base: 'full', md: '50%' },
+              position: 'relative',
+              top: '1.5rem',
+            }}
+            imageProps={{
+              maxHeight: '16rem',
+              w: 'auto',
+            }}
+            dropzoneProps={{
+              ...uploadImageProps.dropzoneProps,
+              height: '16rem',
+            }}
+          />
         </Flex>
         <Flex
           mt={4}
@@ -225,33 +168,20 @@ export const MetadataForm: React.FC<{
               Back
             </Button>
           )}
-          {isDisabled && (
-            <Button
-              borderWidth={1}
-              borderColor="white"
-              height={{ base: 10, md: 12 }}
-              px={5}
-              borderRadius="full"
-              isDisabled
-              w="full"
-            >
-              <Image src={Edit.src} alt="Edit" mr={3} />
-              <Text fontSize={{ base: 12, md: 16 }}>
-                To continue, enter Name and Description
-              </Text>
-            </Button>
-          )}
-          {!isDisabled && (
-            <SubmitButton
-              isLoading={isSubmitting}
-              type="submit"
-              isDisabled={isDisabled}
-              onClick={exportMetadata}
-              w="full"
-            >
-              Continue to Step 2
-            </SubmitButton>
-          )}
+          <SubmitButton
+            isLoading={isSubmitting}
+            isDisabled={isDisabled}
+            onClick={() => {
+              if (!nameRef.current || !descRef.current) {
+                toast.error('Please enter a name & description');
+                return;
+              }
+              exportMetadata();
+            }}
+            w="full"
+          >
+            Continue to Step 2
+          </SubmitButton>
         </Flex>
       </form>
     </VStack>

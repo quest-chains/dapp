@@ -60,6 +60,16 @@ const markdownTheme: Components = {
   br: () => <Spacer />,
   // eslint-disable-next-line jsx-a11y/alt-text
   img: props => <Image w="100%" {...props} />,
+  p: props => (
+    <p
+      style={{
+        fontSize: '16px',
+      }}
+      {...props}
+    >
+      {props.children}
+    </p>
+  ),
   code: props => {
     const { inline } = props;
 

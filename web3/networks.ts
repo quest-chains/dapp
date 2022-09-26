@@ -59,18 +59,18 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     subgraphUrl:
       'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-xdai',
   },
-  '0x4': {
-    chainId: '0x4',
-    name: 'Rinkeby Testnet',
-    label: 'Rinkeby',
+  '0x5': {
+    chainId: '0x5',
+    name: 'Görli Testnet',
+    label: 'Görli',
     symbol: 'ETH',
-    explorer: 'https://rinkeby.etherscan.io',
+    explorer: 'https://goerli.etherscan.io',
     explorerLabel: 'Etherscan',
-    rpc: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
+    rpc: `https://goerli.infura.io/v3/${INFURA_ID}`,
     image: EthereumImage.src,
-    subgraphName: 'dan13ram/quest-chains-rinkeby',
+    subgraphName: 'dan13ram/quest-chains-goerli',
     subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-rinkeby',
+      'https://api.thegraph.com/subgraphs/name/dan13ram/quest-chains-goerli',
   },
   '0x13881': {
     chainId: '0x13881',

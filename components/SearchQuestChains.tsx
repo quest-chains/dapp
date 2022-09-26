@@ -35,9 +35,8 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           backdropFilter="blur(40px)"
           color="white"
           border="none"
-          borderRadius="8px"
           boxShadow="inset 0px 0px 0px 1px gray"
-          placeholder="search chains by name or description"
+          placeholder="Search chains by name or description"
           onChange={e => delayedSetValue(e.target.value)}
           mb={6}
         />

@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Flex,
   Heading,
@@ -117,43 +116,15 @@ export const UserRoles: React.FC<{
         </VStack>
       ) : (
         <>
-          {roles.length === 0 && <Text color="white">No roles found</Text>}
-          {roles?.slice(0, 2).map(({ address, chainId, name, role }) => (
-            <Flex
-              key={address}
-              gap={3}
-              alignItems="center"
-              w="full"
-              background="whiteAlpha.50"
-              p={4}
-              justifyContent="space-between"
-            >
-              <Box>
-                <NextLink
-                  key={address}
-                  as={`/chain/${chainId}/${address}`}
-                  href={`/chain/[chainId]/[address]`}
-                  passHref
-                >
-                  <ChakraLink
-                    display="block"
-                    _hover={{}}
-                    w="full"
-                    borderRadius="3xl"
-                  >
-                    <Text fontSize={20} fontWeight="bold">
-                      {name}
-                    </Text>
-                  </ChakraLink>
-                </NextLink>
-              </Box>
-              <Flex gap={4} alignItems="center">
-                <Text fontSize={16} fontWeight="bold">
-                  {role.toUpperCase()}
-                </Text>
-                <NetworkDisplay asTag chainId={chainId} />
-              </Flex>
+          {roles.length === 0 && (
+            <Flex>
+              <Text color="white" ml={4}>
+                No roles found
+              </Text>
             </Flex>
+          )}
+          {roles?.slice(0, 2).map(roleInfo => (
+            <RoleDisplay roleInfo={roleInfo} key={roleInfo.address} />
           ))}
         </>
       )}
@@ -164,42 +135,8 @@ export const UserRoles: React.FC<{
           <ModalHeader>Roles</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {roles?.map(({ address, chainId, name, role }) => (
-              <Flex
-                key={address}
-                gap={3}
-                alignItems="center"
-                w="full"
-                background="whiteAlpha.50"
-                p={4}
-                justifyContent="space-between"
-              >
-                <Box>
-                  <NextLink
-                    key={address}
-                    as={`/chain/${chainId}/${address}`}
-                    href={`/chain/[chainId]/[address]`}
-                    passHref
-                  >
-                    <ChakraLink
-                      display="block"
-                      _hover={{}}
-                      w="full"
-                      borderRadius="3xl"
-                    >
-                      <Text fontSize={20} fontWeight="bold">
-                        {name}
-                      </Text>
-                    </ChakraLink>
-                  </NextLink>
-                </Box>
-                <Flex gap={4} alignItems="center">
-                  <Text fontSize={16} fontWeight="bold">
-                    {role.toUpperCase()}
-                  </Text>
-                  <NetworkDisplay asTag chainId={chainId} />
-                </Flex>
-              </Flex>
+            {roles?.map(roleInfo => (
+              <RoleDisplay roleInfo={roleInfo} key={roleInfo.address} />
             ))}
           </ModalBody>
         </ModalContent>
@@ -207,3 +144,41 @@ export const UserRoles: React.FC<{
     </VStack>
   );
 };
+
+const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
+  roleInfo: { address, chainId, name, role },
+}) => (
+  <NextLink
+    as={`/chain/${chainId}/${address}`}
+    href={`/chain/[chainId]/[address]`}
+    passHref
+  >
+    <ChakraLink
+      display="block"
+      background="whiteAlpha.50"
+      _hover={{ background: 'whiteAlpha.100' }}
+      w="full"
+      borderRadius={8}
+      overflow="hidden"
+    >
+      <Flex
+        gap={3}
+        alignItems="center"
+        w="full"
+        p={4}
+        justifyContent="space-between"
+        borderRadius={8}
+      >
+        <Text fontSize={20} fontWeight="bold">
+          {name}
+        </Text>
+        <Flex gap={4} alignItems="center">
+          <Text fontSize={16} fontWeight="bold">
+            {role.toUpperCase()}
+          </Text>
+          <NetworkDisplay asTag chainId={chainId} />
+        </Flex>
+      </Flex>
+    </ChakraLink>
+  </NextLink>
+);

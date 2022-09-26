@@ -1,18 +1,11 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import {
-  Grid,
-  Heading,
-  HStack,
-  Link,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, Grid, Heading, Link, Text, VStack } from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 
+import { Page } from '@/components/Layout/Page';
 import { UserActionsNeeded } from '@/components/ProfileView/UserActionsNeeded';
 import { UserBadges } from '@/components/ProfileView/UserBadges';
 import { UserProgress } from '@/components/ProfileView/UserProgress';
@@ -26,13 +19,13 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const isLoggedInUser = addressURL === address?.toLowerCase();
 
   return (
-    <VStack px={{ base: 0, lg: 40 }} gap={4} align="stretch" w="100%">
+    <Page>
       <Head>
         <title>Quest Chains</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Stack spacing={6} alignItems="center" pb={8}>
-        <Heading w="100%" color="white" fontSize={50} textAlign="center">
+      <VStack spacing={6} pb={8}>
+        <Heading color="white" fontSize={50}>
           Profile
         </Heading>
 
@@ -48,20 +41,16 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
             textDecor: 'none',
           }}
         >
-          <HStack
-            spacing={2}
-            position="relative"
+          <Button
             color="main"
             fontSize={20}
             fontWeight="bold"
+            rightIcon={<ExternalLinkIcon />}
           >
-            <Text as="span" borderBottom="1px">
-              {formatAddress(addressURL)}
-            </Text>
-            <ExternalLinkIcon mb={'0.375rem'} />
-          </HStack>
+            <Text as="span">{formatAddress(addressURL)}</Text>
+          </Button>
         </Link>
-      </Stack>
+      </VStack>
 
       <Grid templateColumns="repeat(1, 1fr)" gap={20}>
         <UserBadges address={addressURL} />
@@ -69,7 +58,7 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
         <UserProgress address={addressURL} />
         <UserRoles address={addressURL} />
       </Grid>
-    </VStack>
+    </Page>
   );
 };
 
