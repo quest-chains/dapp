@@ -1,23 +1,8 @@
 import {
   Accordion,
   Box,
-  Button,
-  Checkbox,
   Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
   Spinner,
-  Tab,
-  TabList,
   TabPanel,
   TabPanels,
   Tabs,
@@ -26,22 +11,29 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { PopoverButton } from '@/components/Review/PopoverButton';
+import {
+  removeSelectedFromReviewed,
+  sort,
+  statusToSubmission,
+} from '@/components/Review/helpers';
+import { ReviewCommentModal } from '@/components/Review/ReviewCommentModal';
+import { ReviewTabsList } from '@/components/Review/ReviewTabsList';
+import {
+  DisplaySubmissionType,
+  ReviewToolbar,
+  SORT,
+} from '@/components/Review/ReviewToolbar';
 import {
   SubmissionTile,
   SubmissionType,
 } from '@/components/Review/SubmissionTile';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { uploadMetadata } from '@/utils/metadata';
-import { Metadata } from '@/utils/validate';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
@@ -51,38 +43,6 @@ type Props = {
   fetching: boolean;
   refresh: () => void;
 };
-
-const removeSelectedFromReviewed = (
-  r: SubmissionType[],
-  selected: SubmissionType[],
-) => r.filter(r => !selected.map(s => s.id).includes(r.id));
-
-const statusToSubmission = (
-  q: graphql.QuestStatusInfoFragment,
-): SubmissionType => ({
-  id: q.id,
-  userId: q.user.id,
-  questId: q.quest.questId,
-  name: q.quest.name,
-  description: q.quest.description,
-  submissionDescription:
-    q.submissions[q.submissions.length - 1].description ?? '',
-  imageUri: q.submissions[q.submissions.length - 1]?.imageUrl || undefined,
-  externalUri:
-    q.submissions[q.submissions.length - 1]?.externalUrl || undefined,
-  submissionTimestamp: Number(
-    q.submissions[q.submissions.length - 1].timestamp,
-  ),
-  reviewComment: q.reviews.length
-    ? q.reviews[q.reviews.length - 1].description ?? ''
-    : '',
-  success:
-    q.status === graphql.Status.Pass
-      ? true
-      : q.status === graphql.Status.Fail
-      ? false
-      : undefined,
-});
 
 export const QuestChainV1ReviewPage: React.FC<Props> = ({
   questStatuses,
@@ -102,60 +62,40 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   const [submitted, setSubmitted] = useState<SubmissionType[]>([]);
 
   const [awaitingReview, setAwaitingReview] = useState<SubmissionType[]>([]);
-  const [awaitingReviewIndex, setAwaitingReviewIndex] = useState<number[]>([]);
-
-  const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
-  const [reviewedIndex, setReviewedIndex] = useState<number[]>([]);
+  const [displayAwaitingReview, setDisplayAwaitingReview] = useState<
+    DisplaySubmissionType[]
+  >([]);
 
   const [tabIndex, setTabIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
+  const [reviewed, setReviewed] = useState<SubmissionType[]>([]);
+  const [displayReviewed, setDisplayReviewed] = useState<
+    DisplaySubmissionType[]
+  >([]);
+
   const [filterReviewed, setFilterReviewed] = useState<string>('');
   const [filterAwaitingReview, setFilterAwaitingReview] = useState<string>('');
-  const [checkedReviewed, setCheckedReviewed] = useState<boolean[]>([]);
-  const [checkedAwaitingReview, setCheckedAwaitingReview] = useState<boolean[]>(
-    [],
+
+  const [sortReviewed, setSortReviewed] = useState<SORT>(SORT.DateDesc);
+  const [sortAwaitingReview, setSortAwaitingReview] = useState<SORT>(
+    SORT.DateDesc,
   );
 
-  const [sortReviewed, setSortReviewed] = useState<string>('');
-  const [sortAwaitingReview, setSortAwaitingReview] = useState<string>('');
+  const setCheckedItemAwaitingReview = useCallback((index: number) => {
+    setDisplayAwaitingReview(oldDisplayAwaitingReview => {
+      oldDisplayAwaitingReview[index].checked =
+        !oldDisplayAwaitingReview[index].checked;
+      return oldDisplayAwaitingReview.slice();
+    });
+  }, []);
 
-  const [isAwaitingReviewIndeterminate, setIsAwaitingReviewIndeterminate] =
-    useState<boolean>(false);
-  const [isReviewedIndeterminate, setIsReviewedIndeterminate] =
-    useState<boolean>(false);
-
-  const allAwaitingReviewChecked =
-    checkedAwaitingReview.length !== 0 &&
-    checkedAwaitingReview.length === awaitingReview.length &&
-    checkedAwaitingReview.every(item => item);
-  const allReviewedChecked =
-    checkedReviewed.length !== 0 &&
-    checkedReviewed.length === reviewed.length &&
-    checkedReviewed.every(item => item);
-
-  useEffect(() => {
-    setIsAwaitingReviewIndeterminate(
-      checkedAwaitingReview.some(Boolean) && !allAwaitingReviewChecked,
-    );
-    setIsReviewedIndeterminate(
-      checkedReviewed.some(Boolean) && !allReviewedChecked,
-    );
-  }, [
-    allAwaitingReviewChecked,
-    allReviewedChecked,
-    checkedAwaitingReview,
-    checkedReviewed,
-  ]);
-
-  const setCheckedItemAwaitingReview = (index: number) => {
-    checkedAwaitingReview[index] = !checkedAwaitingReview[index];
-    setCheckedAwaitingReview([...checkedAwaitingReview]);
-  };
-  const setCheckedItemReviewed = (index: number) => {
-    checkedReviewed[index] = !checkedReviewed[index];
-    setCheckedReviewed([...checkedReviewed]);
-  };
+  const setCheckedItemReviewed = useCallback((index: number) => {
+    setDisplayReviewed(oldDisplayReviewed => {
+      oldDisplayReviewed[index].checked = !oldDisplayReviewed[index].checked;
+      return oldDisplayReviewed.slice();
+    });
+  }, []);
 
   useEffect(() => {
     setAllSubmissions(questStatuses.map(statusToSubmission));
@@ -179,46 +119,79 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
   useEffect(() => {
     if (reviewed.length > 0) {
       setAwaitingReview(previous =>
-        previous
-          .filter(q => reviewed.every(r => r.id !== q.id))
-          .sort((a, b) =>
-            sort(
-              a.submissionTimestamp,
-              b.submissionTimestamp,
-              sortAwaitingReview,
-            ),
-          ),
+        previous.filter(q => reviewed.every(r => r.id !== q.id)),
       );
     }
-  }, [reviewed, sortAwaitingReview]);
+  }, [reviewed]);
 
   useEffect(() => {
-    if (reviewed.length) {
-      setReviewed(
-        reviewed.sort((a, b) =>
+    setDisplayAwaitingReview(oldDisplayAwaitingReview => {
+      const filteredAwaitingReview = awaitingReview
+        .filter(
+          submission =>
+            filterAwaitingReview === '' ||
+            filterAwaitingReview === submission.questId,
+        )
+        .sort((a, b) =>
+          sort(
+            a.submissionTimestamp,
+            b.submissionTimestamp,
+            sortAwaitingReview,
+          ),
+        );
+
+      return filteredAwaitingReview.map(submission => {
+        const displaySubmission = oldDisplayAwaitingReview.find(
+          d => d.submission.id === submission.id,
+        );
+        if (displaySubmission) return displaySubmission;
+        return { submission, expanded: false, checked: false };
+      });
+    });
+  }, [awaitingReview, filterAwaitingReview, sortAwaitingReview]);
+
+  useEffect(() => {
+    setDisplayReviewed(oldDisplayReviewed => {
+      const filteredReviewed = reviewed
+        .filter(
+          submission =>
+            filterReviewed === '' || filterReviewed === submission.questId,
+        )
+        .sort((a, b) =>
           sort(a.submissionTimestamp, b.submissionTimestamp, sortReviewed),
-        ),
-      );
-    }
-  }, [reviewed, sortReviewed]);
+        );
 
-  const [commenting, setCommenting] = useState(false);
-
-  const [reviewCommentRef, setReviewComment] = useInputText();
+      return filteredReviewed.map(submission => {
+        const displaySubmission = oldDisplayReviewed.find(
+          d => d.submission.id === submission.id,
+        );
+        if (displaySubmission) return { ...displaySubmission, submission };
+        return { submission, expanded: false, checked: false };
+      });
+    });
+  }, [reviewed, filterReviewed, sortReviewed]);
 
   const [reviewing, setReviewing] = useState<SubmissionType[]>([]);
 
   const onModalClose = useCallback(() => {
     setReviewing([]);
-    setReviewComment('');
     onCloseModal();
-    setCommenting(false);
-  }, [onCloseModal, setReviewComment]);
+  }, [onCloseModal]);
 
   const clearChecked = useCallback(() => {
-    setCheckedAwaitingReview(awaitingReview.map(() => false));
-    setCheckedReviewed(reviewed.map(() => false));
-  }, [awaitingReview, reviewed]);
+    setDisplayAwaitingReview(old =>
+      old.map(old => {
+        old.checked = false;
+        return old;
+      }),
+    );
+    setDisplayReviewed(old =>
+      old.map(old => {
+        old.checked = false;
+        return old;
+      }),
+    );
+  }, []);
 
   const onSelectSubmissions = useCallback(
     (selected: SubmissionType[]) => {
@@ -281,48 +254,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     [addAwaitingReview, clearChecked],
   );
 
-  const onSubmitComment = useCallback(async () => {
-    if (reviewCommentRef.current === '') {
-      toast.error('Empty comment');
-      return;
-    }
-    let tid;
-    try {
-      setCommenting(true);
-      tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      const metadata: Metadata = {
-        name: `Reviewing ${reviewing.length} submission${
-          reviewing.length > 1 ? 's' : ''
-        }`,
-        description: reviewCommentRef.current,
-      };
-
-      const hash = await uploadMetadata(metadata);
-      const details = `ipfs://${hash}`;
-      onSelectSubmissions(
-        reviewing.map(q => ({
-          ...q,
-          reviewCommentUri: details,
-          reviewComment: metadata.description,
-        })),
-      );
-      toast.dismiss(tid);
-      onModalClose();
-      setReviewComment('');
-    } catch (error) {
-      toast.dismiss(tid);
-      handleError(error);
-    } finally {
-      setCommenting(false);
-    }
-  }, [
-    reviewCommentRef,
-    reviewing,
-    onSelectSubmissions,
-    onModalClose,
-    setReviewComment,
-  ]);
-
   const onSubmit = useCallback(async () => {
     if (
       !chainId ||
@@ -370,17 +301,6 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     }
   }, [refresh, chainId, questChain, provider, reviewed]);
 
-  const sort = (a: number, b: number, sort: string) => {
-    switch (sort) {
-      case '':
-        return 0;
-      case 'date-asc':
-        return a - b;
-      default:
-        return b - a;
-    }
-  };
-
   return (
     <VStack w="100%" spacing={8}>
       <Flex w="100%" justifyContent="space-between">
@@ -422,50 +342,45 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
           <Spinner color="main" />
         ) : (
           <Tabs w="full" p={0} onChange={index => setTabIndex(index)}>
-            <TabsList
+            <ReviewTabsList
               awaitingReviewLength={awaitingReview.length}
               reviewedLength={reviewed.length}
               submittedLength={submitted.length}
               allSubmissionsLength={allSubmissions.length}
             />
 
-            {/* Toolbar */}
+            {/* ReviewToolbar Awaiting Review */}
             {tabIndex === 0 && awaitingReview.length != 0 && (
-              <Toolbar
-                allChecked={allAwaitingReviewChecked}
-                isIndeterminate={isAwaitingReviewIndeterminate}
-                submissions={awaitingReview}
-                setChecked={setCheckedAwaitingReview}
-                checkedSubmissions={checkedAwaitingReview}
+              <ReviewToolbar
+                allQuestIds={[
+                  ...new Set(awaitingReview.map(({ questId }) => questId)),
+                ]}
                 onReview={onReview}
                 isDisabled={isDisabled}
                 setFilter={setFilterAwaitingReview}
                 filterValue={filterAwaitingReview}
                 setSort={setSortAwaitingReview}
                 sortValue={sortAwaitingReview}
-                index={awaitingReviewIndex}
-                setIndex={setAwaitingReviewIndex}
+                displaySubmissions={displayAwaitingReview}
+                setDisplaySubmissions={setDisplayAwaitingReview}
               />
             )}
 
+            {/* ReviewToolbar Reviewed */}
             {tabIndex === 1 && reviewed.length != 0 && (
-              <Toolbar
-                checkedSubmissions={checkedReviewed}
-                allChecked={allReviewedChecked}
-                isIndeterminate={isReviewedIndeterminate}
-                setChecked={setCheckedReviewed}
-                submissions={reviewed}
+              <ReviewToolbar
+                allQuestIds={[
+                  ...new Set(reviewed.map(({ questId }) => questId)),
+                ]}
                 onReview={onReview}
                 isDisabled={isDisabled}
-                clearReview={(selected: SubmissionType[]) =>
-                  clearReview(selected)
-                }
+                clearReview={clearReview}
                 setFilter={setFilterReviewed}
                 filterValue={filterReviewed}
                 setSort={setSortReviewed}
                 sortValue={sortReviewed}
-                index={reviewedIndex}
-                setIndex={setReviewedIndex}
+                displaySubmissions={displayReviewed}
+                setDisplaySubmissions={setDisplayReviewed}
               />
             )}
 
@@ -474,100 +389,91 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
               <TabPanel p={0}>
                 <Accordion
                   allowMultiple
-                  index={awaitingReviewIndex}
-                  onChange={idx =>
-                    setAwaitingReviewIndex(
-                      typeof idx === 'number' ? [idx] : idx,
+                  index={displayAwaitingReview
+                    .map((d, i) => (d.expanded ? i : -1))
+                    .filter(d => d != -1)}
+                  onChange={(idxs: number[]) =>
+                    setDisplayAwaitingReview(v =>
+                      v.map((d, i) => ({
+                        ...d,
+                        expanded: idxs.includes(i) ? true : false,
+                      })),
                     )
                   }
                 >
-                  {awaitingReview
-                    .filter(
-                      submission =>
-                        filterAwaitingReview === '' ||
-                        filterAwaitingReview === submission.questId,
-                    )
-                    .sort((a, b) =>
-                      sort(
-                        a.submissionTimestamp,
-                        b.submissionTimestamp,
-                        sortAwaitingReview,
-                      ),
-                    )
-                    .map((submission, index) => (
+                  {displayAwaitingReview.map(
+                    ({ submission, checked }, index) => (
                       <SubmissionTile
                         submission={submission}
                         onReview={onReview}
                         key={submission.id}
                         isDisabled={isDisabled}
-                        checked={checkedAwaitingReview[index]}
+                        checked={checked}
                         onCheck={() => setCheckedItemAwaitingReview(index)}
                       />
-                    ))}
+                    ),
+                  )}
                 </Accordion>
               </TabPanel>
+
               {/* reviewed */}
               <TabPanel p={0}>
                 <Accordion
                   allowMultiple
-                  index={reviewedIndex}
-                  onChange={idx =>
-                    setReviewedIndex(typeof idx === 'number' ? [idx] : idx)
+                  index={displayReviewed
+                    .map((d, i) => (d.expanded ? i : -1))
+                    .filter(d => d != -1)}
+                  onChange={(idxs: number[]) =>
+                    setDisplayReviewed(v =>
+                      v.map((d, i) => ({
+                        ...d,
+                        expanded: idxs.includes(i) ? true : false,
+                      })),
+                    )
                   }
                 >
-                  {reviewed
-                    .filter(
-                      submission =>
-                        filterReviewed === '' ||
-                        filterReviewed === submission.questId,
-                    )
-                    .sort((a, b) =>
-                      sort(
-                        a.submissionTimestamp,
-                        b.submissionTimestamp,
-                        sortReviewed,
-                      ),
-                    )
-                    .map((submission, index) => (
-                      <SubmissionTile
-                        submission={submission}
-                        onReview={onReview}
-                        key={submission.id}
-                        isDisabled={isDisabled}
-                        checked={checkedReviewed[index]}
-                        clearReview={(selected: SubmissionType[]) =>
-                          clearReview(selected)
-                        }
-                        onCheck={() => setCheckedItemReviewed(index)}
-                      />
-                    ))}
+                  {displayReviewed.map(({ submission, checked }, index) => (
+                    <SubmissionTile
+                      submission={submission}
+                      onReview={onReview}
+                      key={submission.id}
+                      isDisabled={isDisabled}
+                      checked={checked}
+                      clearReview={(selected: SubmissionType[]) =>
+                        clearReview(selected)
+                      }
+                      onCheck={() => setCheckedItemReviewed(index)}
+                    />
+                  ))}
                 </Accordion>
               </TabPanel>
+
               {/* submitted */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]} mt={4}>
-                  {submitted.map((submission, index) => (
+                  {submitted.map(submission => (
                     <SubmissionTile
                       submission={submission}
                       onReview={() => undefined}
                       key={submission.id}
                       isDisabled={isDisabled}
-                      checked={checkedReviewed[index]}
+                      checked={false}
                       showButtons={false}
                     />
                   ))}
                 </Accordion>
               </TabPanel>
+
               {/* allSubmissions */}
               <TabPanel p={0}>
                 <Accordion allowMultiple defaultIndex={[]} mt={4}>
-                  {allSubmissions.map((submission, index) => (
+                  {allSubmissions.map(submission => (
                     <SubmissionTile
                       submission={submission}
                       onReview={() => undefined}
                       key={submission.id}
                       isDisabled={isDisabled}
-                      checked={checkedReviewed[index]}
+                      checked={false}
                       showButtons={false}
                     />
                   ))}
@@ -577,337 +483,9 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
           </Tabs>
         )}
       </VStack>
-      <Modal isOpen={isModalOpen} onClose={onModalClose} size="xl">
-        <ModalOverlay />
-        <ModalContent
-          maxW="40rem"
-          background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
-          boxShadow="0 0.25rem 0.25rem rgba(0, 0, 0, 0.25)"
-          borderRadius="0.5rem"
-        >
-          <ModalHeader textTransform={'uppercase'} fontSize="md">
-            You are about to {reviewing[0]?.success ? 'approve' : 'reject'}{' '}
-            {reviewing.length} submission{reviewing.length > 1 ? 's' : ''} with
-            a comment
-          </ModalHeader>
-          <ModalCloseButton borderRadius="full" />
-          <ModalBody>
-            <FormControl isRequired>
-              <FormLabel
-                color="gray.500"
-                htmlFor="reviewComment"
-                fontWeight="bold"
-              >
-                Comment
-              </FormLabel>
-              <Flex pb={4} w="100%">
-                <MarkdownEditor
-                  value={reviewCommentRef.current}
-                  placeholder="Write what you liked about the submissions..."
-                  onChange={setReviewComment}
-                />
-              </Flex>
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter alignItems="baseline">
-            <HStack justify="space-between" spacing={2}>
-              <Button
-                variant="ghost"
-                onClick={onModalClose}
-                borderRadius="full"
-                textTransform="uppercase"
-                size="sm"
-              >
-                CANCEL
-              </Button>
-              <Button
-                size="sm"
-                isLoading={commenting}
-                variant="ghost"
-                borderRadius="full"
-                onClick={onSubmitComment}
-                textTransform="uppercase"
-                color={reviewing[0]?.success ? 'main' : 'rejected'}
-              >
-                Add comment and {reviewing[0]?.success ? 'approve' : 'reject'}
-              </Button>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <ReviewCommentModal
+        {...{ reviewing, isModalOpen, onModalClose, onSelectSubmissions }}
+      />
     </VStack>
-  );
-};
-
-const TabsList: React.FC<{
-  awaitingReviewLength: number;
-  reviewedLength: number;
-  submittedLength: number;
-  allSubmissionsLength: number;
-}> = ({
-  awaitingReviewLength,
-  reviewedLength,
-  submittedLength,
-  allSubmissionsLength,
-}) => {
-  return (
-    <TabList>
-      <Tab
-        color="gray.500"
-        _selected={{
-          color: 'blue.50',
-          borderBottom: 'solid 2px white',
-        }}
-      >
-        Awaiting review{' '}
-        <Text
-          bgColor="whiteAlpha.300"
-          borderRadius={10}
-          py="2px"
-          px={1.5}
-          ml={2}
-          fontSize={11}
-        >
-          {awaitingReviewLength}
-        </Text>
-      </Tab>
-      <Tab
-        color="gray.500"
-        _selected={{
-          color: 'blue.50',
-          borderBottom: 'solid 2px white',
-        }}
-      >
-        Reviewed
-        <Text
-          bgColor="whiteAlpha.300"
-          borderRadius={10}
-          py="2px"
-          px={1.5}
-          ml={2}
-          fontSize={11}
-        >
-          {reviewedLength}
-        </Text>
-      </Tab>
-      <Tab
-        color="gray.500"
-        _selected={{
-          color: 'blue.50',
-          borderBottom: 'solid 2px white',
-        }}
-      >
-        Submitted
-        <Text
-          bgColor="whiteAlpha.300"
-          borderRadius={10}
-          py="2px"
-          px={1.5}
-          ml={2}
-          fontSize={11}
-        >
-          {submittedLength}
-        </Text>
-      </Tab>
-      <Tab
-        color="gray.500"
-        _selected={{
-          color: 'blue.50',
-          borderBottom: 'solid 2px white',
-        }}
-      >
-        All
-        <Text
-          bgColor="whiteAlpha.300"
-          borderRadius={10}
-          py="2px"
-          px={1.5}
-          ml={2}
-          fontSize={11}
-        >
-          {allSubmissionsLength}
-        </Text>
-      </Tab>
-    </TabList>
-  );
-};
-
-const Toolbar: React.FC<{
-  allChecked: boolean;
-  isIndeterminate: boolean;
-  setChecked: (submission: boolean[]) => void;
-  submissions: SubmissionType[];
-  checkedSubmissions: boolean[];
-  onReview: (selected: SubmissionType[], withComment: boolean) => void;
-  isDisabled: boolean;
-  clearReview?: (selected: SubmissionType[]) => void;
-  setFilter: (filter: string) => void;
-  filterValue: string;
-  setSort: (sort: string) => void;
-  sortValue: string;
-  index?: number[];
-  setIndex?: (idx: number[]) => void;
-}> = ({
-  allChecked,
-  isIndeterminate,
-  setChecked,
-  submissions,
-  checkedSubmissions,
-  onReview,
-  isDisabled,
-  clearReview,
-  setFilter,
-  filterValue,
-  setSort,
-  sortValue,
-  index,
-  setIndex,
-}) => {
-  const expanded = useMemo(
-    () => submissions.length === index?.length,
-    [index, submissions],
-  );
-  const selectOptions = [...new Set(submissions.map(({ questId }) => questId))];
-
-  const onToggleExpand = useCallback(() => {
-    if (expanded) {
-      setIndex?.([]);
-    } else {
-      setIndex?.(submissions.map((_, i) => i));
-    }
-  }, [setIndex, submissions, expanded]);
-  return (
-    <>
-      <Flex py={4} w="full" justifyContent="space-between">
-        <Flex gap={4}>
-          <Box borderRadius={24} bgColor="rgba(255, 255, 255, 0.06)" px={8}>
-            <Checkbox
-              py={3}
-              isChecked={allChecked}
-              isIndeterminate={isIndeterminate}
-              onChange={e =>
-                setChecked(
-                  submissions.map((submission, index) => {
-                    // if the filter is not on, apply the checked to all
-                    if (filterValue === '') return e.target.checked;
-
-                    // if the filter is on, apply the checked boolean only to the submissions
-                    // with the same questId
-                    if (
-                      filterValue !== '' &&
-                      submission.questId === filterValue
-                    )
-                      return e.target.checked;
-
-                    // otherwise return the boolean of the value of this submission in the
-                    // checkedsubmission s array (need Boolean, because the value might be undefined)
-                    return Boolean(checkedSubmissions[index]);
-                  }),
-                )
-              }
-            ></Checkbox>
-          </Box>
-
-          {checkedSubmissions.some(item => item) && (
-            <>
-              <PopoverButton
-                toReview={submissions.filter((_, i) => checkedSubmissions[i])}
-                onReview={onReview}
-                isDisabled={isDisabled}
-                success={false}
-              />
-              <PopoverButton
-                toReview={submissions.filter((_, i) => checkedSubmissions[i])}
-                onReview={onReview}
-                isDisabled={isDisabled}
-                success={true}
-              />
-              {clearReview && (
-                <Button
-                  borderRadius={24}
-                  bgColor="gray.900"
-                  px={6}
-                  borderColor="gray.600"
-                  borderWidth={1}
-                  isDisabled={isDisabled}
-                  _hover={{ borderColor: 'white' }}
-                  onClick={() => {
-                    clearReview(
-                      submissions.filter((_, i) => checkedSubmissions[i]),
-                    );
-                  }}
-                >
-                  Clear Review
-                </Button>
-              )}
-            </>
-          )}
-        </Flex>
-        <Flex gap={4}>
-          <Select
-            placeholder="Sort"
-            fontSize={14}
-            fontWeight="bold"
-            bgColor="whiteAlpha.100"
-            borderRadius={24}
-            borderColor="transparent"
-            onChange={e => setSort(e.target.value)}
-            value={sortValue}
-          >
-            <option value="date-asc">Date Asc</option>
-            <option value="date-desc">Date Desc</option>
-          </Select>
-          <Select
-            placeholder="Filter"
-            fontSize={14}
-            fontWeight="bold"
-            bgColor="whiteAlpha.100"
-            borderRadius={24}
-            borderColor="transparent"
-            onChange={e => setFilter(e.target.value)}
-            value={filterValue}
-          >
-            {selectOptions.map((value: string) => (
-              <option key={value} value={value}>
-                Quest {Number(value) + 1}
-              </option>
-            ))}
-          </Select>
-          {setIndex && (
-            <Button
-              px={12}
-              color="gray.200"
-              fontSize={14}
-              fontWeight="bold"
-              bgColor="whiteAlpha.100"
-              borderRadius={24}
-              borderWidth={'1px'}
-              borderStyle={'solid'}
-              borderColor={'transparent'}
-              _hover={{
-                borderColor: 'whiteAlpha.400',
-              }}
-              _active={{
-                borderColor: 'whiteAlpha.400',
-              }}
-              _focus={{
-                zIndex: 1,
-                borderColor: '#63b3ed',
-                boxShadow: '0 0 0 1px #63b3ed',
-              }}
-              _focusVisible={{
-                zIndex: 1,
-                borderColor: '#63b3ed',
-                boxShadow: '0 0 0 1px #63b3ed',
-              }}
-              onClick={onToggleExpand}
-            >
-              {expanded ? 'Close all' : 'Expand all'}
-            </Button>
-          )}
-        </Flex>
-      </Flex>
-    </>
   );
 };

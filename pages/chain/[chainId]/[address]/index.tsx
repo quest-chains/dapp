@@ -657,7 +657,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       <Flex justifyContent="center" alignItems="center">
                         <InfoIcon mr={2} color="#3B82F6" />
                         {numSubmissionsToReview} proof submissions are awaiting
-                        review Description
+                        review
                       </Flex>
                       <NextLink
                         as={`/chain/${questChain.chainId}/${questChain.address}/review`}

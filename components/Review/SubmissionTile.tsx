@@ -21,9 +21,9 @@ import { CommentIcon } from '@/components/icons/CommentIcon';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import {
-  PopoverButton,
+  ReviewPopoverButton,
   SubmissionType,
-} from '@/components/Review/PopoverButton';
+} from '@/components/Review/ReviewPopoverButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
 import { formatDate } from '@/utils/dateHelpers';
@@ -180,7 +180,7 @@ export const SubmissionTile: React.FC<{
                       <CloseIcon color="#F43F5E" />
                     </Flex>
                   )}
-                  {showButtons && (
+                  {showButtons && !isEditing && (
                     <Flex
                       opacity={0}
                       _groupHover={{
@@ -216,7 +216,7 @@ export const SubmissionTile: React.FC<{
                             />
                           )}
                           {success && (
-                            <PopoverButton
+                            <ReviewPopoverButton
                               toReview={[submission]}
                               onReview={onReview}
                               isDisabled={isDisabled}
@@ -224,7 +224,7 @@ export const SubmissionTile: React.FC<{
                             />
                           )}
                           {!success && (
-                            <PopoverButton
+                            <ReviewPopoverButton
                               toReview={[submission]}
                               onReview={onReview}
                               isDisabled={isDisabled}
@@ -267,14 +267,14 @@ export const SubmissionTile: React.FC<{
                   gap={2}
                   bgGradient="linear(to-r, transparent 0%, #1E2025 20%)"
                 >
-                  <PopoverButton
+                  <ReviewPopoverButton
                     toReview={[submission]}
                     onReview={onReview}
                     isDisabled={isDisabled}
                     success={false}
                   />
 
-                  <PopoverButton
+                  <ReviewPopoverButton
                     toReview={[submission]}
                     onReview={onReview}
                     isDisabled={isDisabled}
@@ -382,8 +382,8 @@ const ReviewComment: React.FC<{
       ],
       false,
     );
-    setRemoving(false);
     setEditing(false);
+    setRemoving(false);
     toast.success(`Successfully removed comment`);
   }, [submission, onReview, setEditing]);
 
@@ -498,7 +498,10 @@ const ReviewComment: React.FC<{
           <Text color="gray.400">Remove comment? </Text>
           <Button
             variant="ghost"
-            onClick={() => setEditing(false)}
+            onClick={() => {
+              setEditing(false);
+              setRemoving(false);
+            }}
             borderRadius="full"
             textTransform="uppercase"
             size="sm"

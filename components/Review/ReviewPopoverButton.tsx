@@ -27,7 +27,7 @@ export type SubmissionType = {
   reviewComment?: string;
 };
 
-export const PopoverButton: React.FC<{
+export const ReviewPopoverButton: React.FC<{
   toReview: SubmissionType[];
   onReview: (quest: SubmissionType[], withComment: boolean) => void;
   isDisabled: boolean;
