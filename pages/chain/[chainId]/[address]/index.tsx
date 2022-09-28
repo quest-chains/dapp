@@ -20,6 +20,9 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Stat,
+  StatLabel,
+  StatNumber,
   Text,
   useDisclosure,
   useTimeout,
@@ -90,7 +93,10 @@ enum Mode {
   QUESTER = 'QUESTER',
 }
 
-const getQuestBGColor = (status?: Status, mode: Mode) => {
+const getQuestBGColor = (
+  status: graphql.Status | undefined | null,
+  mode: Mode,
+) => {
   if (mode === Mode.MEMBER || !status || status === Status.Init)
     return 'whiteAlpha.100';
 
@@ -98,6 +104,18 @@ const getQuestBGColor = (status?: Status, mode: Mode) => {
   else if (status === Status.Review) return 'pending.300';
   else return 'main.300';
 };
+
+const ChainStat: React.FC<{ label: string; value: string | JSX.Element }> = ({
+  label,
+  value,
+}) => (
+  <Flex direction="column" justify="space-between">
+    <Text color="whiteAlpha.600" fontSize="xs" textTransform="uppercase">
+      {label}
+    </Text>
+    <Text>{value}</Text>
+  </Flex>
+);
 
 const QuestChainPage: React.FC<Props> = ({
   questChain: inputQuestChain,
@@ -571,84 +589,74 @@ const QuestChainPage: React.FC<Props> = ({
 
               {/* Quest Chain Metadata */}
               <Flex mb={8} justifyContent="space-between" gap={1}>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    TOTAL PLAYERS
-                  </Text>
-                  <Text>{questChain.numQuesters}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    PLAYERS FINISHED
-                  </Text>
-                  <Text>{questChain.numCompletedQuesters}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    QUESTS
-                  </Text>
-                  <Text>{questChain.quests.length}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    DATE CREATED
-                  </Text>
-                  <Text>
-                    {new Date(questChain.createdAt * 1000).toLocaleDateString(
-                      'en-US',
-                    )}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    CREATED BY
-                  </Text>
-                  {questChain.createdBy.id && (
-                    <UserDisplay address={questChain.createdBy.id} />
-                  )}
-                </Box>
+                <ChainStat
+                  label="Total Players"
+                  value={questChain.numQuesters.toString()}
+                />
+                <ChainStat
+                  label="Players Finished"
+                  value={questChain.numCompletedQuesters.toString()}
+                />
+                <ChainStat
+                  label="Quests"
+                  value={questChain.quests.length.toString()}
+                />
+                <ChainStat
+                  label="Date Created"
+                  value={new Date(
+                    questChain.createdAt * 1000,
+                  ).toLocaleDateString('en-US')}
+                />
+                <ChainStat
+                  label="Created by"
+                  value={
+                    <UserDisplay address={questChain.createdBy.id} size="sm" />
+                  }
+                />
               </Flex>
 
-              {/* Actions */}
-              <Flex
-                w="full"
-                justifyContent="space-between"
-                h={6}
-                alignItems="center"
-                mb={6}
-              >
+              {/* Progress */}
+              {mode === Mode.QUESTER && (
                 <Flex
-                  w="90%"
-                  borderColor="whiteAlpha.200"
-                  border="1px solid"
-                  borderRadius={3}
+                  w="full"
+                  justifyContent="space-between"
+                  h={6}
+                  alignItems="center"
+                  mb={6}
                 >
-                  <Box
-                    bg="main"
-                    w={`${
+                  <Flex
+                    w="90%"
+                    borderColor="whiteAlpha.200"
+                    border="1px solid"
+                    borderRadius={3}
+                  >
+                    <Box
+                      bg="main"
+                      w={`${
+                        (progress.total
+                          ? progress.completeCount / progress.total
+                          : 0) * 100
+                      }%`}
+                    />
+                    <Box
+                      bgColor="pending"
+                      w={`${
+                        (progress.total
+                          ? progress.inReviewCount / progress.total
+                          : 0) * 100
+                      }%`}
+                    />
+                    <Box bgColor="grey" h={2} />
+                  </Flex>
+                  <Text>
+                    {`${Math.round(
                       (progress.total
                         ? progress.completeCount / progress.total
-                        : 0) * 100
-                    }%`}
-                  />
-                  <Box
-                    bgColor="pending"
-                    w={`${
-                      (progress.total
-                        ? progress.inReviewCount / progress.total
-                        : 0) * 100
-                    }%`}
-                  />
-                  <Box bgColor="grey" h={2} />
+                        : 0) * 100,
+                    )}%`}
+                  </Text>
                 </Flex>
-                <Text>
-                  {`${Math.round(
-                    (progress.total
-                      ? progress.completeCount / progress.total
-                      : 0) * 100,
-                  )}%`}
-                </Text>
-              </Flex>
+              )}
               <Flex mb={12}>
                 {/* to be implemented eventually */}
                 {/* 
