@@ -1,16 +1,11 @@
-import { AddIcon, EditIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 import {
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Checkbox,
   Flex,
   HStack,
-  IconButton,
   Image,
   Input,
   Link,
@@ -22,14 +17,12 @@ import { graphql } from '@quest-chains/sdk';
 import { constants, utils } from 'ethers';
 import { useState } from 'react';
 
-import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { useInputText } from '@/hooks/useInputText';
-import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
 import { getAddressUrl, useWallet } from '@/web3';
 
 import { MarkdownEditor } from '../MarkdownEditor';
+import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
-import { UploadProofButton } from '../UploadProofButton';
 import { AddQuestBlock } from './AddQuestBlock';
 
 export const QuestsForm: React.FC<{
@@ -133,7 +126,7 @@ export const QuestsForm: React.FC<{
                     index={index}
                   ></EditingQuest>
                 ) : (
-                  <Quest
+                  <QuestTile
                     key={name + description}
                     name={`${index + 1}. ${name}`}
                     description={description}
@@ -261,86 +254,6 @@ export const QuestsForm: React.FC<{
         </SubmitButton>
       </Flex>
     </>
-  );
-};
-
-export const Quest: React.FC<{
-  name: string;
-  description: string;
-  onRemoveQuest?: () => void;
-  onEditQuest: () => void;
-  isMember?: boolean;
-  bgColor?: string;
-  questId?: string;
-  userStatus?: UserStatusType;
-  questChain?: graphql.QuestChainInfoFragment;
-  refresh?: () => void;
-  isCreatingChain?: boolean;
-}> = ({
-  name,
-  description,
-  onRemoveQuest,
-  onEditQuest,
-  isMember = true,
-  bgColor = 'gray.900',
-  questId,
-  userStatus,
-  questChain,
-  refresh,
-  isCreatingChain = false,
-}) => {
-  return (
-    <AccordionItem
-      bg={bgColor}
-      borderRadius={10}
-      px={4}
-      mb={3}
-      border={0}
-      w="100%"
-    >
-      <Flex alignItems="center">
-        <AccordionButton py={6}>
-          <Box flex="1" textAlign="left" fontWeight="bold" whiteSpace="nowrap">
-            {name}
-          </Box>
-          <AccordionIcon ml={4} />
-        </AccordionButton>
-        {isMember && (
-          <>
-            {isCreatingChain && (
-              <Tooltip label="Delete Quest">
-                <IconButton
-                  icon={<SmallCloseIcon />}
-                  onClick={onRemoveQuest}
-                  aria-label=""
-                  bg="transparent"
-                />
-              </Tooltip>
-            )}
-            <Tooltip label="Edit Quest">
-              <IconButton
-                icon={<EditIcon />}
-                onClick={onEditQuest}
-                aria-label=""
-                bg="transparent"
-              />
-            </Tooltip>
-          </>
-        )}
-      </Flex>
-      <AccordionPanel>
-        <MarkdownViewer markdown={description} />
-        {questId && userStatus && questChain && refresh && (
-          <UploadProofButton
-            questId={questId}
-            name={name}
-            questChain={questChain}
-            userStatus={userStatus}
-            refresh={refresh}
-          />
-        )}
-      </AccordionPanel>
-    </AccordionItem>
   );
 };
 

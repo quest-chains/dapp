@@ -314,7 +314,7 @@ const Roles: React.FC<{
       {members.map(({ role, address }) => (
         <Flex key={address}>
           <Flex w="full" justifyContent="space-between" alignItems="center">
-            <UserDisplay address={address} full />
+            <UserDisplay address={address} />
             <Flex alignItems="center" gap={2}>
               <Select
                 onChange={e => setRole(e.target.value as Role, address)}

@@ -20,6 +20,9 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Stat,
+  StatLabel,
+  StatNumber,
   Text,
   useDisclosure,
   useTimeout,
@@ -35,7 +38,6 @@ import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -44,6 +46,7 @@ import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
+import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
@@ -58,7 +61,12 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-const { getQuestChainAddresses, getQuestChainInfo } = graphql;
+const {
+  getQuestChainAddresses,
+  getQuestChainInfo,
+  getStatusesForChain,
+  Status,
+} = graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -85,7 +93,34 @@ enum Mode {
   QUESTER = 'QUESTER',
 }
 
-const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
+const getQuestBGColor = (
+  status: graphql.Status | undefined | null,
+  mode: Mode,
+) => {
+  if (mode === Mode.MEMBER || !status || status === Status.Init)
+    return 'whiteAlpha.100';
+
+  if (status === Status.Fail) return 'rejected.300';
+  else if (status === Status.Review) return 'pending.300';
+  else return 'main.300';
+};
+
+const ChainStat: React.FC<{ label: string; value: string | JSX.Element }> = ({
+  label,
+  value,
+}) => (
+  <Flex direction="column" justify="space-between">
+    <Text color="whiteAlpha.600" fontSize="xs" textTransform="uppercase">
+      {label}
+    </Text>
+    <Text>{value}</Text>
+  </Flex>
+);
+
+const QuestChainPage: React.FC<Props> = ({
+  questChain: inputQuestChain,
+  questStatuses: inputAllQuestStatuses,
+}) => {
   const { isFallback } = useRouter();
   const { address, chainId, provider } = useWallet();
   const [visible, setVisible] = useState(false);
@@ -229,7 +264,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     useLatestQuestStatusesForChainData(
       questChain?.chainId,
       questChain?.address,
-      [],
+      inputAllQuestStatuses,
     );
 
   const numSubmissionsToReview = allQuestStatuses.filter(
@@ -554,84 +589,74 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
 
               {/* Quest Chain Metadata */}
               <Flex mb={8} justifyContent="space-between" gap={1}>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    TOTAL PLAYERS
-                  </Text>
-                  <Text>{questChain.numQuesters}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    PLAYERS FINISHED
-                  </Text>
-                  <Text>{questChain.numCompletedQuesters}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    QUESTS
-                  </Text>
-                  <Text>{questChain.quests.length}</Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    DATE CREATED
-                  </Text>
-                  <Text>
-                    {new Date(questChain.createdAt * 1000).toLocaleDateString(
-                      'en-US',
-                    )}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text color="whiteAlpha.600" fontSize="xs">
-                    CREATED BY
-                  </Text>
-                  {questChain.createdBy.id && (
-                    <UserDisplay address={questChain.createdBy.id} />
-                  )}
-                </Box>
+                <ChainStat
+                  label="Total Players"
+                  value={questChain.numQuesters.toString()}
+                />
+                <ChainStat
+                  label="Players Finished"
+                  value={questChain.numCompletedQuesters.toString()}
+                />
+                <ChainStat
+                  label="Quests"
+                  value={questChain.quests.length.toString()}
+                />
+                <ChainStat
+                  label="Date Created"
+                  value={new Date(
+                    questChain.createdAt * 1000,
+                  ).toLocaleDateString('en-US')}
+                />
+                <ChainStat
+                  label="Created by"
+                  value={
+                    <UserDisplay address={questChain.createdBy.id} size="sm" />
+                  }
+                />
               </Flex>
 
-              {/* Actions */}
-              <Flex
-                w="full"
-                justifyContent="space-between"
-                h={6}
-                alignItems="center"
-                mb={6}
-              >
+              {/* Progress */}
+              {mode === Mode.QUESTER && (
                 <Flex
-                  w="90%"
-                  borderColor="whiteAlpha.200"
-                  border="1px solid"
-                  borderRadius={3}
+                  w="full"
+                  justifyContent="space-between"
+                  h={6}
+                  alignItems="center"
+                  mb={6}
                 >
-                  <Box
-                    bg="main"
-                    w={`${
+                  <Flex
+                    w="90%"
+                    borderColor="whiteAlpha.200"
+                    border="1px solid"
+                    borderRadius={3}
+                  >
+                    <Box
+                      bg="main"
+                      w={`${
+                        (progress.total
+                          ? progress.completeCount / progress.total
+                          : 0) * 100
+                      }%`}
+                    />
+                    <Box
+                      bgColor="pending"
+                      w={`${
+                        (progress.total
+                          ? progress.inReviewCount / progress.total
+                          : 0) * 100
+                      }%`}
+                    />
+                    <Box bgColor="grey" h={2} />
+                  </Flex>
+                  <Text>
+                    {`${Math.round(
                       (progress.total
                         ? progress.completeCount / progress.total
-                        : 0) * 100
-                    }%`}
-                  />
-                  <Box
-                    bgColor="pending"
-                    w={`${
-                      (progress.total
-                        ? progress.inReviewCount / progress.total
-                        : 0) * 100
-                    }%`}
-                  />
-                  <Box bgColor="grey" h={2} />
+                        : 0) * 100,
+                    )}%`}
+                  </Text>
                 </Flex>
-                <Text>
-                  {`${Math.round(
-                    (progress.total
-                      ? progress.completeCount / progress.total
-                      : 0) * 100,
-                  )}%`}
-                </Text>
-              </Flex>
+              )}
               <Flex mb={12}>
                 {/* to be implemented eventually */}
                 {/* 
@@ -665,7 +690,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       justifyContent="space-between"
                     >
                       <Flex justifyContent="center" alignItems="center">
-                        <InfoIcon mr={2} color="#3B82F6" />
+                        <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
                         {numSubmissionsToReview} proof submissions are awaiting
                         review
                       </Flex>
@@ -752,21 +777,20 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   - upload proof */}
                     <Accordion allowMultiple w="full" defaultIndex={[]}>
                       {questChain.quests
-                        .filter(q => !!q.name)
+                        .filter(
+                          q => !!q.name && (mode === Mode.MEMBER || !q.paused),
+                        )
                         .map(
                           ({ name, description, questId, paused }, index) => (
                             <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
-                                <Quest
+                                <QuestTile
                                   name={`${index + 1}. ${name}`}
                                   description={description ?? ''}
-                                  bgColor={
-                                    userStatus[questId]?.status === 'pass'
-                                      ? 'main.300'
-                                      : userStatus[questId]?.status === 'review'
-                                      ? '#EFFF8F30'
-                                      : 'whiteAlpha.100'
-                                  }
+                                  bgColor={getQuestBGColor(
+                                    userStatus[questId]?.status,
+                                    mode,
+                                  )}
                                   onEditQuest={() => {
                                     setEditingQuest(true);
                                     setQuestEditId(questId);
@@ -778,6 +802,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                   questId={questId}
                                   questChain={questChain}
                                   userStatus={userStatus}
+                                  isPaused={paused}
                                   refresh={refresh}
                                 />
                               )}
@@ -965,9 +990,14 @@ export const getStaticProps = async (
   const address = context.params?.address;
   const chainId = context.params?.chainId;
 
+  let questStatuses: graphql.QuestStatusInfoFragment[] = [];
+
   let questChain = null;
   if (address && chainId) {
     try {
+      questStatuses = address
+        ? await getStatusesForChain(chainId, address)
+        : [];
       questChain = address ? await getQuestChainInfo(chainId, address) : null;
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -981,6 +1011,7 @@ export const getStaticProps = async (
   return {
     props: {
       questChain,
+      questStatuses,
     },
     revalidate: 1,
   };
