@@ -103,80 +103,114 @@ export const QuestTile: React.FC<{
   );
 
   return (
-    <AccordionItem
-      bg={bgColor}
-      borderRadius={10}
-      px={4}
-      mb={3}
-      border={0}
-      w="100%"
-    >
-      <Flex alignItems="center">
-        <AccordionButton py={6}>
-          <Flex flex="1" textAlign="left" gap={2}>
-            <Text fontWeight="bold" whiteSpace="nowrap">
-              {name}
-            </Text>
-            {isPaused && (
-              <Tag colorScheme="orange" fontSize="xs">
-                <WarningIcon boxSize=".75rem" mr={1} />
-                Disabled
-              </Tag>
+    <AccordionItem bg={bgColor} borderRadius={10} mb={3} border={0} w="100%">
+      {({ isExpanded }) => (
+        <>
+          <Flex alignItems="center" px={2}>
+            <AccordionButton py={6}>
+              <Flex flex="1" textAlign="left" gap={2}>
+                <Text fontWeight="bold" whiteSpace="nowrap">
+                  {name}
+                </Text>
+                {isPaused && (
+                  <Tag colorScheme="orange" fontSize="xs">
+                    <WarningIcon boxSize=".75rem" mr={1} />
+                    Disabled
+                  </Tag>
+                )}
+              </Flex>
+              <AccordionIcon ml={4} />
+            </AccordionButton>
+            {isMember && (
+              <>
+                {isCreatingChain && (
+                  <Tooltip label="Delete Quest">
+                    <IconButton
+                      icon={<SmallCloseIcon />}
+                      onClick={onRemoveQuest}
+                      aria-label=""
+                      bg="transparent"
+                    />
+                  </Tooltip>
+                )}
+                <Tooltip label="Edit Quest">
+                  <IconButton
+                    icon={<EditIcon />}
+                    onClick={onEditQuest}
+                    aria-label=""
+                    bg="transparent"
+                  />
+                </Tooltip>
+              </>
             )}
           </Flex>
-          <AccordionIcon ml={4} />
-        </AccordionButton>
-        {isMember && (
-          <>
-            {isCreatingChain && (
-              <Tooltip label="Delete Quest">
-                <IconButton
-                  icon={<SmallCloseIcon />}
-                  onClick={onRemoveQuest}
-                  aria-label=""
-                  bg="transparent"
+          <AccordionPanel px={6}>
+            <MarkdownViewer markdown={description} />
+            <Wrap align="center" mt={4} spacing={4}>
+              {questId && userStatus && questChain && refresh && !isMember && (
+                <UploadProofButton
+                  questId={questId}
+                  name={name}
+                  questChain={questChain}
+                  userStatus={userStatus}
+                  refresh={refresh}
                 />
-              </Tooltip>
-            )}
-            <Tooltip label="Edit Quest">
-              <IconButton
-                icon={<EditIcon />}
-                onClick={onEditQuest}
-                aria-label=""
-                bg="transparent"
-              />
-            </Tooltip>
-          </>
-        )}
-      </Flex>
-      <AccordionPanel>
-        <MarkdownViewer markdown={description} />
-        <Wrap align="center" mt={4} spacing={4}>
-          {questId && userStatus && questChain && refresh && !isMember && (
-            <UploadProofButton
-              questId={questId}
-              name={name}
-              questChain={questChain}
-              userStatus={userStatus}
-              refresh={refresh}
-            />
-          )}
-          {questChain && questId && isMember && (
-            <Button
-              colorScheme={isPaused ? 'green' : 'orange'}
-              variant="outline"
-              size="sm"
-              ml="auto"
-              isLoading={isToggling}
-              isDisabled={chainId !== questChain.chainId}
-              onClick={() => toggleQuestPaused(!isPaused)}
-              leftIcon={<PowerIcon />}
-            >
-              {isPaused ? 'Enable Quest' : 'Disable Quest'}
-            </Button>
-          )}
-        </Wrap>
-      </AccordionPanel>
+              )}
+              {questChain && questId && isMember && (
+                <Button
+                  colorScheme={isPaused ? 'green' : 'orange'}
+                  variant="outline"
+                  size="sm"
+                  ml="auto"
+                  isLoading={isToggling}
+                  isDisabled={chainId !== questChain.chainId}
+                  onClick={() => toggleQuestPaused(!isPaused)}
+                  leftIcon={<PowerIcon />}
+                >
+                  {isPaused ? 'Enable Quest' : 'Disable Quest'}
+                </Button>
+              )}
+            </Wrap>
+          </AccordionPanel>
+          {isExpanded && <ReviewComment {...{ userStatus, questId }} />}
+        </>
+      )}
     </AccordionItem>
+  );
+};
+
+const ReviewComment: React.FC<{
+  userStatus?: UserStatusType;
+  questId?: string;
+}> = ({ userStatus, questId }) => {
+  if (
+    !questId ||
+    !userStatus ||
+    !userStatus[questId] ||
+    userStatus[questId].status === graphql.Status.Init ||
+    userStatus[questId].status === graphql.Status.Review ||
+    userStatus[questId].reviews.length === 0
+  )
+    return null;
+
+  const reviewComment =
+    userStatus[questId].reviews[userStatus[questId].reviews.length - 1]
+      .description;
+
+  if (!reviewComment) return null;
+
+  return (
+    <Flex
+      w="100%"
+      p={6}
+      pb={6}
+      background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
+      role="group"
+      position="relative"
+      flexDirection="column"
+      gap="4"
+    >
+      <MarkdownViewer markdown={reviewComment ?? ''} />
+    </Flex>
   );
 };
