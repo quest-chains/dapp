@@ -35,7 +35,6 @@ import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { Quest } from '@/components/CreateChain/QuestsForm';
 import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -44,6 +43,7 @@ import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
+import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
@@ -58,7 +58,12 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-const { getQuestChainAddresses, getQuestChainInfo } = graphql;
+const {
+  getQuestChainAddresses,
+  getQuestChainInfo,
+  getStatusesForChain,
+  Status,
+} = graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -85,7 +90,19 @@ enum Mode {
   QUESTER = 'QUESTER',
 }
 
-const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
+const getQuestBGColor = (status?: Status, mode: Mode) => {
+  if (mode === Mode.MEMBER || !status || status === Status.Init)
+    return 'whiteAlpha.100';
+
+  if (status === Status.Fail) return 'rejected.300';
+  else if (status === Status.Review) return 'pending.300';
+  else return 'main.300';
+};
+
+const QuestChainPage: React.FC<Props> = ({
+  questChain: inputQuestChain,
+  questStatuses: inputAllQuestStatuses,
+}) => {
   const { isFallback } = useRouter();
   const { address, chainId, provider } = useWallet();
   const [visible, setVisible] = useState(false);
@@ -229,7 +246,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
     useLatestQuestStatusesForChainData(
       questChain?.chainId,
       questChain?.address,
-      [],
+      inputAllQuestStatuses,
     );
 
   const numSubmissionsToReview = allQuestStatuses.filter(
@@ -665,7 +682,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                       justifyContent="space-between"
                     >
                       <Flex justifyContent="center" alignItems="center">
-                        <InfoIcon mr={2} color="#3B82F6" />
+                        <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
                         {numSubmissionsToReview} proof submissions are awaiting
                         review
                       </Flex>
@@ -752,21 +769,20 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                   - upload proof */}
                     <Accordion allowMultiple w="full" defaultIndex={[]}>
                       {questChain.quests
-                        .filter(q => !!q.name)
+                        .filter(
+                          q => !!q.name && (mode === Mode.MEMBER || !q.paused),
+                        )
                         .map(
                           ({ name, description, questId, paused }, index) => (
                             <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
-                                <Quest
+                                <QuestTile
                                   name={`${index + 1}. ${name}`}
                                   description={description ?? ''}
-                                  bgColor={
-                                    userStatus[questId]?.status === 'pass'
-                                      ? 'main.300'
-                                      : userStatus[questId]?.status === 'review'
-                                      ? '#EFFF8F30'
-                                      : 'whiteAlpha.100'
-                                  }
+                                  bgColor={getQuestBGColor(
+                                    userStatus[questId]?.status,
+                                    mode,
+                                  )}
                                   onEditQuest={() => {
                                     setEditingQuest(true);
                                     setQuestEditId(questId);
@@ -778,6 +794,7 @@ const QuestChainPage: React.FC<Props> = ({ questChain: inputQuestChain }) => {
                                   questId={questId}
                                   questChain={questChain}
                                   userStatus={userStatus}
+                                  isPaused={paused}
                                   refresh={refresh}
                                 />
                               )}
@@ -965,9 +982,14 @@ export const getStaticProps = async (
   const address = context.params?.address;
   const chainId = context.params?.chainId;
 
+  let questStatuses: graphql.QuestStatusInfoFragment[] = [];
+
   let questChain = null;
   if (address && chainId) {
     try {
+      questStatuses = address
+        ? await getStatusesForChain(chainId, address)
+        : [];
       questChain = address ? await getQuestChainInfo(chainId, address) : null;
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -981,6 +1003,7 @@ export const getStaticProps = async (
   return {
     props: {
       questChain,
+      questStatuses,
     },
     revalidate: 1,
   };

@@ -1,13 +1,14 @@
-import { Button, Image } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import Power from '@/assets/Power.svg';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+import { PowerIcon } from './icons/PowerIcon';
 export const QuestChainPauseStatus: React.FC<{
   questChain: graphql.QuestChainInfoFragment;
   refresh: () => void | Promise<void>;
@@ -68,12 +69,8 @@ export const QuestChainPauseStatus: React.FC<{
       isLoading={isLoading}
       variant="ghost"
       fontSize="xs"
+      leftIcon={<PowerIcon />}
     >
-      <Image
-        src={Power.src}
-        alt={questChain.paused ? 'Enable' : 'Disable'}
-        mr={2}
-      />
       {questChain.paused ? 'Enable Quest Chain' : 'Disable Quest Chain'}
     </Button>
   );
