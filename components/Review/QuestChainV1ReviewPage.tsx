@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { EmptyView } from '@/components/Review/EmptyView';
 import {
   removeSelectedFromReviewed,
   sort,
@@ -387,95 +388,115 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
             <TabPanels>
               {/* awaiting review */}
               <TabPanel p={0}>
-                <Accordion
-                  allowMultiple
-                  index={displayAwaitingReview
-                    .map((d, i) => (d.expanded ? i : -1))
-                    .filter(d => d != -1)}
-                  onChange={(idxs: number[]) =>
-                    setDisplayAwaitingReview(v =>
-                      v.map((d, i) => ({
-                        ...d,
-                        expanded: idxs.includes(i) ? true : false,
-                      })),
-                    )
-                  }
-                >
-                  {displayAwaitingReview.map(
-                    ({ submission, checked }, index) => (
+                {!displayAwaitingReview.length && (
+                  <EmptyView text="There are currently no submissions awaiting review." />
+                )}
+                {!!displayAwaitingReview.length && (
+                  <Accordion
+                    allowMultiple
+                    index={displayAwaitingReview
+                      .map((d, i) => (d.expanded ? i : -1))
+                      .filter(d => d != -1)}
+                    onChange={(idxs: number[]) =>
+                      setDisplayAwaitingReview(v =>
+                        v.map((d, i) => ({
+                          ...d,
+                          expanded: idxs.includes(i) ? true : false,
+                        })),
+                      )
+                    }
+                  >
+                    {displayAwaitingReview.map(
+                      ({ submission, checked }, index) => (
+                        <SubmissionTile
+                          submission={submission}
+                          onReview={onReview}
+                          key={submission.id}
+                          isDisabled={isDisabled}
+                          checked={checked}
+                          onCheck={() => setCheckedItemAwaitingReview(index)}
+                        />
+                      ),
+                    )}
+                  </Accordion>
+                )}
+              </TabPanel>
+
+              {/* reviewed */}
+              <TabPanel p={0}>
+                {!displayReviewed.length && (
+                  <EmptyView text="There are currently no reviewed submissions." />
+                )}
+                {!!displayReviewed.length && (
+                  <Accordion
+                    allowMultiple
+                    index={displayReviewed
+                      .map((d, i) => (d.expanded ? i : -1))
+                      .filter(d => d != -1)}
+                    onChange={(idxs: number[]) =>
+                      setDisplayReviewed(v =>
+                        v.map((d, i) => ({
+                          ...d,
+                          expanded: idxs.includes(i) ? true : false,
+                        })),
+                      )
+                    }
+                  >
+                    {displayReviewed.map(({ submission, checked }, index) => (
                       <SubmissionTile
                         submission={submission}
                         onReview={onReview}
                         key={submission.id}
                         isDisabled={isDisabled}
                         checked={checked}
-                        onCheck={() => setCheckedItemAwaitingReview(index)}
+                        clearReview={(selected: SubmissionType[]) =>
+                          clearReview(selected)
+                        }
+                        onCheck={() => setCheckedItemReviewed(index)}
                       />
-                    ),
-                  )}
-                </Accordion>
-              </TabPanel>
-
-              {/* reviewed */}
-              <TabPanel p={0}>
-                <Accordion
-                  allowMultiple
-                  index={displayReviewed
-                    .map((d, i) => (d.expanded ? i : -1))
-                    .filter(d => d != -1)}
-                  onChange={(idxs: number[]) =>
-                    setDisplayReviewed(v =>
-                      v.map((d, i) => ({
-                        ...d,
-                        expanded: idxs.includes(i) ? true : false,
-                      })),
-                    )
-                  }
-                >
-                  {displayReviewed.map(({ submission, checked }, index) => (
-                    <SubmissionTile
-                      submission={submission}
-                      onReview={onReview}
-                      key={submission.id}
-                      isDisabled={isDisabled}
-                      checked={checked}
-                      clearReview={(selected: SubmissionType[]) =>
-                        clearReview(selected)
-                      }
-                      onCheck={() => setCheckedItemReviewed(index)}
-                    />
-                  ))}
-                </Accordion>
+                    ))}
+                  </Accordion>
+                )}
               </TabPanel>
 
               {/* submitted */}
               <TabPanel p={0}>
-                <Accordion allowMultiple defaultIndex={[]} mt={4}>
-                  {submitted.map(submission => (
-                    <SubmissionTile
-                      submission={submission}
-                      onReview={() => undefined}
-                      key={submission.id}
-                      isDisabled={isDisabled}
-                      showButtons={false}
-                    />
-                  ))}
-                </Accordion>
+                {!submitted.length && (
+                  <EmptyView text="There are currently no submitted reviews." />
+                )}
+                {!!submitted.length && (
+                  <Accordion allowMultiple defaultIndex={[]} mt={4}>
+                    {submitted.map(submission => (
+                      <SubmissionTile
+                        submission={submission}
+                        onReview={() => undefined}
+                        key={submission.id}
+                        isDisabled={isDisabled}
+                        showButtons={false}
+                      />
+                    ))}
+                  </Accordion>
+                )}
               </TabPanel>
 
               {/* allSubmissions */}
               <TabPanel p={0}>
-                <Accordion allowMultiple defaultIndex={[]} mt={4}>
-                  {allSubmissions.map(submission => (
-                    <SubmissionTile
-                      submission={submission}
-                      onReview={() => undefined}
-                      key={submission.id}
-                      isDisabled={isDisabled}
-                      showButtons={false}
-                    />
-                  ))}
-                </Accordion>
+                {!allSubmissions.length && (
+                  <EmptyView text="There are currently no submissions." />
+                )}
+                {!!allSubmissions.length && (
+                  <Accordion allowMultiple defaultIndex={[]} mt={4}>
+                    {allSubmissions.map(submission => (
+                      <SubmissionTile
+                        submission={submission}
+                        onReview={() => undefined}
+                        key={submission.id}
+                        isDisabled={isDisabled}
+                        showButtons={false}
+                      />
+                    ))}
+                  </Accordion>
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>
