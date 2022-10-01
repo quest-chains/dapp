@@ -1,83 +1,80 @@
-import { Button, Flex, Image, Input, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Image,
+  Input,
+  VStack,
+} from '@chakra-ui/react';
+import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useInputText } from '@/hooks/useInputText';
 
 export const AddQuestBlock: React.FC<{
   onClose: () => void;
-  onAdd: (name: string, description: string) => void;
+  onAdd: (name: string, desc: string) => void;
 }> = ({ onClose, onAdd }) => {
-  const [description, setDescription] = useState('');
-  const [name, setName] = useState('');
+  const [nameRef, setName] = useInputText();
+  const [descRef, setDescription] = useInputText();
+
   const onSubmit = () => {
-    onAdd(name, description);
+    onAdd(nameRef.current, descRef.current);
     onClose();
   };
 
-  const isDisabled = name === '' || description === '';
-
   return (
-    <Flex
-      w="full"
-      gap={20}
-      alignItems="normal"
-      display={{ base: 'box', md: 'flex' }}
-    >
-      <Flex flexGrow={1} flexDirection="column">
-        <VStack mb={4} spacing={4}>
-          <Flex w="full" flexDir="column" gap={2}>
-            <Flex alignSelf="start">Name</Flex>
-            <Input
-              color="white"
-              value={name}
-              bg="#0F172A"
-              id="name"
-              onChange={e => setName(e.target.value)}
-              placeholder="Quest Name"
-            />
-          </Flex>
-          <Flex w="full" flexDir="column" gap={2}>
-            <Flex alignSelf="start">Description</Flex>
-            <MarkdownEditor
-              height="12rem"
-              value={description}
-              placeholder="Quest Description"
-              onChange={setDescription}
-            />
-          </Flex>
-        </VStack>
-        <Flex w="100%" justify="flex-end" my={4}>
-          {isDisabled && (
-            <Button
-              borderWidth={1}
-              borderColor="white"
-              height={{ base: 10, md: 12 }}
-              fontSize={{ base: 9, md: 14 }}
-              px={5}
-              borderRadius="full"
-              isDisabled
-              w="full"
-            >
-              <Image src={Edit.src} alt="Edit" mr={3} />
-              To continue, enter the name and description for the quest
-            </Button>
-          )}
-          {!isDisabled && (
+    <Flex w="full" alignItems="normal" display={{ base: 'box', md: 'flex' }}>
+      <form>
+        <Flex flexGrow={1} flexDirection="column" gap={4} mb={4}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel htmlFor="name">Quest Name</FormLabel>
+              <Input
+                color="white"
+                defaultValue={nameRef.current}
+                bg="#0F172A"
+                id="name"
+                maxLength={60}
+                onChange={e => setName(e.target.value)}
+                placeholder="Quest Name"
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel htmlFor="description">Quest Description</FormLabel>
+              <MarkdownEditor
+                height="12rem"
+                value={descRef.current}
+                placeholder="Quest Description"
+                onChange={setDescription}
+              />
+            </FormControl>
+          </VStack>
+          <Flex w="100%" justify="flex-end">
             <SubmitButton
-              onClick={onSubmit}
-              type="submit"
-              isDisabled={isDisabled}
+              onClick={() => {
+                if (!nameRef.current && !descRef.current) {
+                  toast.error(
+                    <>
+                      <Image src={Edit.src} alt="Edit" mr={3} />
+                      To continue, enter the name and description for the quest
+                    </>,
+                  );
+                  return;
+                }
+                onSubmit();
+              }}
               w="full"
               fontWeight="bold"
               fontSize={{ base: 12, md: 14 }}
             >
               ADD QUEST
             </SubmitButton>
-          )}
+          </Flex>
         </Flex>
-      </Flex>
+      </form>
     </Flex>
   );
 };

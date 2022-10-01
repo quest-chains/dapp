@@ -1,24 +1,22 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
-  IconButton,
   Image,
   Input,
   Textarea,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
+import { useDropImage } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
 import { SubmitButton } from '../SubmitButton';
+import { UploadImageForm } from '../UploadImageForm';
 
 const CustomNFTForm2D: React.FC<{
   chainName?: string;
@@ -29,30 +27,10 @@ const CustomNFTForm2D: React.FC<{
     isPremium: boolean,
   ) => void | Promise<void>;
 }> = ({ chainName, onBack, onSubmit }) => {
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-  const isDisabled = !myFiles.length;
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
+  const uploadImageProps = useDropImage();
+  const { imageFile } = uploadImageProps;
 
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-    multiple: false,
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.png', '.jpg', '.gif'],
-    },
-  });
+  const isDisabled = !imageFile;
 
   const [name, setName] = useState<string>('Special Chain');
   const [description, setDescription] = useState<string>(
@@ -67,11 +45,11 @@ const CustomNFTForm2D: React.FC<{
 
   const [isLoading, setLoading] = useState(false);
   const exportMetadata = useCallback(async () => {
+    if (!imageFile) return;
     setLoading(true);
     let tid = toast.loading('Uploading image to IPFS via web3.storage');
     try {
-      const file = myFiles[0];
-      let hash = await uploadFiles([file]);
+      let hash = await uploadFiles([imageFile]);
 
       const metadata: Metadata = {
         name,
@@ -91,52 +69,16 @@ const CustomNFTForm2D: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [myFiles, name, description, onSubmit]);
+  }, [imageFile, name, description, onSubmit]);
 
   return (
     <Flex w="100%" gap={8} mb={12} flexDir="column">
       <Flex flexDir="column" w={{ md: 'xl' }} alignSelf="center">
-        {myFiles.length ? (
-          <>
-            {myFiles.map((file: File) => (
-              <Flex key={file.name} pos="relative">
-                {typeof window !== 'undefined' && (
-                  <Image
-                    alt=""
-                    src={window.URL.createObjectURL(file)}
-                    height="16rem"
-                  />
-                )}
-                <IconButton
-                  pos="absolute"
-                  size="sm"
-                  top={2}
-                  left={2}
-                  borderRadius="full"
-                  onClick={removeFile(file)}
-                  icon={<SmallCloseIcon boxSize="1.5rem" />}
-                  aria-label={''}
-                  backdropFilter="blur(40px)"
-                  boxShadow="inset 0px 0px 0px 1px white"
-                />
-              </Flex>
-            ))}
-          </>
-        ) : (
-          <Flex
-            {...getRootProps({ className: 'dropzone' })}
-            flexDir="column"
-            borderWidth={1}
-            borderStyle="dashed"
-            borderRadius={20}
-            p={10}
-            mb={4}
-            onClick={open}
-          >
-            <input {...getInputProps()} color="white" />
-            <Box alignSelf="center">{`Drag 'n' drop an image here`}</Box>
-          </Flex>
-        )}
+        <UploadImageForm
+          {...uploadImageProps}
+          imageProps={{ height: '16rem' }}
+          formControlProps={{ mb: '4' }}
+        />
         <FormControl isRequired>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
@@ -194,12 +136,7 @@ const CustomNFTForm2D: React.FC<{
           </Button>
         )}
         {!isDisabled && (
-          <SubmitButton
-            isLoading={isLoading}
-            type="submit"
-            onClick={exportMetadata}
-            w="full"
-          >
+          <SubmitButton isLoading={isLoading} onClick={exportMetadata} w="full">
             Continue to Step 3
           </SubmitButton>
         )}

@@ -306,12 +306,7 @@ const NFTForm3D: React.FC<{
             Back
           </Button>
         )}
-        <SubmitButton
-          isLoading={isLoading}
-          type="submit"
-          onClick={exportMetadata}
-          w="full"
-        >
+        <SubmitButton isLoading={isLoading} onClick={exportMetadata} w="full">
           Continue to Step 3
         </SubmitButton>
       </Flex>

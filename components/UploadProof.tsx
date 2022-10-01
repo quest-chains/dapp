@@ -1,11 +1,9 @@
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
-  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,15 +11,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 
+import { useDropFiles, useDropImage } from '@/hooks/useDropFiles';
+import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
@@ -30,6 +28,8 @@ import { getQuestChainContract } from '@/web3/contract';
 
 import { MarkdownEditor } from './MarkdownEditor';
 import { SubmitButton } from './SubmitButton';
+import { UploadFilesForm } from './UploadFilesForm';
+import { UploadImageForm } from './UploadImageForm';
 
 export const UploadProof: React.FC<{
   refresh: () => void;
@@ -43,98 +43,97 @@ export const UploadProof: React.FC<{
 
   const [isSubmitting, setSubmitting] = useState(false);
 
+  const [proofDescRef, setProofDescription] = useInputText();
+
+  const dropFilesProps = useDropFiles();
+
+  const { files, onResetFiles } = dropFilesProps;
+
+  const dropImageProps = useDropImage();
+
+  const { imageFile, onResetImage } = dropImageProps;
+
   const onModalClose = useCallback(() => {
     setProofDescription('');
-    setMyFiles([]);
+    onResetFiles();
+    onResetImage();
     onClose();
-  }, [onClose]);
-  const [proofDescription, setProofDescription] = useState('');
-  const [myFiles, setMyFiles] = useState<File[]>([]);
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setMyFiles([...myFiles, ...acceptedFiles]);
-    },
-    [myFiles],
-  );
-
-  const { getRootProps, getInputProps, open } = useDropzone({
-    // Disable click and keydown behavior
-    noClick: true,
-    noKeyboard: true,
-    onDrop,
-  });
-
-  const removeFile = (file: File) => () => {
-    const newFiles = [...myFiles];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setMyFiles(newFiles);
-  };
+  }, [onClose, onResetFiles, onResetImage, setProofDescription]);
 
   const onSubmit = useCallback(async () => {
-    if (!chainId || chainId !== questChain.chainId || !provider) return;
-    if (proofDescription) {
-      setSubmitting(true);
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      try {
-        let hash = myFiles.length ? await uploadFiles(myFiles) : '';
-        const metadata: Metadata = {
-          name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
-          description: proofDescription,
-          external_url: hash ? `ipfs://${hash}` : undefined,
-        };
+    if (
+      !chainId ||
+      chainId !== questChain.chainId ||
+      !provider ||
+      !proofDescRef.current
+    )
+      return;
 
-        hash = await uploadMetadata(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
+    setSubmitting(true);
+    let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+    try {
+      const [filesHash, imageHash] = await Promise.all([
+        files.length ? await uploadFiles(files) : '',
+        imageFile ? await uploadFiles([imageFile]) : '',
+      ]);
+      const metadata: Metadata = {
+        name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
+        description: proofDescRef.current,
+        image_url: imageHash ? `ipfs://${imageHash}` : undefined,
+        external_url: filesHash ? `ipfs://${filesHash}` : undefined,
+      };
 
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        );
+      const hash = await uploadMetadata(metadata);
+      const details = `ipfs://${hash}`;
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
 
-        const tx = await (questChain.version === '1'
-          ? (contract as contracts.V1.QuestChain).submitProofs(
-              [questId],
-              [details],
-            )
-          : (contract as contracts.V0.QuestChain).submitProof(
-              questId,
-              details,
-            ));
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success('Successfully submitted proof');
-        onModalClose();
-        refresh();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      }
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      );
 
-      setSubmitting(false);
+      const tx = await (questChain.version === '1'
+        ? (contract as contracts.V1.QuestChain).submitProofs(
+            [questId],
+            [details],
+          )
+        : (contract as contracts.V0.QuestChain).submitProof(questId, details));
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
+      toast.success('Successfully submitted proof');
+      onModalClose();
+      setProofDescription('');
+      refresh();
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
     }
+
+    setSubmitting(false);
   }, [
     chainId,
     questChain,
-    proofDescription,
-    myFiles,
+    proofDescRef,
+    files,
+    imageFile,
     questId,
     name,
     onModalClose,
     refresh,
     address,
     provider,
+    setProofDescription,
   ]);
 
   return (
@@ -176,49 +175,23 @@ export const UploadProof: React.FC<{
           <ModalCloseButton />
           <ModalBody>
             <FormControl isRequired>
-              <FormLabel color="main" htmlFor="proofDescription">
+              <FormLabel color="main" htmlFor="proofDescRef.current">
                 Description
               </FormLabel>
               <Flex w="100%" pb={4}>
                 <MarkdownEditor
-                  value={proofDescription}
+                  value={proofDescRef.current}
                   onChange={value => setProofDescription(value)}
                 />
               </Flex>
             </FormControl>
-            <FormControl>
-              <FormLabel color="main" htmlFor="file">
-                Upload file
-              </FormLabel>
-              <Flex
-                {...getRootProps({ className: 'dropzone' })}
-                flexDir="column"
-                borderWidth={1}
-                borderStyle="dashed"
-                borderRadius={20}
-                p={10}
-                mb={4}
-                onClick={open}
-              >
-                <input {...getInputProps()} color="white" />
-                <Box alignSelf="center">{`Drag 'n' drop some files here`}</Box>
-              </Flex>
-            </FormControl>
-            <Text mb={1}>Files:</Text>
-            {myFiles.map((file: File) => (
-              <Flex key={file.name} w="100%" mb={1}>
-                <IconButton
-                  size="xs"
-                  borderRadius="full"
-                  onClick={removeFile(file)}
-                  icon={<SmallCloseIcon boxSize="1rem" />}
-                  aria-label={''}
-                />
-                <Text ml={1} alignSelf="center">
-                  {file.name} - {file.size} bytes
-                </Text>
-              </Flex>
-            ))}
+            <UploadImageForm
+              {...dropImageProps}
+              labelColor="main"
+              imageProps={{ maxH: '12rem' }}
+              formControlProps={{ mb: 4 }}
+            />
+            <UploadFilesForm {...dropFilesProps} />
           </ModalBody>
 
           <ModalFooter alignItems="baseline">
@@ -230,13 +203,7 @@ export const UploadProof: React.FC<{
             >
               Close
             </Button>
-            <SubmitButton
-              mt={4}
-              type="submit"
-              onClick={onSubmit}
-              isDisabled={!proofDescription}
-              isLoading={isSubmitting}
-            >
+            <SubmitButton mt={4} onClick={onSubmit} isLoading={isSubmitting}>
               Submit
             </SubmitButton>
           </ModalFooter>

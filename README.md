@@ -1,9 +1,23 @@
 # @quest-chains/dapp
 
-Try running some of the following tasks:
+### Create your .env file:
+
+```shell
+cp sample.env .env
+```
+
+### Install dependencies:
+
+```shell
+yarn install
+```
+
+### Run in development mode:
 
 ```shell
 yarn dev
-yarn start
-yarn build
 ```
+
+### Submit Pull request:
+
+Make sure to branch off of the `dev` branch and to make `dev` the target of pull requests instead of `main`.

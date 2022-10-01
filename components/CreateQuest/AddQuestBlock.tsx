@@ -25,11 +25,12 @@ import {
   FormikHelpers,
   FormikState,
 } from 'formik';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useInputText } from '@/hooks/useInputText';
 import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -60,13 +61,17 @@ export const AddQuestBlock: React.FC<{
     name: '',
   };
 
-  const [description, setDescription] = useState('');
+  const [descRef, setDescription] = useInputText();
   const onSubmit = useCallback(
     async (
       { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
       if (!chainId || !provider || questChain.chainId !== chainId) return;
+      if (!descRef.current) {
+        toast.error('Cannot have empty description');
+        return;
+      }
 
       // close the dialog
       onClose();
@@ -106,7 +111,7 @@ export const AddQuestBlock: React.FC<{
 
       const metadata: Metadata = {
         name,
-        description,
+        description: descRef.current,
       };
       let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
 
@@ -136,9 +141,9 @@ export const AddQuestBlock: React.FC<{
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
         toast.success('Successfully added a new Quest');
-        refresh();
         resetForm();
         setDescription('');
+        refresh();
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -146,7 +151,16 @@ export const AddQuestBlock: React.FC<{
 
       setSubmitting(false);
     },
-    [refresh, onOpen, questChain, description, chainId, onClose, provider],
+    [
+      refresh,
+      onOpen,
+      questChain,
+      descRef,
+      chainId,
+      onClose,
+      provider,
+      setDescription,
+    ],
   );
 
   if (!isEditor) return null;
@@ -181,7 +195,7 @@ export const AddQuestBlock: React.FC<{
                       Quest Description
                     </FormLabel>
                     <MarkdownEditor
-                      value={description}
+                      value={descRef.current}
                       placeholder="Quest Description"
                       onChange={setDescription}
                     />
@@ -192,7 +206,6 @@ export const AddQuestBlock: React.FC<{
                     mt={4}
                     isLoading={isSubmitting}
                     isDisabled={chainId !== questChain.chainId}
-                    type="submit"
                   >
                     Add
                   </SubmitButton>

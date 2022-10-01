@@ -14,6 +14,10 @@ const Input = {
   },
 };
 
+const Button = {
+  baseStyle: { borderRadius: 'full' },
+};
+
 const Form = {
   baseStyle: { container: { padding: '2px' } },
 };
@@ -50,7 +54,27 @@ export const theme = extendTheme({
     ['main.900']: '#2DF8C790',
     ['main.950']: '#2DF8C795',
     pending: '#EFFF8F',
-    rejected: '#FD86FF',
+    ['pending.100']: '#EFFF8F10',
+    ['pending.200']: '#EFFF8F20',
+    ['pending.300']: '#EFFF8F30',
+    ['pending.400']: '#EFFF8F40',
+    ['pending.500']: '#EFFF8F50',
+    ['pending.600']: '#EFFF8F60',
+    ['pending.700']: '#EFFF8F70',
+    ['pending.800']: '#EFFF8F80',
+    ['pending.900']: '#EFFF8F90',
+    ['pending.950']: '#EFFF8F95',
+    rejected: '#F43F5E',
+    ['rejected.100']: '#F43F5E10',
+    ['rejected.200']: '#F43F5E20',
+    ['rejected.300']: '#F43F5E30',
+    ['rejected.400']: '#F43F5E40',
+    ['rejected.500']: '#F43F5E50',
+    ['rejected.600']: '#F43F5E60',
+    ['rejected.700']: '#F43F5E70',
+    ['rejected.800']: '#F43F5E80',
+    ['rejected.900']: '#F43F5E90',
+    ['rejected.950']: '#F43F5E95',
     neutral: '#BCBCBC',
   },
   shadows: {
@@ -62,6 +86,7 @@ export const theme = extendTheme({
   },
   components: {
     Input,
+    Button,
     Form,
   },
 });
@@ -94,7 +119,8 @@ export const globalStyles = css`
       background: #444444;
       border-radius: 0px;
     }
-    background: #0d1117;
+    overflow-y: scroll;
+    background: #111312;
     overflow-x: hidden;
   }
   html,
