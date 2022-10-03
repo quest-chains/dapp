@@ -63,7 +63,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                   name,
                   description,
                   chainId,
-                  quests: quests.length,
+                  quests: quests.filter(q => !q.paused).length,
                   imageUrl,
                   onClick: onClose,
                 }}

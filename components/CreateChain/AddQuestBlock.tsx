@@ -1,4 +1,5 @@
 import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -12,10 +13,10 @@ export const AddQuestBlock: React.FC<{
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
 
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     onAdd(nameRef.current, descRef.current);
     onClose();
-  };
+  }, [onAdd, onClose, nameRef, descRef]);
 
   return (
     <Flex w="full" alignItems="normal" display={{ base: 'box', md: 'flex' }}>

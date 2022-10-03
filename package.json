@@ -28,7 +28,6 @@
     "chakra-ui-markdown-renderer": "^4.1.0",
     "ethers": "^5.7.0",
     "fast-memoize": "^2.5.2",
-    "formik": "^2.2.9",
     "framer-motion": "^7.2.1",
     "graphql": "^16.6.0",
     "graphql-request": "^5.0.0",
