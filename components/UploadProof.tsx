@@ -23,7 +23,7 @@ import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { MarkdownEditor } from './MarkdownEditor';
@@ -140,7 +140,9 @@ export const UploadProof: React.FC<{
     <Box>
       <Tooltip
         shouldWrapChildren
-        label="Please connect or switch to the correct chain"
+        label={`Please connect or switch to ${
+          AVAILABLE_NETWORK_INFO[questChain.chainId].label
+        }`}
         isDisabled={chainId === questChain.chainId}
       >
         {!profile && (
@@ -181,7 +183,7 @@ export const UploadProof: React.FC<{
               <Flex w="100%" pb={4}>
                 <MarkdownEditor
                   value={proofDescRef.current}
-                  onChange={value => setProofDescription(value)}
+                  onChange={setProofDescription}
                 />
               </Flex>
             </FormControl>
@@ -203,7 +205,26 @@ export const UploadProof: React.FC<{
             >
               Close
             </Button>
-            <SubmitButton mt={4} onClick={onSubmit} isLoading={isSubmitting}>
+            <SubmitButton
+              mt={4}
+              onClick={() => {
+                if (!chainId || chainId !== questChain.chainId || !provider) {
+                  toast.error(
+                    `Wrong Chain, please switch to ${
+                      AVAILABLE_NETWORK_INFO[questChain.chainId].label
+                    }`,
+                  );
+                  return;
+                }
+                if (!proofDescRef.current) {
+                  toast.error('Proof description cannot be empty');
+                  return;
+                }
+
+                onSubmit();
+              }}
+              isLoading={isSubmitting}
+            >
               Submit
             </SubmitButton>
           </ModalFooter>

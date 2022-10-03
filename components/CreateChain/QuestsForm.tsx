@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { constants, utils } from 'ethers';
-import { useState } from 'react';
+import { MutableRefObject, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 import { getAddressUrl, useWallet } from '@/web3';
@@ -73,6 +73,7 @@ export const QuestsForm: React.FC<{
   const paymentToken = chainId
     ? globalInfo[chainId].paymentToken
     : { decimals: 18, address: constants.AddressZero, symbol: 'TOKEN' };
+
   const upgradeFee = chainId ? globalInfo[chainId].upgradeFee : '0';
 
   const upgradeFeeAmount = utils.formatUnits(upgradeFee, paymentToken.decimals);
@@ -118,13 +119,13 @@ export const QuestsForm: React.FC<{
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
-                    name={questNameRef.current}
-                    description={questDescRef.current}
+                    nameRef={questNameRef}
+                    descRef={questDescRef}
                     setQuestName={setQuestName}
                     setQuestDesc={setQuestDesc}
                     onSave={onEditQuest}
                     index={index}
-                  ></EditingQuest>
+                  />
                 ) : (
                   <QuestTile
                     key={name + description}
@@ -168,6 +169,7 @@ export const QuestsForm: React.FC<{
                 borderRadius="full"
                 py={2}
                 px={{ base: 10, md: 40 }}
+                isDisabled={isEditingQuest}
                 onClick={() => setIsAddingQuest(true)}
               >
                 <AddIcon fontSize="sm" mr={2} />
@@ -258,23 +260,25 @@ export const QuestsForm: React.FC<{
 };
 
 export const EditingQuest: React.FC<{
-  name: string;
-  description: string;
+  nameRef: MutableRefObject<string>;
+  descRef: MutableRefObject<string>;
   setQuestName: (name: string) => void;
   setQuestDesc: (description: string) => void;
   onSave: (name: string, description: string, index: number) => void;
   index: number;
-}> = ({ name, description, setQuestName, setQuestDesc, onSave, index }) => {
+}> = ({ nameRef, descRef, setQuestName, setQuestDesc, onSave, index }) => {
   return (
     <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Input
         bg="#0F172A"
-        defaultValue={name}
+        defaultValue={nameRef.current}
         maxLength={60}
         onChange={e => setQuestName(e.target.value)}
       />
-      <MarkdownEditor value={description ?? ''} onChange={setQuestDesc} />
-      <Button onClick={() => onSave(name, description, index)}>Save</Button>
+      <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
+      <Button onClick={() => onSave(nameRef.current, descRef.current, index)}>
+        Save
+      </Button>
     </Flex>
   );
 };
