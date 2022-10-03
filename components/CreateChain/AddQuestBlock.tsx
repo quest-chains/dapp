@@ -1,14 +1,6 @@
-import {
-  Flex,
-  FormControl,
-  FormLabel,
-  Image,
-  Input,
-  VStack,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
 import { toast } from 'react-hot-toast';
 
-import Edit from '@/assets/Edit.svg';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
@@ -55,12 +47,9 @@ export const AddQuestBlock: React.FC<{
           <Flex w="100%" justify="flex-end">
             <SubmitButton
               onClick={() => {
-                if (!nameRef.current && !descRef.current) {
+                if (!nameRef.current || !descRef.current) {
                   toast.error(
-                    <>
-                      <Image src={Edit.src} alt="Edit" mr={3} />
-                      To continue, enter the name and description for the quest
-                    </>,
+                    'To continue, enter the name and description for the quest',
                   );
                   return;
                 }

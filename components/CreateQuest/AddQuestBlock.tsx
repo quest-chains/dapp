@@ -35,7 +35,7 @@ import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { CreateFlow } from './CreateFlow';
@@ -67,7 +67,15 @@ export const AddQuestBlock: React.FC<{
       { name }: FormValues,
       { setSubmitting, resetForm }: FormikHelpers<FormValues>,
     ) => {
-      if (!chainId || !provider || questChain.chainId !== chainId) return;
+      if (!chainId || !provider || questChain.chainId !== chainId) {
+        toast.error(
+          `Wrong Chain, please switch to ${
+            AVAILABLE_NETWORK_INFO[questChain.chainId].label
+          }`,
+        );
+        return;
+      }
+
       if (!descRef.current) {
         toast.error('Cannot have empty description');
         return;

@@ -20,9 +20,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
-  Stat,
-  StatLabel,
-  StatNumber,
   Text,
   useDisclosure,
   useTimeout,
@@ -513,12 +510,31 @@ const QuestChainPage: React.FC<Props> = ({
                       borderRadius="full"
                       onClick={() => {
                         if (
-                          !chainNameRef.current ||
-                          !chainDescRef.current ||
-                          chainNameRef.current === questChain.name ||
+                          !chainId ||
+                          !questChain ||
+                          !provider ||
+                          chainId !== questChain.chainId
+                        ) {
+                          toast.error(
+                            `Wrong Chain, please switch to ${
+                              AVAILABLE_NETWORK_INFO[questChain.chainId].label
+                            }`,
+                          );
+                          return;
+                        }
+                        if (!chainNameRef.current) {
+                          toast.error('Name cannot be empty');
+                          return;
+                        }
+                        if (!chainDescRef.current) {
+                          toast.error('Description cannot be empty');
+                          return;
+                        }
+                        if (
+                          chainNameRef.current === questChain.name &&
                           chainDescRef.current === questChain.description
                         ) {
-                          toast.error('Empty name or description or no change');
+                          toast.error('No change in name or description');
                           return;
                         }
                         onUpdateQuestChainConfirmationOpen();
@@ -579,7 +595,8 @@ const QuestChainPage: React.FC<Props> = ({
                   isOwner={isOwner}
                   onEdit={() => {
                     setEditingQuestChain(true);
-                    setChainName(questChain.name || '');
+                    setChainName(questChain.name ?? '');
+                    setChainDescription(questChain.description ?? '');
                   }}
                   refresh={refresh}
                   chainId={chainId}
