@@ -56,7 +56,7 @@ export const QuestsForm: React.FC<{
     [],
   );
 
-  const onAddQuest = (name: string, description: string) => {
+  const onAddQuest = async (name: string, description: string) => {
     setQuests([...quests, { name, description }]);
     return true;
   };
