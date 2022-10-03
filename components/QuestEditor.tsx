@@ -8,7 +8,7 @@ import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -116,16 +116,26 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
           borderRadius="full"
           onClick={() => {
             if (!chainId || chainId !== questChain.chainId || !provider) {
-              toast.error('Wrong Chain, please switch!');
+              toast.error(
+                `Wrong Chain, please switch to ${
+                  AVAILABLE_NETWORK_INFO[questChain.chainId].label
+                }`,
+              );
+              return;
+            }
+            if (!questNameRef.current) {
+              toast.error('Name cannot be empty');
+              return;
+            }
+            if (!questDescRef.current) {
+              toast.error('Description cannot be empty');
               return;
             }
             if (
-              !questNameRef.current ||
-              !questDescRef.current ||
-              (quest.name === questNameRef.current &&
-                quest.description === questDescRef.current)
+              questNameRef.current === quest.name &&
+              questDescRef.current === quest.description
             ) {
-              toast.error('Empty or no change!');
+              toast.error('No change in name or description');
               return;
             }
             onUpdateQuestConfirmationOpen();
