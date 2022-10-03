@@ -25,7 +25,7 @@ import {
   useTimeout,
   VStack,
 } from '@chakra-ui/react';
-import { graphql } from '@quest-chains/sdk';
+import { contracts, graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -35,7 +35,7 @@ import { toast } from 'react-hot-toast';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { AddQuestBlock } from '@/components/CreateQuest/AddQuestBlock';
+import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -317,13 +317,15 @@ const QuestChainPage: React.FC<Props> = ({
 
   const onSubmitQuestChain = useCallback(
     async ({ name, description }: { name: string; description: string }) => {
-      if (
-        !chainId ||
-        !questChain ||
-        !provider ||
-        chainId !== questChain.chainId
-      )
+      if (!questChain?.chainId) return;
+      if (!chainId || !provider || questChain?.chainId !== chainId) {
+        toast.error(
+          `Wrong Chain, please switch to ${
+            AVAILABLE_NETWORK_INFO[questChain?.chainId].label
+          }`,
+        );
         return;
+      }
       setSubmittingQuestChain(true);
       const metadata: Metadata = {
         name,
@@ -363,6 +365,67 @@ const QuestChainPage: React.FC<Props> = ({
       setSubmittingQuestChain(false);
     },
     [refresh, chainId, questChain, provider],
+  );
+
+  const [isAdding, setAdding] = useState(false);
+
+  const onAddQuest = useCallback(
+    async (name: string, description: string) => {
+      if (!questChain?.chainId) return false;
+      if (!chainId || !provider || questChain?.chainId !== chainId) {
+        toast.error(
+          `Wrong Chain, please switch to ${
+            AVAILABLE_NETWORK_INFO[questChain?.chainId].label
+          }`,
+        );
+        return false;
+      }
+
+      setAdding(true);
+
+      const metadata: Metadata = {
+        name,
+        description,
+      };
+      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+
+      try {
+        const hash = await uploadMetadata(metadata);
+        const details = `ipfs://${hash}`;
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const contract = getQuestChainContract(
+          questChain.address,
+          questChain.version,
+          provider.getSigner(),
+        );
+
+        const tx = await (questChain.version === '1'
+          ? (contract as contracts.V1.QuestChain).createQuests([details])
+          : (contract as contracts.V0.QuestChain).createQuest(details));
+        toast.dismiss(tid);
+        tid = handleTxLoading(tx.hash, chainId);
+        const receipt = await tx.wait(1);
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(chainId, receipt.blockNumber);
+        toast.dismiss(tid);
+        toast.success('Successfully added a new Quest');
+        refresh();
+        return true;
+      } catch (error) {
+        toast.dismiss(tid);
+        handleError(error);
+        return false;
+      } finally {
+        setAdding(false);
+      }
+    },
+    [refresh, questChain, chainId, provider],
   );
 
   if (isFallback) {
@@ -759,7 +822,7 @@ const QuestChainPage: React.FC<Props> = ({
                       <Text fontSize={40} fontFamily="heading">
                         QUESTS
                       </Text>
-                      {mode === Mode.MEMBER && (isAdmin || isEditor) && (
+                      {mode === Mode.MEMBER && isEditor && (
                         <Button onClick={onOpenCreateQuest} fontSize="xs">
                           <AddIcon fontSize="sm" mr={2} />
                           Create Quest
@@ -767,26 +830,28 @@ const QuestChainPage: React.FC<Props> = ({
                       )}
                     </Flex>
 
-                    <Modal
-                      isOpen={isOpenCreateQuest}
-                      onClose={onCloseCreateQUest}
-                    >
-                      <ModalOverlay
-                        bg="blackAlpha.300"
-                        backdropFilter="blur(10px)"
-                      />
-                      <ModalContent maxW="40rem">
-                        <ModalHeader>Create Quest</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody>
-                          <AddQuestBlock
-                            questChain={questChain}
-                            refresh={refresh}
-                            onClose={onCloseCreateQUest}
-                          />
-                        </ModalBody>
-                      </ModalContent>
-                    </Modal>
+                    {mode === Mode.MEMBER && isEditor && (
+                      <Modal
+                        isOpen={isOpenCreateQuest}
+                        onClose={onCloseCreateQUest}
+                      >
+                        <ModalOverlay
+                          bg="blackAlpha.300"
+                          backdropFilter="blur(10px)"
+                        />
+                        <ModalContent maxW="40rem">
+                          <ModalHeader>Create Quest</ModalHeader>
+                          <ModalCloseButton />
+                          <ModalBody>
+                            <AddQuestBlock
+                              onAdd={onAddQuest}
+                              isAdding={isAdding}
+                              onClose={onCloseCreateQUest}
+                            />
+                          </ModalBody>
+                        </ModalContent>
+                      </Modal>
+                    )}
 
                     {/* would be really nice if this was refactored by 
                   separating the whole quest actions logic into its own component, so:
