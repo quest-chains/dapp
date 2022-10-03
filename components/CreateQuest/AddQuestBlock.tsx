@@ -1,43 +1,22 @@
-import {
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  // Modal,
-  // ModalBody,
-  // ModalCloseButton,
-  // ModalContent,
-  // ModalHeader,
-  // ModalOverlay,
-  // useDisclosure,
-  VStack,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-// import { Framework } from '@superfluid-finance/sdk-core';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
-// import { DAIx, DAOQUEST_ADDRESS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-// import { CreateFlow } from './CreateFlow';
-
-// TODO test superfuild for all supported networks and then enable in production
-// const ENABLE_SUPERFLUID = false;
-
 export const AddQuestBlock: React.FC<{
   questChain: graphql.QuestChainInfoFragment;
   refresh: () => void;
   onClose: () => void;
 }> = ({ questChain, refresh, onClose }) => {
-  // const { isOpen, onOpen, onClose: onClosePaymentPlan } = useDisclosure();
   const { address, provider, chainId } = useWallet();
   const isEditor: boolean = questChain.editors.some(
     ({ address: a }) => a === address?.toLowerCase(),
@@ -57,41 +36,6 @@ export const AddQuestBlock: React.FC<{
     }
 
     setSubmitting(true);
-
-    ///////////////////////////////////////////////////////////
-    // if (questChain.quests.length > 4 && ENABLE_SUPERFLUID) {
-    //   const signer = provider.getSigner();
-
-    //   const sf = await Framework.create({
-    //     chainId: Number(chainId),
-    //     provider: provider,
-    //   });
-
-    //   if (signer) {
-    //     const { flowRate } = await sf.cfaV1.getFlow({
-    //       superToken: DAIx,
-    //       sender: questChain.admins[0].address,
-    //       receiver: DAOQUEST_ADDRESS,
-    //       providerOrSigner: signer,
-    //     });
-
-    //     if (Number(flowRate) > 190001234567901) {
-    //       console.log('has premium subscription');
-    //     } else if (Number(flowRate) > 190001234567901 / 2) {
-    //       if (questChain.quests.length > 19) {
-    //         onOpen();
-    //       } else {
-    //         console.log('has basic subscription');
-    //       }
-    //     } else {
-    //       onOpen();
-    //       return;
-    //     }
-    //   }
-    // }
-    // if the user is trying to create more than 5 quests
-    // and if the user has not purchased the subscription
-    ///////////////////////////////////////////////////////////
 
     const metadata: Metadata = {
       name: nameRef.current,
@@ -137,7 +81,6 @@ export const AddQuestBlock: React.FC<{
     }
   }, [
     refresh,
-    // onOpen,
     questChain,
     nameRef,
     descRef,
@@ -198,17 +141,6 @@ export const AddQuestBlock: React.FC<{
           </Flex>
         </Flex>
       </form>
-
-      {/* <Modal isOpen={isOpen} onClose={onClosePaymentPlan}>
-        <ModalOverlay />
-        <ModalContent maxW="36rem">
-          <ModalHeader>Payment plan</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <CreateFlow ownerAddress={questChain.admins[0].address} />
-          </ModalBody>
-        </ModalContent>
-      </Modal> */}
     </Flex>
   );
 };
