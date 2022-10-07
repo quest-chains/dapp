@@ -29,9 +29,8 @@ import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
 import { formatDate } from '@/utils/dateHelpers';
 import { handleError } from '@/utils/helpers';
-import { uploadMetadata } from '@/utils/metadata';
+import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
-import { Metadata } from '@/utils/validate';
 
 export type { SubmissionType };
 
