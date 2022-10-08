@@ -2,7 +2,7 @@ import { Box, Flex, Image, Text } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
 import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
-import { randomBytes } from 'ethers/lib/utils';
+import { constants, utils } from 'ethers';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
@@ -120,7 +120,7 @@ const Create: React.FC = () => {
         tid = toast.loading('Approving spending of tokens, please wait...');
         const approval = await tokenContract.approve(
           factoryAddress,
-          upgradeFee,
+          constants.MaxUint256,
         );
         await approval.wait();
         setIsApproved(true);
@@ -178,12 +178,15 @@ const Create: React.FC = () => {
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
-          tx = await factoryContract.createAndUpgrade(info, randomBytes(32));
+          tx = await factoryContract.createAndUpgrade(
+            info,
+            utils.randomBytes(32),
+          );
         } else {
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
-          tx = await factoryContract.create(info, randomBytes(32));
+          tx = await factoryContract.create(info, utils.randomBytes(32));
         }
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
