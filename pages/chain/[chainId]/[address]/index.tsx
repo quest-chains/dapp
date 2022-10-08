@@ -51,6 +51,8 @@ import { useInputText } from '@/hooks/useInputText';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
+import { useUserProgress } from '@/hooks/useUserProgress';
+import { useUserStatus } from '@/hooks/useUserStatus';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -235,27 +237,7 @@ const QuestChainPage: React.FC<Props> = ({
 
   useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
 
-  const userStatus: UserStatusType = useMemo(() => {
-    const userStat: UserStatusType = {};
-    questStatuses.forEach(item => {
-      userStat[item.quest.questId] = {
-        status: item.status,
-        submissions: item.submissions.map(sub => ({
-          description: sub.description,
-          externalUrl: sub.externalUrl,
-          timestamp: sub.timestamp,
-        })),
-        reviews: item.reviews.map(sub => ({
-          description: sub.description,
-          externalUrl: sub.externalUrl,
-          timestamp: sub.timestamp,
-          accepted: sub.accepted,
-          reviewer: sub.reviewer.id,
-        })),
-      };
-    });
-    return userStat;
-  }, [questStatuses]);
+  const userStatus: UserStatusType = useUserStatus(questStatuses);
 
   const { questStatuses: allQuestStatuses } =
     useLatestQuestStatusesForChainData(
@@ -268,42 +250,10 @@ const QuestChainPage: React.FC<Props> = ({
     q => q.status === graphql.Status.Review,
   ).length;
 
-  const [progress, setProgress] = useState({
-    total: 0,
-    inReviewCount: 0,
-    completeCount: 0,
-  });
-  useEffect(() => {
-    if (questChain) {
-      if (questChain?.quests) {
-        const inReviewCount = questChain.quests.filter(
-          quest => userStatus[quest.questId]?.status === 'review',
-        ).length;
-        const completeCount = questChain.quests.filter(
-          quest => userStatus[quest.questId]?.status === 'pass',
-        ).length;
-
-        setProgress({
-          inReviewCount: inReviewCount || 0,
-          completeCount: completeCount || 0,
-          total: questChain.quests.length || 0,
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questChain, userStatus]);
-
-  const canMint = useMemo(
-    () =>
-      !!address &&
-      questChain?.token &&
-      !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
-      Object.values(userStatus).length === questChain.quests.length &&
-      Object.values(userStatus).reduce(
-        (t, v) => t && v.status === graphql.Status.Pass,
-        true,
-      ),
-    [questChain, address, userStatus],
+  const { progress, canMint } = useUserProgress(
+    address,
+    questChain,
+    userStatus,
   );
 
   const fetching = fetchingStatus || fetchingQuests;
@@ -679,7 +629,9 @@ const QuestChainPage: React.FC<Props> = ({
                 />
                 <ChainStat
                   label="Quests"
-                  value={questChain.quests.length.toString()}
+                  value={questChain.quests
+                    .filter(q => !q.paused)
+                    .length.toString()}
                 />
                 <ChainStat
                   label="Date Created"

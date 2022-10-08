@@ -19,8 +19,7 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmissionType } from '@/components/Review/SubmissionTile';
 import { useInputText } from '@/hooks/useInputText';
 import { handleError } from '@/utils/helpers';
-import { uploadMetadata } from '@/utils/metadata';
-import { Metadata } from '@/utils/validate';
+import { Metadata, uploadMetadata } from '@/utils/metadata';
 
 export const ReviewCommentModal: React.FC<{
   isModalOpen: boolean;

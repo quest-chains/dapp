@@ -1,63 +1,15 @@
-import axios, { AxiosError } from 'axios';
+import { metadata } from '@quest-chains/sdk';
 
 import { API_URL } from './constants';
-import { Metadata as MetadataType, validateSchema } from './validate';
 
-export type Metadata = MetadataType;
+export type Metadata = metadata.Metadata;
 
-type HttpResponse = { response: unknown; error: string };
+const MetadataUploader = metadata.MetadataUploader;
 
-export const uploadMetadata = async (
-  metadata: MetadataType,
-): Promise<string> => {
-  const valid = validateSchema(metadata);
-  if (!valid) throw new Error('Invalid Metadata Schema');
+export const uploader = new MetadataUploader(API_URL);
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  };
+export const uploadMetadata = async (metadata: Metadata): Promise<string> =>
+  uploader.uploadMetadata(metadata);
 
-  try {
-    const res = await axios.post(`${API_URL}/upload/json`, metadata, config);
-    return res.data.response;
-  } catch (error) {
-    throw new Error(
-      ((error as AxiosError).response?.data as HttpResponse).error,
-    );
-  }
-};
-
-export const uploadFiles = async (
-  files: File[] | FileList,
-): Promise<string> => {
-  const formData = new FormData();
-  for (let i = 0; i < files.length; ++i) {
-    formData.append(files[i].name, files[i]);
-  }
-
-  const config = {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Accept: 'application/json',
-    },
-    onUploadProgress: (event: { loaded: number; total: number }) => {
-      // eslint-disable-next-line no-console
-      console.log(
-        `Current progress:`,
-        Math.round((event.loaded * 100) / event.total),
-      );
-    },
-  };
-
-  try {
-    const res = await axios.post(`${API_URL}/upload/files`, formData, config);
-    return res.data.response;
-  } catch (error) {
-    throw new Error(
-      ((error as AxiosError).response?.data as HttpResponse).error,
-    );
-  }
-};
+export const uploadFiles = async (files: File[] | FileList): Promise<string> =>
+  uploader.uploadFiles(files as File[]);
