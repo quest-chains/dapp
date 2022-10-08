@@ -11,15 +11,11 @@ import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { AppLayout } from '@/components/Layout/AppLayout';
-import { initGraphHealthStore } from '@/stores/graphHealth';
 import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   const router = useRouter();
-  useEffect(() => {
-    initGraphHealthStore();
-  }, []);
 
   function ForceDarkMode(props: { children: JSX.Element }) {
     const { colorMode, toggleColorMode } = useColorMode();
