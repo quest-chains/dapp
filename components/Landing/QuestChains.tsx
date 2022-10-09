@@ -18,7 +18,7 @@ export const QuestChains: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH="80vh"
+      minH="100vh"
       bgImage="url(/Landing/Hero-Background1.svg)"
       bgPosition="center"
       bgSize="contain"

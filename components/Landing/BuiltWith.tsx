@@ -42,7 +42,7 @@ export const BuiltWith: React.FC = () => {
         display="flex"
         flexDirection="column"
         justifyContent="center"
-        lineHeight={{ base: 'lg', '2xl': '2xl' }}
+        lineHeight={{ base: 'lg', md: '2xl' }}
         pl={{ base: 0, md: 0 }}
         marginInlineStart="0 !important"
         zIndex={100}
