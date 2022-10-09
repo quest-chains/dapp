@@ -46,6 +46,7 @@ export const How: React.FC = () => {
         zIndex={100}
         fontWeight="normal"
         color="white"
+        fontSize={{ base: 'md', md: '2xl' }}
       >
         <Flex
           align="center"
@@ -58,7 +59,6 @@ export const How: React.FC = () => {
           <Heading
             color="main"
             fontSize={{ base: 36, md: 79 }}
-            pb={10}
             fontWeight="normal"
             display="flex"
             flexDir="column"
@@ -67,12 +67,11 @@ export const How: React.FC = () => {
             How <Text color="white">does it work?</Text>
           </Heading>
         </Flex>
-        <Flex align="center" mb={10}>
+        <Flex align="center">
           <Flex
             flexDir="column"
-            fontSize={{ base: 'md', md: '3xl' }}
-            ml={{ base: 0, md: 20 }}
-            px={{ base: 12, md: 0 }}
+            fontSize={{ base: 'md', md: '2xl' }}
+            p={{ base: 12, md: 32 }}
           >
             <Text>
               Learning & engaging becomes rewarding, as questers receive rewards
