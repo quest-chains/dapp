@@ -22,17 +22,17 @@ export const Who: React.FC = () => {
     >
       {!isSmallScreen && <Image src="/Landing/Circles2.svg" alt="circles" />}
       <Flex
-        gap={8}
+        gap={14}
         justifyContent="center"
         maxWidth={{ base: '90%', md: '5xl' }}
         flexDirection={{ base: 'column', md: 'row' }}
         alignItems={{ base: 'center', md: 'initial' }}
         lineHeight={{ base: 'lg', '2xl': '2xl' }}
-        pl={{ base: 0, md: 0 }}
         zIndex={100}
         fontWeight="normal"
         color="white"
         height={{ base: '100%', md: '340px' }}
+        fontSize={{ base: 'md', md: '2xl' }}
         my={{ base: 24, md: 0 }}
       >
         {isSmallScreen && (
@@ -45,7 +45,7 @@ export const Who: React.FC = () => {
         )}
         <Heading
           color="main"
-          fontSize={{ base: 36, md: 58 }}
+          fontSize={{ base: 36, md: 79 }}
           fontWeight="normal"
           display="flex"
           flexDir="column"
@@ -63,14 +63,19 @@ export const Who: React.FC = () => {
           bgSize={{ base: 'cover', md: 'contain' }}
           backgroundRepeat="no-repeat"
           maxW="267px"
-          p={6}
-          textAlign="center"
+          p={8}
+          fontSize={{ base: 'lg', md: '2xl' }}
         >
-          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={6}>
+          <Heading
+            color="white"
+            fontSize={{ base: 28, md: 40 }}
+            mb={10}
+            textAlign="center"
+          >
             Questers
           </Heading>
-          <Text mb={4}>♢ DAO newcomers</Text>
-          <Text mb={4}>♢ Curious, knowledge hungry people</Text>
+          <Text mb={4}>DAO newcomers</Text>
+          <Text mb={4}>Curious, knowledge hungry people</Text>
         </Box>
 
         <Box
@@ -80,14 +85,19 @@ export const Who: React.FC = () => {
           bgSize={{ base: 'cover', md: 'contain' }}
           backgroundRepeat="no-repeat"
           maxW="267px"
-          p={6}
-          textAlign="center"
+          p={8}
+          fontSize={{ base: 'lg', md: '2xl' }}
         >
-          <Heading color="white" fontSize={{ base: 28, md: 40 }} mb={6}>
+          <Heading
+            color="white"
+            fontSize={{ base: 28, md: 40 }}
+            mb={10}
+            textAlign="center"
+          >
             Creators
           </Heading>
-          <Text mb={4}>♢ DAOs</Text>
-          <Text mb={4}>♢ Organisations that want to create courses</Text>
+          <Text mb={4}>DAOs</Text>
+          <Text mb={4}>Organisations that want to create courses</Text>
         </Box>
       </Flex>
     </HStack>
