@@ -1047,7 +1047,7 @@ export const getStaticProps = async (
       questChain,
       questStatuses,
     },
-    revalidate: 1,
+    revalidate: 60,
   };
 };
 
