@@ -43,7 +43,7 @@ export const Creators: React.FC = () => {
           >
             Creators
           </Heading>
-          <Box flexDir="column" fontSize={{ base: 'md', md: '2xl' }} mb={10}>
+          <Box fontSize={{ base: 'md', md: '2xl' }} mb={10}>
             <Text>The permissions of creator roles are cascading.</Text>
             <Text>
               This means the owners have all permissions of admins, admins have
