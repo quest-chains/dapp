@@ -4,6 +4,7 @@ import {
   Stack,
   StackProps,
   Tag,
+  TagLabel,
   Text,
   TextProps,
 } from '@chakra-ui/react';
@@ -21,6 +22,7 @@ export const NetworkDisplay: React.FC<
   const networkInfo = AVAILABLE_NETWORK_INFO[chainId];
   if (!networkInfo) return null;
   const { image, label } = networkInfo;
+  const TextComponent = asTag ? TagLabel : Text;
   const inner = (
     <Stack
       direction="row"
@@ -30,9 +32,9 @@ export const NetworkDisplay: React.FC<
       color="white"
     >
       <Image src={image} alt={label} boxSize="1.5rem" {...imageProps} />
-      <Text as="span" {...textProps}>
+      <TextComponent as="span" {...textProps}>
         {label}
-      </Text>
+      </TextComponent>
     </Stack>
   );
 

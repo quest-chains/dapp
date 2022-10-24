@@ -1,3 +1,4 @@
+import { WarningIcon } from '@chakra-ui/icons';
 import {
   Button,
   Flex,
@@ -10,6 +11,9 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
   useDisclosure,
   VStack,
@@ -26,6 +30,7 @@ type QuestChainRoleInfo = {
   address: string;
   createdAt: string;
   chainId: string;
+  paused: boolean;
   name?: string | null | undefined;
   role: Role;
 };
@@ -149,7 +154,7 @@ export const UserRoles: React.FC<{
 };
 
 const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
-  roleInfo: { address, chainId, name, role },
+  roleInfo: { address, chainId, name, role, paused },
 }) => (
   <NextLink
     as={`/chain/${chainId}/${address}`}
@@ -166,16 +171,28 @@ const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
     >
       <Flex
         gap={3}
-        alignItems="center"
+        alignItems={{ base: 'stretch', md: 'center' }}
         w="full"
         p={4}
         justifyContent="space-between"
         borderRadius={8}
+        direction={{ base: 'column', md: 'row' }}
       >
         <Text fontSize={20} fontWeight="bold">
           {name}
         </Text>
-        <Flex gap={4} alignItems="center">
+        <Flex gap={4} alignItems="center" justifyContent="flex-end">
+          {!paused && (
+            <Tag
+              variant="subtle"
+              colorScheme="orange"
+              size="sm"
+              borderRadius="full"
+            >
+              <TagLeftIcon as={WarningIcon} boxSize=".75rem" />
+              <TagLabel color="white">Disabled</TagLabel>
+            </Tag>
+          )}
           <Text fontSize={16} fontWeight="bold">
             {role.toUpperCase()}
           </Text>
