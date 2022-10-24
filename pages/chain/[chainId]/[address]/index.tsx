@@ -53,6 +53,7 @@ import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatus
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -1004,7 +1005,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    graphql.SUPPORTED_NETWORKS.map(async chainId => {
+    SUPPORTED_NETWORKS.map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(
