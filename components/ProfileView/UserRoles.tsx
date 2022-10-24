@@ -24,6 +24,7 @@ import { useWallet } from '@/web3';
 
 type QuestChainRoleInfo = {
   address: string;
+  createdAt: string;
   chainId: string;
   name?: string | null | undefined;
   role: Role;
@@ -88,7 +89,9 @@ export const UserRoles: React.FC<{
       });
     });
 
-    return Object.values(questRoles);
+    return Object.values(questRoles).sort(
+      (a, b) => Number(a.createdAt) - Number(b.createdAt),
+    );
   }, [userRoles]);
 
   return (
@@ -123,7 +126,7 @@ export const UserRoles: React.FC<{
               </Text>
             </Flex>
           )}
-          {roles?.slice(0, 2).map(roleInfo => (
+          {roles?.slice(0, 4).map(roleInfo => (
             <RoleDisplay roleInfo={roleInfo} key={roleInfo.address} />
           ))}
         </>
