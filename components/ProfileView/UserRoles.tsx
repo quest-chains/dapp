@@ -182,7 +182,7 @@ const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
           {name}
         </Text>
         <Flex gap={4} alignItems="center" justifyContent="flex-end">
-          {!paused && (
+          {paused && (
             <Tag
               variant="subtle"
               colorScheme="orange"
