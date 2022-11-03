@@ -47,8 +47,8 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
             type="text/javascript"
             defer
             data-domain="questchains.xyz"
-            data-api="/plausible/api/event"
-            src="/plausible/js/script.js"
+            data-api="/jjmahtdkrp/api/event"
+            src="/jjmahtdkrp/js/script.js"
           />
           <Global styles={globalStyles} />
           <WalletProvider>
