@@ -6,6 +6,7 @@ import '@/assets/custom-markdown-editor.scss';
 import { ChakraProvider, useColorMode } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -42,6 +43,14 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
             <span></span>
             <span></span>
           </div>
+
+          <Head>
+            <script
+              defer
+              data-domain="questchains.xyz"
+              src="https://plausible.io/js/script.js"
+            ></script>
+          </Head>
           <Global styles={globalStyles} />
           <WalletProvider>
             <AppLayout>
