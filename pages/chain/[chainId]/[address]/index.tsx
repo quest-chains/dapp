@@ -32,6 +32,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { TwitterShareButton } from 'react-share';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
@@ -39,6 +40,7 @@ import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
@@ -53,7 +55,7 @@ import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatus
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -379,6 +381,12 @@ const QuestChainPage: React.FC<Props> = ({
     [refresh, questChain, chainId, provider],
   );
 
+  const router = useRouter();
+
+  const QCmessage =
+    'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
+  const QCURL = QUESTCHAINS_URL + router.asPath;
+
   if (isFallback) {
     return (
       <Page>
@@ -504,9 +512,29 @@ const QuestChainPage: React.FC<Props> = ({
                     >
                       {questChain.name}
                     </Text>
-                    <Box>
+                    <Flex gap={4} justifyContent="space-between">
                       <NetworkDisplay chainId={questChain.chainId} />
-                    </Box>
+                      <Flex gap={3}>
+                        <TwitterShareButton
+                          url={QCURL}
+                          title={QCmessage}
+                          via="questchainz"
+                        >
+                          <Button bgColor="#4A99E9" p={4} h={7}>
+                            <Image
+                              src="/twitter.svg"
+                              alt="twitter"
+                              height={4}
+                              mr={1}
+                            />
+                            Tweet
+                          </Button>
+                        </TwitterShareButton>
+                        <MastodonShareButton
+                          message={QCmessage + ' ' + QCURL}
+                        />
+                      </Flex>
+                    </Flex>
                   </Flex>
                 )}
 
