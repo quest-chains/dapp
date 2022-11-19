@@ -58,7 +58,7 @@ export const UserBadges: React.FC<{
           a?.tokens.map(b => ({
             ...b,
             chainId: a.chainId,
-            chainAddress: b.questChain.address,
+            chainAddress: b.questChain?.address ?? '',
             imageUrl: b.imageUrl ?? '',
           })) ?? [];
         t.push(...badges);

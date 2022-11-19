@@ -792,6 +792,7 @@ const QuestChainPage: React.FC<Props> = ({
                         onSuccess: refresh,
                         completed: questChain.quests.filter(q => !q.paused)
                           .length,
+                        QCURL,
                       }}
                     />
                   </Flex>
