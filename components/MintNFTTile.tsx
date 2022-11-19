@@ -1,7 +1,20 @@
-import { Button, Image, Text, VStack } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { TwitterShareButton } from 'react-share';
 
 import VictoryCupImage from '@/assets/victory-cup.svg';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -9,18 +22,23 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { MastodonShareButton } from './MastodonShareButton';
+
 type QuestChainTileProps = {
   questChain: graphql.QuestChainInfoFragment;
   completed: number;
   onSuccess?: () => void;
+  QCURL: string;
 };
 
 export const MintNFTTile: React.FC<QuestChainTileProps> = ({
   questChain,
   completed,
   onSuccess,
+  QCURL,
 }) => {
   const { provider, chainId, address } = useWallet();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [isMinting, setMinting] = useState(false);
   const onMint = useCallback(async () => {
@@ -50,14 +68,17 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
       await waitUntilBlock(questChain.chainId, receipt.blockNumber);
       toast.dismiss(tid);
       toast.success(`Successfully minted your NFT`);
-      onSuccess?.();
+      onOpen();
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
     } finally {
       setMinting(false);
     }
-  }, [onSuccess, questChain, address, chainId, provider]);
+  }, [questChain, address, chainId, onOpen, provider]);
+
+  const QCmessage =
+    'I just acquired a soulbound NFT for completing this quest chain.';
 
   return (
     <VStack
@@ -88,6 +109,46 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
       >
         MINT YOUR NFT
       </Button>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onSuccess?.();
+          onClose();
+        }}
+        scrollBehavior="inside"
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent maxW="34rem">
+          <ModalCloseButton />
+          <ModalBody textAlign="center" py={12}>
+            <Text fontSize={20} mb={2}>
+              👏 Congratulations, you have successfully minted your NFT!
+            </Text>
+            {/* <Image
+              src={ipfsUriToHttp(questChain.token.imageUrl)}
+              alt="Quest Chain NFT badge"
+            /> */}
+            <Text>Now is the perfect time to let everybody know!</Text>
+            <Text mb={6}>
+              Use the buttons below to share it on Twitter and Mastodon.
+            </Text>
+            <Flex gap={3} justifyContent="center">
+              <TwitterShareButton
+                url={QCURL}
+                title={QCmessage}
+                via="questchainz"
+              >
+                <Button bgColor="#4A99E9" p={4} h={7}>
+                  <Image src="/twitter.svg" alt="twitter" height={4} mr={1} />
+                  Tweet
+                </Button>
+              </TwitterShareButton>
+              <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };
