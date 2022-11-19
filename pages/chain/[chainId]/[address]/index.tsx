@@ -47,6 +47,7 @@ import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
+import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
@@ -404,6 +405,14 @@ const QuestChainPage: React.FC<Props> = ({
 
   return (
     <Page>
+      <HeadComponent
+        title={`Quest Chains: ${questChain.name}`}
+        description={
+          questChain.description ||
+          'Complete this quest chain to acquire its soulbound NFT!'
+        }
+        url={QCURL}
+      />
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
         position="fixed"
