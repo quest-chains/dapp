@@ -387,12 +387,27 @@ const Create: React.FC = () => {
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent maxW="34rem">
+        <ModalOverlay bg="rgba(3, 12, 10, 0.8)" backdropFilter="blur(8px)" />
+        <ModalContent
+          maxW="34rem"
+          bg="linear-gradient(180deg, #0E251F 0%, rgba(14, 37, 31, 0.4) 100%)"
+        >
           <ModalCloseButton />
           <ModalBody textAlign="center" py={12}>
-            <Text fontSize={20} mb={2}>
-              👏 Your quest chain will be ready in a few seconds
+            <Flex
+              justifyContent={'center'}
+              flexDir="column"
+              alignItems="center"
+            >
+              <Image
+                w="14rem"
+                src={ipfsUriToHttp(imageUrl)}
+                alt="Quest Chain NFT badge"
+              />
+              {chainId && <NetworkDisplay chainId={chainId} />}
+            </Flex>
+            <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">
+              Your quest chain will be ready in a few seconds...
             </Text>
             <Text>Now is the perfect time to let everybody know!</Text>
             <Text mb={6}>

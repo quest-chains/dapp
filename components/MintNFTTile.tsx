@@ -19,10 +19,12 @@ import { TwitterShareButton } from 'react-share';
 import VictoryCupImage from '@/assets/victory-cup.svg';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
+import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { MastodonShareButton } from './MastodonShareButton';
+import { NetworkDisplay } from './NetworkDisplay';
 
 type QuestChainTileProps = {
   questChain: graphql.QuestChainInfoFragment;
@@ -118,17 +120,29 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent maxW="34rem">
+        <ModalOverlay bg="rgba(3, 12, 10, 0.8)" backdropFilter="blur(8px)" />
+        <ModalContent
+          maxW="34rem"
+          bg="linear-gradient(180deg, #0E251F 0%, rgba(14, 37, 31, 0.4) 100%)"
+        >
           <ModalCloseButton />
           <ModalBody textAlign="center" py={12}>
-            <Text fontSize={20} mb={2}>
-              👏 Congratulations, you have successfully minted your NFT!
+            <Flex
+              justifyContent={'center'}
+              flexDir="column"
+              alignItems="center"
+            >
+              <Image
+                w="14rem"
+                src={ipfsUriToHttp(questChain.token.imageUrl)}
+                alt="Quest Chain NFT badge"
+              />
+              {chainId && <NetworkDisplay chainId={chainId} />}
+            </Flex>
+
+            <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">
+              Congrats on minting your NFT!
             </Text>
-            {/* <Image
-              src={ipfsUriToHttp(questChain.token.imageUrl)}
-              alt="Quest Chain NFT badge"
-            /> */}
             <Text>Now is the perfect time to let everybody know!</Text>
             <Text mb={6}>
               Use the buttons below to share it on Twitter and Mastodon.
