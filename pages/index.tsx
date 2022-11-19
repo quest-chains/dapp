@@ -1,5 +1,4 @@
 import { Flex, Heading } from '@chakra-ui/react';
-import Head from 'next/head';
 
 import { BuiltWith } from '@/components/Landing/BuiltWith';
 import { Creators } from '@/components/Landing/Creators';
@@ -8,14 +7,12 @@ import { QuestChains } from '@/components/Landing/QuestChains';
 import { Team } from '@/components/Landing/Team';
 import { What } from '@/components/Landing/What';
 import { Who } from '@/components/Landing/Who';
+import { HeadComponent } from '@/components/Seo';
 
 const Index: React.FC = () => {
   return (
     <Flex w="100%" h="100%" direction="column" align="center" pos="relative">
-      <Head>
-        <title>Quest Chains</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <HeadComponent />
       <QuestChains />
       <What />
       <Who />
