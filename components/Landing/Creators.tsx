@@ -76,7 +76,7 @@ export const Creators: React.FC = () => {
         fontSize={{ base: 'md', md: '2xl' }}
       >
         {!isSmallScreen && (
-          <Box h="338px" gridArea="creators" mb={40} mr={10}>
+          <Box h="338px" gridArea="creators" my={12}>
             <Heading color="white" fontSize={70} mb={6}>
               Creators
             </Heading>
@@ -109,6 +109,7 @@ export const Creators: React.FC = () => {
           p={6}
           h="338px"
           gridArea="reviewers"
+          mt={24}
         >
           <Heading
             color="white"
