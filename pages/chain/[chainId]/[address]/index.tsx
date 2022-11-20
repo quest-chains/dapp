@@ -308,7 +308,7 @@ const QuestChainPage: React.FC<Props> = ({
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success(`Successfully updated the Quest Chain: ${name}`);
+        toast.success(`Successfully updated the quest chain: ${name}`);
         refresh();
       } catch (error) {
         toast.dismiss(tid);
@@ -398,7 +398,7 @@ const QuestChainPage: React.FC<Props> = ({
   if (!questChain) {
     return (
       <Page>
-        <Text> Quest Chain not found! </Text>
+        <Text> Quest chain not found! </Text>
       </Page>
     );
   }
@@ -406,7 +406,7 @@ const QuestChainPage: React.FC<Props> = ({
   return (
     <Page>
       <HeadComponent
-        title={`Quest Chains: ${questChain.name}`}
+        title={questChain.name || 'Quest Chains'}
         description={
           questChain.description ||
           'Complete this quest chain to acquire its soulbound NFT!'
@@ -448,7 +448,7 @@ const QuestChainPage: React.FC<Props> = ({
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
-              <AlertTitle>Quest Chain is disabled.</AlertTitle>
+              <AlertTitle>quest chain is disabled.</AlertTitle>
             </Alert>
           )}
 
@@ -500,7 +500,7 @@ const QuestChainPage: React.FC<Props> = ({
             </Flex>
           )}
 
-          {/* Quest Chain */}
+          {/* quest chain */}
           <Flex
             gap={10}
             justifyContent="space-between"
@@ -508,7 +508,7 @@ const QuestChainPage: React.FC<Props> = ({
           >
             {/* Left */}
             <Flex flexDirection="column" w="full">
-              {/* Quest Chain Title */}
+              {/* quest chain Title */}
               <Flex justifyContent="space-between" w="full">
                 {!isEditingQuestChain && (
                   <Flex flexDirection="column" mb={8}>
@@ -611,7 +611,7 @@ const QuestChainPage: React.FC<Props> = ({
                           description: chainDescRef.current,
                         });
                       }}
-                      title="Update Quest Chain"
+                      title="Update quest chain"
                       content="Are you sure you want to update this quest chain?"
                       isOpen={isUpdateQuestChainConfirmationOpen}
                       onClose={onUpdateQuestChainConfirmationClose}
@@ -620,7 +620,7 @@ const QuestChainPage: React.FC<Props> = ({
                 )}
               </Flex>
 
-              {/* Quest Chain Description */}
+              {/* quest chain Description */}
               <Flex mb={8}>
                 {!isEditingQuestChain && questChain.description && (
                   <MarkdownViewer markdown={questChain.description} />
@@ -655,7 +655,7 @@ const QuestChainPage: React.FC<Props> = ({
                 />
               </Flex>
 
-              {/* Quest Chain Metadata */}
+              {/* quest chain Metadata */}
               <Flex mb={8} justifyContent="space-between" gap={1}>
                 <ChainStat
                   label="Total Players"
@@ -923,7 +923,7 @@ const QuestChainPage: React.FC<Props> = ({
                   questChain={questChain}
                 />
               </Flex>
-              {/* Quest Chain Members */}
+              {/* quest chain Members */}
               <Members
                 owners={owners}
                 admins={admins}
@@ -980,7 +980,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
     {questChain.token.imageUrl && (
       <Image
         src={ipfsUriToHttp(questChain.token.imageUrl)}
-        alt="Quest Chain NFT badge"
+        alt="quest chain NFT badge"
         maxW={373}
       />
     )}
@@ -1075,7 +1075,7 @@ export const getStaticProps = async (
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not fetch Quest Chain for address ${address}`,
+        `Could not fetch quest chain for address ${address}`,
         error,
       );
     }

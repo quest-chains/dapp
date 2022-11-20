@@ -120,7 +120,7 @@ export const MetadataForm: React.FC<{
                 bg="#0F172A"
                 id="name"
                 onChange={e => setName(e.target.value)}
-                placeholder="Quest Chain Name"
+                placeholder="Quest chain name"
               />
             </FormControl>
             <FormControl w="full" isRequired={true}>
@@ -128,7 +128,7 @@ export const MetadataForm: React.FC<{
               <MarkdownEditor
                 height="12rem"
                 value={descRef.current}
-                placeholder="Quest Chain Description"
+                placeholder="Quest chain description"
                 onChange={setDescription}
               />
             </FormControl>

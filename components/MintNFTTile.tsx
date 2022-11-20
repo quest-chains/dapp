@@ -134,7 +134,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
               <Image
                 w="14rem"
                 src={ipfsUriToHttp(questChain.token.imageUrl)}
-                alt="Quest Chain NFT badge"
+                alt="Quest chain NFT badge"
               />
             </Flex>
 

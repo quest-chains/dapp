@@ -68,7 +68,7 @@ const Review: React.FC<Props> = ({
   if (!questChain) {
     return (
       <Page>
-        <Text> Quest Chain not found! </Text>
+        <Text>Quest chain not found!</Text>
       </Page>
     );
   }
@@ -167,7 +167,7 @@ export const getStaticProps = async (
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not fetch Quest Chain/Statuses for address ${address}`,
+        `Could not fetch quest chains/statuses for address ${address}`,
         error,
       );
     }
