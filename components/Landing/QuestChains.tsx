@@ -10,6 +10,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { Link } from 'react-scroll';
 
 import { PrimaryButton } from '../PrimaryButton';
 
@@ -113,16 +114,15 @@ export const QuestChains: React.FC = () => {
               </ChakraLink>
             </NextLink>
           </Flex>
-          <Stack
-            py={24}
-            justifyContent="center"
-            alignItems="center"
-            cursor="pointer"
-          >
+          <Stack py={24} justifyContent="center" alignItems="center">
             <Heading as="h1" fontSize={20}>
               Learn more
             </Heading>
-            <ArrowDownIcon h={10} w={10} />
+
+            {/* @ts-expect-error */}
+            <Link to="what" spy={true} smooth={true} duration={500}>
+              <ArrowDownIcon h={10} w={10} cursor="pointer" />
+            </Link>
           </Stack>
         </Flex>
       </Container>
