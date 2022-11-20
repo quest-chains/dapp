@@ -15,7 +15,6 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
 import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
 import { constants, utils } from 'ethers';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -30,6 +29,7 @@ import { Page } from '@/components/Layout/Page';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
 import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
@@ -250,7 +250,7 @@ const Create: React.FC = () => {
   };
 
   const QCURL = `${QUESTCHAINS_URL}/chain/${chainId}/${chainAddress}`;
-  const QCmessage = 'I have just created a Quest Chain, check it out!';
+  const QCmessage = 'I have just created a quest chain, check it out!';
 
   // temporary fix to wait till globalInfo is loaded
   if (!globalInfo[SUPPORTED_NETWORKS[0]]) return null;
@@ -269,10 +269,11 @@ const Create: React.FC = () => {
         bgSize="cover"
         zIndex={-1}
       />
-      <Head>
-        <title>Create</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <HeadComponent
+        title="Create a quest chain"
+        description="You will be able create a 2D or a 3D soulbound NFT which Questers will be able to mint after completing the chain."
+        url={QUESTCHAINS_URL + '/create'}
+      />
       {step === 0 && (
         <Flex w="full" flexDir="column" gap={8}>
           <Step0 />
@@ -285,7 +286,7 @@ const Create: React.FC = () => {
       )}
       {step !== 0 && (
         <Box fontFamily="heading" color="white" fontSize={32}>
-          New Quest Chain
+          New quest chain
         </Box>
       )}
 
@@ -319,7 +320,7 @@ const Create: React.FC = () => {
             <Image
               maxW={373}
               src={ipfsUriToHttp(nftUrl)}
-              alt="Quest Chain NFT badge"
+              alt="quest chain NFT badge"
             />
           )}
         </Flex>
@@ -402,7 +403,7 @@ const Create: React.FC = () => {
               <Image
                 w="14rem"
                 src={ipfsUriToHttp(imageUrl)}
-                alt="Quest Chain NFT badge"
+                alt="quest chain NFT badge"
               />
             </Flex>
             <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">

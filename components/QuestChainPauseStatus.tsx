@@ -52,7 +52,7 @@ export const QuestChainPauseStatus: React.FC<{
       toast.success(
         `Successfully ${
           questChain.paused ? 'enabled' : 'disabled'
-        } the Quest Chain`,
+        } the quest chain`,
       );
       refresh();
     } catch (error) {
@@ -71,7 +71,7 @@ export const QuestChainPauseStatus: React.FC<{
       fontSize="xs"
       leftIcon={<PowerIcon />}
     >
-      {questChain.paused ? 'Enable Quest Chain' : 'Disable Quest Chain'}
+      {questChain.paused ? 'Enable quest chain' : 'Disable quest chain'}
     </Button>
   );
 };
