@@ -404,7 +404,6 @@ const Create: React.FC = () => {
                 src={ipfsUriToHttp(imageUrl)}
                 alt="Quest Chain NFT badge"
               />
-              {chainId && <NetworkDisplay chainId={chainId} />}
             </Flex>
             <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">
               Your quest chain will be ready in a few seconds...

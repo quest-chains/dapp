@@ -24,7 +24,6 @@ import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { MastodonShareButton } from './MastodonShareButton';
-import { NetworkDisplay } from './NetworkDisplay';
 
 type QuestChainTileProps = {
   questChain: graphql.QuestChainInfoFragment;
@@ -137,7 +136,6 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
                 src={ipfsUriToHttp(questChain.token.imageUrl)}
                 alt="Quest Chain NFT badge"
               />
-              {chainId && <NetworkDisplay chainId={chainId} />}
             </Flex>
 
             <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">
