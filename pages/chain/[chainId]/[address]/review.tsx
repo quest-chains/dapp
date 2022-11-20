@@ -12,6 +12,7 @@ import { QuestChainV0ReviewPage } from '@/components/Review/QuestChainV0ReviewPa
 import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPage';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
@@ -135,7 +136,7 @@ export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
   await Promise.all(
-    graphql.SUPPORTED_NETWORKS.map(async chainId => {
+    SUPPORTED_NETWORKS.map(async chainId => {
       const addresses = await getQuestChainAddresses(chainId, 1000);
 
       paths.push(
@@ -177,7 +178,7 @@ export const getStaticProps = async (
       questStatuses,
       questChain,
     },
-    revalidate: 1,
+    revalidate: 60,
   };
 };
 

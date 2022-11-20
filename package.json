@@ -18,7 +18,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@gnosis.pm/safe-apps-web3modal": "^17.0.0",
-    "@quest-chains/sdk": "^0.1.12",
+    "@quest-chains/sdk": "^0.1.13",
     "@react-three/drei": "9.26.1",
     "@react-three/fiber": "8.7.1",
     "@walletconnect/web3-provider": "^1.8.0",
