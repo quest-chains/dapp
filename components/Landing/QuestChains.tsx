@@ -1,3 +1,4 @@
+import { ArrowDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Container,
@@ -112,6 +113,17 @@ export const QuestChains: React.FC = () => {
               </ChakraLink>
             </NextLink>
           </Flex>
+          <Stack
+            py={24}
+            justifyContent="center"
+            alignItems="center"
+            cursor="pointer"
+          >
+            <Heading as="h1" fontSize={20}>
+              Learn more
+            </Heading>
+            <ArrowDownIcon h={10} w={10} />
+          </Stack>
         </Flex>
       </Container>
     </Stack>
