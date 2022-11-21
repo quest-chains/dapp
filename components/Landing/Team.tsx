@@ -6,7 +6,6 @@ import {
   HStack,
   Image,
   Link as ChakraLink,
-  Link,
   Text,
 } from '@chakra-ui/react';
 
@@ -16,7 +15,7 @@ export const Team: React.FC = () => {
       w="full"
       align="center"
       justify="center"
-      minH={{ base: 'full', md: '80vh' }}
+      minH={{ base: 'full', md: '110vh' }}
       bg="dark"
       bgPosition="center"
       bgAttachment="fixed"
@@ -45,35 +44,10 @@ export const Team: React.FC = () => {
             Team
           </Heading>
 
-          <Flex mb={8}>
-            <Link
-              href="https://discord.gg/sjnh6cuVcN"
-              isExternal
-              borderRadius="full"
-              mx={4}
-            >
-              <Image
-                src="/Landing/contact/discord.png"
-                alt="discord"
-                height={14}
-              />
-            </Link>
-            <Link
-              href="https://mobile.twitter.com/questchainz"
-              isExternal
-              borderRadius="full"
-            >
-              <Image
-                src="/Landing/contact/twitter.png"
-                alt="twitter"
-                height={14}
-              />
-            </Link>
-          </Flex>
           <Grid
             gap={8}
             // display={{ base: 'flex', md: 'grid' }}
-            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(5, 1fr)' }}
+            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
             height={{ base: 'initial', md: '20rem' }}
           >
             <ProfileCard
@@ -92,6 +66,13 @@ export const Team: React.FC = () => {
               twitter="https://twitter.com/dan13ram"
             />
             <ProfileCard
+              name="Dave"
+              role="Product Designer"
+              image="/Landing/profile/dave.jpg"
+              linkedin="https://www.linkedin.com/in/davortomic/"
+              portfolio="https://bit.ly/Portfolio-Davor_Tomic"
+            />
+            <ProfileCard
               name="Parv"
               role="Solidity Developer"
               image="/Landing/profile/parv.jpeg"
@@ -99,11 +80,10 @@ export const Team: React.FC = () => {
               twitter="https://twitter.com/parv3213"
             />
             <ProfileCard
-              name="Dave"
-              role="Product Designer"
-              image="/Landing/profile/dave.jpg"
-              linkedin="https://www.linkedin.com/in/davortomic/"
-              portfolio="https://bit.ly/Portfolio-Davor_Tomic"
+              name="Tony"
+              role="Writer"
+              image="/Landing/profile/tony.jpg"
+              twitter="https://twitter.com/anthonyihediwa1"
             />
             <ProfileCard
               name="Beti"
@@ -146,7 +126,7 @@ const ProfileCard = ({
     <Text fontWeight="bold" mt={3} fontSize="lg" fontFamily="heading" mb={2}>
       {name}
     </Text>
-    <Text marginBottom="auto" fontSize="sm">
+    <Text marginBottom="auto" fontSize="sm" mb={2}>
       {role}
     </Text>
 
