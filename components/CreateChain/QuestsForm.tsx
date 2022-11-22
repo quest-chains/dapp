@@ -252,6 +252,7 @@ export const QuestsForm: React.FC<{
         )}
         <SubmitButton
           isDisabled={(isPremium && !isApproved) || isSubmitting}
+          isLoading={isSubmitting}
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
           flex={1}
           fontSize={{ base: 12, md: 16 }}
