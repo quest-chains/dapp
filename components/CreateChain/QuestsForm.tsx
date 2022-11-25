@@ -35,6 +35,7 @@ export const QuestsForm: React.FC<{
   isApproved: boolean;
   goBackToNFTSelection: () => void;
   globalInfo: Record<string, graphql.GlobalInfoFragment>;
+  isSubmitting: boolean;
 }> = ({
   globalInfo,
   onPublishQuestChain,
@@ -42,6 +43,7 @@ export const QuestsForm: React.FC<{
   approveTokens,
   isApproved,
   goBackToNFTSelection,
+  isSubmitting,
 }) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
@@ -249,7 +251,8 @@ export const QuestsForm: React.FC<{
           </SubmitButton>
         )}
         <SubmitButton
-          isDisabled={isPremium && !isApproved}
+          isDisabled={(isPremium && !isApproved) || isSubmitting}
+          isLoading={isSubmitting}
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
           flex={1}
           fontSize={{ base: 12, md: 16 }}

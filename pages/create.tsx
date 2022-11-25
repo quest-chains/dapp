@@ -1,12 +1,24 @@
-import { Box, Flex, Image, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
 import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
 import { constants, utils } from 'ethers';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { TwitterShareButton } from 'react-share';
 
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
@@ -15,9 +27,11 @@ import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -52,6 +66,10 @@ const Create: React.FC = () => {
   const [editorAddresses, setEditorAddresses] = useState(['']);
   const [reviewerAddresses, setReviewerAddresses] = useState(['']);
   const [isApproved, setIsApproved] = useState(false);
+  const [chainAddress, setChainAddress] = useState('');
+  const [isSubmitting, setSubmitting] = useState(false);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmitChainMeta = (
     name: string,
@@ -139,6 +157,7 @@ const Create: React.FC = () => {
       quests: { name: string; description: string }[],
       startAsDisabled: boolean,
     ) => {
+      setSubmitting(true);
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
         return;
 
@@ -197,13 +216,11 @@ const Create: React.FC = () => {
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
+        onOpen();
 
-        const questChainAddress = await awaitQuestChainAddress(receipt);
+        const chainAddress = await awaitQuestChainAddress(receipt);
+        setChainAddress(chainAddress);
         toast.dismiss(tid);
-        toast.success('Successfully created a new Quest Chain! Redirecting...');
-        if (questChainAddress) {
-          router.push(`/chain/${chainId}/${questChainAddress}`);
-        }
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
@@ -221,7 +238,7 @@ const Create: React.FC = () => {
       reviewerAddresses,
       globalInfo,
       isPremium,
-      router,
+      onOpen,
     ],
   );
 
@@ -231,6 +248,9 @@ const Create: React.FC = () => {
     setIsPremium(false);
     setNFTUrl('');
   };
+
+  const QCURL = `${QUESTCHAINS_URL}/chain/${chainId}/${chainAddress}`;
+  const QCmessage = 'I have just created a quest chain, check it out!';
 
   // temporary fix to wait till globalInfo is loaded
   if (!globalInfo[SUPPORTED_NETWORKS[0]]) return null;
@@ -249,10 +269,11 @@ const Create: React.FC = () => {
         bgSize="cover"
         zIndex={-1}
       />
-      <Head>
-        <title>Create</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <HeadComponent
+        title="Create a quest chain"
+        description="You will be able create a 2D or a 3D soulbound NFT which Questers will be able to mint after completing the chain."
+        url={QUESTCHAINS_URL + '/create'}
+      />
       {step === 0 && (
         <Flex w="full" flexDir="column" gap={8}>
           <Step0 />
@@ -265,7 +286,7 @@ const Create: React.FC = () => {
       )}
       {step !== 0 && (
         <Box fontFamily="heading" color="white" fontSize={32}>
-          New Quest Chain
+          New quest chain
         </Box>
       )}
 
@@ -299,7 +320,7 @@ const Create: React.FC = () => {
             <Image
               maxW={373}
               src={ipfsUriToHttp(nftUrl)}
-              alt="Quest Chain NFT badge"
+              alt="quest chain NFT badge"
             />
           )}
         </Flex>
@@ -338,6 +359,7 @@ const Create: React.FC = () => {
       >
         <Flex flexGrow={1} flexDir="column" gap={8}>
           <QuestsForm
+            isSubmitting={isSubmitting}
             onPublishQuestChain={onPublishQuestChain}
             isPremium={isPremium}
             isApproved={isApproved}
@@ -357,6 +379,56 @@ const Create: React.FC = () => {
           )}
         </Flex>
       </Flex>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          router.push(`/chain/${chainId}/${chainAddress}`);
+        }}
+        scrollBehavior="inside"
+        isCentered
+      >
+        <ModalOverlay bg="rgba(3, 12, 10, 0.8)" backdropFilter="blur(8px)" />
+        <ModalContent
+          maxW="34rem"
+          bg="linear-gradient(180deg, #0E251F 0%, rgba(14, 37, 31, 0.4) 100%)"
+        >
+          <ModalCloseButton />
+          <ModalBody textAlign="center" py={12}>
+            <Flex
+              justifyContent={'center'}
+              flexDir="column"
+              alignItems="center"
+            >
+              <Image
+                w="14rem"
+                src={ipfsUriToHttp(imageUrl)}
+                alt="quest chain NFT badge"
+              />
+            </Flex>
+            <Text fontSize={20} mb={2} mt={4} fontWeight="semibold">
+              Your quest chain will be ready in a few seconds...
+            </Text>
+            <Text>Now is the perfect time to let everybody know!</Text>
+            <Text mb={6}>
+              Use the buttons below to share it on Twitter and Mastodon.
+            </Text>
+            <Flex gap={3} justifyContent="center">
+              <TwitterShareButton
+                url={QCURL}
+                title={QCmessage}
+                via="questchainz"
+              >
+                <Button bgColor="#4A99E9" p={4} h={7}>
+                  <Image src="/twitter.svg" alt="twitter" height={4} mr={1} />
+                  Tweet
+                </Button>
+              </TwitterShareButton>
+              <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Page>
   );
 };

@@ -46,7 +46,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         <Text fontSize={20} textTransform="uppercase" color="white">
           {error
             ? 'Error: Something went wrong!'
-            : `${results.length} Quest Chain${
+            : `${results.length} quest chain${
                 results.length === 1 ? '' : 's'
               } found`}
         </Text>

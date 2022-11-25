@@ -1,15 +1,16 @@
-import Head from 'next/head';
-
 import { Page } from '@/components/Layout/Page';
 import SearchQuestChains from '@/components/SearchQuestChains';
+import { HeadComponent } from '@/components/Seo';
+import { QUESTCHAINS_URL } from '@/utils/constants';
 
 const Explore: React.FC = () => {
   return (
     <Page alignItems="flex-start" gap={4}>
-      <Head>
-        <title>Quest Chains</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <HeadComponent
+        title="Explore quest chains"
+        description="Browse through the catalogue of quest chains"
+        url={QUESTCHAINS_URL + '/explore'}
+      />
       <SearchQuestChains />
     </Page>
   );

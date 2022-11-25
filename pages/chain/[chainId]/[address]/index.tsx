@@ -32,6 +32,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { TwitterShareButton } from 'react-share';
 
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
@@ -39,12 +40,14 @@ import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
+import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
@@ -53,7 +56,7 @@ import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatus
 import { useLatestQuestStatusesForUserAndChainData } from '@/hooks/useLatestQuestStatusesForUserAndChainData';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -305,7 +308,7 @@ const QuestChainPage: React.FC<Props> = ({
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
         toast.dismiss(tid);
-        toast.success(`Successfully updated the Quest Chain: ${name}`);
+        toast.success(`Successfully updated the quest chain: ${name}`);
         refresh();
       } catch (error) {
         toast.dismiss(tid);
@@ -379,6 +382,12 @@ const QuestChainPage: React.FC<Props> = ({
     [refresh, questChain, chainId, provider],
   );
 
+  const router = useRouter();
+
+  const QCmessage =
+    'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
+  const QCURL = QUESTCHAINS_URL + router.asPath;
+
   if (isFallback) {
     return (
       <Page>
@@ -389,13 +398,21 @@ const QuestChainPage: React.FC<Props> = ({
   if (!questChain) {
     return (
       <Page>
-        <Text> Quest Chain not found! </Text>
+        <Text> Quest chain not found! </Text>
       </Page>
     );
   }
 
   return (
     <Page>
+      <HeadComponent
+        title={questChain.name || 'Quest Chains'}
+        description={
+          questChain.description ||
+          'Complete this quest chain to acquire its soulbound NFT!'
+        }
+        url={QCURL}
+      />
       <Box
         bgImage={ipfsUriToHttp(questChain.imageUrl)}
         position="fixed"
@@ -431,7 +448,7 @@ const QuestChainPage: React.FC<Props> = ({
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
-              <AlertTitle>Quest Chain is disabled.</AlertTitle>
+              <AlertTitle>quest chain is disabled.</AlertTitle>
             </Alert>
           )}
 
@@ -483,7 +500,7 @@ const QuestChainPage: React.FC<Props> = ({
             </Flex>
           )}
 
-          {/* Quest Chain */}
+          {/* quest chain */}
           <Flex
             gap={10}
             justifyContent="space-between"
@@ -491,7 +508,7 @@ const QuestChainPage: React.FC<Props> = ({
           >
             {/* Left */}
             <Flex flexDirection="column" w="full">
-              {/* Quest Chain Title */}
+              {/* quest chain Title */}
               <Flex justifyContent="space-between" w="full">
                 {!isEditingQuestChain && (
                   <Flex flexDirection="column" mb={8}>
@@ -504,9 +521,29 @@ const QuestChainPage: React.FC<Props> = ({
                     >
                       {questChain.name}
                     </Text>
-                    <Box>
+                    <Flex gap={4} justifyContent="space-between">
                       <NetworkDisplay chainId={questChain.chainId} />
-                    </Box>
+                      <Flex gap={3}>
+                        <TwitterShareButton
+                          url={QCURL}
+                          title={QCmessage}
+                          via="questchainz"
+                        >
+                          <Button bgColor="#4A99E9" p={4} h={7}>
+                            <Image
+                              src="/twitter.svg"
+                              alt="twitter"
+                              height={4}
+                              mr={1}
+                            />
+                            Tweet
+                          </Button>
+                        </TwitterShareButton>
+                        <MastodonShareButton
+                          message={QCmessage + ' ' + QCURL}
+                        />
+                      </Flex>
+                    </Flex>
                   </Flex>
                 )}
 
@@ -574,7 +611,7 @@ const QuestChainPage: React.FC<Props> = ({
                           description: chainDescRef.current,
                         });
                       }}
-                      title="Update Quest Chain"
+                      title="Update quest chain"
                       content="Are you sure you want to update this quest chain?"
                       isOpen={isUpdateQuestChainConfirmationOpen}
                       onClose={onUpdateQuestChainConfirmationClose}
@@ -583,7 +620,7 @@ const QuestChainPage: React.FC<Props> = ({
                 )}
               </Flex>
 
-              {/* Quest Chain Description */}
+              {/* quest chain Description */}
               <Flex mb={8}>
                 {!isEditingQuestChain && questChain.description && (
                   <MarkdownViewer markdown={questChain.description} />
@@ -618,7 +655,7 @@ const QuestChainPage: React.FC<Props> = ({
                 />
               </Flex>
 
-              {/* Quest Chain Metadata */}
+              {/* quest chain Metadata */}
               <Flex mb={8} justifyContent="space-between" gap={1}>
                 <ChainStat
                   label="Total Players"
@@ -755,6 +792,7 @@ const QuestChainPage: React.FC<Props> = ({
                         onSuccess: refresh,
                         completed: questChain.quests.filter(q => !q.paused)
                           .length,
+                        QCURL,
                       }}
                     />
                   </Flex>
@@ -885,7 +923,7 @@ const QuestChainPage: React.FC<Props> = ({
                   questChain={questChain}
                 />
               </Flex>
-              {/* Quest Chain Members */}
+              {/* quest chain Members */}
               <Members
                 owners={owners}
                 admins={admins}
@@ -942,7 +980,7 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
     {questChain.token.imageUrl && (
       <Image
         src={ipfsUriToHttp(questChain.token.imageUrl)}
-        alt="Quest Chain NFT badge"
+        alt="quest chain NFT badge"
         maxW={373}
       />
     )}
@@ -1037,7 +1075,7 @@ export const getStaticProps = async (
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
-        `Could not fetch Quest Chain for address ${address}`,
+        `Could not fetch quest chain for address ${address}`,
         error,
       );
     }
