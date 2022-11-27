@@ -21,28 +21,31 @@ export type UserStatusType = {
 
 export const useUserStatus = (
   questStatuses: graphql.QuestStatusInfoFragment[],
+  address: string,
 ): UserStatusType => {
   const userStatus: UserStatusType = useMemo(() => {
     const userStat: UserStatusType = {};
-    questStatuses.forEach(item => {
-      userStat[item.quest.questId] = {
-        status: item.status,
-        submissions: item.submissions.map(sub => ({
-          description: sub.description,
-          externalUrl: sub.externalUrl,
-          timestamp: sub.timestamp,
-        })),
-        reviews: item.reviews.map(sub => ({
-          description: sub.description,
-          externalUrl: sub.externalUrl,
-          timestamp: sub.timestamp,
-          accepted: sub.accepted,
-          reviewer: sub.reviewer.id,
-        })),
-      };
-    });
+    questStatuses
+      .filter(item => item.user.id === address.toLowerCase())
+      .forEach(item => {
+        userStat[item.quest.questId] = {
+          status: item.status,
+          submissions: item.submissions.map(sub => ({
+            description: sub.description,
+            externalUrl: sub.externalUrl,
+            timestamp: sub.timestamp,
+          })),
+          reviews: item.reviews.map(sub => ({
+            description: sub.description,
+            externalUrl: sub.externalUrl,
+            timestamp: sub.timestamp,
+            accepted: sub.accepted,
+            reviewer: sub.reviewer.id,
+          })),
+        };
+      });
     return userStat;
-  }, [questStatuses]);
+  }, [questStatuses, address]);
 
   return userStatus;
 };

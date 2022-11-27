@@ -27,6 +27,7 @@ import Step0 from '@/components/CreateChain/Step0';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MastodonShareButton } from '@/components/MastodonShareButton';
+import { MembersDisplay } from '@/components/MembersDisplay';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -37,8 +38,6 @@ import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { TrackEvent } from '@/utils/plausibleHelpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
-
-import { Members } from './chain/[chainId]/[address]';
 
 const Create: React.FC = () => {
   const router = useRouter();
@@ -298,7 +297,7 @@ const Create: React.FC = () => {
         </Flex>
         <Flex w={373}>
           {address && (
-            <Members
+            <MembersDisplay
               owners={ownerAddresses}
               admins={adminAddresses}
               editors={editorAddresses}
