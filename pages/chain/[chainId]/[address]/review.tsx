@@ -2,7 +2,6 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Flex, Link as ChakraLink, Spinner, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
-import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
@@ -10,9 +9,10 @@ import { useCallback, useMemo } from 'react';
 import { Page } from '@/components/Layout/Page';
 import { QuestChainV0ReviewPage } from '@/components/Review/QuestChainV0ReviewPage';
 import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPage';
+import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
@@ -46,7 +46,7 @@ const Review: React.FC<Props> = ({
   }, [refreshStatuses, refreshQuests]);
   const fetching = fetchingStatuses || fetchingQuests;
 
-  const { isFallback } = useRouter();
+  const { isFallback, asPath } = useRouter();
   const { address, isConnecting } = useWallet();
 
   const isReviewer: boolean = useMemo(
@@ -75,14 +75,13 @@ const Review: React.FC<Props> = ({
 
   const ReviewHead = () => (
     <>
-      <Head>
-        <title>
-          {`Review - ${questChain.name} - ${
-            AVAILABLE_NETWORK_INFO[questChain.chainId].name
-          }`}
-        </title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      <HeadComponent
+        title={`Review - ${questChain.name} - ${
+          AVAILABLE_NETWORK_INFO[questChain.chainId].name
+        }`}
+        description={`Review submissions for this quest chain`}
+        url={QUESTCHAINS_URL + asPath}
+      />
       <Flex w="full">
         <NextLink
           as={`/chain/${questChain.chainId}/${questChain.address}`}
