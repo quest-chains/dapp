@@ -502,7 +502,7 @@ const QuestChainPage: React.FC<Props> = ({
 
           {/* quest chain */}
           <Flex
-            gap={10}
+            gap={20}
             justifyContent="space-between"
             direction={{ base: 'column', lg: 'row' }}
           >
@@ -511,7 +511,7 @@ const QuestChainPage: React.FC<Props> = ({
               {/* quest chain Title */}
               <Flex justifyContent="space-between" w="full">
                 {!isEditingQuestChain && (
-                  <Flex flexDirection="column" mb={8}>
+                  <Flex flexDirection="column" mb={8} w="full">
                     <Text
                       fontSize="5xl"
                       fontWeight="bold"
@@ -909,6 +909,7 @@ const QuestChainPage: React.FC<Props> = ({
                 flexDirection="column"
                 w="100%"
                 display={{ base: 'none', lg: 'flex' }}
+                mb={16}
               >
                 <ActionsAndImage
                   mode={mode}
