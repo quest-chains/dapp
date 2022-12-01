@@ -35,6 +35,7 @@ import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
+import { TrackEvent } from '@/utils/plausibleHelpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
@@ -219,9 +220,13 @@ const Create: React.FC = () => {
         onOpen();
 
         const chainAddress = await awaitQuestChainAddress(receipt);
+        // @ts-ignore
+        window.plausible(TrackEvent.ChainCreated);
         setChainAddress(chainAddress);
         toast.dismiss(tid);
       } catch (error) {
+        // @ts-ignore
+        window.plausible(TrackEvent.ChainCreateFailed);
         toast.dismiss(tid);
         handleError(error);
       }
