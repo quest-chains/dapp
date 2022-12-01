@@ -134,7 +134,7 @@ const Create: React.FC = () => {
         address,
         factoryAddress,
       );
-      if (tokenAllowance.toNumber() >= upgradeFee) setIsApproved(true);
+      if (tokenAllowance.toString() >= upgradeFee) setIsApproved(true);
       else {
         tid = toast.loading('Approving spending of tokens, please wait...');
         const approval = await tokenContract.approve(
@@ -274,6 +274,7 @@ const Create: React.FC = () => {
         description="You will be able create a 2D or a 3D soulbound NFT which Questers will be able to mint after completing the chain."
         url={QUESTCHAINS_URL + '/create'}
       />
+
       {step === 0 && (
         <Flex w="full" flexDir="column" gap={8}>
           <Step0 />
