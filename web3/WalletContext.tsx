@@ -1,3 +1,5 @@
+import { graphql } from '@quest-chains/sdk';
+import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
 import { providers } from 'ethers';
 import {
   createContext,
@@ -23,6 +25,7 @@ export type WalletContextType = {
   isConnecting: boolean;
   isConnected: boolean;
   isMetaMask: boolean | undefined;
+  globalInfo: Record<string, GlobalInfoFragment>;
 };
 
 export const WalletContext = createContext<WalletContextType>({
@@ -34,6 +37,7 @@ export const WalletContext = createContext<WalletContextType>({
   isConnecting: true,
   isConnected: false,
   isMetaMask: false,
+  globalInfo: {},
 });
 
 type WalletStateType = {
@@ -147,6 +151,14 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
     }
   }, [connectWallet]);
 
+  const [globalInfo, setGlobalInfo] = useState<
+    Record<string, GlobalInfoFragment>
+  >({});
+
+  useEffect(() => {
+    graphql.getGlobalInfo().then(setGlobalInfo);
+  }, []);
+
   return (
     <WalletContext.Provider
       value={{
@@ -158,6 +170,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         isConnecting,
         disconnect,
         isMetaMask,
+        globalInfo,
       }}
     >
       {children}

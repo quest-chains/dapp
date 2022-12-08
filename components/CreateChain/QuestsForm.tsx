@@ -8,17 +8,13 @@ import {
   HStack,
   Image,
   Input,
-  Link,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { graphql } from '@quest-chains/sdk';
-import { constants, utils } from 'ethers';
 import { MutableRefObject, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
-import { getAddressUrl, useWallet } from '@/web3';
 
 import { MarkdownEditor } from '../MarkdownEditor';
 import { QuestTile } from '../QuestTile';
@@ -30,21 +26,8 @@ export const QuestsForm: React.FC<{
     quests: { name: string; description: string }[],
     startAsDisabled: boolean,
   ) => void | Promise<void>;
-  isPremium: boolean;
-  approveTokens: () => void | Promise<void>;
-  isApproved: boolean;
-  goBackToNFTSelection: () => void;
-  globalInfo: Record<string, graphql.GlobalInfoFragment>;
   isSubmitting: boolean;
-}> = ({
-  globalInfo,
-  onPublishQuestChain,
-  isPremium,
-  approveTokens,
-  isApproved,
-  goBackToNFTSelection,
-  isSubmitting,
-}) => {
+}> = ({ onPublishQuestChain, isSubmitting }) => {
   const [isAddingQuest, setIsAddingQuest] = useState(false);
   const [isEditingQuest, setIsEditingQuest] = useState(false);
   const [editingQuestIndex, setEditingQuestIndex] = useState(0);
@@ -71,16 +54,6 @@ export const QuestsForm: React.FC<{
     setIsEditingQuest(false);
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
-
-  const { chainId } = useWallet();
-
-  const paymentToken = chainId
-    ? globalInfo[chainId].paymentToken
-    : { decimals: 18, address: constants.AddressZero, symbol: 'TOKEN' };
-
-  const upgradeFee = chainId ? globalInfo[chainId].upgradeFee : '0';
-
-  const upgradeFeeAmount = utils.formatUnits(upgradeFee, paymentToken.decimals);
 
   return (
     <>
@@ -204,54 +177,9 @@ export const QuestsForm: React.FC<{
         </Tooltip>
       </Flex>
 
-      {isPremium && (
-        <Flex
-          bgColor="blackAlpha.600"
-          py={{ base: 6, md: 10 }}
-          px={{ base: 7, md: 12 }}
-          gap={3}
-          borderRadius={10}
-        >
-          <Image src="/CreateChain/gem-premium.svg" alt="circles3" w={16} />
-          <Box>
-            <Text fontSize={18} fontWeight="bold" mb={3}>
-              This quest chain has a 3D/Custom completion NFT, which is a
-              PREMIUM feature and costs {upgradeFeeAmount}{' '}
-              <Link
-                isExternal
-                href={getAddressUrl(paymentToken.address, chainId)}
-                textDecoration="underline"
-                color="main"
-              >
-                {paymentToken.symbol}
-              </Link>
-              {' tokens.'}
-            </Text>
-            <Text
-              fontSize={14}
-              decoration="underline"
-              cursor="pointer"
-              onClick={goBackToNFTSelection}
-            >
-              Changed your mind? Downgrade to 2D and publish for free.
-            </Text>
-          </Box>
-        </Flex>
-      )}
-
       <Flex w="full" gap={4}>
-        {isPremium && !isApproved && (
-          <SubmitButton
-            isDisabled={!(isPremium && !isApproved)}
-            onClick={async () => approveTokens()}
-            flex={1}
-            fontSize={{ base: 12, md: 16 }}
-          >
-            APPROVE TOKENS
-          </SubmitButton>
-        )}
         <SubmitButton
-          isDisabled={(isPremium && !isApproved) || isSubmitting}
+          isDisabled={isSubmitting}
           isLoading={isSubmitting}
           onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
           flex={1}

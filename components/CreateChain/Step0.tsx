@@ -65,8 +65,6 @@ const Step = ({
     <Text marginBottom="auto" fontSize="sm" textAlign="center">
       {description}
     </Text>
-
-    <Flex alignItems="center" justifyContent="center" gap={2}></Flex>
   </Flex>
 );
 

@@ -11,12 +11,11 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { contracts, graphql } from '@quest-chains/sdk';
+import { contracts } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
-import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
-import { constants, utils } from 'ethers';
+import { utils } from 'ethers';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
@@ -31,7 +30,7 @@ import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
-import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
+import { QUESTCHAINS_URL } from '@/utils/constants';
 import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
@@ -44,15 +43,7 @@ import { Members } from './chain/[chainId]/[address]';
 const Create: React.FC = () => {
   const router = useRouter();
 
-  const [globalInfo, setGlobalInfo] = useState<
-    Record<string, GlobalInfoFragment>
-  >({});
-
-  useEffect(() => {
-    graphql.getGlobalInfo().then(setGlobalInfo);
-  }, []);
-
-  const { address, provider, chainId } = useWallet();
+  const { address, provider, chainId, globalInfo } = useWallet();
 
   const [chainName, setChainName] = useState('');
   const [chainDescription, setChainDescription] = useState('');
@@ -60,13 +51,11 @@ const Create: React.FC = () => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [isPremium, setIsPremium] = useState(true);
   const [step, setStep] = useState(0);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
   const [reviewerAddresses, setReviewerAddresses] = useState(['']);
-  const [isApproved, setIsApproved] = useState(false);
   const [chainAddress, setChainAddress] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -85,13 +74,8 @@ const Create: React.FC = () => {
     setStep(2);
   };
 
-  const onSubmitNFTMeta = (
-    metadataUri: string,
-    nftUrl: string | undefined,
-    isPremium: boolean,
-  ) => {
+  const onSubmitNFTMeta = (metadataUri: string, nftUrl: string | undefined) => {
     setNFTUri(metadataUri);
-    setIsPremium(isPremium);
     if (nftUrl) setNFTUrl(nftUrl);
     setStep(3);
   };
@@ -118,39 +102,6 @@ const Create: React.FC = () => {
         .map(member => member.address),
     );
     setStep(4);
-  };
-
-  const approveTokens = async () => {
-    if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
-      return;
-    let tid;
-    try {
-      const { factoryAddress, paymentToken, upgradeFee } = globalInfo[chainId];
-      const tokenContract: contracts.V1.IERC20Token =
-        contracts.V1.IERC20Token__factory.connect(
-          paymentToken.address,
-          provider.getSigner(),
-        );
-      const tokenAllowance = await tokenContract.allowance(
-        address,
-        factoryAddress,
-      );
-      if (tokenAllowance.toString() >= upgradeFee) setIsApproved(true);
-      else {
-        tid = toast.loading('Approving spending of tokens, please wait...');
-        const approval = await tokenContract.approve(
-          factoryAddress,
-          constants.MaxUint256,
-        );
-        await approval.wait();
-        setIsApproved(true);
-        toast.dismiss(tid);
-        toast.success('Approved');
-      }
-    } catch (error) {
-      toast.dismiss(tid);
-      handleError(error);
-    }
   };
 
   const onPublishQuestChain = useCallback(
@@ -193,22 +144,13 @@ const Create: React.FC = () => {
             provider.getSigner(),
           );
 
-        let tx;
-
-        if (isPremium) {
-          tid = toast.loading(
-            'Waiting for Confirmation - Confirm the transaction in your Wallet',
-          );
-          tx = await factoryContract.createAndUpgrade(
-            info,
-            utils.randomBytes(32),
-          );
-        } else {
-          tid = toast.loading(
-            'Waiting for Confirmation - Confirm the transaction in your Wallet',
-          );
-          tx = await factoryContract.create(info, utils.randomBytes(32));
-        }
+        tid = toast.loading(
+          'Waiting for Confirmation - Confirm the transaction in your Wallet',
+        );
+        const tx = await factoryContract.createAndUpgrade(
+          info,
+          utils.randomBytes(32),
+        );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
@@ -242,23 +184,12 @@ const Create: React.FC = () => {
       editorAddresses,
       reviewerAddresses,
       globalInfo,
-      isPremium,
       onOpen,
     ],
   );
 
-  const goBackToNFTSelection = () => {
-    setStep(2);
-    setNFTUri('');
-    setIsPremium(false);
-    setNFTUrl('');
-  };
-
   const QCURL = `${QUESTCHAINS_URL}/chain/${chainId}/${chainAddress}`;
   const QCmessage = 'I have just created a quest chain, check it out!';
-
-  // temporary fix to wait till globalInfo is loaded
-  if (!globalInfo[SUPPORTED_NETWORKS[0]]) return null;
 
   return (
     <Page>
@@ -338,11 +269,7 @@ const Create: React.FC = () => {
         flexDir="column"
         gap={8}
       >
-        <NFTForm
-          onSubmit={onSubmitNFTMeta}
-          chainName={chainName}
-          globalInfo={globalInfo}
-        />
+        <NFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
         <Step3 />
         <Step4 />
       </Flex>
@@ -367,11 +294,6 @@ const Create: React.FC = () => {
           <QuestsForm
             isSubmitting={isSubmitting}
             onPublishQuestChain={onPublishQuestChain}
-            isPremium={isPremium}
-            isApproved={isApproved}
-            approveTokens={approveTokens}
-            goBackToNFTSelection={goBackToNFTSelection}
-            globalInfo={globalInfo}
           />
         </Flex>
         <Flex w={373}>
