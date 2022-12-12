@@ -68,6 +68,7 @@ export const QuestChainPauseStatus: React.FC<{
       onClick={togglePause}
       isLoading={isLoading}
       variant="ghost"
+      bgColor="rgba(71, 85, 105, 0.15)"
       fontSize="xs"
       leftIcon={<PowerIcon />}
     >

@@ -219,8 +219,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const [mode, setMode] = useState<Mode>(isUser ? Mode.QUESTER : Mode.MEMBER);
 
-  // useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
-  useEffect(() => setMode(Mode.QUESTER), [isUser]);
+  useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
 
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
@@ -395,48 +394,83 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
           {/* Set Mode  */}
           {(isAdmin || isEditor || isReviewer) && (
             <Flex
-              h={14}
               mb={14}
-              bgColor="whiteAlpha.100"
+              bgColor={mode === Mode.QUESTER ? '#121F33' : '#1D1121'}
               borderRadius={8}
               alignItems="center"
-              justifyContent="center"
+              px={6}
+              py={4}
               zIndex={100}
               w="100%"
+              fontSize="sm"
+              minH="4.5rem"
             >
-              <Flex
-                w={32}
-                onClick={() => setMode(Mode.QUESTER)}
-                bgColor={mode === Mode.QUESTER ? 'main.200' : 'whiteAlpha.100'}
-                h={8}
-                alignItems="center"
-                justifyContent="center"
-                borderLeftRadius={6}
-                borderWidth={1}
-                borderRightWidth={0}
-                borderColor="main.700"
-                cursor="pointer"
-              >
-                <Text fontSize="small" fontWeight="bold">
-                  Quester Mode
-                </Text>
-              </Flex>
-              <Flex
-                w={32}
-                onClick={() => setMode(Mode.MEMBER)}
-                bgColor={mode === Mode.MEMBER ? 'main.200' : 'whiteAlpha.100'}
-                h={8}
-                alignItems="center"
-                justifyContent="center"
-                borderRightRadius={6}
-                borderWidth={1}
-                borderColor="main.700"
-                cursor="pointer"
-              >
-                <Text fontSize="small" fontWeight="bold">
-                  Member Mode
-                </Text>
-              </Flex>
+              {mode === Mode.QUESTER ? (
+                <Flex gap="0.5rem">
+                  <Text>You are viewing this quest chain as a quester.</Text>
+                  <Text
+                    color="main"
+                    textDecor="underline"
+                    cursor="pointer"
+                    _hover={{ textDecor: 'underline' }}
+                    onClick={() => setMode(Mode.MEMBER)}
+                  >
+                    Switch to member view
+                  </Text>
+                </Flex>
+              ) : (
+                <Flex
+                  gap="1rem"
+                  direction={{ base: 'column', lg: 'row' }}
+                  justify="space-between"
+                  w="100%"
+                  align="center"
+                >
+                  <Flex
+                    gap="0.5rem"
+                    direction={{ base: 'column', md: 'row' }}
+                    align="center"
+                  >
+                    <Text>You are viewing this quest chain as a member.</Text>
+                    <Text
+                      color="main"
+                      cursor="pointer"
+                      _hover={{ textDecor: 'underline' }}
+                      onClick={() => setMode(Mode.QUESTER)}
+                    >
+                      Switch to quester view
+                    </Text>
+                  </Flex>
+                  {/* Actions */}
+                  {chainId &&
+                    chainId === questChain.chainId &&
+                    (isAdmin || isOwner) && (
+                      <Flex gap="0.5rem">
+                        {isAdmin && (
+                          <Button
+                            variant="ghost"
+                            bgColor="rgba(71, 85, 105, 0.15)"
+                            onClick={() => {
+                              setEditingQuestChain(true);
+                              setChainName(questChain.name ?? '');
+                              setChainDescription(questChain.description ?? '');
+                            }}
+                            fontSize="xs"
+                          >
+                            <Image src={Edit.src} alt="Edit" mr={2} />
+                            Edit chain metadata
+                          </Button>
+                        )}
+                        {isOwner && (
+                          <QuestChainPauseStatus
+                            questChain={questChain}
+                            refresh={refresh}
+                          />
+                        )}
+                      </Flex>
+                    )}
+                </Flex>
+              )}
             </Flex>
           )}
 
@@ -945,24 +979,6 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
   questChain,
 }) => (
   <>
-    {/* Actions */}
-    {mode === Mode.MEMBER &&
-      chainId &&
-      chainId === questChain.chainId &&
-      (isAdmin || isOwner) && (
-        <Flex justifyContent="space-between" w="100%">
-          {isAdmin && (
-            <Button variant="ghost" onClick={onEdit} fontSize="xs">
-              <Image src={Edit.src} alt="Edit" mr={2} />
-              Edit Metadata
-            </Button>
-          )}
-          {isOwner && (
-            <QuestChainPauseStatus questChain={questChain} refresh={refresh} />
-          )}
-        </Flex>
-      )}
-
     {/* Image (Should be NFT) */}
     {questChain.token.imageUrl && (
       <Image
