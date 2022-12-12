@@ -170,6 +170,8 @@ const Create: React.FC = () => {
         window.plausible(TrackEvent.ChainCreateFailed);
         toast.dismiss(tid);
         handleError(error);
+      } finally {
+        setSubmitting(false);
       }
     },
     [
