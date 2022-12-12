@@ -15,13 +15,14 @@ import NFTFormCustom from '@/components/CreateChain/NFTFormCustom';
 const TABS = ['2D', '3D', 'Custom'];
 
 const NFTForm: React.FC<{
+  showStep?: boolean;
   onSubmit: (
     metadataUri: string,
     nftUrl: string | undefined,
-    isPremium: boolean,
   ) => void | Promise<void>;
   chainName: string;
-}> = ({ onSubmit, chainName }) => {
+  submitLabel?: string;
+}> = ({ onSubmit, chainName, showStep = true, submitLabel }) => {
   const [tab, setTab] = useState(TABS[0]);
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
@@ -37,17 +38,19 @@ const NFTForm: React.FC<{
     >
       <Flex w="100%" justifyContent="space-between" alignItems="center">
         <Flex alignItems="center">
-          <Box
-            py={1}
-            px={3}
-            borderWidth={1}
-            borderColor="gray.500"
-            color="gray.500"
-            borderRadius={4}
-            mr={4}
-          >
-            STEP 2
-          </Box>
+          {showStep && (
+            <Box
+              py={1}
+              px={3}
+              borderWidth={1}
+              borderColor="gray.500"
+              color="gray.500"
+              borderRadius={4}
+              mr={4}
+            >
+              STEP 2
+            </Box>
+          )}
           <Text fontWeight="bold" fontSize={16}>
             Chain completion NFT
           </Text>
@@ -75,13 +78,25 @@ const NFTForm: React.FC<{
         ))}
       </Flex>
       {tab === TABS[0] && (
-        <NFTForm2D chainName={chainName} onSubmit={onSubmit} />
+        <NFTForm2D
+          chainName={chainName}
+          onSubmit={onSubmit}
+          submitLabel={submitLabel}
+        />
       )}
       {tab === TABS[1] && (
-        <NFTForm3D chainName={chainName} onSubmit={onSubmit} />
+        <NFTForm3D
+          chainName={chainName}
+          onSubmit={onSubmit}
+          submitLabel={submitLabel}
+        />
       )}
       {tab === TABS[2] && (
-        <NFTFormCustom chainName={chainName} onSubmit={onSubmit} />
+        <NFTFormCustom
+          chainName={chainName}
+          onSubmit={onSubmit}
+          submitLabel={submitLabel}
+        />
       )}
     </VStack>
   );
