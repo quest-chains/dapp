@@ -255,11 +255,21 @@ const Create: React.FC = () => {
             <MarkdownViewer markdown={chainDescription} />
           </Flex>
           {nftUrl && (
-            <Image
-              maxW={373}
-              src={ipfsUriToHttp(nftUrl)}
-              alt="quest chain NFT badge"
-            />
+            <Flex
+              align="center"
+              justify="center"
+              h={373}
+              w={373}
+              maxW="100%"
+              maxH="100%"
+            >
+              <Image
+                maxW={373}
+                maxH={373}
+                src={ipfsUriToHttp(nftUrl)}
+                alt="quest chain NFT badge"
+              />
+            </Flex>
           )}
         </Flex>
       )}

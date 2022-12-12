@@ -755,11 +755,21 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 mb={12}
               >
                 {questChain.token.imageUrl && (
-                  <Image
-                    src={ipfsUriToHttp(questChain.token.imageUrl)}
-                    alt="quest chain NFT badge"
-                    maxW={373}
-                  />
+                  <Flex
+                    align="center"
+                    justify="center"
+                    h={373}
+                    w={373}
+                    maxW="100%"
+                    maxH="100%"
+                  >
+                    <Image
+                      src={ipfsUriToHttp(questChain.token.imageUrl)}
+                      alt="quest chain NFT badge"
+                      maxW={373}
+                      maxH={373}
+                    />
+                  </Flex>
                 )}
 
                 {isOwner &&
@@ -1101,11 +1111,21 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 mb={16}
               >
                 {questChain.token.imageUrl && (
-                  <Image
-                    src={ipfsUriToHttp(questChain.token.imageUrl)}
-                    alt="quest chain NFT badge"
-                    maxW={373}
-                  />
+                  <Flex
+                    align="center"
+                    justify="center"
+                    h={373}
+                    w={373}
+                    maxW="100%"
+                    maxH="100%"
+                  >
+                    <Image
+                      src={ipfsUriToHttp(questChain.token.imageUrl)}
+                      alt="quest chain NFT badge"
+                      maxW={373}
+                      maxH={373}
+                    />
+                  </Flex>
                 )}
                 {isOwner &&
                   mode === Mode.MEMBER &&
