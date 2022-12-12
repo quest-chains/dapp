@@ -219,7 +219,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const [mode, setMode] = useState<Mode>(isUser ? Mode.QUESTER : Mode.MEMBER);
 
-  useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
+  // useEffect(() => setMode(isUser ? Mode.QUESTER : Mode.MEMBER), [isUser]);
+  useEffect(() => setMode(Mode.QUESTER), [isUser]);
 
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
@@ -626,44 +627,90 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
               {/* Progress */}
               {mode === Mode.QUESTER && (
-                <Flex
-                  w="full"
-                  justifyContent="space-between"
-                  h={6}
-                  alignItems="center"
-                  mb={6}
-                >
+                <Flex w="full" h={6} alignItems="center" mb={6}>
                   <Flex
-                    w="90%"
-                    borderColor="whiteAlpha.200"
-                    border="1px solid"
-                    borderRadius={3}
+                    flex={1}
+                    border="1px solid white"
+                    borderRadius={5}
+                    h={3}
                   >
-                    <Box
-                      bg="main"
-                      w={`${
+                    <Flex
+                      w="100%"
+                      h="100%"
+                      border="1px solid transparent"
+                      borderRadius={3}
+                      position="relative"
+                    >
+                      <Box
+                        position="absolute"
+                        left={0}
+                        top={0}
+                        h="100%"
+                        bgColor="white"
+                        opacity={0.5}
+                        w={`${
+                          (progress.total
+                            ? (progress.completeCount +
+                                progress.inReviewCount) /
+                              progress.total
+                            : 0) * 100
+                        }%`}
+                        borderRadius={3}
+                      >
+                        {progress.inReviewCount > 0 && (
+                          <Text
+                            position="absolute"
+                            top="200%"
+                            right="0%"
+                            fontSize="xs"
+                          >
+                            {progress.inReviewCount} pending
+                          </Text>
+                        )}
+                      </Box>
+                      <Box
+                        position="absolute"
+                        left={0}
+                        top={0}
+                        h="100%"
+                        bgColor="white"
+                        w={`${
+                          (progress.total
+                            ? progress.completeCount / progress.total
+                            : 0) * 100
+                        }%`}
+                        borderRadius={3}
+                      >
+                        {progress.completeCount > 0 && (
+                          <Text
+                            position="absolute"
+                            top="200%"
+                            right="0%"
+                            fontSize="xs"
+                          >
+                            {progress.completeCount} accepted
+                          </Text>
+                        )}
+                      </Box>
+                    </Flex>
+                  </Flex>
+                  <Box position="relative" w="4rem">
+                    <Text textAlign="right">
+                      {`${Math.round(
                         (progress.total
                           ? progress.completeCount / progress.total
-                          : 0) * 100
-                      }%`}
-                    />
-                    <Box
-                      bgColor="pending"
-                      w={`${
-                        (progress.total
-                          ? progress.inReviewCount / progress.total
-                          : 0) * 100
-                      }%`}
-                    />
-                    <Box bgColor="grey" h={2} />
-                  </Flex>
-                  <Text>
-                    {`${Math.round(
-                      (progress.total
-                        ? progress.completeCount / progress.total
-                        : 0) * 100,
-                    )}%`}
-                  </Text>
+                          : 0) * 100,
+                      )}%`}
+                    </Text>
+                    <Text
+                      position="absolute"
+                      top="100%"
+                      right="0%"
+                      fontSize="xs"
+                    >
+                      completed
+                    </Text>
+                  </Box>
                 </Flex>
               )}
               <Flex mb={12}>
