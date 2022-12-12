@@ -31,6 +31,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
+import AwardIcon from '@/assets/award.svg';
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
@@ -59,6 +60,7 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import NFTForm from '../CreateChain/NFTForm';
 import { RolesEditor } from './RolesEditor';
 
 const { Status } = graphql;
@@ -147,6 +149,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   );
 
   const [isEditingMembers, setEditingMembers] = useState(false);
+
+  const [isEditingNFT, setEditingNFT] = useState(false);
 
   const checkMetadataChanged = useCallback(() => {
     if (
@@ -361,6 +365,56 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
   const QCURL = QUESTCHAINS_URL + router.asPath;
 
+  const [isSavingNFT, setSavingNFT] = useState(false);
+
+  const onSubmitNFT = useCallback(
+    async (metadataUri: string) => {
+      if (!chainId || !provider || questChain?.chainId !== chainId) {
+        toast.error(
+          `Wrong Chain, please switch to ${
+            AVAILABLE_NETWORK_INFO[questChain?.chainId].label
+          }`,
+        );
+        return;
+      }
+      setSavingNFT(true);
+
+      let tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
+
+      try {
+        const contract = getQuestChainContract(
+          questChain.address,
+          questChain.version,
+          provider.getSigner(),
+        );
+
+        const tx = await (contract as contracts.V1.QuestChain).setTokenURI(
+          metadataUri,
+        );
+        toast.dismiss(tid);
+        tid = handleTxLoading(tx.hash, chainId);
+        const receipt = await tx.wait(1);
+        toast.dismiss(tid);
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(chainId, receipt.blockNumber);
+        toast.dismiss(tid);
+        toast.success('Successfully edited the NFT');
+        refresh();
+      } catch (error) {
+        toast.dismiss(tid);
+        handleError(error);
+      } finally {
+        setSavingNFT(false);
+        setEditingNFT(false);
+      }
+    },
+    [refresh, questChain, chainId, provider],
+  );
+
   return (
     <Page>
       <HeadComponent
@@ -414,7 +468,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
           {(isAdmin || isEditor || isReviewer) && !isEditingQuestChain && (
             <Flex
               mb={14}
-              bgColor={mode === Mode.QUESTER ? '#121F33' : '#1D1121'}
+              bgColor={(() => {
+                if (mode === Mode.QUESTER) return '#121F33';
+                if (isEditingNFT || isEditingMembers || isEditingQuest)
+                  return '#182B29';
+                return '#1D1121';
+              })()}
               boxShadow="0px 0px 16px 4px rgba(0, 0, 0, 0.12)"
               borderRadius={8}
               alignItems="center"
@@ -451,22 +510,50 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     direction={{ base: 'column', md: 'row' }}
                     align="center"
                   >
-                    <Text>You are viewing this quest chain as a member.</Text>
-                    <Text
-                      color="main"
-                      cursor="pointer"
-                      _hover={{ textDecor: 'underline' }}
-                      onClick={() => setMode(Mode.QUESTER)}
-                    >
-                      Switch to quester view
-                    </Text>
+                    {(() => {
+                      if (isEditingNFT)
+                        return (
+                          <Text>
+                            You are editing the NFT of this quest chain.
+                          </Text>
+                        );
+                      if (isEditingMembers)
+                        return (
+                          <Text>
+                            You are editing the members of this quest chain.
+                          </Text>
+                        );
+                      if (isEditingQuest)
+                        return (
+                          <Text>
+                            You are editing the quests of this quest chain.
+                          </Text>
+                        );
+
+                      return (
+                        <>
+                          <Text>
+                            You are viewing this quest chain as a member.
+                          </Text>
+                          <Text
+                            color="main"
+                            cursor="pointer"
+                            _hover={{ textDecor: 'underline' }}
+                            onClick={() => setMode(Mode.QUESTER)}
+                          >
+                            Switch to quester view
+                          </Text>
+                        </>
+                      );
+                    })()}
                   </Flex>
                   {/* Actions */}
                   {chainId &&
                     chainId === questChain.chainId &&
                     (isAdmin || isOwner) &&
                     !isEditingQuest &&
-                    !isEditingMembers && (
+                    !isEditingMembers &&
+                    !isEditingNFT && (
                       <Flex gap="0.5rem">
                         {isAdmin && (
                           <Button
@@ -674,26 +761,50 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     maxW={373}
                   />
                 )}
-                {!isEditingQuestChain && !isEditingQuest && !isEditingMembers && (
-                  <Flex justify="space-between" align="center" w="100%">
-                    <TwitterShareButton
-                      url={QCURL}
-                      title={QCmessage}
-                      via="questchainz"
+
+                {isOwner &&
+                  mode === Mode.MEMBER &&
+                  !isEditingMembers &&
+                  !isEditingQuest &&
+                  !isEditingQuestChain && (
+                    <Button
+                      onClick={() => setEditingNFT(g => !g)}
+                      w="100%"
+                      my={6}
+                      isLoading={isSavingNFT}
                     >
-                      <Button bgColor="#4A99E9" p={4} h={7}>
-                        <Image
-                          src="/twitter.svg"
-                          alt="twitter"
-                          height={4}
-                          mr={1}
-                        />
-                        Tweet
-                      </Button>
-                    </TwitterShareButton>
-                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                  </Flex>
-                )}
+                      <Image
+                        src={AwardIcon.src}
+                        alt="award"
+                        height={4}
+                        mr={1}
+                      />
+                      Edit NFT
+                    </Button>
+                  )}
+                {!isEditingQuestChain &&
+                  !isEditingQuest &&
+                  !isEditingMembers &&
+                  !isEditingNFT && (
+                    <Flex justify="space-between" align="center" w="100%">
+                      <TwitterShareButton
+                        url={QCURL}
+                        title={QCmessage}
+                        via="questchainz"
+                      >
+                        <Button bgColor="#4A99E9" p={4} h={7}>
+                          <Image
+                            src="/twitter.svg"
+                            alt="twitter"
+                            height={4}
+                            mr={1}
+                          />
+                          Tweet
+                        </Button>
+                      </TwitterShareButton>
+                      <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                    </Flex>
+                  )}
               </Flex>
 
               {/* quest chain Metadata */}
@@ -820,7 +931,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   isReviewer &&
                   !isEditingQuestChain &&
                   !isEditingQuest &&
-                  !isEditingMembers && (
+                  !isEditingMembers &&
+                  !isEditingNFT && (
                     <Flex
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
@@ -886,7 +998,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                         isEditor &&
                         !isEditingQuestChain &&
                         !isEditingQuest &&
-                        !isEditingMembers && (
+                        !isEditingMembers &&
+                        !isEditingNFT && (
                           <Button onClick={onOpenCreateQuest} fontSize="xs">
                             <AddIcon fontSize="sm" mr={2} />
                             Create Quest
@@ -994,26 +1107,49 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     maxW={373}
                   />
                 )}
-                {!isEditingQuestChain && !isEditingQuest && !isEditingMembers && (
-                  <Flex justify="space-between" align="center">
-                    <TwitterShareButton
-                      url={QCURL}
-                      title={QCmessage}
-                      via="questchainz"
+                {isOwner &&
+                  mode === Mode.MEMBER &&
+                  !isEditingMembers &&
+                  !isEditingQuest &&
+                  !isEditingQuestChain && (
+                    <Button
+                      onClick={() => setEditingNFT(g => !g)}
+                      w="100%"
+                      my={6}
+                      isLoading={isSavingNFT}
                     >
-                      <Button bgColor="#4A99E9" p={4} h={7}>
-                        <Image
-                          src="/twitter.svg"
-                          alt="twitter"
-                          height={4}
-                          mr={1}
-                        />
-                        Tweet
-                      </Button>
-                    </TwitterShareButton>
-                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                  </Flex>
-                )}
+                      <Image
+                        src={AwardIcon.src}
+                        alt="award"
+                        height={4}
+                        mr={1}
+                      />
+                      Edit NFT
+                    </Button>
+                  )}
+                {!isEditingQuestChain &&
+                  !isEditingQuest &&
+                  !isEditingMembers &&
+                  !isEditingNFT && (
+                    <Flex justify="space-between" align="center">
+                      <TwitterShareButton
+                        url={QCURL}
+                        title={QCmessage}
+                        via="questchainz"
+                      >
+                        <Button bgColor="#4A99E9" p={4} h={7}>
+                          <Image
+                            src="/twitter.svg"
+                            alt="twitter"
+                            height={4}
+                            mr={1}
+                          />
+                          Tweet
+                        </Button>
+                      </TwitterShareButton>
+                      <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                    </Flex>
+                  )}
               </Flex>
               {/* quest chain Members */}
               {isEditingMembers && isOwner && address ? (
@@ -1031,7 +1167,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   editors={editors}
                   reviewers={reviewers}
                   onEdit={
-                    isOwner && mode === Mode.MEMBER
+                    isOwner &&
+                    mode === Mode.MEMBER &&
+                    !isEditingNFT &&
+                    !isEditingQuest &&
+                    !isEditingQuestChain
                       ? () => setEditingMembers(true)
                       : undefined
                   }
@@ -1039,6 +1179,22 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               )}
             </Flex>
           </Flex>
+          {mode === Mode.MEMBER && isOwner && (
+            <Modal isOpen={isEditingNFT} onClose={() => setEditingNFT(false)}>
+              <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
+              <ModalContent maxW="80rem" p={0} mx={4}>
+                <ModalCloseButton />
+                <ModalBody p={0}>
+                  <NFTForm
+                    chainName={questChain.name ?? ''}
+                    onSubmit={onSubmitNFT}
+                    showStep={false}
+                    submitLabel="Submit"
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )}
         </Flex>
       </Fade>
     </Page>

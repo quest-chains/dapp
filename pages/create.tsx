@@ -82,22 +82,22 @@ const Create: React.FC = () => {
   const onSubmitRoles = (members: Member[]) => {
     setOwnerAddresses(
       members
-        .filter(member => member.role === 'owner')
+        .filter(member => member.role === 'Owner')
         .map(member => member.address),
     );
     setAdminAddresses(
       members
-        .filter(member => member.role === 'admin')
+        .filter(member => member.role === 'Admin')
         .map(member => member.address),
     );
     setEditorAddresses(
       members
-        .filter(member => member.role === 'editor')
+        .filter(member => member.role === 'Editor')
         .map(member => member.address),
     );
     setReviewerAddresses(
       members
-        .filter(member => member.role === 'reviewer')
+        .filter(member => member.role === 'Reviewer')
         .map(member => member.address),
     );
     setStep(4);
