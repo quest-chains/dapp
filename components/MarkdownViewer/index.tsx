@@ -64,6 +64,7 @@ const markdownTheme: Components = {
     <p
       style={{
         fontSize: '16px',
+        marginTop: '8px',
       }}
       {...props}
     >
