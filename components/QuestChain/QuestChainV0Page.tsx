@@ -905,7 +905,12 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
       (isAdmin || isOwner) && (
         <Flex justifyContent="space-between" w="100%">
           {isAdmin && (
-            <Button variant="ghost" onClick={onEdit} fontSize="xs">
+            <Button
+              variant="ghost"
+              onClick={onEdit}
+              fontSize="xs"
+              bgColor="rgba(71, 85, 105, 0.15)"
+            >
               <Image src={Edit.src} alt="Edit" mr={2} />
               Edit Metadata
             </Button>
