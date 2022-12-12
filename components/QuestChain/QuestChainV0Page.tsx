@@ -25,10 +25,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import {
-  QuestChainInfoFragment,
-  QuestStatusInfoFragment,
-} from '@quest-chains/sdk/dist/graphql';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -96,8 +92,8 @@ const ChainStat: React.FC<{ label: string; value: string | JSX.Element }> = ({
 );
 
 export type QuestChainV0PageProps = {
-  questChain: QuestChainInfoFragment;
-  questStatuses: QuestStatusInfoFragment[];
+  questChain: graphql.QuestChainInfoFragment;
+  questStatuses: graphql.QuestStatusInfoFragment[];
   fetching: boolean;
   refresh: () => void;
 };

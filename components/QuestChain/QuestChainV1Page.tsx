@@ -24,10 +24,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import {
-  QuestChainInfoFragment,
-  QuestStatusInfoFragment,
-} from '@quest-chains/sdk/dist/graphql';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -63,6 +59,8 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { RolesEditor } from './RolesEditor';
+
 const { Status } = graphql;
 
 enum Mode {
@@ -95,8 +93,8 @@ const ChainStat: React.FC<{ label: string; value: string | JSX.Element }> = ({
 );
 
 export type QuestChainV1PageProps = {
-  questChain: QuestChainInfoFragment;
-  questStatuses: QuestStatusInfoFragment[];
+  questChain: graphql.QuestChainInfoFragment;
+  questStatuses: graphql.QuestStatusInfoFragment[];
   fetching: boolean;
   refresh: () => void;
 };
@@ -147,6 +145,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
+
+  const [isEditingMembers, setEditingMembers] = useState(false);
 
   const checkMetadataChanged = useCallback(() => {
     if (
@@ -464,7 +464,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   {/* Actions */}
                   {chainId &&
                     chainId === questChain.chainId &&
-                    (isAdmin || isOwner) && (
+                    (isAdmin || isOwner) &&
+                    !isEditingQuest &&
+                    !isEditingMembers && (
                       <Flex gap="0.5rem">
                         {isAdmin && (
                           <Button
@@ -672,24 +674,26 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     maxW={373}
                   />
                 )}
-                <Flex justify="space-between" align="center" w="100%">
-                  <TwitterShareButton
-                    url={QCURL}
-                    title={QCmessage}
-                    via="questchainz"
-                  >
-                    <Button bgColor="#4A99E9" p={4} h={7}>
-                      <Image
-                        src="/twitter.svg"
-                        alt="twitter"
-                        height={4}
-                        mr={1}
-                      />
-                      Tweet
-                    </Button>
-                  </TwitterShareButton>
-                  <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                </Flex>
+                {!isEditingQuestChain && !isEditingQuest && !isEditingMembers && (
+                  <Flex justify="space-between" align="center" w="100%">
+                    <TwitterShareButton
+                      url={QCURL}
+                      title={QCmessage}
+                      via="questchainz"
+                    >
+                      <Button bgColor="#4A99E9" p={4} h={7}>
+                        <Image
+                          src="/twitter.svg"
+                          alt="twitter"
+                          height={4}
+                          mr={1}
+                        />
+                        Tweet
+                      </Button>
+                    </TwitterShareButton>
+                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                  </Flex>
+                )}
               </Flex>
 
               {/* quest chain Metadata */}
@@ -813,7 +817,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               <Flex mb={12}>
                 {mode === Mode.MEMBER &&
                   numSubmissionsToReview != 0 &&
-                  isReviewer && (
+                  isReviewer &&
+                  !isEditingQuestChain &&
+                  !isEditingQuest &&
+                  !isEditingMembers && (
                     <Flex
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
@@ -877,7 +884,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       </Text>
                       {mode === Mode.MEMBER &&
                         isEditor &&
-                        !isEditingQuestChain && (
+                        !isEditingQuestChain &&
+                        !isEditingQuest &&
+                        !isEditingMembers && (
                           <Button onClick={onOpenCreateQuest} fontSize="xs">
                             <AddIcon fontSize="sm" mr={2} />
                             Create Quest
@@ -941,7 +950,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                                   userStatus={userStatus}
                                   isPaused={paused}
                                   refresh={refresh}
-                                  editDisabled={isEditingQuestChain}
+                                  editDisabled={
+                                    isEditingQuestChain || isEditingMembers
+                                  }
                                 />
                               )}
 
@@ -983,32 +994,49 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     maxW={373}
                   />
                 )}
-                <Flex justify="space-between" align="center">
-                  <TwitterShareButton
-                    url={QCURL}
-                    title={QCmessage}
-                    via="questchainz"
-                  >
-                    <Button bgColor="#4A99E9" p={4} h={7}>
-                      <Image
-                        src="/twitter.svg"
-                        alt="twitter"
-                        height={4}
-                        mr={1}
-                      />
-                      Tweet
-                    </Button>
-                  </TwitterShareButton>
-                  <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                </Flex>
+                {!isEditingQuestChain && !isEditingQuest && !isEditingMembers && (
+                  <Flex justify="space-between" align="center">
+                    <TwitterShareButton
+                      url={QCURL}
+                      title={QCmessage}
+                      via="questchainz"
+                    >
+                      <Button bgColor="#4A99E9" p={4} h={7}>
+                        <Image
+                          src="/twitter.svg"
+                          alt="twitter"
+                          height={4}
+                          mr={1}
+                        />
+                        Tweet
+                      </Button>
+                    </TwitterShareButton>
+                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                  </Flex>
+                )}
               </Flex>
               {/* quest chain Members */}
-              <MembersDisplay
-                owners={owners}
-                admins={admins}
-                editors={editors}
-                reviewers={reviewers}
-              />
+              {isEditingMembers && isOwner && address ? (
+                <RolesEditor
+                  questChain={questChain}
+                  members={members}
+                  ownerAddress={address}
+                  refresh={refresh}
+                  onExit={() => setEditingMembers(false)}
+                />
+              ) : (
+                <MembersDisplay
+                  owners={owners}
+                  admins={admins}
+                  editors={editors}
+                  reviewers={reviewers}
+                  onEdit={
+                    isOwner && mode === Mode.MEMBER
+                      ? () => setEditingMembers(true)
+                      : undefined
+                  }
+                />
+              )}
             </Flex>
           </Flex>
         </Flex>

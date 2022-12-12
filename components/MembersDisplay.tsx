@@ -1,5 +1,6 @@
-import { Box, Divider, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Image, Text } from '@chakra-ui/react';
 
+import Edit from '@/assets/Edit.svg';
 import { UserDisplay } from '@/components/UserDisplay';
 
 type RolesProps = {
@@ -12,6 +13,7 @@ type MembersProps = {
   admins: string[];
   editors: string[];
   reviewers: string[];
+  onEdit?: () => void;
 };
 
 const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
@@ -35,11 +37,20 @@ export const MembersDisplay: React.FC<MembersProps> = ({
   admins,
   editors,
   reviewers,
+  onEdit,
 }) => (
   <Flex flexDir="column" width="full">
-    <Text fontFamily="heading" fontSize="xl" mb={5}>
-      Members
-    </Text>
+    <Flex justify="space-between" align="center" mb={5}>
+      <Text fontFamily="heading" fontSize="xl">
+        Members
+      </Text>
+      {onEdit && (
+        <Button onClick={onEdit} fontSize="xs" px={4}>
+          <Image src={Edit.src} alt="Edit" mr={2} />
+          Edit members
+        </Button>
+      )}
+    </Flex>
     <Divider />
     <MemberSection role="OWNERS" addresses={owners} />
     {admins.length !== 0 && <MemberSection role="ADMINS" addresses={admins} />}

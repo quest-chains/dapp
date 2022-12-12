@@ -26,10 +26,10 @@ import { UserDisplay } from '@/components/UserDisplay';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 enum Role {
-  Owner = 'owner',
-  Admin = 'admin',
-  Editor = 'editor',
-  Reviewer = 'reviewer',
+  Owner = 'Owner',
+  Admin = 'Admin',
+  Editor = 'Editor',
+  Reviewer = 'Reviewer',
 }
 
 export interface Member {
@@ -283,7 +283,7 @@ const Roles: React.FC<{
             type="address"
             placeholder="Paste or write an ETH address..."
             value={newAddress}
-            onChange={e => setNewAddress(e.target.value)}
+            onChange={e => setNewAddress(e.target.value?.toLowerCase() ?? '')}
           />
           <InputRightElement w="4.5rem">
             <Tooltip
