@@ -39,6 +39,7 @@ export const QuestTile: React.FC<{
   refresh?: () => void;
   isCreatingChain?: boolean;
   isPaused?: boolean;
+  editDisabled?: boolean;
 }> = ({
   name,
   description,
@@ -52,6 +53,7 @@ export const QuestTile: React.FC<{
   refresh,
   isCreatingChain = false,
   isPaused = false,
+  editDisabled = false,
 }) => {
   const { chainId, provider } = useWallet();
   const [isToggling, setToggling] = useState(false);
@@ -133,14 +135,16 @@ export const QuestTile: React.FC<{
                     />
                   </Tooltip>
                 )}
-                <Tooltip label="Edit Quest">
-                  <IconButton
-                    icon={<EditIcon />}
-                    onClick={onEditQuest}
-                    aria-label=""
-                    bg="transparent"
-                  />
-                </Tooltip>
+                {!editDisabled && (
+                  <Tooltip label="Edit Quest">
+                    <IconButton
+                      icon={<EditIcon />}
+                      onClick={onEditQuest}
+                      aria-label=""
+                      bg="transparent"
+                    />
+                  </Tooltip>
+                )}
               </>
             )}
           </Flex>
@@ -156,7 +160,7 @@ export const QuestTile: React.FC<{
                   refresh={refresh}
                 />
               )}
-              {questChain && questId && isMember && (
+              {questChain && questId && isMember && !editDisabled && (
                 <Button
                   colorScheme={isPaused ? 'green' : 'orange'}
                   variant="outline"

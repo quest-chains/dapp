@@ -1,4 +1,4 @@
-import { AddIcon, CheckIcon, CloseIcon, InfoIcon } from '@chakra-ui/icons';
+import { AddIcon, InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Alert,
@@ -8,7 +8,6 @@ import {
   Button,
   Fade,
   Flex,
-  IconButton,
   Image,
   Input,
   Link as ChakraLink,
@@ -140,12 +139,32 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   } = useDisclosure();
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
+  const [hasMetadataChanged, setMetadataChanged] = useState(false);
+
   const [isEditingQuest, setEditingQuest] = useState(false);
 
   const [chainNameRef, setChainName] = useInputText(questChain?.name || '');
   const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
+
+  const checkMetadataChanged = useCallback(() => {
+    if (
+      hasMetadataChanged &&
+      chainNameRef.current === questChain.name &&
+      chainDescRef.current === questChain.description
+    ) {
+      setMetadataChanged(false);
+    } else if (
+      !hasMetadataChanged &&
+      !(
+        chainNameRef.current === questChain.name &&
+        chainDescRef.current === questChain.description
+      )
+    ) {
+      setMetadataChanged(true);
+    }
+  }, [hasMetadataChanged, questChain, chainNameRef, chainDescRef]);
 
   const [questEditId, setQuestEditId] = useState(0);
 
@@ -387,15 +406,16 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
-              <AlertTitle>quest chain is disabled.</AlertTitle>
+              <AlertTitle>Quest chain is disabled.</AlertTitle>
             </Alert>
           )}
 
           {/* Set Mode  */}
-          {(isAdmin || isEditor || isReviewer) && (
+          {(isAdmin || isEditor || isReviewer) && !isEditingQuestChain && (
             <Flex
               mb={14}
               bgColor={mode === Mode.QUESTER ? '#121F33' : '#1D1121'}
+              boxShadow="0px 0px 16px 4px rgba(0, 0, 0, 0.12)"
               borderRadius={8}
               alignItems="center"
               px={6}
@@ -473,6 +493,96 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               )}
             </Flex>
           )}
+          {isEditingQuestChain && (
+            <Flex
+              mb={14}
+              bgColor="#182B29"
+              boxShadow="0px 0px 16px 4px rgba(0, 0, 0, 0.12)"
+              borderRadius={8}
+              alignItems="center"
+              px={6}
+              py={4}
+              zIndex={100}
+              w="100%"
+              fontSize="sm"
+              minH="4.5rem"
+              justify="space-between"
+              direction={{ base: 'column', lg: 'row' }}
+              gap="1rem"
+            >
+              {hasMetadataChanged ? (
+                <Text>
+                  You have made changes to this quest chain. Would you like to
+                  save them?{' '}
+                </Text>
+              ) : (
+                <Text>You are editing this quest chain.</Text>
+              )}
+              <Flex gap="0.5rem" direction={{ base: 'column', md: 'row' }}>
+                {hasMetadataChanged && (
+                  <SubmitButton
+                    fontSize="sm"
+                    px={6}
+                    height={10}
+                    onClick={() => {
+                      if (
+                        !chainId ||
+                        !questChain ||
+                        !provider ||
+                        chainId !== questChain.chainId
+                      ) {
+                        toast.error(
+                          `Wrong Chain, please switch to ${
+                            AVAILABLE_NETWORK_INFO[questChain.chainId].label
+                          }`,
+                        );
+                        return;
+                      }
+                      if (!chainNameRef.current) {
+                        toast.error('Name cannot be empty');
+                        return;
+                      }
+                      if (!chainDescRef.current) {
+                        toast.error('Description cannot be empty');
+                        return;
+                      }
+                      if (
+                        chainNameRef.current === questChain.name &&
+                        chainDescRef.current === questChain.description
+                      ) {
+                        toast.error('No change in name or description');
+                        return;
+                      }
+                      onUpdateQuestChainConfirmationOpen();
+                    }}
+                    isLoading={isSubmittingQuestChain}
+                    w="12.5rem"
+                  >
+                    Save changes
+                  </SubmitButton>
+                )}
+                <SubmitButton
+                  fontSize="sm"
+                  bg="transparent"
+                  height={10}
+                  border="1px solid #9EFCE5"
+                  color="#9EFCE5"
+                  onClick={() => {
+                    setEditingQuestChain(false);
+                    setMetadataChanged(false);
+                  }}
+                  isDisabled={isSubmittingQuestChain}
+                  _hover={{
+                    bg: 'whiteAlpha.200',
+                  }}
+                  px={6}
+                  w="12.5rem"
+                >
+                  {hasMetadataChanged ? 'Exit without saving' : 'Exit'}
+                </SubmitButton>
+              </Flex>
+            </Flex>
+          )}
 
           {/* quest chain */}
           <Flex
@@ -495,28 +605,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     >
                       {questChain.name}
                     </Text>
-                    <Flex gap={4} justifyContent="space-between">
+                    <Flex gap={4} justify="space-between">
                       <NetworkDisplay chainId={questChain.chainId} />
-                      <Flex gap={3}>
-                        <TwitterShareButton
-                          url={QCURL}
-                          title={QCmessage}
-                          via="questchainz"
-                        >
-                          <Button bgColor="#4A99E9" p={4} h={7}>
-                            <Image
-                              src="/twitter.svg"
-                              alt="twitter"
-                              height={4}
-                              mr={1}
-                            />
-                            Tweet
-                          </Button>
-                        </TwitterShareButton>
-                        <MastodonShareButton
-                          message={QCmessage + ' ' + QCURL}
-                        />
-                      </Flex>
                     </Flex>
                   </Flex>
                 )}
@@ -529,52 +619,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       fontFamily="heading"
                       mb={3}
                       defaultValue={chainNameRef.current}
-                      onChange={e => setChainName(e.target.value)}
-                    />
-                    <IconButton
-                      borderRadius="full"
-                      onClick={() => {
-                        if (
-                          !chainId ||
-                          !questChain ||
-                          !provider ||
-                          chainId !== questChain.chainId
-                        ) {
-                          toast.error(
-                            `Wrong Chain, please switch to ${
-                              AVAILABLE_NETWORK_INFO[questChain.chainId].label
-                            }`,
-                          );
-                          return;
-                        }
-                        if (!chainNameRef.current) {
-                          toast.error('Name cannot be empty');
-                          return;
-                        }
-                        if (!chainDescRef.current) {
-                          toast.error('Description cannot be empty');
-                          return;
-                        }
-                        if (
-                          chainNameRef.current === questChain.name &&
-                          chainDescRef.current === questChain.description
-                        ) {
-                          toast.error('No change in name or description');
-                          return;
-                        }
-                        onUpdateQuestChainConfirmationOpen();
+                      onChange={e => {
+                        setChainName(e.target.value);
+                        checkMetadataChanged();
                       }}
-                      isDisabled={isSubmittingQuestChain}
-                      icon={<CheckIcon boxSize="1rem" />}
-                      aria-label={''}
-                      mx={2}
-                    />
-                    <IconButton
-                      borderRadius="full"
-                      onClick={() => setEditingQuestChain(false)}
-                      isDisabled={isSubmittingQuestChain}
-                      icon={<CloseIcon boxSize="1rem" />}
-                      aria-label={''}
                     />
 
                     <ConfirmationModal
@@ -602,7 +650,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 {isEditingQuestChain && (
                   <MarkdownEditor
                     value={chainDescRef.current}
-                    onChange={setChainDescription}
+                    onChange={value => {
+                      setChainDescription(value);
+                      checkMetadataChanged();
+                    }}
                   />
                 )}
               </Flex>
@@ -614,19 +665,31 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 w="100%"
                 mb={12}
               >
-                <ActionsAndImage
-                  mode={mode}
-                  isAdmin={isAdmin}
-                  isOwner={isOwner}
-                  onEdit={() => {
-                    setEditingQuestChain(true);
-                    setChainName(questChain.name ?? '');
-                    setChainDescription(questChain.description ?? '');
-                  }}
-                  refresh={refresh}
-                  chainId={chainId}
-                  questChain={questChain}
-                />
+                {questChain.token.imageUrl && (
+                  <Image
+                    src={ipfsUriToHttp(questChain.token.imageUrl)}
+                    alt="quest chain NFT badge"
+                    maxW={373}
+                  />
+                )}
+                <Flex justify="space-between" align="center" w="100%">
+                  <TwitterShareButton
+                    url={QCURL}
+                    title={QCmessage}
+                    via="questchainz"
+                  >
+                    <Button bgColor="#4A99E9" p={4} h={7}>
+                      <Image
+                        src="/twitter.svg"
+                        alt="twitter"
+                        height={4}
+                        mr={1}
+                      />
+                      Tweet
+                    </Button>
+                  </TwitterShareButton>
+                  <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                </Flex>
               </Flex>
 
               {/* quest chain Metadata */}
@@ -748,27 +811,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 </Flex>
               )}
               <Flex mb={12}>
-                {/* to be implemented eventually */}
-                {/* 
-                {mode === Mode.QUESTER &&
-                  progress.completeCount === 0 &&
-                  progress.inReviewCount === 0 &&
-                  progress.total !== 0 && (
-                    <Button
-                      borderWidth={1}
-                      borderColor="main"
-                      px={12}
-                      py={2}
-                      bgColor="main"
-                      borderRadius="full"
-                      color="black"
-                      _hover={{
-                        bgColor: 'main.950',
-                      }}
-                    >
-                      START PLAYING
-                    </Button>
-                  )} */}
                 {mode === Mode.MEMBER &&
                   numSubmissionsToReview != 0 &&
                   isReviewer && (
@@ -833,12 +875,14 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       <Text fontSize={40} fontFamily="heading">
                         QUESTS
                       </Text>
-                      {mode === Mode.MEMBER && isEditor && (
-                        <Button onClick={onOpenCreateQuest} fontSize="xs">
-                          <AddIcon fontSize="sm" mr={2} />
-                          Create Quest
-                        </Button>
-                      )}
+                      {mode === Mode.MEMBER &&
+                        isEditor &&
+                        !isEditingQuestChain && (
+                          <Button onClick={onOpenCreateQuest} fontSize="xs">
+                            <AddIcon fontSize="sm" mr={2} />
+                            Create Quest
+                          </Button>
+                        )}
                     </Flex>
 
                     {mode === Mode.MEMBER && isEditor && (
@@ -897,6 +941,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                                   userStatus={userStatus}
                                   isPaused={paused}
                                   refresh={refresh}
+                                  editDisabled={isEditingQuestChain}
                                 />
                               )}
 
@@ -931,18 +976,31 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 display={{ base: 'none', lg: 'flex' }}
                 mb={16}
               >
-                <ActionsAndImage
-                  mode={mode}
-                  isAdmin={isAdmin}
-                  isOwner={isOwner}
-                  onEdit={() => {
-                    setEditingQuestChain(true);
-                    setChainName(questChain.name || '');
-                  }}
-                  refresh={refresh}
-                  chainId={chainId}
-                  questChain={questChain}
-                />
+                {questChain.token.imageUrl && (
+                  <Image
+                    src={ipfsUriToHttp(questChain.token.imageUrl)}
+                    alt="quest chain NFT badge"
+                    maxW={373}
+                  />
+                )}
+                <Flex justify="space-between" align="center">
+                  <TwitterShareButton
+                    url={QCURL}
+                    title={QCmessage}
+                    via="questchainz"
+                  >
+                    <Button bgColor="#4A99E9" p={4} h={7}>
+                      <Image
+                        src="/twitter.svg"
+                        alt="twitter"
+                        height={4}
+                        mr={1}
+                      />
+                      Tweet
+                    </Button>
+                  </TwitterShareButton>
+                  <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                </Flex>
               </Flex>
               {/* quest chain Members */}
               <MembersDisplay
@@ -958,34 +1016,3 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     </Page>
   );
 };
-
-type ActionsAndImageProps = {
-  mode: string;
-  isAdmin: boolean;
-  isOwner: boolean;
-  onEdit: () => void;
-  refresh: () => void;
-  chainId: string | null | undefined;
-  questChain: graphql.QuestChainInfoFragment;
-};
-
-const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
-  mode,
-  isAdmin,
-  isOwner,
-  onEdit,
-  refresh,
-  chainId,
-  questChain,
-}) => (
-  <>
-    {/* Image (Should be NFT) */}
-    {questChain.token.imageUrl && (
-      <Image
-        src={ipfsUriToHttp(questChain.token.imageUrl)}
-        alt="quest chain NFT badge"
-        maxW={373}
-      />
-    )}
-  </>
-);

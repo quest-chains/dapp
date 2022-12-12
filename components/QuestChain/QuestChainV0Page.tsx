@@ -387,7 +387,7 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
           {questChain.paused && (
             <Alert status="warning" borderRadius="md" mb={6} height="14">
               <AlertIcon boxSize="1.75rem" />
-              <AlertTitle>quest chain is disabled.</AlertTitle>
+              <AlertTitle>Quest chain is disabled.</AlertTitle>
             </Alert>
           )}
 
