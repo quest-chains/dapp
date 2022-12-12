@@ -3,7 +3,7 @@ import Davatar from '@davatar/react';
 import NextLink from 'next/link';
 
 import { useENS } from '@/hooks/useENS';
-import { formatAddress } from '@/web3';
+import { formatAddress, useWallet } from '@/web3';
 import { getEthersProvider } from '@/web3/providers';
 
 export const UserDisplay: React.FC<{
@@ -11,7 +11,10 @@ export const UserDisplay: React.FC<{
   color?: string;
   size?: 'sm' | 'md' | 'lg';
 }> = ({ address, color = 'white', size = 'md' }) => {
+  const { address: userAddress } = useWallet();
   const { ens } = useENS(address);
+
+  const isUser = userAddress?.toLowerCase() === address?.toLowerCase();
 
   if (!address) return null;
   return (
@@ -26,7 +29,7 @@ export const UserDisplay: React.FC<{
               provider={getEthersProvider('0x1')}
             />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {formatAddress(address, ens)}
+              {isUser ? 'YOURSELF' : formatAddress(address, ens)}
             </Text>
           </HStack>
         </Button>
