@@ -7,19 +7,18 @@ import {
   Flex,
   HStack,
   Image,
-  Input,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { MutableRefObject, useState } from 'react';
+import { useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
-import { MarkdownEditor } from '../MarkdownEditor';
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock } from './AddQuestBlock';
+import { EditingQuest } from './EditingQuest';
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
@@ -189,46 +188,5 @@ export const QuestsForm: React.FC<{
         </SubmitButton>
       </Flex>
     </>
-  );
-};
-
-export const EditingQuest: React.FC<{
-  nameRef: MutableRefObject<string>;
-  descRef: MutableRefObject<string>;
-  setQuestName: (name: string) => void;
-  setQuestDesc: (description: string) => void;
-  onSave: (name: string, description: string, index: number) => void;
-  onCancel: () => void;
-  index: number;
-}> = ({
-  nameRef,
-  descRef,
-  setQuestName,
-  setQuestDesc,
-  onSave,
-  index,
-  onCancel,
-}) => {
-  return (
-    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
-      <Input
-        bg="#0F172A"
-        defaultValue={nameRef.current}
-        maxLength={60}
-        onChange={e => setQuestName(e.target.value)}
-      />
-      <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
-      <Flex align="center" justify="space-between" gap={4} w="full">
-        <Button
-          onClick={() => onSave(nameRef.current, descRef.current, index)}
-          flex={1}
-        >
-          Save
-        </Button>
-        <Button onClick={onCancel} flex={1}>
-          Cancel
-        </Button>
-      </Flex>
-    </Flex>
   );
 };
