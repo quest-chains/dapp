@@ -42,7 +42,6 @@ import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { MembersDisplay } from '@/components/MembersDisplay';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
 import { QuestEditor } from '@/components/QuestEditor';
 import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
@@ -50,6 +49,7 @@ import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
+import { useToggleQuestChainPauseStatus } from '@/hooks/useToggleQuestChainPauseStatus';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
 import { QUESTCHAINS_URL } from '@/utils/constants';
@@ -61,6 +61,7 @@ import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import NFTForm from '../CreateChain/NFTForm';
+import { PowerIcon } from '../icons/PowerIcon';
 import { RolesEditor } from './RolesEditor';
 
 const { Status } = graphql;
@@ -367,6 +368,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const [isSavingNFT, setSavingNFT] = useState(false);
 
+  const { togglePause, isTogglingPauseStatus } = useToggleQuestChainPauseStatus(
+    questChain,
+    refresh,
+  );
+
   const onSubmitNFT = useCallback(
     async (metadataUri: string) => {
       if (!chainId || !provider || questChain?.chainId !== chainId) {
@@ -530,6 +536,15 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           </Text>
                         );
 
+                      if (isTogglingPauseStatus)
+                        return (
+                          <Text>
+                            You are{' '}
+                            {questChain.paused ? 'enabling' : 'disabling'} this
+                            quest chain.
+                          </Text>
+                        );
+
                       return (
                         <>
                           <Text>
@@ -555,7 +570,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     !isEditingMembers &&
                     !isEditingNFT && (
                       <Flex gap="0.5rem">
-                        {isAdmin && (
+                        {isAdmin && !isTogglingPauseStatus && (
                           <Button
                             variant="ghost"
                             bgColor="rgba(71, 85, 105, 0.15)"
@@ -571,10 +586,18 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           </Button>
                         )}
                         {isOwner && (
-                          <QuestChainPauseStatus
-                            questChain={questChain}
-                            refresh={refresh}
-                          />
+                          <Button
+                            onClick={togglePause}
+                            isLoading={isTogglingPauseStatus}
+                            variant="ghost"
+                            bgColor="rgba(71, 85, 105, 0.15)"
+                            fontSize="xs"
+                            leftIcon={<PowerIcon />}
+                          >
+                            {questChain.paused
+                              ? 'Enable quest chain'
+                              : 'Disable quest chain'}
+                          </Button>
                         )}
                       </Flex>
                     )}
@@ -774,6 +797,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
                 {isOwner &&
                   mode === Mode.MEMBER &&
+                  !isTogglingPauseStatus &&
                   !isEditingMembers &&
                   !isEditingQuest &&
                   !isEditingQuestChain && (
@@ -795,6 +819,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 {!isEditingQuestChain &&
                   !isEditingQuest &&
                   !isEditingMembers &&
+                  !isTogglingPauseStatus &&
                   !isEditingNFT && (
                     <Flex
                       justify="space-between"
@@ -947,6 +972,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isEditingQuestChain &&
                   !isEditingQuest &&
                   !isEditingMembers &&
+                  !isTogglingPauseStatus &&
                   !isEditingNFT && (
                     <Flex
                       w="full"
@@ -1011,6 +1037,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       </Text>
                       {mode === Mode.MEMBER &&
                         isEditor &&
+                        !isTogglingPauseStatus &&
                         !isEditingQuestChain &&
                         !isEditingQuest &&
                         !isEditingMembers &&
@@ -1136,6 +1163,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   mode === Mode.MEMBER &&
                   !isEditingMembers &&
                   !isEditingQuest &&
+                  !isTogglingPauseStatus &&
                   !isEditingQuestChain && (
                     <Button
                       onClick={() => setEditingNFT(g => !g)}
@@ -1153,6 +1181,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     </Button>
                   )}
                 {!isEditingQuestChain &&
+                  !isTogglingPauseStatus &&
                   !isEditingQuest &&
                   !isEditingMembers &&
                   !isEditingNFT && (
@@ -1196,6 +1225,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     mode === Mode.MEMBER &&
                     !isEditingNFT &&
                     !isEditingQuest &&
+                    !isTogglingPauseStatus &&
                     !isEditingQuestChain
                       ? () => setEditingMembers(true)
                       : undefined
