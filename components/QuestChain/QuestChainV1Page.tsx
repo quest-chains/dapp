@@ -1,4 +1,4 @@
-import { AddIcon, InfoIcon } from '@chakra-ui/icons';
+import { InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Alert,
@@ -15,7 +15,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   Spinner,
   Text,
@@ -34,7 +33,6 @@ import { TwitterShareButton } from 'react-share';
 import AwardIcon from '@/assets/award.svg';
 import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -42,7 +40,6 @@ import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { MembersDisplay } from '@/components/MembersDisplay';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
-import { QuestEditor } from '@/components/QuestEditor';
 import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
 import { HeadComponent } from '@/components/Seo';
@@ -62,6 +59,7 @@ import { getQuestChainContract } from '@/web3/contract';
 
 import NFTForm from '../CreateChain/NFTForm';
 import { PowerIcon } from '../icons/PowerIcon';
+import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
 const { Status } = graphql;
@@ -133,16 +131,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     onClose: onUpdateQuestChainConfirmationClose,
   } = useDisclosure();
 
-  const {
-    isOpen: isOpenCreateQuest,
-    onOpen: onOpenCreateQuest,
-    onClose: onCloseCreateQUest,
-  } = useDisclosure();
-
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
   const [hasMetadataChanged, setMetadataChanged] = useState(false);
 
-  const [isEditingQuest, setEditingQuest] = useState(false);
+  const [isEditingQuests, setEditingQuests] = useState(false);
 
   const [chainNameRef, setChainName] = useInputText(questChain?.name || '');
   const [chainDescRef, setChainDescription] = useInputText(
@@ -170,8 +162,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       setMetadataChanged(true);
     }
   }, [hasMetadataChanged, questChain, chainNameRef, chainDescRef]);
-
-  const [questEditId, setQuestEditId] = useState(0);
 
   const isOwner: boolean = useMemo(
     () =>
@@ -291,73 +281,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       } catch (error) {
         toast.dismiss(tid);
         handleError(error);
+      } finally {
+        setEditingQuestChain(false);
+        setSubmittingQuestChain(false);
       }
-
-      setEditingQuestChain(false);
-      setSubmittingQuestChain(false);
     },
     [refresh, chainId, questChain, provider],
-  );
-
-  const [isAdding, setAdding] = useState(false);
-
-  const onAddQuest = useCallback(
-    async (name: string, description: string) => {
-      if (!questChain?.chainId) return false;
-      if (!chainId || !provider || questChain?.chainId !== chainId) {
-        toast.error(
-          `Wrong Chain, please switch to ${
-            AVAILABLE_NETWORK_INFO[questChain?.chainId].label
-          }`,
-        );
-        return false;
-      }
-
-      setAdding(true);
-
-      const metadata: Metadata = {
-        name,
-        description,
-      };
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-
-      try {
-        const hash = await uploadMetadata(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        );
-
-        const tx = await (contract as contracts.V1.QuestChain).createQuests([
-          details,
-        ]);
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success('Successfully added a new Quest');
-        refresh();
-        return true;
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-        return false;
-      } finally {
-        setAdding(false);
-      }
-    },
-    [refresh, questChain, chainId, provider],
   );
 
   const router = useRouter();
@@ -476,7 +405,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               mb={14}
               bgColor={(() => {
                 if (mode === Mode.QUESTER) return '#121F33';
-                if (isEditingNFT || isEditingMembers || isEditingQuest)
+                if (isEditingNFT || isEditingMembers || isEditingQuests)
                   return '#182B29';
                 return '#1D1121';
               })()}
@@ -529,7 +458,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                             You are editing the members of this quest chain.
                           </Text>
                         );
-                      if (isEditingQuest)
+                      if (isEditingQuests)
                         return (
                           <Text>
                             You are editing the quests of this quest chain.
@@ -565,12 +494,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   {/* Actions */}
                   {chainId &&
                     chainId === questChain.chainId &&
-                    (isAdmin || isOwner) &&
-                    !isEditingQuest &&
+                    isAdmin &&
+                    !isEditingQuests &&
                     !isEditingMembers &&
                     !isEditingNFT && (
                       <Flex gap="0.5rem">
-                        {isAdmin && !isTogglingPauseStatus && (
+                        {!isTogglingPauseStatus && (
                           <Button
                             variant="ghost"
                             bgColor="rgba(71, 85, 105, 0.15)"
@@ -585,20 +514,18 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                             Edit chain metadata
                           </Button>
                         )}
-                        {isOwner && (
-                          <Button
-                            onClick={togglePause}
-                            isLoading={isTogglingPauseStatus}
-                            variant="ghost"
-                            bgColor="rgba(71, 85, 105, 0.15)"
-                            fontSize="xs"
-                            leftIcon={<PowerIcon />}
-                          >
-                            {questChain.paused
-                              ? 'Enable quest chain'
-                              : 'Disable quest chain'}
-                          </Button>
-                        )}
+                        <Button
+                          onClick={togglePause}
+                          isLoading={isTogglingPauseStatus}
+                          variant="ghost"
+                          bgColor="rgba(71, 85, 105, 0.15)"
+                          fontSize="xs"
+                          leftIcon={<PowerIcon />}
+                        >
+                          {questChain.paused
+                            ? 'Enable quest chain'
+                            : 'Disable quest chain'}
+                        </Button>
                       </Flex>
                     )}
                 </Flex>
@@ -795,11 +722,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   </Flex>
                 )}
 
-                {isOwner &&
+                {isAdmin &&
                   mode === Mode.MEMBER &&
                   !isTogglingPauseStatus &&
                   !isEditingMembers &&
-                  !isEditingQuest &&
+                  !isEditingQuests &&
                   !isEditingQuestChain && (
                     <Button
                       onClick={() => setEditingNFT(g => !g)}
@@ -817,7 +744,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     </Button>
                   )}
                 {!isEditingQuestChain &&
-                  !isEditingQuest &&
+                  !isEditingQuests &&
                   !isEditingMembers &&
                   !isTogglingPauseStatus &&
                   !isEditingNFT && (
@@ -970,7 +897,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   numSubmissionsToReview != 0 &&
                   isReviewer &&
                   !isEditingQuestChain &&
-                  !isEditingQuest &&
+                  !isEditingQuests &&
                   !isEditingMembers &&
                   !isTogglingPauseStatus &&
                   !isEditingNFT && (
@@ -1039,96 +966,57 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                         isEditor &&
                         !isTogglingPauseStatus &&
                         !isEditingQuestChain &&
-                        !isEditingQuest &&
+                        !isEditingQuests &&
                         !isEditingMembers &&
                         !isEditingNFT && (
-                          <Button onClick={onOpenCreateQuest} fontSize="xs">
-                            <AddIcon fontSize="sm" mr={2} />
-                            Create Quest
+                          <Button
+                            onClick={() => setEditingQuests(e => !e)}
+                            fontSize="xs"
+                          >
+                            <Image src={Edit.src} alt="Edit" mr={2} />
+                            Edit Quests
                           </Button>
                         )}
                     </Flex>
 
-                    {mode === Mode.MEMBER && isEditor && (
-                      <Modal
-                        isOpen={isOpenCreateQuest}
-                        onClose={onCloseCreateQUest}
-                      >
-                        <ModalOverlay
-                          bg="blackAlpha.300"
-                          backdropFilter="blur(10px)"
-                        />
-                        <ModalContent maxW="40rem">
-                          <ModalHeader>Create Quest</ModalHeader>
-                          <ModalCloseButton />
-                          <ModalBody>
-                            <AddQuestBlock
-                              onAdd={onAddQuest}
-                              isAdding={isAdding}
-                              onClose={onCloseCreateQUest}
-                            />
-                          </ModalBody>
-                        </ModalContent>
-                      </Modal>
+                    {isEditingQuests ? (
+                      <QuestsEditor
+                        refresh={refresh}
+                        questChain={questChain}
+                        onExit={() => setEditingQuests(false)}
+                      />
+                    ) : (
+                      <Accordion allowMultiple w="full" defaultIndex={[]}>
+                        {questChain.quests
+                          .filter(
+                            q =>
+                              !!q.name && (mode === Mode.MEMBER || !q.paused),
+                          )
+                          .map(
+                            ({ name, description, questId, paused }, index) => (
+                              <QuestTile
+                                key={questId}
+                                name={`${index + 1}. ${name}`}
+                                description={description ?? ''}
+                                bgColor={getQuestBGColor(
+                                  userStatus[questId]?.status,
+                                  mode,
+                                )}
+                                onEditQuest={() => undefined}
+                                isMember={
+                                  mode === Mode.MEMBER && (isAdmin || isEditor)
+                                }
+                                questId={questId}
+                                questChain={questChain}
+                                userStatus={userStatus}
+                                isPaused={paused}
+                                refresh={refresh}
+                                editDisabled
+                              />
+                            ),
+                          )}
+                      </Accordion>
                     )}
-
-                    {/* would be really nice if this was refactored by 
-                  separating the whole quest actions logic into its own component, so:
-                  - edit quest
-                  - upload proof */}
-                    <Accordion allowMultiple w="full" defaultIndex={[]}>
-                      {questChain.quests
-                        .filter(
-                          q => !!q.name && (mode === Mode.MEMBER || !q.paused),
-                        )
-                        .map(
-                          ({ name, description, questId, paused }, index) => (
-                            <React.Fragment key={questId}>
-                              {!(isEditingQuest && questEditId === questId) && (
-                                <QuestTile
-                                  name={`${index + 1}. ${name}`}
-                                  description={description ?? ''}
-                                  bgColor={getQuestBGColor(
-                                    userStatus[questId]?.status,
-                                    mode,
-                                  )}
-                                  onEditQuest={() => {
-                                    setEditingQuest(true);
-                                    setQuestEditId(questId);
-                                  }}
-                                  isMember={
-                                    mode === Mode.MEMBER &&
-                                    (isAdmin || isEditor)
-                                  }
-                                  questId={questId}
-                                  questChain={questChain}
-                                  userStatus={userStatus}
-                                  isPaused={paused}
-                                  refresh={refresh}
-                                  editDisabled={
-                                    isEditingQuestChain || isEditingMembers
-                                  }
-                                />
-                              )}
-
-                              {/* Edit quest components */}
-                              {isEditingQuest && questEditId === questId && (
-                                <QuestEditor
-                                  refresh={refresh}
-                                  questChain={questChain}
-                                  quest={{
-                                    name,
-                                    description,
-                                    questId,
-                                    paused,
-                                  }}
-                                  setEditingQuest={setEditingQuest}
-                                />
-                              )}
-                            </React.Fragment>
-                          ),
-                        )}
-                    </Accordion>
                   </>
                 )}
               </VStack>
@@ -1159,10 +1047,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     />
                   </Flex>
                 )}
-                {isOwner &&
+                {isAdmin &&
                   mode === Mode.MEMBER &&
                   !isEditingMembers &&
-                  !isEditingQuest &&
+                  !isEditingQuests &&
                   !isTogglingPauseStatus &&
                   !isEditingQuestChain && (
                     <Button
@@ -1182,7 +1070,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   )}
                 {!isEditingQuestChain &&
                   !isTogglingPauseStatus &&
-                  !isEditingQuest &&
+                  !isEditingQuests &&
                   !isEditingMembers &&
                   !isEditingNFT && (
                     <Flex justify="space-between" align="center" mt={8}>
@@ -1206,7 +1094,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   )}
               </Flex>
               {/* quest chain Members */}
-              {isEditingMembers && isOwner && address ? (
+              {isEditingMembers && isAdmin && address ? (
                 <RolesEditor
                   questChain={questChain}
                   members={members}
@@ -1221,10 +1109,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   editors={editors}
                   reviewers={reviewers}
                   onEdit={
-                    isOwner &&
+                    isAdmin &&
                     mode === Mode.MEMBER &&
                     !isEditingNFT &&
-                    !isEditingQuest &&
+                    !isEditingQuests &&
                     !isTogglingPauseStatus &&
                     !isEditingQuestChain
                       ? () => setEditingMembers(true)
@@ -1234,7 +1122,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               )}
             </Flex>
           </Flex>
-          {mode === Mode.MEMBER && isOwner && (
+          {mode === Mode.MEMBER && isAdmin && (
             <Modal isOpen={isEditingNFT} onClose={() => setEditingNFT(false)}>
               <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
               <ModalContent maxW="80rem" p={0} mx={4}>

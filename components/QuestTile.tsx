@@ -17,7 +17,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownViewer } from '@/components/MarkdownViewer';
-import { UserStatusType } from '@/pages/chain/[chainId]/[address]';
+import { UserStatusType } from '@/hooks/useUserStatus';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
@@ -37,7 +37,6 @@ export const QuestTile: React.FC<{
   userStatus?: UserStatusType;
   questChain?: graphql.QuestChainInfoFragment;
   refresh?: () => void;
-  isCreatingChain?: boolean;
   isPaused?: boolean;
   editDisabled?: boolean;
 }> = ({
@@ -51,7 +50,6 @@ export const QuestTile: React.FC<{
   userStatus,
   questChain,
   refresh,
-  isCreatingChain = false,
   isPaused = false,
   editDisabled = false,
 }) => {
@@ -109,7 +107,7 @@ export const QuestTile: React.FC<{
       {({ isExpanded }) => (
         <>
           <Flex alignItems="center" px={2}>
-            <AccordionButton pt={6} pb={isExpanded ? 2 : 6}>
+            <AccordionButton pt={6} pb={6}>
               <Flex flex="1" textAlign="left" gap={2}>
                 <Text
                   display="-webkit-box"
@@ -140,7 +138,7 @@ export const QuestTile: React.FC<{
             </AccordionButton>
             {isMember && (
               <>
-                {isCreatingChain && (
+                {onRemoveQuest && (
                   <Tooltip label="Delete Quest">
                     <IconButton
                       icon={<SmallCloseIcon />}
