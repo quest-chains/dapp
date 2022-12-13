@@ -1,8 +1,8 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Accordion, Button, Flex, Input } from '@chakra-ui/react';
+import { Accordion, Button, Flex } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { providers } from 'ethers';
-import { MutableRefObject, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useInputText } from '@/hooks/useInputText';
@@ -13,7 +13,7 @@ import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { AddQuestBlock } from '../CreateChain/AddQuestBlock';
-import { MarkdownEditor } from '../MarkdownEditor';
+import { EditingQuest } from '../CreateChain/EditingQuest';
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
 
@@ -389,46 +389,5 @@ export const QuestsEditor: React.FC<{
         </Flex>
       )}
     </>
-  );
-};
-
-export const EditingQuest: React.FC<{
-  nameRef: MutableRefObject<string>;
-  descRef: MutableRefObject<string>;
-  setQuestName: (name: string) => void;
-  setQuestDesc: (description: string) => void;
-  onSave: (name: string, description: string, index: number) => void;
-  onCancel: () => void;
-  index: number;
-}> = ({
-  nameRef,
-  descRef,
-  setQuestName,
-  setQuestDesc,
-  onSave,
-  index,
-  onCancel,
-}) => {
-  return (
-    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
-      <Input
-        bg="#0F172A"
-        defaultValue={nameRef.current}
-        maxLength={60}
-        onChange={e => setQuestName(e.target.value)}
-      />
-      <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
-      <Flex align="center" justify="space-between" gap={4} w="full">
-        <Button
-          onClick={() => onSave(nameRef.current, descRef.current, index)}
-          flex={1}
-        >
-          Save
-        </Button>
-        <Button onClick={onCancel} flex={1}>
-          Cancel
-        </Button>
-      </Flex>
-    </Flex>
   );
 };

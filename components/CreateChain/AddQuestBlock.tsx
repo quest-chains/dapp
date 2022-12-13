@@ -65,12 +65,9 @@ export const AddQuestBlock: React.FC<{
               }
               onSubmit();
             }}
-            w="full"
-            fontWeight="bold"
-            fontSize={{ base: 12, md: 14 }}
+            fontSize="sm"
             isLoading={isAdding}
             height={10}
-            px={6}
             flex={1}
           >
             Add quest
@@ -87,7 +84,6 @@ export const AddQuestBlock: React.FC<{
             _hover={{
               bg: 'whiteAlpha.200',
             }}
-            px={6}
           >
             Cancel
           </SubmitButton>
