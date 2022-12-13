@@ -101,6 +101,7 @@ export const QuestsForm: React.FC<{
                     setQuestName={setQuestName}
                     setQuestDesc={setQuestDesc}
                     onSave={onEditQuest}
+                    onCancel={() => setIsEditingQuest(false)}
                     index={index}
                   />
                 ) : (
@@ -115,7 +116,6 @@ export const QuestsForm: React.FC<{
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
-                    isCreatingChain
                   />
                 ),
               )}
@@ -150,7 +150,7 @@ export const QuestsForm: React.FC<{
                 onClick={() => setIsAddingQuest(true)}
               >
                 <AddIcon fontSize="sm" mr={2} />
-                Add a Quest
+                Add a quest
               </Button>
             </>
           )}
@@ -181,7 +181,7 @@ export const QuestsForm: React.FC<{
         <SubmitButton
           isDisabled={isSubmitting}
           isLoading={isSubmitting}
-          onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
+          onClick={() => onPublishQuestChain(quests, startAsDisabled)}
           flex={1}
           fontSize={{ base: 12, md: 16 }}
         >
@@ -198,8 +198,17 @@ export const EditingQuest: React.FC<{
   setQuestName: (name: string) => void;
   setQuestDesc: (description: string) => void;
   onSave: (name: string, description: string, index: number) => void;
+  onCancel: () => void;
   index: number;
-}> = ({ nameRef, descRef, setQuestName, setQuestDesc, onSave, index }) => {
+}> = ({
+  nameRef,
+  descRef,
+  setQuestName,
+  setQuestDesc,
+  onSave,
+  index,
+  onCancel,
+}) => {
   return (
     <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Input
@@ -209,9 +218,17 @@ export const EditingQuest: React.FC<{
         onChange={e => setQuestName(e.target.value)}
       />
       <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
-      <Button onClick={() => onSave(nameRef.current, descRef.current, index)}>
-        Save
-      </Button>
+      <Flex align="center" justify="space-between" gap={4} w="full">
+        <Button
+          onClick={() => onSave(nameRef.current, descRef.current, index)}
+          flex={1}
+        >
+          Save
+        </Button>
+        <Button onClick={onCancel} flex={1}>
+          Cancel
+        </Button>
+      </Flex>
     </Flex>
   );
 };

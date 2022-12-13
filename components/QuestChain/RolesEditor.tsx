@@ -1,6 +1,5 @@
 import { CheckIcon } from '@chakra-ui/icons';
 import {
-  Button,
   Flex,
   IconButton,
   Image,
@@ -25,6 +24,8 @@ import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+import { SubmitButton } from '../SubmitButton';
 
 const QuestChainRoles = {
   Owner: '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -296,14 +297,34 @@ export const RolesEditor: React.FC<{
       ))}
 
       <Flex align="center" justify="space-between" gap={4}>
-        <Button onClick={onExit} flex={1} isDisabled={isSaving}>
-          Cancel
-        </Button>
         {isEditing && (
-          <Button onClick={onSave} flex={1} isLoading={isSaving}>
+          <SubmitButton
+            onClick={onSave}
+            flex={1}
+            isLoading={isSaving}
+            height={10}
+            px={6}
+            fontSize="sm"
+          >
             Save
-          </Button>
+          </SubmitButton>
         )}
+        <SubmitButton
+          onClick={onExit}
+          flex={1}
+          isDisabled={isSaving}
+          fontSize="sm"
+          bg="transparent"
+          height={10}
+          border="1px solid #9EFCE5"
+          color="#9EFCE5"
+          _hover={{
+            bg: 'whiteAlpha.200',
+          }}
+          px={6}
+        >
+          Cancel
+        </SubmitButton>
       </Flex>
     </Flex>
   );

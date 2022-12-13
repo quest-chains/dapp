@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
 import { useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -24,9 +24,9 @@ export const AddQuestBlock: React.FC<{
   }, [onAdd, onClose, nameRef, descRef, setName, setDescription]);
 
   return (
-    <form>
-      <VStack spacing={4} pb={4}>
-        <FormControl isRequired>
+    <form style={{ width: '100%' }}>
+      <VStack spacing={4} pb={4} w="100%">
+        <FormControl isRequired px={4}>
           <FormLabel htmlFor="name">Quest Name</FormLabel>
           <Input
             color="white"
@@ -38,7 +38,7 @@ export const AddQuestBlock: React.FC<{
             placeholder="Quest Name"
           />
         </FormControl>
-        <FormControl isRequired>
+        <FormControl isRequired px={4}>
           <FormLabel htmlFor="description">Quest Description</FormLabel>
           <MarkdownEditor
             height="12rem"
@@ -47,23 +47,51 @@ export const AddQuestBlock: React.FC<{
             onChange={setDescription}
           />
         </FormControl>
-        <SubmitButton
-          onClick={() => {
-            if (!nameRef.current || !descRef.current) {
-              toast.error(
-                'To continue, enter the name and description for the quest',
-              );
-              return;
-            }
-            onSubmit();
-          }}
+        <Flex
+          align="center"
+          justify="space-between"
+          gap={4}
           w="full"
-          fontWeight="bold"
-          fontSize={{ base: 12, md: 14 }}
-          isLoading={isAdding}
+          pt={2}
+          px={4}
         >
-          ADD QUEST
-        </SubmitButton>
+          <SubmitButton
+            onClick={() => {
+              if (!nameRef.current || !descRef.current) {
+                toast.error(
+                  'To continue, enter the name and description for the quest',
+                );
+                return;
+              }
+              onSubmit();
+            }}
+            w="full"
+            fontWeight="bold"
+            fontSize={{ base: 12, md: 14 }}
+            isLoading={isAdding}
+            height={10}
+            px={6}
+            flex={1}
+          >
+            Add quest
+          </SubmitButton>
+          <SubmitButton
+            onClick={onClose}
+            flex={1}
+            isDisabled={isAdding}
+            fontSize="sm"
+            bg="transparent"
+            height={10}
+            border="1px solid #9EFCE5"
+            color="#9EFCE5"
+            _hover={{
+              bg: 'whiteAlpha.200',
+            }}
+            px={6}
+          >
+            Cancel
+          </SubmitButton>
+        </Flex>
       </VStack>
     </form>
   );
