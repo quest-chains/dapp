@@ -4,7 +4,6 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Button,
   Flex,
   IconButton,
   Tag,
@@ -38,7 +37,9 @@ export const QuestTile: React.FC<{
   questChain?: graphql.QuestChainInfoFragment;
   refresh?: () => void;
   isPaused?: boolean;
+  onTogglePause?: (questId: string, pause: boolean) => void;
   editDisabled?: boolean;
+  pauseDisabled?: boolean;
 }> = ({
   name,
   description,
@@ -52,6 +53,8 @@ export const QuestTile: React.FC<{
   refresh,
   isPaused = false,
   editDisabled = false,
+  pauseDisabled = true,
+  onTogglePause,
 }) => {
   const { chainId, provider } = useWallet();
   const [isToggling, setToggling] = useState(false);
@@ -148,6 +151,21 @@ export const QuestTile: React.FC<{
                     />
                   </Tooltip>
                 )}
+                {!pauseDisabled && questId && (
+                  <Tooltip label={isPaused ? 'Enable Quest' : 'Disable Quest'}>
+                    <IconButton
+                      aria-label=""
+                      bg="transparent"
+                      isLoading={isToggling}
+                      onClick={() =>
+                        onTogglePause
+                          ? onTogglePause(questId, !isPaused)
+                          : toggleQuestPaused(!isPaused)
+                      }
+                      icon={<PowerIcon />}
+                    />
+                  </Tooltip>
+                )}
                 {!editDisabled && (
                   <Tooltip label="Edit Quest">
                     <IconButton
@@ -172,20 +190,6 @@ export const QuestTile: React.FC<{
                   userStatus={userStatus}
                   refresh={refresh}
                 />
-              )}
-              {questChain && questId && isMember && !editDisabled && (
-                <Button
-                  colorScheme={isPaused ? 'green' : 'orange'}
-                  variant="outline"
-                  size="sm"
-                  ml="auto"
-                  isLoading={isToggling}
-                  isDisabled={chainId !== questChain.chainId}
-                  onClick={() => toggleQuestPaused(!isPaused)}
-                  leftIcon={<PowerIcon />}
-                >
-                  {isPaused ? 'Enable Quest' : 'Disable Quest'}
-                </Button>
               )}
             </Wrap>
           </AccordionPanel>
