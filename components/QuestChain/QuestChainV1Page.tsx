@@ -752,16 +752,16 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 display={{ base: 'flex', lg: 'none' }}
                 align="center"
                 w="100%"
-                mb={12}
+                mb={8}
               >
                 {questChain.token.imageUrl && (
                   <Flex
                     align="center"
                     justify="center"
-                    h={373}
-                    w={373}
-                    maxW="100%"
-                    maxH="100%"
+                    maxW="min(373px, 100%)"
+                    maxH="min(373px, 100%)"
+                    borderRadius={8}
+                    overflow="hidden"
                   >
                     <Image
                       src={ipfsUriToHttp(questChain.token.imageUrl)}
@@ -780,7 +780,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     <Button
                       onClick={() => setEditingNFT(g => !g)}
                       w="100%"
-                      my={6}
+                      mt={6}
                       isLoading={isSavingNFT}
                     >
                       <Image
@@ -796,7 +796,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isEditingQuest &&
                   !isEditingMembers &&
                   !isEditingNFT && (
-                    <Flex justify="space-between" align="center" w="100%">
+                    <Flex
+                      justify="space-between"
+                      align="center"
+                      w="100%"
+                      mt={8}
+                    >
                       <TwitterShareButton
                         url={QCURL}
                         title={QCmessage}
@@ -1108,16 +1113,16 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 flexDirection="column"
                 w="100%"
                 display={{ base: 'none', lg: 'flex' }}
-                mb={16}
+                mb={12}
               >
                 {questChain.token.imageUrl && (
                   <Flex
                     align="center"
                     justify="center"
-                    h={373}
-                    w={373}
-                    maxW="100%"
-                    maxH="100%"
+                    maxW="min(373px, 100%)"
+                    maxH="min(373px, 100%)"
+                    borderRadius={8}
+                    overflow="hidden"
                   >
                     <Image
                       src={ipfsUriToHttp(questChain.token.imageUrl)}
@@ -1135,7 +1140,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     <Button
                       onClick={() => setEditingNFT(g => !g)}
                       w="100%"
-                      my={6}
+                      mt={6}
                       isLoading={isSavingNFT}
                     >
                       <Image
@@ -1151,7 +1156,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isEditingQuest &&
                   !isEditingMembers &&
                   !isEditingNFT && (
-                    <Flex justify="space-between" align="center">
+                    <Flex justify="space-between" align="center" mt={8}>
                       <TwitterShareButton
                         url={QCURL}
                         title={QCmessage}

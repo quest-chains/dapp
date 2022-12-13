@@ -196,7 +196,7 @@ export const RolesEditor: React.FC<{
           Members
         </Text>
       </Flex>
-      {!isEditing && (
+      {!memberToSave && (
         <Flex bgColor="gray.800" alignItems="center" p={1} borderRadius={8}>
           <InputGroup flexGrow={1}>
             <InputLeftElement>
@@ -283,6 +283,12 @@ export const RolesEditor: React.FC<{
                 icon={<Image src={TrashOutlined.src} alt="trash" />}
                 onClick={() => onRemove(address)}
                 isDisabled={ownerAddress === address || newRole === 'Remove'}
+                visibility={
+                  ownerAddress === address ||
+                  (memberToSave && memberToSave?.[0] !== address)
+                    ? 'hidden'
+                    : 'unset'
+                }
               />
             </Flex>
           </Flex>
