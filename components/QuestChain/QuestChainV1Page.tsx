@@ -974,7 +974,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                             fontSize="xs"
                           >
                             <Image src={Edit.src} alt="Edit" mr={2} />
-                            Edit Quests
+                            Edit quests
                           </Button>
                         )}
                     </Flex>

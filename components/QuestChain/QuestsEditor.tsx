@@ -316,6 +316,7 @@ export const QuestsEditor: React.FC<{
                   }
                   pauseDisabled={
                     (hasAdded && index < existingLength) ||
+                    hasEdited ||
                     isSaving ||
                     isAddingQuest ||
                     isEditingQuest
@@ -342,12 +343,14 @@ export const QuestsEditor: React.FC<{
           !hasPaused && (
             <>
               <Button
-                borderWidth={1}
-                borderColor="white"
-                borderRadius="full"
                 w="100%"
                 isDisabled={isEditingQuest}
                 onClick={() => setIsAddingQuest(true)}
+                height={16}
+                border="1px solid white"
+                borderRadius={8}
+                color="white"
+                textTransform="uppercase"
               >
                 <AddIcon fontSize="sm" mr={2} />
                 Add a quest
@@ -357,7 +360,7 @@ export const QuestsEditor: React.FC<{
       </Flex>
 
       {!isAddingQuest && !isEditingQuest && (
-        <Flex align="center" justify="space-between" gap={4} w="full" pt={2}>
+        <Flex align="center" justify="space-between" gap={4} w="full" mt={2}>
           {hasChanged && (
             <SubmitButton
               onClick={onSave}

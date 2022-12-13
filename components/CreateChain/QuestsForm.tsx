@@ -147,6 +147,7 @@ export const QuestsForm: React.FC<{
                 px={{ base: 10, md: 40 }}
                 isDisabled={isEditingQuest}
                 onClick={() => setIsAddingQuest(true)}
+                textTransform="uppercase"
               >
                 <AddIcon fontSize="sm" mr={2} />
                 Add a quest
