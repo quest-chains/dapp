@@ -109,9 +109,24 @@ export const QuestTile: React.FC<{
       {({ isExpanded }) => (
         <>
           <Flex alignItems="center" px={2}>
-            <AccordionButton py={6}>
+            <AccordionButton pt={6} pb={isExpanded ? 2 : 6}>
               <Flex flex="1" textAlign="left" gap={2}>
-                <Text fontWeight="bold" whiteSpace="nowrap">
+                <Text
+                  display="-webkit-box"
+                  fontWeight="bold"
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  maxW="calc(100%)"
+                  sx={
+                    isExpanded
+                      ? {}
+                      : {
+                          lineClamp: 1,
+                          WebkitLineClamp: 1,
+                          WebkitBoxOrient: 'vertical',
+                        }
+                  }
+                >
                   {name}
                 </Text>
                 {isPaused && (
@@ -150,7 +165,7 @@ export const QuestTile: React.FC<{
           </Flex>
           <AccordionPanel px={6}>
             <MarkdownViewer markdown={description} />
-            <Wrap align="center" mt={4} spacing={4}>
+            <Wrap align="center" mt={6} spacing={4} pb={2}>
               {questId && userStatus && questChain && refresh && !isMember && (
                 <UploadProofButton
                   questId={questId}
@@ -207,7 +222,6 @@ const ReviewComment: React.FC<{
     <Flex
       w="100%"
       p={6}
-      pb={6}
       background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
       role="group"
       position="relative"
