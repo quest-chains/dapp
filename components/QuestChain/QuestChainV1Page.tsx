@@ -726,7 +726,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 <Flex mb={8} pt={2}>
                   <UploadImageForm
                     {...uploadImageProps}
-                    label="Cover Image"
+                    label="Cover Image (optional)"
                     formControlProps={{
                       w: '100%',
                       position: 'relative',
