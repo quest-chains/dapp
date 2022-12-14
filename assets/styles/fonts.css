@@ -2,12 +2,12 @@
   font-family: 'Museo Moderno';
   font-style: normal;
   font-weight: 600;
-  src: url('./MuseoModerno.ttf') format('truetype');
+  src: url('../fonts/MuseoModerno.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Museo Moderno Light';
   font-style: normal;
   font-weight: 400;
-  src: url('./MuseoModerno.ttf') format('truetype');
+  src: url('../fonts/MuseoModerno.ttf') format('truetype');
 }

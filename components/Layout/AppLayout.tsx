@@ -55,7 +55,13 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   }, [handleUserKeyPress]);
 
   return (
-    <Stack align="center" fontFamily="body" minH="100vh" w="100%">
+    <Stack
+      align="center"
+      fontFamily="body"
+      minH="100vh"
+      w="100%"
+      justify="space-between"
+    >
       <Header>
         {isSmallScreen ? (
           isLanding ? (

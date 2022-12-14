@@ -1,8 +1,9 @@
-import '@/assets/bg.scss';
-import '@/fonts/styles.css';
+import '@/assets/styles/bg.scss';
+import '@/assets/styles/fonts.css';
 import 'react-markdown-editor-lite/lib/index.css';
-import '@/assets/custom-markdown-editor.scss';
+import '@/assets/styles/custom-markdown-editor.scss';
 
+// Do NOT change order of CSS files
 import { ChakraProvider, useColorMode } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';

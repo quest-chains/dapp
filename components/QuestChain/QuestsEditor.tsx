@@ -1,5 +1,5 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Accordion, Button, Flex } from '@chakra-ui/react';
+import { Accordion, Button, Flex, HStack, Text } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
@@ -269,8 +269,6 @@ export const QuestsEditor: React.FC<{
     <>
       <Flex
         w="full"
-        gap={4}
-        mb={6}
         justifyContent="center"
         alignItems="center"
         flexDir="column"
@@ -331,10 +329,12 @@ export const QuestsEditor: React.FC<{
             )}
         </Accordion>
         {isAddingQuest && (
-          <AddQuestBlock
-            onClose={() => setIsAddingQuest(false)}
-            onAdd={onAddQuest}
-          />
+          <Flex w="100%" mt={3}>
+            <AddQuestBlock
+              onClose={() => setIsAddingQuest(false)}
+              onAdd={onAddQuest}
+            />
+          </Flex>
         )}
         {!isAddingQuest &&
           !isEditingQuest &&
@@ -346,21 +346,23 @@ export const QuestsEditor: React.FC<{
                 w="100%"
                 isDisabled={isEditingQuest}
                 onClick={() => setIsAddingQuest(true)}
-                height={16}
-                border="1px solid white"
+                py={7}
                 borderRadius={8}
                 color="white"
                 textTransform="uppercase"
+                mb={3}
               >
-                <AddIcon fontSize="sm" mr={2} />
-                Add a quest
+                <HStack spacing={2} align="center">
+                  <AddIcon fontSize="sm" />
+                  <Text>Add a quest</Text>
+                </HStack>
               </Button>
             </>
           )}
       </Flex>
 
       {!isAddingQuest && !isEditingQuest && (
-        <Flex align="center" justify="space-between" gap={4} w="full" mt={2}>
+        <Flex align="center" justify="space-between" gap={4} w="full">
           {hasChanged && (
             <SubmitButton
               onClick={onSave}
