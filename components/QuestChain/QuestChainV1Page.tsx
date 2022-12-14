@@ -928,7 +928,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               )}
               <Flex mb={12}>
                 {mode === Mode.MEMBER &&
-                  numSubmissionsToReview != 0 &&
                   isReviewer &&
                   !isEditingQuestChain &&
                   !isEditingQuests &&
@@ -944,25 +943,28 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     >
                       <Flex justifyContent="center" alignItems="center">
                         <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
-                        {numSubmissionsToReview} proof submissions are awaiting
-                        review
+                        {numSubmissionsToReview > 0
+                          ? `${numSubmissionsToReview} submissions are awaiting review`
+                          : 'There are no submissions that are awaiting review'}
                       </Flex>
-                      <NextLink
-                        as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                        href={`/chain/[chainId]/[address]/review`}
-                        passHref
-                      >
-                        <ChakraLink display="block" _hover={{}}>
-                          <SubmitButton
-                            fontSize={14}
-                            fontWeight="bold"
-                            height={10}
-                            px={6}
-                          >
-                            Review Submissions
-                          </SubmitButton>
-                        </ChakraLink>
-                      </NextLink>
+                      {numSubmissionsToReview > 0 && (
+                        <NextLink
+                          as={`/chain/${questChain.chainId}/${questChain.address}/review`}
+                          href={`/chain/[chainId]/[address]/review`}
+                          passHref
+                        >
+                          <ChakraLink display="block" _hover={{}}>
+                            <SubmitButton
+                              fontSize={14}
+                              fontWeight="bold"
+                              height={10}
+                              px={6}
+                            >
+                              Review Submissions
+                            </SubmitButton>
+                          </ChakraLink>
+                        </NextLink>
+                      )}
                     </Flex>
                   )}
 
