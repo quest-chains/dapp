@@ -30,8 +30,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
-import AwardIcon from '@/assets/award.svg';
-import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -58,7 +56,10 @@ import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import NFTForm from '../CreateChain/NFTForm';
+import { AwardIcon } from '../icons/AwardIcon';
+import { EditIcon } from '../icons/EditIcon';
 import { PowerIcon } from '../icons/PowerIcon';
+import { TwitterIcon } from '../icons/TwitterIcon';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
@@ -512,8 +513,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                               setChainDescription(questChain.description ?? '');
                             }}
                             fontSize="xs"
+                            leftIcon={<EditIcon fontSize="sm" />}
                           >
-                            <Image src={Edit.src} alt="Edit" mr={2} />
                             Edit chain metadata
                           </Button>
                         )}
@@ -523,7 +524,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           variant="ghost"
                           bgColor="rgba(71, 85, 105, 0.15)"
                           fontSize="xs"
-                          leftIcon={<PowerIcon />}
+                          leftIcon={<PowerIcon fontSize="sm" />}
                         >
                           {questChain.paused
                             ? 'Enable quest chain'
@@ -736,13 +737,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       w="100%"
                       mt={6}
                       isLoading={isSavingNFT}
+                      leftIcon={<AwardIcon />}
                     >
-                      <Image
-                        src={AwardIcon.src}
-                        alt="award"
-                        height={4}
-                        mr={1}
-                      />
                       Edit NFT
                     </Button>
                   )}
@@ -753,13 +749,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       title={QCmessage}
                       via="questchainz"
                     >
-                      <Button bgColor="#4A99E9" p={4} h={7}>
-                        <Image
-                          src="/twitter.svg"
-                          alt="twitter"
-                          height={4}
-                          mr={1}
-                        />
+                      <Button
+                        bgColor="#4A99E9"
+                        p={4}
+                        h={7}
+                        leftIcon={<TwitterIcon />}
+                      >
                         Tweet
                       </Button>
                     </TwitterShareButton>
@@ -966,8 +961,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           <Button
                             onClick={() => setEditingQuests(e => !e)}
                             fontSize="xs"
+                            leftIcon={<EditIcon fontSize="sm" />}
                           >
-                            <Image src={Edit.src} alt="Edit" mr={2} />
                             Edit quests
                           </Button>
                         )}
@@ -1052,13 +1047,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       w="100%"
                       mt={6}
                       isLoading={isSavingNFT}
+                      leftIcon={<AwardIcon />}
                     >
-                      <Image
-                        src={AwardIcon.src}
-                        alt="award"
-                        height={4}
-                        mr={1}
-                      />
                       Edit NFT
                     </Button>
                   )}
@@ -1069,13 +1059,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       title={QCmessage}
                       via="questchainz"
                     >
-                      <Button bgColor="#4A99E9" p={4} h={7}>
-                        <Image
-                          src="/twitter.svg"
-                          alt="twitter"
-                          height={4}
-                          mr={1}
-                        />
+                      <Button
+                        bgColor="#4A99E9"
+                        p={4}
+                        h={7}
+                        leftIcon={<TwitterIcon />}
+                      >
                         Tweet
                       </Button>
                     </TwitterShareButton>

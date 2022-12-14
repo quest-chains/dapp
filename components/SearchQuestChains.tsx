@@ -21,6 +21,11 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     value.toLowerCase(),
   );
 
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error while searching for quest chains:', error);
+  }
+
   return (
     <VStack alignItems="flex-start" gap={4} w="full">
       <InputGroup maxW="2xl" size="lg">
@@ -52,6 +57,15 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         </Text>
       )}
       <VStack w="full" gap={4} flex={1}>
+        {fetching && (
+          <Spinner
+            size="xl"
+            thickness="2px"
+            speed="0.67s"
+            color="white"
+            my="4rem"
+          />
+        )}
         {!fetching &&
           !error &&
           results.length > 0 &&

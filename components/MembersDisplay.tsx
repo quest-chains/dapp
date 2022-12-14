@@ -1,7 +1,8 @@
-import { Box, Button, Divider, Flex, Image, Text } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Text } from '@chakra-ui/react';
 
-import Edit from '@/assets/Edit.svg';
 import { UserDisplay } from '@/components/UserDisplay';
+
+import { EditIcon } from './icons/EditIcon';
 
 type RolesProps = {
   role: string;
@@ -45,8 +46,12 @@ export const MembersDisplay: React.FC<MembersProps> = ({
         Members
       </Text>
       {onEdit && (
-        <Button onClick={onEdit} fontSize="xs" px={4}>
-          <Image src={Edit.src} alt="Edit" mr={2} />
+        <Button
+          onClick={onEdit}
+          fontSize="xs"
+          px={4}
+          leftIcon={<EditIcon fontSize="sm" />}
+        >
           Edit members
         </Button>
       )}

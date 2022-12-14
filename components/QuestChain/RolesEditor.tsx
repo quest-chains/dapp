@@ -2,7 +2,6 @@ import { CheckIcon } from '@chakra-ui/icons';
 import {
   Flex,
   IconButton,
-  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -16,8 +15,6 @@ import { ethers } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import AddUser from '@/assets/add-user.svg';
-import TrashOutlined from '@/assets/delete-outline.svg';
 import { Role } from '@/components/RoleTag';
 import { UserDisplay } from '@/components/UserDisplay';
 import { waitUntilBlock } from '@/utils/graphHelpers';
@@ -25,6 +22,8 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { AddUserIcon } from '../icons/AddUserIcon';
+import { TrashOutlinedIcon } from '../icons/TrashOutlinedIcon';
 import { SubmitButton } from '../SubmitButton';
 
 const QuestChainRoles = {
@@ -201,7 +200,7 @@ export const RolesEditor: React.FC<{
         <Flex bgColor="gray.800" alignItems="center" p={1} borderRadius={8}>
           <InputGroup flexGrow={1}>
             <InputLeftElement>
-              <Image src={AddUser.src} alt="Add Member" ml="4" />
+              <AddUserIcon ml={2} />
             </InputLeftElement>
             <Input
               border={0}
@@ -282,7 +281,7 @@ export const RolesEditor: React.FC<{
               <IconButton
                 aria-label="remove address"
                 variant="outline"
-                icon={<Image src={TrashOutlined.src} alt="trash" />}
+                icon={<TrashOutlinedIcon />}
                 onClick={() => onRemove(address)}
                 isDisabled={
                   ownerAddress === address || newRole === 'Remove' || isSaving
@@ -299,7 +298,7 @@ export const RolesEditor: React.FC<{
         </Flex>
       ))}
 
-      <Flex align="center" justify="space-between" gap={4}>
+      <Flex align="center" justify="space-between" gap={4} pt={3}>
         {isEditing && (
           <SubmitButton
             onClick={onSave}

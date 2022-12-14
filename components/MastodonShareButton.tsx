@@ -1,4 +1,6 @@
-import { Button, Image, StackProps } from '@chakra-ui/react';
+import { Button, Link, StackProps } from '@chakra-ui/react';
+
+import { MastodonIcon } from './icons/MastodonIcon';
 
 export const MastodonShareButton: React.FC<
   {
@@ -6,15 +8,14 @@ export const MastodonShareButton: React.FC<
   } & StackProps
 > = ({ message }) => {
   return (
-    <a
+    <Link
       href={`https://mastodon.social//share?text=${message}`}
-      target="_blank"
-      rel="noopener noreferrer"
+      isExternal
+      _hover={{}}
     >
-      <Button bgColor="#5560F8" p={4} h={7}>
-        <Image src="/mastodon.svg" alt="twitter" height={4} mr={1} />
+      <Button bgColor="#5560F8" p={4} h={7} leftIcon={<MastodonIcon />}>
         Publish
       </Button>
-    </a>
+    </Link>
   );
 };

@@ -23,6 +23,7 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { TwitterIcon } from './icons/TwitterIcon';
 import { MastodonShareButton } from './MastodonShareButton';
 
 type QuestChainTileProps = {
@@ -151,8 +152,12 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
                 title={QCmessage}
                 via="questchainz"
               >
-                <Button bgColor="#4A99E9" p={4} h={7}>
-                  <Image src="/twitter.svg" alt="twitter" height={4} mr={1} />
+                <Button
+                  bgColor="#4A99E9"
+                  p={4}
+                  h={7}
+                  leftIcon={<TwitterIcon />}
+                >
                   Tweet
                 </Button>
               </TwitterShareButton>

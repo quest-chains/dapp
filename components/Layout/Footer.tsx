@@ -99,12 +99,12 @@ export const Footer: React.FC = () => (
     gap={2}
     pt={8}
     pb={4}
-    justifySelf="flex-end"
     fontSize="sm"
     background="linear-gradient(transparent, rgba(255, 255, 255, 0.1))"
+    h={{ base: '16rem', md: '10rem' }}
   >
     <Stack
-      gap={{ base: 1, md: 2 }}
+      gap={{ base: 1, md: 2, lg: 4 }}
       direction={{ base: 'column', md: 'row' }}
       align="center"
     >

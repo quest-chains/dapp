@@ -32,7 +32,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
-import Edit from '@/assets/Edit.svg';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { Page } from '@/components/Layout/Page';
@@ -59,6 +58,9 @@ import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+import { EditIcon } from '../icons/EditIcon';
+import { TwitterIcon } from '../icons/TwitterIcon';
 
 const { Status } = graphql;
 
@@ -464,13 +466,12 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                           title={QCmessage}
                           via="questchainz"
                         >
-                          <Button bgColor="#4A99E9" p={4} h={7}>
-                            <Image
-                              src="/twitter.svg"
-                              alt="twitter"
-                              height={4}
-                              mr={1}
-                            />
+                          <Button
+                            bgColor="#4A99E9"
+                            p={4}
+                            h={7}
+                            leftIcon={<TwitterIcon />}
+                          >
                             Tweet
                           </Button>
                         </TwitterShareButton>
@@ -906,8 +907,8 @@ const ActionsAndImage: React.FC<ActionsAndImageProps> = ({
               onClick={onEdit}
               fontSize="xs"
               bgColor="rgba(71, 85, 105, 0.15)"
+              leftIcon={<EditIcon fontSize="sm" />}
             >
-              <Image src={Edit.src} alt="Edit" mr={2} />
               Edit Metadata
             </Button>
           )}

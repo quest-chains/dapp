@@ -3,18 +3,17 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Image,
   Input,
   Textarea,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import Edit from '@/assets/Edit.svg';
 import { useDropImage } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
+import { EditIcon } from '../icons/EditIcon';
 import { SubmitButton } from '../SubmitButton';
 import { UploadImageForm } from '../UploadImageForm';
 
@@ -130,8 +129,8 @@ const CustomNFTForm2D: React.FC<{
             borderRadius="full"
             isDisabled
             w="full"
+            leftIcon={<EditIcon />}
           >
-            <Image src={Edit.src} alt="Edit" mr={3} />
             To continue, upload an image
           </Button>
         )}

@@ -5,7 +5,6 @@ import {
   Grid,
   HStack,
   IconButton,
-  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -19,11 +18,12 @@ import { ethers } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import AddUser from '@/assets/add-user.svg';
-import TrashOutlined from '@/assets/delete-outline.svg';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { isSupportedNetwork, useWallet } from '@/web3';
+
+import { AddUserIcon } from '../icons/AddUserIcon';
+import { TrashOutlinedIcon } from '../icons/TrashOutlinedIcon';
 
 enum Role {
   Owner = 'Owner',
@@ -270,11 +270,9 @@ const Roles: React.FC<{
       </Text>
       <Flex bgColor="gray.800" alignItems="center" p={1} borderRadius={8}>
         <InputGroup flexGrow={1}>
-          <InputLeftElement
-            pointerEvents="none"
-            // eslint-disable-next-line react/no-children-prop, jsx-a11y/alt-text
-            children={<Image src={AddUser.src} left={6} position="absolute" />}
-          />
+          <InputLeftElement>
+            <AddUserIcon ml={2} />
+          </InputLeftElement>
           <Input
             border={0}
             pl={16}
@@ -331,7 +329,7 @@ const Roles: React.FC<{
               <IconButton
                 aria-label="remove address"
                 variant="outline"
-                icon={<Image src={TrashOutlined.src} alt="trash" />}
+                icon={<TrashOutlinedIcon />}
                 onClick={() => onRemove(address)}
                 isDisabled={ownerAddress === address}
                 visibility={ownerAddress === address ? 'hidden' : 'visible'}

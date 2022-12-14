@@ -1,4 +1,4 @@
-import { EditIcon, SmallCloseIcon, WarningIcon } from '@chakra-ui/icons';
+import { EditIcon, WarningIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
@@ -9,7 +9,6 @@ import {
   Tag,
   Text,
   Tooltip,
-  Wrap,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
@@ -23,6 +22,7 @@ import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { PowerIcon } from './icons/PowerIcon';
+import { TrashOutlinedIcon } from './icons/TrashOutlinedIcon';
 import { UploadProofButton } from './UploadProofButton';
 
 export const QuestTile: React.FC<{
@@ -109,8 +109,25 @@ export const QuestTile: React.FC<{
     <AccordionItem bg={bgColor} borderRadius={10} mb={3} border={0} w="100%">
       {({ isExpanded }) => (
         <>
-          <Flex alignItems="center" px={2}>
-            <AccordionButton pt={6} pb={6}>
+          <Flex
+            alignItems="center"
+            gap={1}
+            pr={
+              isMember && (!editDisabled || !pauseDisabled || onRemoveQuest)
+                ? 2
+                : 0
+            }
+          >
+            <AccordionButton
+              py={5}
+              _hover={{ bgColor: 'whiteAlpha.200' }}
+              borderRadius={8}
+              pl={
+                isMember && (!editDisabled || !pauseDisabled || onRemoveQuest)
+                  ? 5
+                  : 4
+              }
+            >
               <Flex flex="1" textAlign="left" gap={2}>
                 <Text
                   display="-webkit-box"
@@ -141,31 +158,6 @@ export const QuestTile: React.FC<{
             </AccordionButton>
             {isMember && (
               <>
-                {onRemoveQuest && (
-                  <Tooltip label="Delete Quest">
-                    <IconButton
-                      icon={<SmallCloseIcon />}
-                      onClick={onRemoveQuest}
-                      aria-label=""
-                      bg="transparent"
-                    />
-                  </Tooltip>
-                )}
-                {!pauseDisabled && questId && (
-                  <Tooltip label={isPaused ? 'Enable Quest' : 'Disable Quest'}>
-                    <IconButton
-                      aria-label=""
-                      bg="transparent"
-                      isLoading={isToggling}
-                      onClick={() =>
-                        onTogglePause
-                          ? onTogglePause(questId, !isPaused)
-                          : toggleQuestPaused(!isPaused)
-                      }
-                      icon={<PowerIcon />}
-                    />
-                  </Tooltip>
-                )}
                 {!editDisabled && (
                   <Tooltip label="Edit Quest">
                     <IconButton
@@ -176,22 +168,45 @@ export const QuestTile: React.FC<{
                     />
                   </Tooltip>
                 )}
+                {!pauseDisabled && questId && (
+                  <Tooltip label={isPaused ? 'Enable Quest' : 'Disable Quest'}>
+                    <IconButton
+                      aria-label=""
+                      bg={!isPaused ? 'transparent' : 'whiteAlpha.200'}
+                      isLoading={isToggling}
+                      onClick={() =>
+                        onTogglePause
+                          ? onTogglePause(questId, !isPaused)
+                          : toggleQuestPaused(!isPaused)
+                      }
+                      icon={<PowerIcon />}
+                    />
+                  </Tooltip>
+                )}
+                {onRemoveQuest && (
+                  <Tooltip label="Delete Quest">
+                    <IconButton
+                      icon={<TrashOutlinedIcon />}
+                      onClick={onRemoveQuest}
+                      aria-label=""
+                      bg="transparent"
+                    />
+                  </Tooltip>
+                )}
               </>
             )}
           </Flex>
           <AccordionPanel px={6}>
             <MarkdownViewer markdown={description} />
-            <Wrap align="center" mt={6} spacing={4} pb={2}>
-              {questId && userStatus && questChain && refresh && !isMember && (
-                <UploadProofButton
-                  questId={questId}
-                  name={name}
-                  questChain={questChain}
-                  userStatus={userStatus}
-                  refresh={refresh}
-                />
-              )}
-            </Wrap>
+            {questId && userStatus && questChain && refresh && !isMember && (
+              <UploadProofButton
+                questId={questId}
+                name={name}
+                questChain={questChain}
+                userStatus={userStatus}
+                refresh={refresh}
+              />
+            )}
           </AccordionPanel>
           {isExpanded && <ReviewComment {...{ userStatus, questId }} />}
         </>
@@ -224,6 +239,7 @@ const ReviewComment: React.FC<{
     <Flex
       w="100%"
       p={6}
+      mt={4}
       background="linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #1A202C"
       role="group"
       position="relative"
