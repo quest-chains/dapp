@@ -1,7 +1,6 @@
 import {
   Button,
   Flex,
-  Image,
   Link as ChakraLink,
   Modal,
   ModalBody,
@@ -21,23 +20,6 @@ export const MenuLandingMobile: React.FC = () => {
 
   return (
     <>
-      <Flex mb={8} pos="fixed" top={6} right={24}>
-        <ChakraLink
-          href="https://discord.gg/sjnh6cuVcN"
-          isExternal
-          borderRadius="full"
-          mx={4}
-        >
-          <Image src="/Landing/contact/discord.png" alt="discord" height={8} />
-        </ChakraLink>
-        <ChakraLink
-          href="https://twitter.com/questchainz"
-          isExternal
-          borderRadius="full"
-        >
-          <Image src="/Landing/contact/twitter.png" alt="twitter" height={8} />
-        </ChakraLink>
-      </Flex>
       <Portal>
         <NavToggle isOpen={isOpen} onClick={toggleOpen} />
       </Portal>

@@ -424,9 +424,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   <Text>You are viewing this quest chain as a quester.</Text>
                   <Text
                     color="main"
-                    textDecor="underline"
                     cursor="pointer"
-                    _hover={{ textDecor: 'underline' }}
+                    borderBottom="1px solid"
+                    borderBottomColor="main"
+                    _hover={{ borderBottomColor: 'white' }}
                     onClick={() => setMode(Mode.MEMBER)}
                   >
                     Switch to member view
@@ -482,7 +483,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           <Text
                             color="main"
                             cursor="pointer"
-                            _hover={{ textDecor: 'underline' }}
+                            borderBottom="1px solid"
+                            borderBottomColor="main"
+                            _hover={{ borderBottomColor: 'white' }}
                             onClick={() => setMode(Mode.QUESTER)}
                           >
                             Switch to quester view
@@ -743,35 +746,26 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       Edit NFT
                     </Button>
                   )}
-                {!isEditingQuestChain &&
-                  !isEditingQuests &&
-                  !isEditingMembers &&
-                  !isTogglingPauseStatus &&
-                  !isEditingNFT && (
-                    <Flex
-                      justify="space-between"
-                      align="center"
-                      w="100%"
-                      mt={8}
+                {mode === Mode.QUESTER && (
+                  <Flex justify="space-between" align="center" w="100%" mt={8}>
+                    <TwitterShareButton
+                      url={QCURL}
+                      title={QCmessage}
+                      via="questchainz"
                     >
-                      <TwitterShareButton
-                        url={QCURL}
-                        title={QCmessage}
-                        via="questchainz"
-                      >
-                        <Button bgColor="#4A99E9" p={4} h={7}>
-                          <Image
-                            src="/twitter.svg"
-                            alt="twitter"
-                            height={4}
-                            mr={1}
-                          />
-                          Tweet
-                        </Button>
-                      </TwitterShareButton>
-                      <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                    </Flex>
-                  )}
+                      <Button bgColor="#4A99E9" p={4} h={7}>
+                        <Image
+                          src="/twitter.svg"
+                          alt="twitter"
+                          height={4}
+                          mr={1}
+                        />
+                        Tweet
+                      </Button>
+                    </TwitterShareButton>
+                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                  </Flex>
+                )}
               </Flex>
 
               {/* quest chain Metadata */}
@@ -1068,30 +1062,26 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       Edit NFT
                     </Button>
                   )}
-                {!isEditingQuestChain &&
-                  !isTogglingPauseStatus &&
-                  !isEditingQuests &&
-                  !isEditingMembers &&
-                  !isEditingNFT && (
-                    <Flex justify="space-between" align="center" mt={8}>
-                      <TwitterShareButton
-                        url={QCURL}
-                        title={QCmessage}
-                        via="questchainz"
-                      >
-                        <Button bgColor="#4A99E9" p={4} h={7}>
-                          <Image
-                            src="/twitter.svg"
-                            alt="twitter"
-                            height={4}
-                            mr={1}
-                          />
-                          Tweet
-                        </Button>
-                      </TwitterShareButton>
-                      <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                    </Flex>
-                  )}
+                {mode === Mode.QUESTER && (
+                  <Flex justify="space-between" align="center" mt={8}>
+                    <TwitterShareButton
+                      url={QCURL}
+                      title={QCmessage}
+                      via="questchainz"
+                    >
+                      <Button bgColor="#4A99E9" p={4} h={7}>
+                        <Image
+                          src="/twitter.svg"
+                          alt="twitter"
+                          height={4}
+                          mr={1}
+                        />
+                        Tweet
+                      </Button>
+                    </TwitterShareButton>
+                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
+                  </Flex>
+                )}
               </Flex>
               {/* quest chain Members */}
               {isEditingMembers && address && isOwner ? (
