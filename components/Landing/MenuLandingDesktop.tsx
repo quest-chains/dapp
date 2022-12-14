@@ -1,11 +1,4 @@
-import {
-  Button,
-  Flex,
-  HStack,
-  Image,
-  Link as ChakraLink,
-  Text,
-} from '@chakra-ui/react';
+import { Button, HStack, Link as ChakraLink, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { Link } from 'react-scroll';
 
@@ -81,22 +74,5 @@ export const MenuLandingDesktop: React.FC = () => (
         Team
       </Text>
     </Link>
-    <Flex mb={8}>
-      <ChakraLink
-        href="https://discord.gg/sjnh6cuVcN"
-        isExternal
-        borderRadius="full"
-        mx={4}
-      >
-        <Image src="/Landing/contact/discord.png" alt="discord" height={8} />
-      </ChakraLink>
-      <ChakraLink
-        href="https://twitter.com/questchainz"
-        isExternal
-        borderRadius="full"
-      >
-        <Image src="/Landing/contact/twitter.png" alt="twitter" height={8} />
-      </ChakraLink>
-    </Flex>
   </HStack>
 );
