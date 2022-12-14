@@ -421,7 +421,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               minH="4.5rem"
             >
               {mode === Mode.QUESTER ? (
-                <Flex gap="0.5rem">
+                <Flex gap="0.5rem" fontWeight="600">
                   <Text>You are viewing this quest chain as a quester.</Text>
                   <Text
                     color="main"
@@ -446,6 +446,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     gap="0.5rem"
                     direction={{ base: 'column', md: 'row' }}
                     align="center"
+                    fontWeight="600"
                   >
                     {(() => {
                       if (isEditingNFT)
