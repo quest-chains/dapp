@@ -1094,7 +1094,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   )}
               </Flex>
               {/* quest chain Members */}
-              {isEditingMembers && isAdmin && address ? (
+              {isEditingMembers && address && isOwner ? (
                 <RolesEditor
                   questChain={questChain}
                   members={members}
@@ -1109,7 +1109,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   editors={editors}
                   reviewers={reviewers}
                   onEdit={
-                    isAdmin &&
+                    isOwner &&
                     mode === Mode.MEMBER &&
                     !isEditingNFT &&
                     !isEditingQuests &&
