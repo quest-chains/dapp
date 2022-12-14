@@ -43,6 +43,7 @@ import { Role } from '@/components/RoleTag';
 import { HeadComponent } from '@/components/Seo';
 import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
+import { useDropImage } from '@/hooks/useDropFiles';
 import { useInputText } from '@/hooks/useInputText';
 import { useToggleQuestChainPauseStatus } from '@/hooks/useToggleQuestChainPauseStatus';
 import { useUserProgress } from '@/hooks/useUserProgress';
@@ -50,7 +51,7 @@ import { useUserStatus } from '@/hooks/useUserStatus';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
-import { Metadata, uploadMetadata } from '@/utils/metadata';
+import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
@@ -60,6 +61,7 @@ import { AwardIcon } from '../icons/AwardIcon';
 import { EditIcon } from '../icons/EditIcon';
 import { PowerIcon } from '../icons/PowerIcon';
 import { TwitterIcon } from '../icons/TwitterIcon';
+import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
@@ -141,6 +143,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
+  const uploadImageProps = useDropImage();
+  const { imageFile, onResetImage } = uploadImageProps;
+  const [removeCoverImage, setRemoveCoverImage] = useState(false);
 
   const [isEditingMembers, setEditingMembers] = useState(false);
 
@@ -163,6 +168,14 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       setMetadataChanged(true);
     }
   }, [hasMetadataChanged, questChain, chainNameRef, chainDescRef]);
+
+  useEffect(
+    () =>
+      setMetadataChanged(
+        !!imageFile || (removeCoverImage && !!questChain.imageUrl),
+      ),
+    [imageFile, questChain, removeCoverImage],
+  );
 
   const isOwner: boolean = useMemo(
     () =>
@@ -238,57 +251,76 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
-  const onSubmitQuestChain = useCallback(
-    async ({ name, description }: { name: string; description: string }) => {
-      if (!questChain?.chainId) return;
-      if (!chainId || !provider || questChain?.chainId !== chainId) {
-        toast.error(
-          `Wrong Chain, please switch to ${
-            AVAILABLE_NETWORK_INFO[questChain?.chainId].label
-          }`,
-        );
-        return;
+  const onSubmitQuestChain = useCallback(async () => {
+    if (!chainId || !provider || questChain.chainId !== chainId) {
+      toast.error(
+        `Wrong Chain, please switch to ${
+          AVAILABLE_NETWORK_INFO[questChain.chainId].label
+        }`,
+      );
+      return;
+    }
+    setSubmittingQuestChain(true);
+    const metadata: Metadata = {
+      name: chainNameRef.current,
+      description: chainDescRef.current,
+      image_url: removeCoverImage
+        ? undefined
+        : questChain.imageUrl ?? undefined,
+    };
+    let tid;
+    try {
+      if (imageFile) {
+        tid = toast.loading('Uploading image to IPFS via web3.storage');
+        const imageHash = await uploadFiles([imageFile]);
+        metadata.image_url = `ipfs://${imageHash}`;
+        toast.dismiss(tid);
       }
-      setSubmittingQuestChain(true);
-      const metadata: Metadata = {
-        name,
-        description,
-      };
-      let tid = toast.loading('Uploading metadata to IPFS via web3.storage');
-      try {
-        const hash = await uploadMetadata(metadata);
-        const details = `ipfs://${hash}`;
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        );
-        const tx = await contract.edit(details);
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-        toast.success(`Successfully updated the quest chain: ${name}`);
-        refresh();
-      } catch (error) {
-        toast.dismiss(tid);
-        handleError(error);
-      } finally {
-        setEditingQuestChain(false);
-        setSubmittingQuestChain(false);
-      }
-    },
-    [refresh, chainId, questChain, provider],
-  );
+      tid = toast.loading('Uploading metadata to IPFS via web3.storage');
+      const hash = await uploadMetadata(metadata);
+      const details = `ipfs://${hash}`;
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      );
+      const tx = await contract.edit(details);
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
+      toast.success(`Successfully updated the quest chain: ${metadata.name}`);
+      refresh();
+    } catch (error) {
+      toast.dismiss(tid);
+      handleError(error);
+    } finally {
+      setEditingQuestChain(false);
+      setMetadataChanged(false);
+      setRemoveCoverImage(false);
+      setSubmittingQuestChain(false);
+      onResetImage();
+    }
+  }, [
+    refresh,
+    chainId,
+    questChain,
+    provider,
+    chainNameRef,
+    chainDescRef,
+    removeCoverImage,
+    imageFile,
+    onResetImage,
+  ]);
 
   const router = useRouter();
 
@@ -569,12 +601,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     px={6}
                     height={10}
                     onClick={() => {
-                      if (
-                        !chainId ||
-                        !questChain ||
-                        !provider ||
-                        chainId !== questChain.chainId
-                      ) {
+                      if (!provider || chainId !== questChain.chainId) {
                         toast.error(
                           `Wrong Chain, please switch to ${
                             AVAILABLE_NETWORK_INFO[questChain.chainId].label
@@ -588,13 +615,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       }
                       if (!chainDescRef.current) {
                         toast.error('Description cannot be empty');
-                        return;
-                      }
-                      if (
-                        chainNameRef.current === questChain.name &&
-                        chainDescRef.current === questChain.description
-                      ) {
-                        toast.error('No change in name or description');
                         return;
                       }
                       onUpdateQuestChainConfirmationOpen();
@@ -613,6 +633,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   color="#9EFCE5"
                   onClick={() => {
                     setEditingQuestChain(false);
+                    onResetImage();
+                    setRemoveCoverImage(false);
                     setMetadataChanged(false);
                   }}
                   isDisabled={isSubmittingQuestChain}
@@ -672,10 +694,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     <ConfirmationModal
                       onSubmit={() => {
                         onUpdateQuestChainConfirmationClose();
-                        onSubmitQuestChain({
-                          name: chainNameRef.current,
-                          description: chainDescRef.current,
-                        });
+                        onSubmitQuestChain();
                       }}
                       title="Update quest chain"
                       content="Are you sure you want to update this quest chain?"
@@ -687,11 +706,13 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               </Flex>
 
               {/* quest chain Description */}
-              <Flex mb={8}>
-                {!isEditingQuestChain && questChain.description && (
+              {!isEditingQuestChain && questChain.description && (
+                <Flex mb={8}>
                   <MarkdownViewer markdown={questChain.description} />
-                )}
-                {isEditingQuestChain && (
+                </Flex>
+              )}
+              {isEditingQuestChain && (
+                <>
                   <MarkdownEditor
                     value={chainDescRef.current}
                     onChange={value => {
@@ -699,8 +720,31 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       checkMetadataChanged();
                     }}
                   />
-                )}
-              </Flex>
+                </>
+              )}
+              {isEditingQuestChain && (
+                <Flex mb={8} pt={2}>
+                  <UploadImageForm
+                    {...uploadImageProps}
+                    label="Cover Image"
+                    formControlProps={{
+                      w: '100%',
+                      position: 'relative',
+                    }}
+                    imageProps={{
+                      maxHeight: '16rem',
+                      w: 'auto',
+                    }}
+                    dropzoneProps={{
+                      ...uploadImageProps.dropzoneProps,
+                      width: '100%',
+                      height: '16rem',
+                    }}
+                    defaultImageUri={ipfsUriToHttp(questChain.imageUrl)}
+                    onResetDefaultImage={() => setRemoveCoverImage(true)}
+                  />
+                </Flex>
+              )}
 
               <Flex
                 direction="column"
