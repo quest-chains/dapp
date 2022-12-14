@@ -263,6 +263,7 @@ export const RolesEditor: React.FC<{
                 value={newRole}
                 placeholder="Select role"
                 isDisabled={
+                  isSaving ||
                   ownerAddress === address ||
                   (memberToSave && memberToSave?.[0] !== address)
                 }
@@ -283,7 +284,9 @@ export const RolesEditor: React.FC<{
                 variant="outline"
                 icon={<Image src={TrashOutlined.src} alt="trash" />}
                 onClick={() => onRemove(address)}
-                isDisabled={ownerAddress === address || newRole === 'Remove'}
+                isDisabled={
+                  ownerAddress === address || newRole === 'Remove' || isSaving
+                }
                 visibility={
                   ownerAddress === address ||
                   (memberToSave && memberToSave?.[0] !== address)
