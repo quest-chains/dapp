@@ -150,6 +150,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   const [isEditingMembers, setEditingMembers] = useState(false);
 
   const [isEditingNFT, setEditingNFT] = useState(false);
+  const {
+    isOpen: isEditNFTOpen,
+    onOpen: onEditNFTOpen,
+    onClose: onEditNFTClose,
+  } = useDisclosure();
 
   const checkMetadataChanged = useCallback(() => {
     if (
@@ -345,6 +350,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
         );
         return;
       }
+      onEditNFTClose();
       setSavingNFT(true);
 
       let tid = toast.loading(
@@ -380,7 +386,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
         setEditingNFT(false);
       }
     },
-    [refresh, questChain, chainId, provider],
+    [refresh, questChain, chainId, provider, onEditNFTClose],
   );
 
   return (
@@ -781,7 +787,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isEditingQuests &&
                   !isEditingQuestChain && (
                     <Button
-                      onClick={() => setEditingNFT(g => !g)}
+                      onClick={() => {
+                        setEditingNFT(true);
+                        onEditNFTOpen();
+                      }}
                       w="100%"
                       mt={6}
                       isLoading={isSavingNFT}
@@ -1093,7 +1102,10 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isTogglingPauseStatus &&
                   !isEditingQuestChain && (
                     <Button
-                      onClick={() => setEditingNFT(g => !g)}
+                      onClick={() => {
+                        setEditingNFT(true);
+                        onEditNFTOpen();
+                      }}
                       w="100%"
                       mt={6}
                       isLoading={isSavingNFT}
@@ -1152,7 +1164,13 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
             </Flex>
           </Flex>
           {mode === Mode.MEMBER && isAdmin && (
-            <Modal isOpen={isEditingNFT} onClose={() => setEditingNFT(false)}>
+            <Modal
+              isOpen={isEditingNFT && isEditNFTOpen}
+              onClose={() => {
+                onEditNFTClose();
+                setEditingNFT(false);
+              }}
+            >
               <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
               <ModalContent maxW="80rem" p={0} mx={4}>
                 <ModalCloseButton />
