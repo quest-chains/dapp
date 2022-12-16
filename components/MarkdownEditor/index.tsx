@@ -7,14 +7,16 @@ const Editor = dynamic(() => import('./MarkdownEditor'), {
   ssr: false,
 });
 
+type EditorProps = {
+  value: string;
+  height?: string;
+  placeholder?: string;
+  onChange: (newValue: string) => void;
+  isDisabled?: boolean;
+};
+
 export const MarkdownEditor: React.FC<
-  {
-    value: string;
-    height?: string;
-    placeholder?: string;
-    onChange: (newValue: string) => void;
-    isDisabled?: boolean;
-  } & BoxProps
+  EditorProps & Omit<BoxProps, keyof EditorProps>
 > = ({
   value,
   placeholder,
