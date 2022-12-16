@@ -685,6 +685,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       fontFamily="heading"
                       mb={3}
                       defaultValue={chainNameRef.current}
+                      isDisabled={isSubmittingQuestChain}
                       onChange={e => {
                         setChainName(e.target.value);
                         checkMetadataChanged();
@@ -715,6 +716,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 <>
                   <MarkdownEditor
                     value={chainDescRef.current}
+                    isDisabled={isSubmittingQuestChain}
                     onChange={value => {
                       setChainDescription(value);
                       checkMetadataChanged();
@@ -742,6 +744,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     }}
                     defaultImageUri={ipfsUriToHttp(questChain.imageUrl)}
                     onResetDefaultImage={() => setRemoveCoverImage(true)}
+                    isDisabled={isSubmittingQuestChain}
                   />
                 </Flex>
               )}

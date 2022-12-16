@@ -25,6 +25,7 @@ export const UploadImageForm = ({
   imageProps = {},
   defaultImageUri: defaultImageUriInput,
   onResetDefaultImage,
+  isDisabled = false,
 }: DropImageType & {
   defaultImageUri?: string | null | undefined;
   onResetDefaultImage?: () => void;
@@ -32,18 +33,22 @@ export const UploadImageForm = ({
   labelColor?: string;
   formControlProps?: FormControlProps;
   imageProps?: Omit<ImageProps, 'src'> & BoxProps;
+  isDisabled?: boolean;
 }) => {
   const [defaultImageUri, setDefaultImageUri] = useState<string>(
     defaultImageUriInput ?? '',
   );
 
   return (
-    <FormControl {...formControlProps}>
+    <FormControl
+      {...(isDisabled ? { cursor: 'not-allowed' } : {})}
+      {...formControlProps}
+    >
       <FormLabel color={labelColor} htmlFor="imageInput">
         {label}
       </FormLabel>
       {imageFile && (
-        <Flex pos="relative">
+        <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
           {typeof window !== 'undefined' && (
             <Image
               {...imageProps}
@@ -62,11 +67,12 @@ export const UploadImageForm = ({
             aria-label={''}
             backdropFilter="blur(40px)"
             boxShadow="inset 0px 0px 0px 1px white"
+            isDisabled={isDisabled}
           />
         </Flex>
       )}
       {!imageFile && defaultImageUri && onResetDefaultImage && (
-        <Flex pos="relative">
+        <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
           {typeof window !== 'undefined' && (
             <Image
               {...imageProps}
@@ -88,6 +94,7 @@ export const UploadImageForm = ({
             aria-label={''}
             backdropFilter="blur(40px)"
             boxShadow="inset 0px 0px 0px 1px white"
+            isDisabled={isDisabled}
           />
         </Flex>
       )}
@@ -99,7 +106,8 @@ export const UploadImageForm = ({
           borderStyle="dashed"
           borderRadius={20}
           p={10}
-          onClick={onOpenImageInput}
+          onClick={isDisabled ? undefined : onOpenImageInput}
+          {...(isDisabled ? { pointerEvents: 'none' } : {})}
         >
           <input {...inputProps} id="imageInput" color="white" />
           <Flex
