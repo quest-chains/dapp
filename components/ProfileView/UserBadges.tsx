@@ -4,7 +4,6 @@ import {
   Grid,
   Heading,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -24,6 +23,8 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { TokenImageOrVideo } from '@/components/TokenImage/TokenImageOrVideo';
 import { useUserBadgesForAllChains } from '@/hooks/useUserBadgesForAllChains';
 import { QUESTCHAINS_URL } from '@/utils/constants';
+
+import { TwitterIcon } from '../icons/TwitterIcon';
 
 type QuestChainBadgeInfo = {
   chainId: string;
@@ -178,13 +179,12 @@ export const UserBadges: React.FC<{
                     title={QCmessage}
                     via="questchainz"
                   >
-                    <Button bgColor="#4A99E9" p={4} h={7}>
-                      <Image
-                        src="/twitter.svg"
-                        alt="twitter"
-                        height={4}
-                        mr={1}
-                      />
+                    <Button
+                      bgColor="#4A99E9"
+                      p={4}
+                      h={7}
+                      leftIcon={<TwitterIcon />}
+                    >
                       Tweet
                     </Button>
                   </TwitterShareButton>

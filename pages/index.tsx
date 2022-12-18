@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 
 import { BuiltWith } from '@/components/Landing/BuiltWith';
 import { Creators } from '@/components/Landing/Creators';
@@ -20,17 +20,6 @@ const Index: React.FC = () => {
       <Creators />
       <Team />
       <BuiltWith />
-      <Flex
-        fontSize={{ base: 18, md: 36 }}
-        mb={{ base: 4, md: 10 }}
-        alignItems="center"
-      >
-        2022
-        <Heading mx={4} color="main" fontSize={{ base: 18, md: 38 }}>
-          Quest Chains.
-        </Heading>{' '}
-        All rights reserved.
-      </Flex>
     </Flex>
   );
 };

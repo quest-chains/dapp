@@ -7,19 +7,18 @@ import {
   Flex,
   HStack,
   Image,
-  Input,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { MutableRefObject, useState } from 'react';
+import { useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
-import { MarkdownEditor } from '../MarkdownEditor';
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock } from './AddQuestBlock';
+import { EditingQuest } from './EditingQuest';
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
@@ -101,6 +100,7 @@ export const QuestsForm: React.FC<{
                     setQuestName={setQuestName}
                     setQuestDesc={setQuestDesc}
                     onSave={onEditQuest}
+                    onCancel={() => setIsEditingQuest(false)}
                     index={index}
                   />
                 ) : (
@@ -115,7 +115,6 @@ export const QuestsForm: React.FC<{
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
-                    isCreatingChain
                   />
                 ),
               )}
@@ -148,9 +147,10 @@ export const QuestsForm: React.FC<{
                 px={{ base: 10, md: 40 }}
                 isDisabled={isEditingQuest}
                 onClick={() => setIsAddingQuest(true)}
+                textTransform="uppercase"
               >
                 <AddIcon fontSize="sm" mr={2} />
-                Add a Quest
+                Add a quest
               </Button>
             </>
           )}
@@ -181,7 +181,7 @@ export const QuestsForm: React.FC<{
         <SubmitButton
           isDisabled={isSubmitting}
           isLoading={isSubmitting}
-          onClick={async () => onPublishQuestChain(quests, startAsDisabled)}
+          onClick={() => onPublishQuestChain(quests, startAsDisabled)}
           flex={1}
           fontSize={{ base: 12, md: 16 }}
         >
@@ -189,29 +189,5 @@ export const QuestsForm: React.FC<{
         </SubmitButton>
       </Flex>
     </>
-  );
-};
-
-export const EditingQuest: React.FC<{
-  nameRef: MutableRefObject<string>;
-  descRef: MutableRefObject<string>;
-  setQuestName: (name: string) => void;
-  setQuestDesc: (description: string) => void;
-  onSave: (name: string, description: string, index: number) => void;
-  index: number;
-}> = ({ nameRef, descRef, setQuestName, setQuestDesc, onSave, index }) => {
-  return (
-    <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
-      <Input
-        bg="#0F172A"
-        defaultValue={nameRef.current}
-        maxLength={60}
-        onChange={e => setQuestName(e.target.value)}
-      />
-      <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
-      <Button onClick={() => onSave(nameRef.current, descRef.current, index)}>
-        Save
-      </Button>
-    </Flex>
   );
 };

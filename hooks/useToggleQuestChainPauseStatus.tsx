@@ -1,4 +1,3 @@
-import { Button } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -8,11 +7,10 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-import { PowerIcon } from './icons/PowerIcon';
-export const QuestChainPauseStatus: React.FC<{
-  questChain: graphql.QuestChainInfoFragment;
-  refresh: () => void | Promise<void>;
-}> = ({ questChain, refresh }) => {
+export const useToggleQuestChainPauseStatus = (
+  questChain: graphql.QuestChainInfoFragment,
+  refresh: () => void | Promise<void>,
+): { isTogglingPauseStatus: boolean; togglePause: () => Promise<void> } => {
   const { provider, chainId } = useWallet();
   const [isLoading, setLoading] = useState(false);
 
@@ -63,16 +61,5 @@ export const QuestChainPauseStatus: React.FC<{
     }
   }, [chainId, refresh, questChain, provider]);
 
-  return (
-    <Button
-      onClick={togglePause}
-      isLoading={isLoading}
-      variant="ghost"
-      bgColor="rgba(71, 85, 105, 0.15)"
-      fontSize="xs"
-      leftIcon={<PowerIcon />}
-    >
-      {questChain.paused ? 'Enable quest chain' : 'Disable quest chain'}
-    </Button>
-  );
+  return { isTogglingPauseStatus: isLoading, togglePause };
 };

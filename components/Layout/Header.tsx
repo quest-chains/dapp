@@ -13,7 +13,7 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
       backdropFilter="blur(8px)"
       pos="fixed"
     >
-      <NextLink href="/" passHref>
+      <NextLink href="/explore" passHref>
         <ChakraLink display="block" _hover={{}} w={16}>
           <Image src="/logo.png" alt="Quest Chains" height={9} />
         </ChakraLink>

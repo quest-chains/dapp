@@ -13,9 +13,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { MenuLandingDesktop } from '@/components/Landing/MenuLandingDesktop';
 import { MenuLandingMobile } from '@/components/Landing/MenuLandingMobile';
+import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 import SearchQuestChains from '@/components/SearchQuestChains';
-import { useWallet } from '@/web3';
 
 import { DesktopMenu } from './DesktopMenu';
 import { MobileMenu } from './MobileMenu';
@@ -23,7 +23,6 @@ import { MobileMenu } from './MobileMenu';
 export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
-  const { isConnected } = useWallet();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(o => !o);
   const router = useRouter();
@@ -58,13 +57,11 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
   return (
     <Stack
       align="center"
-      p={0}
-      m={0}
-      spacing={0}
       fontFamily="body"
       minH="100vh"
+      w="100%"
+      justify="space-between"
     >
-      {/* {!isLanding && ( */}
       <Header>
         {isSmallScreen ? (
           isLanding ? (
@@ -82,20 +79,13 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           <DesktopMenu onSearchOpen={onSearchOpen} />
         )}
       </Header>
-      {/* )} */}
       {!isLanding && (
         <Flex
           direction="column"
           w="100%"
-          visibility={
-            isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
-          }
-          pos="relative"
-          top={20}
-          py="2.75rem !important"
-          opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
-          transition="opacity 0.25s"
-          p={{ base: 4, sm: 8, lg: 0 }}
+          pt="6rem"
+          pb={8}
+          px={{ base: 4, sm: 8, lg: 0 }}
           maxW="8xl"
         >
           {children}
@@ -106,17 +96,13 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
         <Flex
           direction="column"
           w="100%"
-          flex={1}
-          visibility={
-            isOpen && isSmallScreen && isConnected ? 'hidden' : 'visible'
-          }
-          opacity={isOpen && isSmallScreen && isConnected ? 0 : 1}
           transition="opacity 0.25s"
           overflowX="hidden"
         >
           {children}
         </Flex>
       )}
+      <Footer />
       <Modal
         isOpen={isSearchOpen}
         onClose={onSearchClose}

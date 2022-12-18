@@ -104,42 +104,32 @@ export const MetadataForm: React.FC<{
         </Text>
       </HStack>
       <form>
-        <Flex
-          w="100%"
-          align="flex-start"
-          gap={{ base: 0, md: 20 }}
-          mb={14}
-          flexDirection={{ base: 'column', md: 'row' }}
-        >
-          <VStack w={{ base: 'full', md: '50%' }} spacing={4}>
-            <FormControl w="full" isRequired={true}>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input
-                color="white"
-                defaultValue={nameRef.current}
-                bg="#0F172A"
-                id="name"
-                onChange={e => setName(e.target.value)}
-                placeholder="Quest chain name"
-              />
-            </FormControl>
-            <FormControl w="full" isRequired={true}>
-              <FormLabel htmlFor="description">Description</FormLabel>
-              <MarkdownEditor
-                height="12rem"
-                value={descRef.current}
-                placeholder="Quest chain description"
-                onChange={setDescription}
-              />
-            </FormControl>
-          </VStack>
+        <VStack w="100%" align="stretch" mb={10} spacing={4}>
+          <FormControl w="full" isRequired={true}>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input
+              color="white"
+              defaultValue={nameRef.current}
+              bg="#0F172A"
+              id="name"
+              onChange={e => setName(e.target.value)}
+              placeholder="Quest chain name"
+            />
+          </FormControl>
+          <FormControl w="full" isRequired={true}>
+            <FormLabel htmlFor="description">Description</FormLabel>
+            <MarkdownEditor
+              value={descRef.current}
+              placeholder="Quest chain description"
+              onChange={setDescription}
+            />
+          </FormControl>
           <UploadImageForm
             {...uploadImageProps}
             label="Cover Image (optional)"
             formControlProps={{
-              w: { base: 'full', md: '50%' },
+              w: '100%',
               position: 'relative',
-              top: '1.5rem',
             }}
             imageProps={{
               maxHeight: '16rem',
@@ -150,7 +140,7 @@ export const MetadataForm: React.FC<{
               height: '16rem',
             }}
           />
-        </Flex>
+        </VStack>
         <Flex
           mt={4}
           w="100%"

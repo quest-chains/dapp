@@ -42,12 +42,14 @@ export const uriToHttpAsArray = (uri: string): string[] => {
       if (hash.startsWith('ipfs')) {
         const newHash = hash.split('/')[1];
         return [
+          `https://w3s.link/ipfs/${newHash}`,
           `https://gateway.ipfs.io/ipfs/${newHash}/`,
           `https://gateway.pinata.cloud/ipfs/${newHash}/`,
           `https://ipfs.io/ipfs/${newHash}/`,
         ];
       }
       return [
+        `https://w3s.link/ipfs/${hash}`,
         `https://gateway.ipfs.io/ipfs/${hash}/`,
         `https://gateway.pinata.cloud/ipfs/${hash}/`,
         `https://ipfs.io/ipfs/${hash}/`,

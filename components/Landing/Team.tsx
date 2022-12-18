@@ -147,7 +147,7 @@ const ProfileCard = ({
         </ChakraLink>
       )}
       {portfolio && (
-        <ChakraLink href={portfolio} isExternal borderRadius="full">
+        <ChakraLink href={portfolio} isExternal borderRadius="full" _hover={{}}>
           <Heading
             color="blue.200"
             fontSize={'xl'}

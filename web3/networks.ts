@@ -1,7 +1,7 @@
-import EthereumImage from '@/assets/ethereum.svg';
-import GnosisImage from '@/assets/gnosis.svg';
-import PolygonImage from '@/assets/polygon.svg';
-import { INFURA_ID, SUPPORTED_NETWORKS } from '@/utils/constants';
+import { INFURA_ID, SUPPORTED_NETWORKS } from '../utils/constants';
+import EthereumImage from './images/ethereum.svg';
+import GnosisImage from './images/gnosis.svg';
+import PolygonImage from './images/polygon.svg';
 
 export type NetworkInfo = {
   [chainId: string]: {

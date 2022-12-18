@@ -7,6 +7,15 @@ import { getExplorerLabel, getTxUrl } from '@/web3';
 export const handleError = (error: unknown) => {
   // eslint-disable-next-line no-console
   console.error(error);
+
+  const isUserError =
+    // (error as Error)?.message?.toLowerCase().includes('user denied') ||
+    (error as Error)?.message?.toLowerCase().includes('user rejected') || false;
+  if (isUserError) {
+    toast.error('User rejected transaction');
+    return;
+  }
+
   toast.error(
     (error as { error?: Error }).error?.message ?? (error as Error).message,
   );

@@ -3,18 +3,17 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Image,
   Input,
   Textarea,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import Edit from '@/assets/Edit.svg';
 import { useDropImage } from '@/hooks/useDropFiles';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 
+import { EditIcon } from '../icons/EditIcon';
 import { SubmitButton } from '../SubmitButton';
 import { UploadImageForm } from '../UploadImageForm';
 
@@ -24,9 +23,9 @@ const CustomNFTForm2D: React.FC<{
   onSubmit: (
     metadataUri: string,
     nftUrl: string | undefined,
-    isPremium: boolean,
   ) => void | Promise<void>;
-}> = ({ chainName, onBack, onSubmit }) => {
+  submitLabel?: string;
+}> = ({ chainName, onBack, onSubmit, submitLabel = 'Continue to Step 3' }) => {
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
 
@@ -62,7 +61,7 @@ const CustomNFTForm2D: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details, metadata.image_url, true);
+      onSubmit(details, metadata.image_url);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
@@ -130,14 +129,14 @@ const CustomNFTForm2D: React.FC<{
             borderRadius="full"
             isDisabled
             w="full"
+            leftIcon={<EditIcon />}
           >
-            <Image src={Edit.src} alt="Edit" mr={3} />
             To continue, upload an image
           </Button>
         )}
         {!isDisabled && (
           <SubmitButton isLoading={isLoading} onClick={exportMetadata} w="full">
-            Continue to Step 3
+            {submitLabel}
           </SubmitButton>
         )}
       </Flex>

@@ -40,9 +40,9 @@ const NFTForm2D: React.FC<{
   onSubmit: (
     metadataUri: string,
     nftUrl: string | undefined,
-    isPremium: boolean,
   ) => void | Promise<void>;
-}> = ({ chainName, onBack, onSubmit }) => {
+  submitLabel?: string;
+}> = ({ chainName, onBack, onSubmit, submitLabel = 'Continue to Step 3' }) => {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
   const [bgIndex, setBgIndex] = useState<number>(0);
@@ -93,7 +93,7 @@ const NFTForm2D: React.FC<{
       hash = await uploadMetadata(metadata);
       const details = `ipfs://${hash}`;
       toast.dismiss(tid);
-      onSubmit(details, metadata.image_url, false);
+      onSubmit(details, metadata.image_url);
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
@@ -287,7 +287,7 @@ const NFTForm2D: React.FC<{
           </Button>
         )}
         <SubmitButton isLoading={isLoading} onClick={exportMetadata} w="full">
-          Continue to Step 3
+          {submitLabel}
         </SubmitButton>
       </Flex>
     </VStack>
