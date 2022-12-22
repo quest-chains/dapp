@@ -192,7 +192,7 @@ const Create: React.FC = () => {
     ],
   );
 
-  const QCURL = `${QUESTCHAINS_URL}/chain/${chainId}/${chainAddress}`;
+  const QCURL = `${QUESTCHAINS_URL}/${chainId}/${chainAddress}`;
   const QCmessage = 'I have just created a quest chain, check it out!';
 
   return (
@@ -325,7 +325,7 @@ const Create: React.FC = () => {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          router.push(`/chain/${chainId}/${chainAddress}`);
+          router.push(`/${chainId}/${chainAddress}`);
         }}
         scrollBehavior="inside"
         isCentered
