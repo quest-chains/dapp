@@ -19,11 +19,12 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
-import { MetadataForm } from '@/components/CreateChain/MetadataForm';
+import { MetadataForm, slugify } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
 import { QuestsForm } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
+import { TwitterIcon } from '@/components/icons/TwitterIcon';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { MastodonShareButton } from '@/components/MastodonShareButton';
@@ -37,7 +38,7 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { TrackEvent } from '@/utils/plausibleHelpers';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
-import { isSupportedNetwork, useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, isSupportedNetwork, useWallet } from '@/web3';
 
 const Create: React.FC = () => {
   const router = useRouter();
@@ -51,7 +52,7 @@ const Create: React.FC = () => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -245,23 +246,39 @@ const Create: React.FC = () => {
 
       {step >= 2 && (
         <Flex gap={8} justifyContent="space-between">
-          <Flex flexDir="column" gap={8}>
+          <Flex flexDir="column">
             <Text
               fontSize="5xl"
               fontWeight="bold"
               lineHeight="3.5rem"
               fontFamily="heading"
+              mb={4}
             >
               {chainName}
             </Text>
-            <Box>{chainId && <NetworkDisplay chainId={chainId} />}</Box>
+
+            {chainId && (
+              <Flex mb={8}>
+                <NetworkDisplay chainId={chainId} mr={3} />
+                <Text
+                  ml={1}
+                  display="inline-block"
+                  fontStyle="italic"
+                  fontSize="sm"
+                  color="gray.500"
+                >
+                  questchains.xyz/
+                  {AVAILABLE_NETWORK_INFO[chainId].urlName}/{slugify(slug)}
+                </Text>
+              </Flex>
+            )}
             <MarkdownViewer markdown={chainDescription} />
           </Flex>
           {nftUrl && (
             <Flex
               align="center"
               justify="center"
-              maxW="min(373px, 100%)"
+              minW="min(373px, 100%)"
               maxH="min(373px, 100%)"
               borderRadius={8}
               overflow="hidden"
@@ -325,7 +342,17 @@ const Create: React.FC = () => {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          router.push(`/${chainId}/${chainAddress}`);
+          if (chainId) {
+            if (slug) {
+              router.push(
+                `/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug}`,
+              );
+            } else {
+              router.push(
+                `/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${chainAddress}`,
+              );
+            }
+          }
         }}
         scrollBehavior="inside"
         isCentered
@@ -361,8 +388,12 @@ const Create: React.FC = () => {
                 title={QCmessage}
                 via="questchainz"
               >
-                <Button bgColor="#4A99E9" p={4} h={7}>
-                  <Image src="/twitter.svg" alt="twitter" height={4} mr={1} />
+                <Button
+                  bgColor="#4A99E9"
+                  p={4}
+                  h={7}
+                  leftIcon={<TwitterIcon />}
+                >
                   Tweet
                 </Button>
               </TwitterShareButton>
