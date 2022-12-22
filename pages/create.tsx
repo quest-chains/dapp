@@ -47,10 +47,11 @@ const Create: React.FC = () => {
   const [chainName, setChainName] = useState('');
   const [chainDescription, setChainDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [slug, setSlug] = useState('');
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -64,12 +65,14 @@ const Create: React.FC = () => {
     name: string,
     description: string,
     metadataUri: string,
+    slug?: string,
     imageUrl?: string,
   ) => {
     setChainName(name);
     setChainDescription(description);
     setChainUri(metadataUri);
     setImageUrl(imageUrl || '');
+    setSlug(slug || '');
     setStep(2);
   };
 

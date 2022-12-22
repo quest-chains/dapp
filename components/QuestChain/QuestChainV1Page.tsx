@@ -23,6 +23,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
+import { ethers } from 'ethers';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -143,6 +144,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
+  const [chainSlugRef, setChainSlug] = useInputText(questChain?.slug || '');
   const uploadImageProps = useDropImage();
   const { imageFile, onResetImage } = uploadImageProps;
   const [removeCoverImage, setRemoveCoverImage] = useState(false);
@@ -160,19 +162,29 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     if (
       hasMetadataChanged &&
       chainNameRef.current === questChain.name &&
-      chainDescRef.current === questChain.description
+      chainDescRef.current === questChain.description &&
+      chainSlugRef.current === questChain.slug
     ) {
       setMetadataChanged(false);
     } else if (
       !hasMetadataChanged &&
       !(
         chainNameRef.current === questChain.name &&
-        chainDescRef.current === questChain.description
+        chainDescRef.current === questChain.description &&
+        chainSlugRef.current === questChain.slug
       )
     ) {
       setMetadataChanged(true);
     }
-  }, [hasMetadataChanged, questChain, chainNameRef, chainDescRef]);
+  }, [
+    hasMetadataChanged,
+    chainNameRef,
+    questChain.name,
+    questChain.description,
+    questChain.slug,
+    chainDescRef,
+    chainSlugRef,
+  ]);
 
   useEffect(
     () =>
@@ -256,6 +268,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
+  const router = useRouter();
+
   const onSubmitQuestChain = useCallback(async () => {
     if (!chainId || !provider || questChain.chainId !== chainId) {
       toast.error(
@@ -269,6 +283,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     const metadata: Metadata = {
       name: chainNameRef.current,
       description: chainDescRef.current,
+      slug: chainSlugRef.current,
       image_url: removeCoverImage
         ? undefined
         : questChain.imageUrl ?? undefined,
@@ -304,7 +319,14 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       await waitUntilBlock(chainId, receipt.blockNumber);
       toast.dismiss(tid);
       toast.success(`Successfully updated the quest chain: ${metadata.name}`);
-      refresh();
+
+      if (chainSlugRef.current !== questChain.slug) {
+        router.push(
+          `/chain/${AVAILABLE_NETWORK_INFO[chainId]}/${chainSlugRef.current}`,
+        );
+      } else {
+        refresh();
+      }
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
@@ -316,18 +338,22 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       onResetImage();
     }
   }, [
-    refresh,
     chainId,
-    questChain,
     provider,
+    questChain.chainId,
+    questChain.imageUrl,
+    questChain.address,
+    questChain.version,
+    questChain.slug,
     chainNameRef,
     chainDescRef,
+    chainSlugRef,
     removeCoverImage,
     imageFile,
+    refresh,
+    router,
     onResetImage,
   ]);
-
-  const router = useRouter();
 
   const QCmessage =
     'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
@@ -550,6 +576,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                               setEditingQuestChain(true);
                               setChainName(questChain.name ?? '');
                               setChainDescription(questChain.description ?? '');
+                              setChainSlug(questChain.slug ?? '');
                             }}
                             fontSize="xs"
                             leftIcon={<EditIcon fontSize="sm" />}
@@ -617,6 +644,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       }
                       if (!chainNameRef.current) {
                         toast.error('Name cannot be empty');
+                        return;
+                      }
+                      // if for some reason people will choose to use an eth address as slug they can mess everything up
+                      // that's why we need to disallow eth addresses as slugs
+                      if (ethers.utils.isAddress(chainSlugRef.current)) {
+                        toast.error('Slug cannot be an address');
                         return;
                       }
                       if (!chainDescRef.current) {
@@ -711,6 +744,40 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   </>
                 )}
               </Flex>
+              {isEditingQuestChain && (
+                <Flex
+                  justifyContent="space-between"
+                  w="full"
+                  mb={3}
+                  alignItems="center"
+                >
+                  <>
+                    <Text mr={2}>Slug: </Text>
+                    <Input
+                      fontSize="xl"
+                      fontWeight="light"
+                      defaultValue={chainSlugRef.current}
+                      isDisabled={isSubmittingQuestChain}
+                      isInvalid={ethers.utils.isAddress(chainSlugRef.current)}
+                      onChange={e => {
+                        setChainSlug(e.target.value);
+                        checkMetadataChanged();
+                      }}
+                    />
+
+                    <ConfirmationModal
+                      onSubmit={() => {
+                        onUpdateQuestChainConfirmationClose();
+                        onSubmitQuestChain();
+                      }}
+                      title="Update quest chain"
+                      content="Are you sure you want to update this quest chain?"
+                      isOpen={isUpdateQuestChainConfirmationOpen}
+                      onClose={onUpdateQuestChainConfirmationClose}
+                    />
+                  </>
+                </Flex>
+              )}
 
               {/* quest chain Description */}
               {!isEditingQuestChain && questChain.description && (

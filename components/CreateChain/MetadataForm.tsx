@@ -28,11 +28,13 @@ export const MetadataForm: React.FC<{
     name: string,
     description: string,
     metadataUri: string,
+    slug?: string,
     imageUrl?: string,
   ) => void | Promise<void>;
 }> = ({ onBack, onSubmit }) => {
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
+  const [slugRef, setSlug] = useInputText();
 
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
@@ -50,6 +52,7 @@ export const MetadataForm: React.FC<{
       const metadata: Metadata = {
         name: nameRef.current,
         description: descRef.current,
+        slug: slugRef.current,
       };
       let imageUrl;
       if (imageFile) {
@@ -64,9 +67,16 @@ export const MetadataForm: React.FC<{
       const metadataUri = `ipfs://${hash}`;
       toast.dismiss(tid);
 
-      await onSubmit(nameRef.current, descRef.current, metadataUri, imageUrl);
+      await onSubmit(
+        nameRef.current,
+        descRef.current,
+        metadataUri,
+        slugRef.current,
+        imageUrl,
+      );
       setName('');
       setDescription('');
+      setSlug('');
     } catch (error) {
       if (tid) {
         toast.dismiss(tid);
@@ -75,7 +85,16 @@ export const MetadataForm: React.FC<{
     } finally {
       setSubmitting(false);
     }
-  }, [nameRef, descRef, onSubmit, imageFile, setName, setDescription]);
+  }, [
+    nameRef,
+    descRef,
+    slugRef,
+    onSubmit,
+    imageFile,
+    setName,
+    setDescription,
+    setSlug,
+  ]);
 
   return (
     <VStack
@@ -114,6 +133,17 @@ export const MetadataForm: React.FC<{
               id="name"
               onChange={e => setName(e.target.value)}
               placeholder="Quest chain name"
+            />
+          </FormControl>
+          <FormControl w="full" isRequired={true}>
+            <FormLabel htmlFor="name">Slug</FormLabel>
+            <Input
+              color="white"
+              defaultValue={slugRef.current}
+              bg="#0F172A"
+              id="name"
+              onChange={e => setSlug(e.target.value)}
+              placeholder="Quest chain slug"
             />
           </FormControl>
           <FormControl w="full" isRequired={true}>

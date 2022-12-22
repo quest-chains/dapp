@@ -1,5 +1,6 @@
 import { Spinner, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
+import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
@@ -11,9 +12,14 @@ import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
+import { CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
-const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
-  graphql;
+const {
+  getQuestChainAddresses,
+  getQuestChainsFromSlug,
+  getStatusesForChain,
+  getQuestChainInfo,
+} = graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -125,24 +131,43 @@ export async function getStaticPaths() {
 export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
+  let chainId = context.params?.chainId;
   const address = context.params?.address;
-  const chainId = context.params?.chainId;
 
   let questStatuses: graphql.QuestStatusInfoFragment[] = [];
 
   let questChain = null;
+
+  if (chainId && CHAIN_URL_MAPPINGS[chainId]) {
+    chainId = CHAIN_URL_MAPPINGS[chainId];
+  }
+
   if (address && chainId) {
-    try {
-      questStatuses = address
-        ? await getStatusesForChain(chainId, address)
-        : [];
-      questChain = address ? await getQuestChainInfo(chainId, address) : null;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Could not fetch quest chain for address ${address}`,
-        error,
-      );
+    if (ethers.utils.isAddress(address)) {
+      try {
+        questStatuses = address
+          ? await getStatusesForChain(chainId, address)
+          : [];
+        questChain = address ? await getQuestChainInfo(chainId, address) : null;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+      }
+    } else {
+      try {
+        const questChainsFromSlug = address
+          ? await getQuestChainsFromSlug(chainId, address)
+          : null;
+
+        questChain = questChainsFromSlug ? questChainsFromSlug[0] : null;
+        if (questChain) {
+          questStatuses = await getStatusesForChain(
+            chainId,
+            questChain.address,
+          );
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+      }
     }
   }
 
