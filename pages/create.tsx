@@ -193,7 +193,11 @@ const Create: React.FC = () => {
     ],
   );
 
-  const QCURL = `${QUESTCHAINS_URL}/${chainId}/${chainAddress}`;
+  const networkName = chainId
+    ? AVAILABLE_NETWORK_INFO[chainId].urlName
+    : chainId;
+
+  const QCURL = `${QUESTCHAINS_URL}/${networkName}/${slug || chainAddress}`;
   const QCmessage = 'I have just created a quest chain, check it out!';
 
   return (

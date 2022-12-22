@@ -14,6 +14,7 @@ import NextLink from 'next/link';
 import removeMd from 'remove-markdown';
 
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { AVAILABLE_NETWORK_INFO } from '@/web3';
 
 import { NetworkDisplay } from './NetworkDisplay';
 
@@ -22,6 +23,7 @@ type QuestChainTileProps = {
   chainId: string;
   name?: string | undefined | null;
   description?: string | undefined | null;
+  slug?: string | undefined | null;
   imageUrl?: string | undefined | null;
   completed?: number;
   quests: number;
@@ -33,6 +35,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   address,
   name,
   description,
+  slug,
   chainId,
   completed,
   quests,
@@ -40,7 +43,11 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   onClick = () => undefined,
   paused = false,
 }) => (
-  <NextLink as={`/${chainId}/${address}`} href="/[chainId]/[address]" passHref>
+  <NextLink
+    as={`/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug || address}`}
+    href="/[chainId]/[address]"
+    passHref
+  >
     <ChakraLink
       display="block"
       _hover={{}}
