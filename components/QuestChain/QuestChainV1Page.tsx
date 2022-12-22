@@ -326,7 +326,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
       if (chainSlugRef.current !== questChain.slug) {
         router.push(
-          `/chain/${AVAILABLE_NETWORK_INFO[chainId]}/${chainSlugRef.current}`,
+          `/${AVAILABLE_NETWORK_INFO[chainId]}/${chainSlugRef.current}`,
         );
       } else {
         refresh();
@@ -1073,8 +1073,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       </Flex>
                       {numSubmissionsToReview > 0 && (
                         <NextLink
-                          as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                          href={`/chain/[chainId]/[address]/review`}
+                          as={`/${questChain.chainId}/${questChain.address}/review`}
+                          href={`/[chainId]/[address]/review`}
                           passHref
                         >
                           <ChakraLink display="block" _hover={{}}>

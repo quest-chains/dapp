@@ -75,7 +75,7 @@ export const UserBadges: React.FC<{
     chainAddress: '',
   });
 
-  const QCURL = `${QUESTCHAINS_URL}/chain/${selectedNFT.chainId}/${selectedNFT.chainAddress}`;
+  const QCURL = `${QUESTCHAINS_URL}/${selectedNFT.chainId}/${selectedNFT.chainAddress}`;
   const QCmessage =
     'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
 

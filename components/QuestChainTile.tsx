@@ -40,11 +40,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   onClick = () => undefined,
   paused = false,
 }) => (
-  <NextLink
-    as={`/chain/${chainId}/${address}`}
-    href="/chain/[chainId]/[address]"
-    passHref
-  >
+  <NextLink as={`/${chainId}/${address}`} href="/[chainId]/[address]" passHref>
     <ChakraLink
       display="block"
       _hover={{}}

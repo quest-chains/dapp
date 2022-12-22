@@ -86,8 +86,8 @@ const QuestChainStatusView: React.FC<{
   questChain: graphql.QuestChainReviewInfoFragment;
 }> = ({ questChain: chain }) => (
   <NextLink
-    as={`/chain/${chain.chainId}/${chain.address}/review`}
-    href={`/chain/[chainId]/[address]/review`}
+    as={`/${chain.chainId}/${chain.address}/review`}
+    href={`/[chainId]/[address]/review`}
     passHref
   >
     <ChakraLink

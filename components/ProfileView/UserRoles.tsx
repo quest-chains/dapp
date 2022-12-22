@@ -157,8 +157,8 @@ const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
   roleInfo: { address, chainId, name, role, paused },
 }) => (
   <NextLink
-    as={`/chain/${chainId}/${address}`}
-    href={`/chain/[chainId]/[address]`}
+    as={`/${chainId}/${address}`}
+    href={`/[chainId]/[address]`}
     passHref
   >
     <ChakraLink

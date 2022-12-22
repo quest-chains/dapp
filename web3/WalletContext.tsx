@@ -75,10 +75,10 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       const network = (await ethersProvider.getNetwork()).chainId;
       const signerAddress = await ethersProvider.getSigner().getAddress();
 
-      const chain = `0x${network.toString(16)}`;
+      const chainId = `0x${network.toString(16)}`;
       setWalletState({
         provider: ethersProvider,
-        chainId: chain,
+        chainId,
         address: signerAddress.toLowerCase(),
         isMetaMask: prov.isMetaMask,
       });

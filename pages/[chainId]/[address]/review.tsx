@@ -84,8 +84,8 @@ const Review: React.FC<Props> = ({
       />
       <Flex w="full">
         <NextLink
-          as={`/chain/${questChain.chainId}/${questChain.address}`}
-          href="/chain/[chainId]/[address]"
+          as={`/${questChain.chainId}/${questChain.address}`}
+          href="/[chainId]/[address]"
           passHref
         >
           <ChakraLink display="block" _hover={{}} w="full">

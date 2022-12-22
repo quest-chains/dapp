@@ -701,8 +701,8 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                         review
                       </Flex>
                       <NextLink
-                        as={`/chain/${questChain.chainId}/${questChain.address}/review`}
-                        href={`/chain/[chainId]/[address]/review`}
+                        as={`/${questChain.chainId}/${questChain.address}/review`}
+                        href={`/[chainId]/[address]/review`}
                         passHref
                       >
                         <ChakraLink display="block" _hover={{}}>
