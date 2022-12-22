@@ -24,7 +24,7 @@ import { useMemo } from 'react';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { Role } from '@/components/RoleTag';
 import { useUserRolesForAllChains } from '@/hooks/useUserRolesForAllChains';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 type QuestChainRoleInfo = {
   address: string;
@@ -32,6 +32,7 @@ type QuestChainRoleInfo = {
   chainId: string;
   paused: boolean;
   name?: string | null | undefined;
+  slug?: string | null;
   role: Role;
 };
 
@@ -154,10 +155,10 @@ export const UserRoles: React.FC<{
 };
 
 const RoleDisplay: React.FC<{ roleInfo: QuestChainRoleInfo }> = ({
-  roleInfo: { address, chainId, name, role, paused },
+  roleInfo: { address, chainId, name, role, paused, slug },
 }) => (
   <NextLink
-    as={`/${chainId}/${address}`}
+    as={`/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug || address}`}
     href={`/[chainId]/[address]`}
     passHref
   >

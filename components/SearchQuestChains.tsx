@@ -70,12 +70,21 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           !error &&
           results.length > 0 &&
           results.map(
-            ({ address, name, description, chainId, quests, imageUrl }) => (
+            ({
+              address,
+              name,
+              description,
+              slug,
+              chainId,
+              quests,
+              imageUrl,
+            }) => (
               <QuestChainTile
                 {...{
                   address,
                   name,
                   description,
+                  slug,
                   chainId,
                   quests: quests.filter(q => !q.paused).length,
                   imageUrl,
