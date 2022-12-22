@@ -23,6 +23,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
+import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
 import { ethers } from 'ethers';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -145,6 +146,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     questChain?.description || '',
   );
   const [chainSlugRef, setChainSlug] = useInputText(questChain?.slug || '');
+  const [slug, setSlug] = useState(questChain?.slug || '');
+  const [slugAvailable, setSlugAvailable] = useState(true);
+
   const uploadImageProps = useDropImage();
   const { imageFile, onResetImage } = uploadImageProps;
   const [removeCoverImage, setRemoveCoverImage] = useState(false);
@@ -415,6 +419,20 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     [refresh, questChain, chainId, provider, onEditNFTClose],
   );
 
+  const fetchSearchResults = async (slug: string) => {
+    if (chainId) {
+      const qcFromSlug = await getQuestChainsFromSlug(chainId, slug);
+
+      if (slug === chainSlugRef.current) {
+        if (qcFromSlug.length === 0) {
+          setSlugAvailable(true);
+        } else {
+          setSlugAvailable(false);
+        }
+      }
+    }
+  };
+
   return (
     <Page>
       <HeadComponent
@@ -577,6 +595,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                               setChainName(questChain.name ?? '');
                               setChainDescription(questChain.description ?? '');
                               setChainSlug(questChain.slug ?? '');
+                              setSlug(questChain.slug ?? '');
                             }}
                             fontSize="xs"
                             leftIcon={<EditIcon fontSize="sm" />}
@@ -630,6 +649,13 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               <Flex gap="0.5rem" direction={{ base: 'column', md: 'row' }}>
                 {hasMetadataChanged && (
                   <SubmitButton
+                    isDisabled={
+                      (!slugAvailable &&
+                        slug !== questChain.slug &&
+                        slug !== '') ||
+                      slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
+                      ethers.utils.isAddress(chainSlugRef.current)
+                    }
                     fontSize="sm"
                     px={6}
                     height={10}
@@ -748,19 +774,28 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                 <Flex
                   justifyContent="space-between"
                   w="full"
-                  mb={3}
                   alignItems="center"
+                  mb={3}
+                  direction="column"
                 >
-                  <>
+                  <Flex w="full" alignItems="center">
                     <Text mr={2}>Slug: </Text>
                     <Input
                       fontSize="xl"
                       fontWeight="light"
                       defaultValue={chainSlugRef.current}
                       isDisabled={isSubmittingQuestChain}
-                      isInvalid={ethers.utils.isAddress(chainSlugRef.current)}
+                      isInvalid={
+                        ethers.utils.isAddress(chainSlugRef.current) ||
+                        !slugAvailable ||
+                        chainSlugRef.current.match(
+                          /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                        ) === null
+                      }
                       onChange={e => {
                         setChainSlug(e.target.value);
+                        setSlug(e.target.value);
+                        fetchSearchResults(e.target.value);
                         checkMetadataChanged();
                       }}
                     />
@@ -775,7 +810,17 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       isOpen={isUpdateQuestChainConfirmationOpen}
                       onClose={onUpdateQuestChainConfirmationClose}
                     />
-                  </>
+                  </Flex>
+                  {!slugAvailable &&
+                    slug !== questChain.slug &&
+                    slug !== '' && <Text mt={1}>Slug is not available</Text>}
+
+                  {/* ^[a-z0-9]+(?:-[a-z0-9]+)*$ */}
+                  {slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null && (
+                    <Text mt={1} fontSize="xs">
+                      This is not a valid slug
+                    </Text>
+                  )}
                 </Flex>
               )}
 
