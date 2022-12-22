@@ -23,7 +23,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
 import { ethers } from 'ethers';
 import Head from 'next/head';
 import NextLink from 'next/link';
@@ -67,7 +66,7 @@ import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
-const { Status } = graphql;
+const { Status, getQuestChainsFromSlug } = graphql;
 
 enum Mode {
   MEMBER = 'MEMBER',
@@ -670,12 +669,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       }
                       if (!chainNameRef.current) {
                         toast.error('Name cannot be empty');
-                        return;
-                      }
-                      // if for some reason people will choose to use an eth address as slug they can mess everything up
-                      // that's why we need to disallow eth addresses as slugs
-                      if (ethers.utils.isAddress(chainSlugRef.current)) {
-                        toast.error('Slug cannot be an address');
                         return;
                       }
                       if (!chainDescRef.current) {
