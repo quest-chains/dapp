@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -21,17 +20,27 @@ import { useDropImage } from '@/hooks/useDropFiles';
 import { useInputText } from '@/hooks/useInputText';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
-import { AVAILABLE_NETWORK_INFO, isSupportedNetwork, useWallet } from '@/web3';
+import { isSupportedNetwork, useWallet } from '@/web3';
 
 import { UploadImageForm } from '../UploadImageForm';
 
-export const slugify = (str: string) =>
+const slugify = (str: string) =>
   str
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+const makeId = () => {
+  let result = '';
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
 
 export const MetadataForm: React.FC<{
   onBack?: () => void;
@@ -45,7 +54,7 @@ export const MetadataForm: React.FC<{
 }> = ({ onBack, onSubmit }) => {
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
-  const [slugRef, setSlug] = useState('');
+  const [slug, setSlug] = useState('');
   const { getQuestChainsFromSlug } = graphql;
 
   const uploadImageProps = useDropImage();
@@ -59,19 +68,20 @@ export const MetadataForm: React.FC<{
     !isConnected ||
     !isSupportedNetwork(chainId) ||
     !slugAvailable ||
-    slugRef.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
-    ethers.utils.isAddress(slugRef);
+    slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
+    ethers.utils.isAddress(slug);
 
   const [isSubmitting, setSubmitting] = useState(false);
 
   const fetchSearchResults = async (slug: string) => {
     if (chainId) {
       const qcFromSlug = await getQuestChainsFromSlug(chainId, slug);
-
       if (qcFromSlug.length === 0) {
         setSlugAvailable(true);
+        setSlug(slug);
       } else {
         setSlugAvailable(false);
+        setSlug(`${slug}${makeId()}`);
       }
     }
   };
@@ -83,7 +93,7 @@ export const MetadataForm: React.FC<{
       const metadata: Metadata = {
         name: nameRef.current,
         description: descRef.current,
-        slug: slugRef,
+        slug,
       };
       let imageUrl;
       if (imageFile) {
@@ -102,7 +112,7 @@ export const MetadataForm: React.FC<{
         nameRef.current,
         descRef.current,
         metadataUri,
-        slugRef,
+        slug,
         imageUrl,
       );
       setName('');
@@ -119,7 +129,7 @@ export const MetadataForm: React.FC<{
   }, [
     nameRef,
     descRef,
-    slugRef,
+    slug,
     onSubmit,
     imageFile,
     setName,
@@ -164,55 +174,12 @@ export const MetadataForm: React.FC<{
               id="name"
               onChange={e => {
                 setName(e.target.value);
-                setSlug(slugify(e.target.value));
                 fetchSearchResults(slugify(e.target.value));
               }}
               placeholder="Quest chain name"
             />
           </FormControl>
-          <FormControl
-            w="full"
-            isInvalid={
-              (!slugAvailable ||
-                slugRef.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
-                ethers.utils.isAddress(slugRef)) &&
-              slugRef !== ''
-            }
-          >
-            <FormLabel htmlFor="name">
-              URL Slug
-              {chainId && (
-                <Text
-                  ml={1}
-                  display="inline-block"
-                  fontStyle="italic"
-                  fontSize="sm"
-                  color="gray.500"
-                >
-                  (will appear as questchains.xyz/
-                  {AVAILABLE_NETWORK_INFO[chainId].urlName}/{slugify(slugRef)})
-                </Text>
-              )}
-            </FormLabel>
-            <Input
-              color="white"
-              value={slugRef}
-              bg="#0F172A"
-              id="name"
-              onChange={e => {
-                setSlug(e.target.value);
-                fetchSearchResults(e.target.value);
-              }}
-              placeholder="Quest chain slug"
-            />
-            {!slugAvailable && (
-              <FormErrorMessage>Slug is not available.</FormErrorMessage>
-            )}
-            {(slugRef.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
-              ethers.utils.isAddress(slugRef)) && (
-              <FormErrorMessage>This is not a valid slug.</FormErrorMessage>
-            )}
-          </FormControl>
+
           <FormControl w="full" isRequired={true}>
             <FormLabel htmlFor="description">Description</FormLabel>
             <MarkdownEditor

@@ -80,7 +80,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
   }, [questChain, address, chainId, onOpen, provider]);
 
   const QCmessage =
-    'I just acquired a soulbound NFT for completing this quest chain.';
+    'Woohoo! Just minted my soulbound NFT for completing a quest chain 🤩 Check it out!';
 
   return (
     <VStack

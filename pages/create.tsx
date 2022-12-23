@@ -19,7 +19,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
-import { MetadataForm, slugify } from '@/components/CreateChain/MetadataForm';
+import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
 import { QuestsForm } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
@@ -198,7 +198,8 @@ const Create: React.FC = () => {
     : chainId;
 
   const QCURL = `${QUESTCHAINS_URL}/${networkName}/${slug || chainAddress}`;
-  const QCmessage = 'I have just created a quest chain, check it out!';
+  const QCmessage =
+    'I just created a quest chain! Check it out and join the fun! #questchain #DAO #web3 #gamification';
 
   return (
     <Page>
@@ -250,7 +251,7 @@ const Create: React.FC = () => {
 
       {step >= 2 && (
         <Flex gap={8} justifyContent="space-between">
-          <Flex flexDir="column">
+          <Flex flexDir="column" gap={8}>
             <Text
               fontSize="5xl"
               fontWeight="bold"
@@ -261,21 +262,7 @@ const Create: React.FC = () => {
               {chainName}
             </Text>
 
-            {chainId && (
-              <Flex mb={8}>
-                <NetworkDisplay chainId={chainId} mr={3} />
-                <Text
-                  ml={1}
-                  display="inline-block"
-                  fontStyle="italic"
-                  fontSize="sm"
-                  color="gray.500"
-                >
-                  questchains.xyz/
-                  {AVAILABLE_NETWORK_INFO[chainId].urlName}/{slugify(slug)}
-                </Text>
-              </Flex>
-            )}
+            {chainId && <NetworkDisplay chainId={chainId} mr={3} />}
             <MarkdownViewer markdown={chainDescription} />
           </Flex>
           {nftUrl && (
@@ -346,16 +333,8 @@ const Create: React.FC = () => {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          if (chainId) {
-            if (slug) {
-              router.push(
-                `/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug}`,
-              );
-            } else {
-              router.push(
-                `/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${chainAddress}`,
-              );
-            }
+          if (chainId && slug) {
+            router.push(`/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug}`);
           }
         }}
         scrollBehavior="inside"

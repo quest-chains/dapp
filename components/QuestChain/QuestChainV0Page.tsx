@@ -337,7 +337,7 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
   const router = useRouter();
 
   const QCmessage =
-    'Have you got what it takes? Try to complete this quest chain to obtain it’s soulbound NFT!';
+    'Level up your Web3 skills by completing a quest chain and earning a soulbound NFT! #QuestChains #NFTs #Web3';
   const QCURL = QUESTCHAINS_URL + router.asPath;
 
   return (
