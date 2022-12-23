@@ -23,7 +23,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -66,7 +65,7 @@ import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
-const { Status, getQuestChainsFromSlug } = graphql;
+const { Status } = graphql;
 
 enum Mode {
   MEMBER = 'MEMBER',
@@ -144,9 +143,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   const [chainDescRef, setChainDescription] = useInputText(
     questChain?.description || '',
   );
-  const [chainSlugRef, setChainSlug] = useInputText(questChain?.slug || '');
-  const [slug, setSlug] = useState(questChain?.slug || '');
-  const [slugAvailable, setSlugAvailable] = useState(true);
 
   const uploadImageProps = useDropImage();
   const { imageFile, onResetImage } = uploadImageProps;
@@ -165,16 +161,14 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     if (
       hasMetadataChanged &&
       chainNameRef.current === questChain.name &&
-      chainDescRef.current === questChain.description &&
-      chainSlugRef.current === questChain.slug
+      chainDescRef.current === questChain.description
     ) {
       setMetadataChanged(false);
     } else if (
       !hasMetadataChanged &&
       !(
         chainNameRef.current === questChain.name &&
-        chainDescRef.current === questChain.description &&
-        chainSlugRef.current === questChain.slug
+        chainDescRef.current === questChain.description
       )
     ) {
       setMetadataChanged(true);
@@ -184,9 +178,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     chainNameRef,
     questChain.name,
     questChain.description,
-    questChain.slug,
     chainDescRef,
-    chainSlugRef,
   ]);
 
   useEffect(
@@ -286,7 +278,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     const metadata: Metadata = {
       name: chainNameRef.current,
       description: chainDescRef.current,
-      slug: chainSlugRef.current,
       image_url: removeCoverImage
         ? undefined
         : questChain.imageUrl ?? undefined,
@@ -323,13 +314,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
       toast.dismiss(tid);
       toast.success(`Successfully updated the quest chain: ${metadata.name}`);
 
-      if (chainSlugRef.current !== questChain.slug) {
-        router.push(
-          `/${AVAILABLE_NETWORK_INFO[chainId]}/${chainSlugRef.current}`,
-        );
-      } else {
-        refresh();
-      }
+      refresh();
     } catch (error) {
       toast.dismiss(tid);
       handleError(error);
@@ -347,14 +332,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     questChain.imageUrl,
     questChain.address,
     questChain.version,
-    questChain.slug,
     chainNameRef,
     chainDescRef,
-    chainSlugRef,
     removeCoverImage,
     imageFile,
     refresh,
-    router,
     onResetImage,
   ]);
 
@@ -417,20 +399,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     },
     [refresh, questChain, chainId, provider, onEditNFTClose],
   );
-
-  const fetchSearchResults = async (slug: string) => {
-    if (chainId) {
-      const qcFromSlug = await getQuestChainsFromSlug(chainId, slug);
-
-      if (slug === chainSlugRef.current) {
-        if (qcFromSlug.length === 0) {
-          setSlugAvailable(true);
-        } else {
-          setSlugAvailable(false);
-        }
-      }
-    }
-  };
 
   return (
     <Page>
@@ -593,8 +561,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                               setEditingQuestChain(true);
                               setChainName(questChain.name ?? '');
                               setChainDescription(questChain.description ?? '');
-                              setChainSlug(questChain.slug ?? '');
-                              setSlug(questChain.slug ?? '');
                             }}
                             fontSize="xs"
                             leftIcon={<EditIcon fontSize="sm" />}
@@ -648,13 +614,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
               <Flex gap="0.5rem" direction={{ base: 'column', md: 'row' }}>
                 {hasMetadataChanged && (
                   <SubmitButton
-                    isDisabled={
-                      (!slugAvailable &&
-                        slug !== questChain.slug &&
-                        slug !== '') ||
-                      slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
-                      ethers.utils.isAddress(chainSlugRef.current)
-                    }
                     fontSize="sm"
                     px={6}
                     height={10}
@@ -763,59 +722,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   </>
                 )}
               </Flex>
-              {isEditingQuestChain && (
-                <Flex
-                  justifyContent="space-between"
-                  w="full"
-                  alignItems="center"
-                  mb={3}
-                  direction="column"
-                >
-                  <Flex w="full" alignItems="center">
-                    <Text mr={2}>Slug: </Text>
-                    <Input
-                      fontSize="xl"
-                      fontWeight="light"
-                      defaultValue={chainSlugRef.current}
-                      isDisabled={isSubmittingQuestChain}
-                      isInvalid={
-                        ethers.utils.isAddress(chainSlugRef.current) ||
-                        !slugAvailable ||
-                        chainSlugRef.current.match(
-                          /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-                        ) === null
-                      }
-                      onChange={e => {
-                        setChainSlug(e.target.value);
-                        setSlug(e.target.value);
-                        fetchSearchResults(e.target.value);
-                        checkMetadataChanged();
-                      }}
-                    />
-
-                    <ConfirmationModal
-                      onSubmit={() => {
-                        onUpdateQuestChainConfirmationClose();
-                        onSubmitQuestChain();
-                      }}
-                      title="Update quest chain"
-                      content="Are you sure you want to update this quest chain?"
-                      isOpen={isUpdateQuestChainConfirmationOpen}
-                      onClose={onUpdateQuestChainConfirmationClose}
-                    />
-                  </Flex>
-                  {!slugAvailable &&
-                    slug !== questChain.slug &&
-                    slug !== '' && <Text mt={1}>Slug is not available</Text>}
-
-                  {/* ^[a-z0-9]+(?:-[a-z0-9]+)*$ */}
-                  {slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null && (
-                    <Text mt={1} fontSize="xs">
-                      This is not a valid slug
-                    </Text>
-                  )}
-                </Flex>
-              )}
 
               {/* quest chain Description */}
               {!isEditingQuestChain && questChain.description && (
