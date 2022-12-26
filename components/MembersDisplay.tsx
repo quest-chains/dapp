@@ -17,7 +17,7 @@ type MembersProps = {
   admins: string[];
   editors: string[];
   reviewers: string[];
-  statusesPoH: {
+  statusesPoH?: {
     [addr: string]: boolean;
   };
   onEdit?: () => void;
@@ -50,7 +50,7 @@ export const MembersDisplay: React.FC<MembersProps> = ({
   admins,
   editors,
   reviewers,
-  statusesPoH,
+  statusesPoH = {},
   onEdit,
 }) => (
   <Flex flexDir="column" width="full">
