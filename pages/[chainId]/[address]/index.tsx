@@ -151,6 +151,7 @@ export const getStaticProps = async (
         questChain = address ? await getQuestChainInfo(chainId, address) : null;
       } catch (error) {
         // eslint-disable-next-line no-console
+        console.error(error);
       }
     } else {
       try {
@@ -167,6 +168,7 @@ export const getStaticProps = async (
         }
       } catch (error) {
         // eslint-disable-next-line no-console
+        console.error(error);
       }
     }
   }
