@@ -7,6 +7,9 @@ import { EditIcon } from './icons/EditIcon';
 type RolesProps = {
   role: string;
   addresses: string[];
+  statusesPoH: {
+    [addr: string]: boolean;
+  };
 };
 
 type MembersProps = {
@@ -14,20 +17,29 @@ type MembersProps = {
   admins: string[];
   editors: string[];
   reviewers: string[];
+  statusesPoH: {
+    [addr: string]: boolean;
+  };
   onEdit?: () => void;
 };
 
-const MemberSection: React.FC<RolesProps> = ({ role, addresses }) => (
+const MemberSection: React.FC<RolesProps> = ({
+  role,
+  addresses,
+  statusesPoH,
+}) => (
   <>
-    <Flex justify="space-between" alignItems="center" my={3} pl={4} w="100%">
-      <Text color="whiteAlpha.600">{role}</Text>
+    <Flex justify="space-between" alignItems="center" my={3} w="100%">
       <Flex flexDir="column">
         {addresses.map(address => (
           <Box key={address}>
-            {address && <UserDisplay address={address} />}
+            {address && (
+              <UserDisplay address={address} hasPoH={statusesPoH[address]} />
+            )}
           </Box>
         ))}
       </Flex>
+      <Text color="whiteAlpha.600">{role}</Text>
     </Flex>
     <Divider />
   </>
@@ -38,6 +50,7 @@ export const MembersDisplay: React.FC<MembersProps> = ({
   admins,
   editors,
   reviewers,
+  statusesPoH,
   onEdit,
 }) => (
   <Flex flexDir="column" width="full">
@@ -57,13 +70,27 @@ export const MembersDisplay: React.FC<MembersProps> = ({
       )}
     </Flex>
     <Divider />
-    <MemberSection role="OWNERS" addresses={owners} />
-    {admins.length !== 0 && <MemberSection role="ADMINS" addresses={admins} />}
+    <MemberSection role="OWNERS" addresses={owners} statusesPoH={statusesPoH} />
+    {admins.length !== 0 && (
+      <MemberSection
+        role="ADMINS"
+        addresses={admins}
+        statusesPoH={statusesPoH}
+      />
+    )}
     {editors.length !== 0 && (
-      <MemberSection role="EDITORS" addresses={editors} />
+      <MemberSection
+        role="EDITORS"
+        addresses={editors}
+        statusesPoH={statusesPoH}
+      />
     )}
     {reviewers.length !== 0 && (
-      <MemberSection role="REVIEWERS" addresses={reviewers} />
+      <MemberSection
+        role="REVIEWERS"
+        addresses={reviewers}
+        statusesPoH={statusesPoH}
+      />
     )}
   </Flex>
 );
