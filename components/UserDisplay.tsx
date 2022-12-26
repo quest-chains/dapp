@@ -1,4 +1,4 @@
-import { CheckIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import {
   Button,
   Flex,
@@ -48,7 +48,7 @@ export const UserDisplay: React.FC<{
             {hasPoH && (
               <Popover trigger="hover">
                 <PopoverTrigger>
-                  <CheckIcon h={4} w={4} />
+                  <CheckCircleIcon h={4} w={4} />
                 </PopoverTrigger>
                 <PopoverContent
                   cursor="initial"
