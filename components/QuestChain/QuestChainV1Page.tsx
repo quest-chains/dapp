@@ -66,10 +66,10 @@ import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
 
-const APIURL =
+export const PoHAPI =
   'https://api.thegraph.com/subgraphs/name/kleros/proof-of-humanity-mainnet';
 
-const tokensQuery = `
+export const getRegisteredStatus = `
   query GetRegisteredStatus ($id: ID!) {
     submission(id: $id) {
       registered
@@ -259,14 +259,16 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
   }>({});
 
   const client = createClient({
-    url: APIURL,
+    url: PoHAPI,
   });
 
   const getPOH = async () => {
     const statuses: { [addr: string]: boolean } = {};
 
     Object.keys(members).forEach(async address => {
-      const data = await client.query(tokensQuery, { id: address }).toPromise();
+      const data = await client
+        .query(getRegisteredStatus, { id: address })
+        .toPromise();
 
       const registered = data?.data?.submission?.registered || false;
 
