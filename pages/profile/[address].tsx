@@ -1,14 +1,29 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Button, Grid, Heading, Link, Text, VStack } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Grid,
+  Heading,
+  Link,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
+import { useEffect, useState } from 'react';
+import { createClient } from 'urql';
 
 import { Page } from '@/components/Layout/Page';
+import { PoHBadge } from '@/components/PoHBadge';
 import { UserActionsNeeded } from '@/components/ProfileView/UserActionsNeeded';
 import { UserBadges } from '@/components/ProfileView/UserBadges';
 import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
+import {
+  getRegisteredStatus,
+  PoHAPI,
+} from '@/components/QuestChain/QuestChainV1Page';
 import { HeadComponent } from '@/components/Seo';
 import { useENS } from '@/hooks/useENS';
 import { QUESTCHAINS_URL } from '@/utils/constants';
@@ -20,7 +35,24 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const { address, chainId } = useWallet();
   const isLoggedInUser = addressURL === address?.toLowerCase();
   const { ens } = useENS(address);
+  const [registered, setRegistered] = useState<boolean>(false);
   const profile = formatAddress(address, ens);
+
+  const getPOH = async () => {
+    const client = createClient({
+      url: PoHAPI,
+    });
+    const data = await client
+      .query(getRegisteredStatus, { id: addressURL })
+      .toPromise();
+
+    setRegistered(data?.data?.submission?.registered || false);
+  };
+
+  useEffect(() => {
+    getPOH();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
 
   return (
     <Page>
@@ -39,22 +71,26 @@ const Profile: React.FC<Props> = ({ address: addressURL }) => {
           size={150}
           generatedAvatarType="jazzicon"
         />
-        <Link
-          isExternal
-          href={getAddressUrl(addressURL, chainId)}
-          _hover={{
-            textDecor: 'none',
-          }}
-        >
-          <Button
-            color="main"
-            fontSize={20}
-            fontWeight="bold"
-            rightIcon={<ExternalLinkIcon />}
+        <Flex alignItems="center">
+          <Link
+            isExternal
+            href={getAddressUrl(addressURL, chainId)}
+            _hover={{
+              textDecor: 'none',
+            }}
+            mr={2}
           >
-            <Text as="span">{formatAddress(addressURL)}</Text>
-          </Button>
-        </Link>
+            <Button
+              color="main"
+              fontSize={20}
+              fontWeight="bold"
+              rightIcon={<ExternalLinkIcon />}
+            >
+              <Text as="span">{formatAddress(addressURL)}</Text>
+            </Button>
+          </Link>
+          {registered && <PoHBadge address={addressURL} size={6} />}
+        </Flex>
       </VStack>
 
       <Grid templateColumns="repeat(1, 1fr)" gap={20}>

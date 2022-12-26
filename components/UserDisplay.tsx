@@ -6,11 +6,14 @@ import { useENS } from '@/hooks/useENS';
 import { formatAddress, useWallet } from '@/web3';
 import { getEthersProvider } from '@/web3/providers';
 
+import { PoHBadge } from './PoHBadge';
+
 export const UserDisplay: React.FC<{
   address?: string | undefined | null;
   color?: string;
   size?: 'sm' | 'md' | 'lg';
-}> = ({ address, color = 'white', size = 'md' }) => {
+  hasPoH?: boolean;
+}> = ({ address, color = 'white', size = 'md', hasPoH }) => {
   const { address: userAddress } = useWallet();
   const { ens } = useENS(address);
 
@@ -31,6 +34,7 @@ export const UserDisplay: React.FC<{
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
               {isUser ? 'YOURSELF' : formatAddress(address, ens)}
             </Text>
+            {hasPoH && <PoHBadge address={address} />}
           </HStack>
         </Button>
       </Link>

@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
+import { createClient } from 'urql';
 
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Page } from '@/components/Layout/Page';
@@ -64,6 +65,17 @@ import { TwitterIcon } from '../icons/TwitterIcon';
 import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
+
+export const PoHAPI =
+  'https://api.thegraph.com/subgraphs/name/kleros/proof-of-humanity-mainnet';
+
+export const getRegisteredStatus = `
+  query GetRegisteredStatus ($id: ID!) {
+    submission(id: $id) {
+      registered
+    }
+  }
+`;
 
 const { Status } = graphql;
 
@@ -241,6 +253,35 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
     return memberRoles;
   }, [questChain]);
+
+  const [statusesPoH, setStatusesPoH] = useState<{
+    [addr: string]: boolean;
+  }>({});
+
+  const client = createClient({
+    url: PoHAPI,
+  });
+
+  const getPOH = async () => {
+    const statuses: { [addr: string]: boolean } = {};
+
+    Object.keys(members).forEach(async address => {
+      const data = await client
+        .query(getRegisteredStatus, { id: address })
+        .toPromise();
+
+      const registered = data?.data?.submission?.registered || false;
+
+      statuses[address] = registered;
+    });
+
+    setStatusesPoH(statuses);
+  };
+
+  useEffect(() => {
+    getPOH();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [members]);
 
   const owners = Object.entries(members)
     .filter(([, role]) => role === 'Owner')
@@ -1160,6 +1201,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   admins={admins}
                   editors={editors}
                   reviewers={reviewers}
+                  statusesPoH={statusesPoH}
                   onEdit={
                     isOwner &&
                     mode === Mode.MEMBER &&
