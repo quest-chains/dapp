@@ -731,6 +731,25 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     </Text>
                     <Flex gap={4} justify="space-between">
                       <NetworkDisplay chainId={questChain.chainId} />
+                      <Flex align="center" gap={3}>
+                        <TwitterShareButton
+                          url={QCURL}
+                          title={QCmessage}
+                          via="questchainz"
+                        >
+                          <Button
+                            bgColor="#4A99E9"
+                            p={4}
+                            h={7}
+                            leftIcon={<TwitterIcon />}
+                          >
+                            Tweet
+                          </Button>
+                        </TwitterShareButton>
+                        <MastodonShareButton
+                          message={QCmessage + ' ' + QCURL}
+                        />
+                      </Flex>
                     </Flex>
                   </Flex>
                 )}
@@ -851,25 +870,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       Edit NFT
                     </Button>
                   )}
-                {mode === Mode.QUESTER && (
-                  <Flex justify="space-between" align="center" w="100%" mt={8}>
-                    <TwitterShareButton
-                      url={QCURL}
-                      title={QCmessage}
-                      via="questchainz"
-                    >
-                      <Button
-                        bgColor="#4A99E9"
-                        p={4}
-                        h={7}
-                        leftIcon={<TwitterIcon />}
-                      >
-                        Tweet
-                      </Button>
-                    </TwitterShareButton>
-                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                  </Flex>
-                )}
               </Flex>
 
               {/* quest chain Metadata */}
@@ -1166,25 +1166,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       Edit NFT
                     </Button>
                   )}
-                {mode === Mode.QUESTER && (
-                  <Flex justify="space-between" align="center" mt={8}>
-                    <TwitterShareButton
-                      url={QCURL}
-                      title={QCmessage}
-                      via="questchainz"
-                    >
-                      <Button
-                        bgColor="#4A99E9"
-                        p={4}
-                        h={7}
-                        leftIcon={<TwitterIcon />}
-                      >
-                        Tweet
-                      </Button>
-                    </TwitterShareButton>
-                    <MastodonShareButton message={QCmessage + ' ' + QCURL} />
-                  </Flex>
-                )}
               </Flex>
               {/* quest chain Members */}
               {isEditingMembers && address && isOwner ? (
