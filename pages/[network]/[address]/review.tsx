@@ -1,6 +1,8 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Flex, Link as ChakraLink, Spinner, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
+import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
+import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -13,7 +15,7 @@ import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
-import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS, useWallet } from '@/web3';
 
 const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
   graphql;
@@ -84,7 +86,9 @@ const Review: React.FC<Props> = ({
       />
       <Flex w="full">
         <NextLink
-          as={`/${questChain.chainId}/${questChain.address}`}
+          as={`/${AVAILABLE_NETWORK_INFO[questChain.chainId].urlName}/${
+            questChain.address
+          }`}
           href="/[chainId]/[address]"
           passHref
         >
@@ -129,7 +133,7 @@ const Review: React.FC<Props> = ({
   );
 };
 
-type QueryParams = { address: string; chainId: string };
+type QueryParams = { address: string; network: string };
 
 export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
@@ -140,7 +144,7 @@ export async function getStaticPaths() {
 
       paths.push(
         ...addresses.map(address => ({
-          params: { address, chainId },
+          params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
         })),
       );
     }),
@@ -152,23 +156,44 @@ export async function getStaticPaths() {
 export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
+  let network = context.params?.network;
   const address = context.params?.address;
-  const chainId = context.params?.chainId;
 
   let questStatuses: graphql.QuestStatusInfoFragment[] = [];
   let questChain = null;
-  if (chainId && address) {
-    try {
-      questStatuses = address
-        ? await getStatusesForChain(chainId, address)
-        : [];
-      questChain = address ? await getQuestChainInfo(chainId, address) : null;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Could not fetch quest chains/statuses for address ${address}`,
-        error,
-      );
+
+  if (network && CHAIN_URL_MAPPINGS[network]) {
+    network = CHAIN_URL_MAPPINGS[network];
+  }
+
+  if (address && network) {
+    if (ethers.utils.isAddress(address)) {
+      try {
+        questStatuses = address
+          ? await getStatusesForChain(network, address)
+          : [];
+        questChain = address ? await getQuestChainInfo(network, address) : null;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
+    } else {
+      try {
+        const questChainsFromSlug = address
+          ? await getQuestChainsFromSlug(network, address)
+          : null;
+
+        questChain = questChainsFromSlug ? questChainsFromSlug[0] : null;
+        if (questChain) {
+          questStatuses = await getStatusesForChain(
+            network,
+            questChain.address,
+          );
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
   }
 

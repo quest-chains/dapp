@@ -53,6 +53,7 @@ import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
+import { getRegisteredStatuses, PoHAPI } from '@/utils/PoH';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
@@ -65,17 +66,6 @@ import { TwitterIcon } from '../icons/TwitterIcon';
 import { UploadImageForm } from '../UploadImageForm';
 import { QuestsEditor } from './QuestsEditor';
 import { RolesEditor } from './RolesEditor';
-
-export const PoHAPI =
-  'https://api.thegraph.com/subgraphs/name/kleros/proof-of-humanity-mainnet';
-
-export const getRegisteredStatus = `
-  query GetRegisteredStatus ($id: ID!) {
-    submission(id: $id) {
-      registered
-    }
-  }
-`;
 
 const { Status } = graphql;
 
@@ -264,15 +254,17 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
 
   const getPOH = async () => {
     const statuses: { [addr: string]: boolean } = {};
+    const ids = Object.keys(members);
 
-    Object.keys(members).forEach(async address => {
-      const data = await client
-        .query(getRegisteredStatus, { id: address })
-        .toPromise();
+    const data = await client
+      .query(getRegisteredStatuses, { id: ids })
+      .toPromise();
 
-      const registered = data?.data?.submission?.registered || false;
-
-      statuses[address] = registered;
+    const submissions = data?.data?.submissions;
+    ids.forEach(address => {
+      statuses[address] = submissions.find(
+        (submission: { id: string }) => submission.id === address,
+      );
     });
 
     setStatusesPoH(statuses);
@@ -1013,7 +1005,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       </Flex>
                       {numSubmissionsToReview > 0 && (
                         <NextLink
-                          as={`/${questChain.chainId}/${questChain.address}/review`}
+                          as={`/${
+                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                          }/${questChain.address}/review`}
                           href={`/[chainId]/[address]/review`}
                           passHref
                         >

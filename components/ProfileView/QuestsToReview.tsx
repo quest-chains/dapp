@@ -20,7 +20,7 @@ import NextLink from 'next/link';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { useQuestsToReviewForAllChains } from '@/hooks/useQuestsToReviewForAllChains';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 export const QuestsToReview: React.FC = () => {
   const { address } = useWallet();
@@ -86,7 +86,9 @@ const QuestChainStatusView: React.FC<{
   questChain: graphql.QuestChainReviewInfoFragment;
 }> = ({ questChain: chain }) => (
   <NextLink
-    as={`/${chain.chainId}/${chain.address}/review`}
+    as={`/${AVAILABLE_NETWORK_INFO[chain.chainId].urlName}/${
+      chain.address
+    }/review`}
     href={`/[chainId]/[address]/review`}
     passHref
   >

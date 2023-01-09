@@ -20,13 +20,10 @@ import { UserActionsNeeded } from '@/components/ProfileView/UserActionsNeeded';
 import { UserBadges } from '@/components/ProfileView/UserBadges';
 import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
-import {
-  getRegisteredStatus,
-  PoHAPI,
-} from '@/components/QuestChain/QuestChainV1Page';
 import { HeadComponent } from '@/components/Seo';
 import { useENS } from '@/hooks/useENS';
 import { QUESTCHAINS_URL } from '@/utils/constants';
+import { getRegisteredStatus, PoHAPI } from '@/utils/PoH';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getServerSideProps>;

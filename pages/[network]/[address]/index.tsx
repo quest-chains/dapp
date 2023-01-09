@@ -12,7 +12,7 @@ import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
-import { CHAIN_URL_MAPPINGS } from '@/web3/networks';
+import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
 const {
   getQuestChainAddresses,
@@ -108,7 +108,7 @@ const QuestChainPage: React.FC<Props> = ({
   );
 };
 
-type QueryParams = { address: string; chainId: string };
+type QueryParams = { address: string; network: string };
 
 export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
@@ -119,7 +119,7 @@ export async function getStaticPaths() {
 
       paths.push(
         ...addresses.map(address => ({
-          params: { address, chainId },
+          params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
         })),
       );
     }),
@@ -131,44 +131,41 @@ export async function getStaticPaths() {
 export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
-  let chainId = context.params?.chainId;
+  let network = context.params?.network;
   const address = context.params?.address;
 
   let questStatuses: graphql.QuestStatusInfoFragment[] = [];
-
   let questChain = null;
 
-  if (chainId && CHAIN_URL_MAPPINGS[chainId]) {
-    chainId = CHAIN_URL_MAPPINGS[chainId];
+  if (network && CHAIN_URL_MAPPINGS[network]) {
+    network = CHAIN_URL_MAPPINGS[network];
   }
 
-  if (address && chainId) {
+  if (address && network) {
     if (ethers.utils.isAddress(address)) {
       try {
         questStatuses = address
-          ? await getStatusesForChain(chainId, address)
+          ? await getStatusesForChain(network, address)
           : [];
-        questChain = address ? await getQuestChainInfo(chainId, address) : null;
+        questChain = address ? await getQuestChainInfo(network, address) : null;
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error(error);
       }
     } else {
       try {
         const questChainsFromSlug = address
-          ? await getQuestChainsFromSlug(chainId, address)
+          ? await getQuestChainsFromSlug(network, address)
           : null;
 
         questChain = questChainsFromSlug ? questChainsFromSlug[0] : null;
         if (questChain) {
           questStatuses = await getStatusesForChain(
-            chainId,
+            network,
             questChain.address,
           );
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error(error);
       }
     }
   }
