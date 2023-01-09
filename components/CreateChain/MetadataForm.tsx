@@ -81,7 +81,7 @@ export const MetadataForm: React.FC<{
         setSlug(slug);
       } else {
         setSlugAvailable(false);
-        setSlug(`${slug}${makeId()}`);
+        setSlug(`${slug}-${makeId()}`);
       }
     }
   };
