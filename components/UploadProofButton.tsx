@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 
-import { UserStatusType } from '@/pages/[chainId]/[address]';
+import { UserStatusType } from '@/pages/[network]/[address]';
 
 import { UploadProof } from './UploadProof';
 
