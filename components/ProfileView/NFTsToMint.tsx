@@ -15,7 +15,7 @@ import {
 
 import { useNFTsToMintForAllChains } from '@/hooks/useNFTsToMintForAllChains';
 import { QUESTCHAINS_URL } from '@/utils/constants';
-import { useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 
 import { MintNFTTile } from '../MintNFTTile';
 
@@ -78,7 +78,9 @@ export const NFTsToMint: React.FC = () => {
             <SimpleGrid gap={8} columns={{ base: 1, md: 2 }}>
               {nftsToMint.slice(0, 2).map(ns => (
                 <MintNFTTile
-                  QCURL={`${QUESTCHAINS_URL}/${ns.questChain.chainId}/${ns.questChain.address}`}
+                  QCURL={`${QUESTCHAINS_URL}/${
+                    AVAILABLE_NETWORK_INFO[ns.questChain.chainId].urlName
+                  }/${ns.questChain.address}`}
                   {...ns}
                   key={ns.questChain.address + ns.questChain.chainId}
                   onSuccess={refresh}

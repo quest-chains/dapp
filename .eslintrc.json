@@ -19,7 +19,7 @@
     "react/prop-types": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@next/next/no-img-element": "off",
-    "react-hooks/exhaustive-deps": "off",
+    "react-hooks/exhaustive-deps": "error",
     "react/display-name": "off",
     "react/no-unescaped-entities": "warn",
     "react-hooks/rules-of-hooks": "error",
