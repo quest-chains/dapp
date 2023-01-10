@@ -11,8 +11,6 @@ import {
 import Davatar from '@davatar/react';
 import { utils } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
-import { useEffect, useState } from 'react';
-import { createClient } from 'urql';
 
 import { Page } from '@/components/Layout/Page';
 import { PoHBadge } from '@/components/PoHBadge';
@@ -22,34 +20,19 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { useENS } from '@/hooks/useENS';
+import { usePoH } from '@/hooks/usePoH';
 import { QUESTCHAINS_URL } from '@/utils/constants';
-import { getRegisteredStatus, PoHAPI } from '@/utils/PoH';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
 type Props = InferGetStaticPropsType<typeof getServerSideProps>;
 
 const Profile: React.FC<Props> = ({ address: addressURL }) => {
   const { address, chainId } = useWallet();
-  const isLoggedInUser = addressURL === address?.toLowerCase();
   const { ens } = useENS(address);
-  const [registered, setRegistered] = useState<boolean>(false);
+  const { registered } = usePoH(address);
+
+  const isLoggedInUser = addressURL === address?.toLowerCase();
   const profile = formatAddress(address, ens);
-
-  const getPOH = async () => {
-    const client = createClient({
-      url: PoHAPI,
-    });
-    const data = await client
-      .query(getRegisteredStatus, { id: addressURL })
-      .toPromise();
-
-    setRegistered(data?.data?.submission?.registered || false);
-  };
-
-  useEffect(() => {
-    getPOH();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
 
   return (
     <Page>

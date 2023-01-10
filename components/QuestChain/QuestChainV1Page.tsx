@@ -29,7 +29,6 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
-import { createClient } from 'urql';
 
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { Page } from '@/components/Layout/Page';
@@ -46,6 +45,7 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { useDropImage } from '@/hooks/useDropFiles';
 import { useInputText } from '@/hooks/useInputText';
+import { usePoHs } from '@/hooks/usePoH';
 import { useToggleQuestChainPauseStatus } from '@/hooks/useToggleQuestChainPauseStatus';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
@@ -53,7 +53,6 @@ import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
-import { getRegisteredStatuses, PoHAPI } from '@/utils/PoH';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
@@ -244,36 +243,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     return memberRoles;
   }, [questChain]);
 
-  const [statusesPoH, setStatusesPoH] = useState<{
-    [addr: string]: boolean;
-  }>({});
-
-  const client = createClient({
-    url: PoHAPI,
-  });
-
-  const getPOH = async () => {
-    const statuses: { [addr: string]: boolean } = {};
-    const ids = Object.keys(members);
-
-    const data = await client
-      .query(getRegisteredStatuses, { id: ids })
-      .toPromise();
-
-    const submissions = data?.data?.submissions;
-    ids.forEach(address => {
-      statuses[address] = submissions.find(
-        (submission: { id: string }) => submission.id === address,
-      );
-    });
-
-    setStatusesPoH(statuses);
-  };
-
-  useEffect(() => {
-    getPOH();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [members]);
+  const { statuses } = usePoHs(Object.keys(members));
 
   const owners = Object.entries(members)
     .filter(([, role]) => role === 'Owner')
@@ -1008,7 +978,9 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           as={`/${
                             AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
                           }/${questChain.address}/review`}
-                          href={`/[chainId]/[address]/review`}
+                          href={`/${
+                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                          }/[address]/review`}
                           passHref
                         >
                           <ChakraLink display="block" _hover={{}}>
@@ -1176,7 +1148,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   admins={admins}
                   editors={editors}
                   reviewers={reviewers}
-                  statusesPoH={statusesPoH}
+                  statusesPoH={statuses}
                   onEdit={
                     isOwner &&
                     mode === Mode.MEMBER &&

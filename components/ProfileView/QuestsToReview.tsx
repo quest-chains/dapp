@@ -89,7 +89,7 @@ const QuestChainStatusView: React.FC<{
     as={`/${AVAILABLE_NETWORK_INFO[chain.chainId].urlName}/${
       chain.address
     }/review`}
-    href={`/[chainId]/[address]/review`}
+    href={`/${AVAILABLE_NETWORK_INFO[chain.chainId].urlName}/[address]/review`}
     passHref
   >
     <ChakraLink
