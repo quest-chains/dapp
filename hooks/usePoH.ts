@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from 'urql';
 
+import { Role } from '@/components/RoleTag';
 import {
   getRegisteredStatus,
   getRegisteredStatuses,
@@ -41,13 +42,14 @@ export const usePoH = (
   };
 };
 
-export const usePoHs = (
-  addresses: string[],
-): {
+export const usePoHs = (roles: {
+  [addr: string]: Role;
+}): {
   statuses: {
     [addr: string]: boolean;
   };
 } => {
+  const addresses = Object.keys(roles);
   const [statusesPoH, setStatusesPoH] = useState<{
     [addr: string]: boolean;
   }>({});
@@ -77,7 +79,7 @@ export const usePoHs = (
   useEffect(() => {
     getStatuses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addresses]);
+  }, []);
 
   return {
     statuses: statusesPoH,
