@@ -243,7 +243,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     return memberRoles;
   }, [questChain]);
 
-  const { statuses } = usePoHs(Object.keys(members));
+  const { statuses } = usePoHs(members);
 
   const owners = Object.entries(members)
     .filter(([, role]) => role === 'Owner')
