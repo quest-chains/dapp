@@ -182,6 +182,7 @@ export const MetadataForm: React.FC<{
 
           <FormControl w="full" isRequired={true}>
             <FormLabel htmlFor="description">Description</FormLabel>
+            {/* TODO add hover effect similar to Name */}
             <MarkdownEditor
               value={descRef.current}
               placeholder="Quest chain description"
