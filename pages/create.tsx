@@ -21,7 +21,10 @@ import { TwitterShareButton } from 'react-share';
 
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
-import { QuestsForm } from '@/components/CreateChain/QuestsForm';
+import {
+  advanceSettingQuests,
+  QuestsForm,
+} from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { TwitterIcon } from '@/components/icons/TwitterIcon';
@@ -109,8 +112,12 @@ const Create: React.FC = () => {
 
   const onPublishQuestChain = useCallback(
     async (
-      quests: { name: string; description: string }[],
+      quests: {
+        name: string;
+        description: string;
+      }[],
       startAsDisabled: boolean,
+      advanceSettingQuests: advanceSettingQuests | undefined,
     ) => {
       setSubmitting(true);
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
@@ -141,8 +148,8 @@ const Create: React.FC = () => {
           quests: questsDetails,
           paused: startAsDisabled,
         };
-        const factoryContract: contracts.V1.QuestChainFactory =
-          contracts.V1.QuestChainFactory__factory.connect(
+        const factoryContract: contracts.V2.QuestChainFactory =
+          contracts.V2.QuestChainFactory__factory.connect(
             factoryAddress,
             provider.getSigner(),
           );
@@ -162,9 +169,36 @@ const Create: React.FC = () => {
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
+        const chainAddress = await awaitQuestChainAddress(receipt);
+
+        // TODO Show info related to secondary transaction
+        // Send second tx to set questDetails
+        if (advanceSettingQuests) {
+          toast.dismiss(tid);
+          tid = toast.loading(
+            'Waiting for Confirmation - Confirm the transaction in your Wallet',
+          );
+          const questContract: contracts.V2.QuestChain =
+            contracts.V2.QuestChain__factory.connect(
+              chainAddress,
+              provider.getSigner(),
+            );
+
+          const tx = await questContract.configureQuests(
+            advanceSettingQuests.questIds,
+            advanceSettingQuests.questSettings,
+          );
+          toast.dismiss(tid);
+          tid = handleTxLoading(tx.hash, chainId);
+          const receipt = await tx.wait(1);
+          toast.dismiss(tid);
+          tid = toast.loading(
+            'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+          );
+          await waitUntilBlock(chainId, receipt.blockNumber);
+        }
         onOpen();
 
-        const chainAddress = await awaitQuestChainAddress(receipt);
         // @ts-ignore
         window.plausible(TrackEvent.ChainCreated);
         setChainAddress(chainAddress);

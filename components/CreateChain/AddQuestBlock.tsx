@@ -18,31 +18,53 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
 
+import { QuestAdvSetting } from './QuestsForm';
+
+const defaultQuestAdvSetting: QuestAdvSetting = {
+  paused: false,
+  optional: false,
+  skipReview: false,
+};
+
 export const AddQuestBlock: React.FC<{
   onClose: () => void;
-  onAdd: (name: string, desc: string) => Promise<boolean>;
+  onAdd: (
+    name: string,
+    desc: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => Promise<boolean>;
   isAdding?: boolean;
 }> = ({ onClose, onAdd, isAdding = false }) => {
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
 
   const [isAdvancedSetOpen, setIsAdvancedSetOpen] = useState(false);
-
-  // TODO pass this to onAdd()
-  const [questDetails, setQuestDetails] = useState({
-    paused: false,
-    optional: false,
-    skipReview: false,
-  });
+  const [questAdvSetting, setQuestAdvSetting] = useState(
+    defaultQuestAdvSetting,
+  );
 
   const onSubmit = useCallback(async () => {
-    const success = await onAdd(nameRef.current, descRef.current);
+    const success = await onAdd(
+      nameRef.current,
+      descRef.current,
+      questAdvSetting === defaultQuestAdvSetting ? null : questAdvSetting,
+    );
     if (success) {
       setName('');
       setDescription('');
+      setQuestAdvSetting(defaultQuestAdvSetting);
       onClose();
     }
-  }, [onAdd, onClose, nameRef, descRef, setName, setDescription]);
+  }, [
+    onAdd,
+    onClose,
+    nameRef,
+    descRef,
+    questAdvSetting,
+    setName,
+    setDescription,
+    setQuestAdvSetting,
+  ]);
 
   return (
     <form style={{ width: '100%' }}>
@@ -122,10 +144,10 @@ export const AddQuestBlock: React.FC<{
                   w={'fit-content'}
                   display={'inline-block'}
                   value={
-                    questDetails.optional === false ? 'required' : 'optional'
+                    questAdvSetting.optional === false ? 'required' : 'optional'
                   }
                   onChange={e =>
-                    setQuestDetails(prevState => {
+                    setQuestAdvSetting(prevState => {
                       return {
                         ...prevState,
                         optional: e.target.value === 'required' ? false : true,
@@ -143,12 +165,12 @@ export const AddQuestBlock: React.FC<{
                   w={'fit-content'}
                   display={'inline-block'}
                   value={
-                    questDetails.skipReview === false
+                    questAdvSetting.skipReview === false
                       ? 'reviewed_manually'
                       : 'auto_accepted'
                   }
                   onChange={e =>
-                    setQuestDetails(prevState => {
+                    setQuestAdvSetting(prevState => {
                       return {
                         ...prevState,
                         skipReview:
@@ -167,13 +189,12 @@ export const AddQuestBlock: React.FC<{
                   Start quest as disabled
                 </FormLabel>
                 {/* TODO Not exactly like figma */}
-
                 <Switch
                   id="questDisabled"
                   size="lg"
-                  isChecked={questDetails.paused}
+                  isChecked={questAdvSetting.paused}
                   onChange={e =>
-                    setQuestDetails(prevState => {
+                    setQuestAdvSetting(prevState => {
                       return {
                         ...prevState,
                         paused: e.target.checked ? true : false,

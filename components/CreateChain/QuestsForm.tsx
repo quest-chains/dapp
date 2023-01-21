@@ -20,10 +20,25 @@ import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
 
+export interface advanceSettingQuests {
+  questIds: number[];
+  questSettings: QuestAdvSetting[];
+}
+
+export interface QuestAdvSetting {
+  paused: boolean;
+  optional: boolean;
+  skipReview: boolean;
+}
+
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
-    quests: { name: string; description: string }[],
+    quests: {
+      name: string;
+      description: string;
+    }[],
     startAsDisabled: boolean,
+    advanceSettingQuests: advanceSettingQuests | undefined,
   ) => void | Promise<void>;
   isSubmitting: boolean;
 }> = ({ onPublishQuestChain, isSubmitting }) => {
@@ -36,11 +51,35 @@ export const QuestsForm: React.FC<{
 
   const [startAsDisabled, setStartAsDisabled] = useState(false);
 
-  const [quests, setQuests] = useState<{ name: string; description: string }[]>(
-    [],
-  );
+  const [quests, setQuests] = useState<
+    {
+      name: string;
+      description: string;
+    }[]
+  >([]);
+  const [advanceSettingQuests, setAdvanceSettingQuests] =
+    useState<advanceSettingQuests>();
 
-  const onAddQuest = async (name: string, description: string) => {
+  const onAddQuest = async (
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => {
+    if (questAdvSetting !== null) {
+      setAdvanceSettingQuests(prevState => {
+        // For questIds pushing quests.length because the index of new quest will be equal to quests.length.
+        if (prevState)
+          return {
+            questIds: [...prevState?.questIds, quests.length],
+            questSettings: [...prevState?.questSettings, questAdvSetting],
+          };
+        else
+          return {
+            questIds: [quests.length],
+            questSettings: [questAdvSetting],
+          };
+      });
+    }
     setQuests([...quests, { name, description }]);
     return true;
   };
@@ -93,6 +132,7 @@ export const QuestsForm: React.FC<{
             {quests &&
               quests.map(({ name, description }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
+                  // TODO add adv setting here
                   <EditingQuest
                     key={name + description}
                     nameRef={questNameRef}
@@ -181,7 +221,9 @@ export const QuestsForm: React.FC<{
         <SubmitButton
           isDisabled={isSubmitting}
           isLoading={isSubmitting}
-          onClick={() => onPublishQuestChain(quests, startAsDisabled)}
+          onClick={() =>
+            onPublishQuestChain(quests, startAsDisabled, advanceSettingQuests)
+          }
           flex={1}
           fontSize={{ base: 12, md: 16 }}
         >
