@@ -17,10 +17,10 @@ import { useInputText } from '@/hooks/useInputText';
 
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
-import { AddQuestBlock } from './AddQuestBlock';
+import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
 
-export interface advanceSettingQuests {
+export interface AdvanceSettingQuests {
   questIds: number[];
   questSettings: QuestAdvSetting[];
 }
@@ -38,7 +38,7 @@ export const QuestsForm: React.FC<{
       description: string;
     }[],
     startAsDisabled: boolean,
-    advanceSettingQuests: advanceSettingQuests | undefined,
+    advanceSettingQuests: AdvanceSettingQuests | undefined,
   ) => void | Promise<void>;
   isSubmitting: boolean;
 }> = ({ onPublishQuestChain, isSubmitting }) => {
@@ -58,7 +58,7 @@ export const QuestsForm: React.FC<{
     }[]
   >([]);
   const [advanceSettingQuests, setAdvanceSettingQuests] =
-    useState<advanceSettingQuests>();
+    useState<AdvanceSettingQuests>();
 
   const onAddQuest = async (
     name: string,
@@ -86,10 +86,78 @@ export const QuestsForm: React.FC<{
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
+    setAdvanceSettingQuests(prevState => {
+      const indexFound = prevState?.questIds.indexOf(index);
+      const questIds =
+        prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
+      const questSettings =
+        prevState?.questSettings.filter(
+          (questSetting, i) => i !== indexFound,
+        ) || [];
+
+      if (questIds?.length === 0 || questSettings?.length === 0) {
+        return undefined;
+      }
+      return {
+        questIds,
+        questSettings,
+      };
+    });
   };
 
-  const onEditQuest = (name: string, description: string, index: number) => {
+  const onEditQuest = (
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null,
+    index: number,
+  ) => {
     setIsEditingQuest(false);
+    if (questAdvSetting) {
+      setAdvanceSettingQuests(prevState => {
+        if (prevState) {
+          const indexFound = prevState?.questIds.indexOf(index);
+          // If index already present in questAdvSetting
+          if (indexFound !== -1) {
+            prevState.questSettings[indexFound] = questAdvSetting;
+            return {
+              questIds: [...prevState.questIds],
+              questSettings: [...prevState.questSettings],
+            };
+          }
+
+          // If index not present in questAdvSetting
+          return {
+            questIds: [...prevState.questIds, index],
+            questSettings: [...prevState.questSettings, questAdvSetting],
+          };
+        } else
+          return {
+            questIds: [index],
+            questSettings: [questAdvSetting],
+          };
+      });
+    } else {
+      const indexFound = advanceSettingQuests?.questIds.indexOf(index);
+      // if index is present in advanceSettingQuests then delete it from questIds and advSetting
+      if (indexFound !== -1) {
+        setAdvanceSettingQuests(prevState => {
+          const questIds =
+            prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
+          const questSettings =
+            prevState?.questSettings.filter(
+              (questSetting, i) => i !== indexFound,
+            ) || [];
+
+          if (questIds?.length === 0 || questSettings?.length === 0) {
+            return undefined;
+          }
+          return {
+            questIds,
+            questSettings,
+          };
+        });
+      }
+    }
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
 
@@ -132,7 +200,6 @@ export const QuestsForm: React.FC<{
             {quests &&
               quests.map(({ name, description }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
-                  // TODO add adv setting here
                   <EditingQuest
                     key={name + description}
                     nameRef={questNameRef}
@@ -142,6 +209,15 @@ export const QuestsForm: React.FC<{
                     onSave={onEditQuest}
                     onCancel={() => setIsEditingQuest(false)}
                     index={index}
+                    questVersion={'2'}
+                    editedQuestAdvSettings={
+                      advanceSettingQuests?.questIds.indexOf(index) !== -1
+                        ? advanceSettingQuests?.questSettings[
+                            advanceSettingQuests?.questIds.indexOf(index)
+                          ]
+                        : undefined
+                    }
+                    currentQuestAdvSettings={defaultQuestAdvSetting}
                   />
                 ) : (
                   <QuestTile
@@ -217,19 +293,33 @@ export const QuestsForm: React.FC<{
         </Tooltip>
       </Flex>
 
-      <Flex w="full" gap={4}>
-        <SubmitButton
-          isDisabled={isSubmitting}
-          isLoading={isSubmitting}
-          onClick={() =>
-            onPublishQuestChain(quests, startAsDisabled, advanceSettingQuests)
-          }
-          flex={1}
-          fontSize={{ base: 12, md: 16 }}
-        >
-          PUBLISH QUEST CHAIN
-        </SubmitButton>
-      </Flex>
+      <Box w="full">
+        <Flex w="full" gap={4}>
+          <SubmitButton
+            isDisabled={isSubmitting}
+            isLoading={isSubmitting}
+            onClick={() =>
+              onPublishQuestChain(quests, startAsDisabled, advanceSettingQuests)
+            }
+            flex={1}
+            fontSize={{ base: 12, md: 16 }}
+          >
+            PUBLISH QUEST CHAIN
+          </SubmitButton>
+        </Flex>
+        {advanceSettingQuests ? (
+          <Flex
+            fontSize="xs"
+            color="whiteAlpha.600"
+            w="full"
+            justifyContent={'center'}
+            alignContent={'center'}
+            mt={'0.5rem'}
+          >
+            This action will trigger 2 transactions.
+          </Flex>
+        ) : null}
+      </Box>
     </>
   );
 };

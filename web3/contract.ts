@@ -21,8 +21,11 @@ export const getQuestChainContract = (
       signer,
     ) as contracts.V1.QuestChain;
   }
-  return contracts.V2.QuestChain__factory.connect(
-    address,
-    signer,
-  ) as contracts.V2.QuestChain;
+  if (version === '2') {
+    return contracts.V2.QuestChain__factory.connect(
+      address,
+      signer,
+    ) as contracts.V2.QuestChain;
+  }
+  throw new Error('Unsupported Quest Chain version');
 };

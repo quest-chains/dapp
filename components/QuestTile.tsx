@@ -168,7 +168,9 @@ export const QuestTile: React.FC<{
                     />
                   </Tooltip>
                 )}
-                {!pauseDisabled && questId && (
+
+                {/* Only show for version lesser than 2 */}
+                {Number(questChain?.version) < 2 && !pauseDisabled && questId && (
                   <Tooltip label={isPaused ? 'Enable Quest' : 'Disable Quest'}>
                     <IconButton
                       aria-label=""

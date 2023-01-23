@@ -22,7 +22,7 @@ import { TwitterShareButton } from 'react-share';
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
 import {
-  advanceSettingQuests,
+  AdvanceSettingQuests,
   QuestsForm,
 } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
@@ -117,7 +117,7 @@ const Create: React.FC = () => {
         description: string;
       }[],
       startAsDisabled: boolean,
-      advanceSettingQuests: advanceSettingQuests | undefined,
+      advanceSettingQuests: AdvanceSettingQuests | undefined,
     ) => {
       setSubmitting(true);
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
@@ -169,12 +169,12 @@ const Create: React.FC = () => {
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
+        toast.dismiss(tid);
         const chainAddress = await awaitQuestChainAddress(receipt);
 
         // TODO Show info related to secondary transaction
         // Send second tx to set questDetails
         if (advanceSettingQuests) {
-          toast.dismiss(tid);
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
