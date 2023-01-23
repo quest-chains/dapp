@@ -830,8 +830,8 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                     description,
                                     questId,
                                     paused,
-                                    skipReview: false,
                                     optional: false,
+                                    skipReview: false,
                                   }}
                                   setEditingQuest={setEditingQuest}
                                 />
