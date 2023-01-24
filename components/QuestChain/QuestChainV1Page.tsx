@@ -281,6 +281,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     const metadata: Metadata = {
       name: chainNameRef.current,
       description: chainDescRef.current,
+      slug: questChain?.slug || '',
       image_url: removeCoverImage
         ? undefined
         : questChain.imageUrl ?? undefined,
@@ -335,6 +336,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     questChain.imageUrl,
     questChain.address,
     questChain.version,
+    questChain.slug,
     chainNameRef,
     chainDescRef,
     removeCoverImage,
