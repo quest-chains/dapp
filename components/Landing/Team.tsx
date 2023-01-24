@@ -47,7 +47,7 @@ export const Team: React.FC = () => {
           <Grid
             gap={8}
             // display={{ base: 'flex', md: 'grid' }}
-            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
             height={{ base: 'initial', md: '20rem' }}
           >
             <ProfileCard
@@ -84,6 +84,12 @@ export const Team: React.FC = () => {
               role="Writer"
               image="/Landing/profile/tony.jpg"
               twitter="https://twitter.com/anthonyihediwa1"
+            />
+            <ProfileCard
+              name="LizardWizard"
+              role="Community Manager"
+              image="/Landing/profile/lizard.png"
+              twitter="https://twitter.com/LizardResearch"
             />
             <ProfileCard
               name="Beti"
