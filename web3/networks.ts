@@ -9,6 +9,7 @@ export type NetworkInfo = {
     name: string;
     label: string;
     urlName: string;
+    openSeaUrl?: string;
     symbol: string;
     explorer: string;
     explorerLabel: string;
@@ -48,6 +49,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     name: 'Polygon Mainnet',
     label: 'Polygon',
     urlName: 'polygon',
+    openSeaUrl: 'https://opensea.io/assets/matic',
     symbol: 'MATIC',
     explorer: 'https://polygonscan.com',
     explorerLabel: 'PolygonScan',
@@ -90,6 +92,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     name: 'Mumbai Testnet',
     label: 'Mumbai',
     urlName: 'mumbai',
+    openSeaUrl: 'https://opensea.io/assets/mumbai',
     symbol: 'MATIC',
     explorer: 'https://mumbai.polygonscan.com',
     explorerLabel: 'PolygonScan',
