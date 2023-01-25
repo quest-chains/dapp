@@ -1,7 +1,7 @@
 import { BoxProps, Image as ChakraImage } from '@chakra-ui/react';
 import NoImageAvailable from 'assets/no-image-available.svg';
 import React, { useCallback, useMemo, useState } from 'react';
-import { uriToHttpAsArray } from 'utils/uriHelpers';
+import { ipfsUriToHttp } from 'utils/uriHelpers';
 
 import { ImageOrVideo } from './ImageOrVideo';
 
@@ -22,9 +22,7 @@ export const TokenImageOrVideo: React.FC<{ uri: string } & BoxProps> = ({
   ...props
 }) => {
   const [, refresh] = useState(0);
-  const srcs = useMemo(() => uriToHttpAsArray(uri), [uri]);
-
-  const src = srcs.find(s => !BAD_SRCS[s]);
+  const src = useMemo(() => ipfsUriToHttp(uri), [uri]);
 
   const onError = useCallback((badSrc: string) => {
     if (badSrc && !BAD_SRCS[badSrc]) {
