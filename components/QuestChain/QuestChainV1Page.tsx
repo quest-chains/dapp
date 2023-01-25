@@ -1,4 +1,4 @@
-import { InfoIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
   Alert,
@@ -11,10 +11,12 @@ import {
   Image,
   Input,
   Link as ChakraLink,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalHeader,
   ModalOverlay,
   Spinner,
   Text,
@@ -133,6 +135,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     isOpen: isUpdateQuestChainConfirmationOpen,
     onOpen: onUpdateQuestChainConfirmationOpen,
     onClose: onUpdateQuestChainConfirmationClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isNFTModalOpen,
+    onOpen: onNFTModalOpen,
+    onClose: onNFTModalClose,
   } = useDisclosure();
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
@@ -812,6 +820,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       maxW={373}
                       maxH={373}
                     />
+                    Here
                   </Flex>
                 )}
 
@@ -1112,9 +1121,61 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       alt="quest chain NFT badge"
                       maxW={373}
                       maxH={373}
+                      onClick={onNFTModalOpen}
+                      cursor="pointer"
                     />
                   </Flex>
                 )}
+                <Modal isOpen={isNFTModalOpen} onClose={onNFTModalClose}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>{questChain.token?.name}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <Flex
+                        mb={3}
+                        alignItems="start"
+                        direction="column"
+                        gap={3}
+                      >
+                        <Flex
+                          w="full"
+                          gap={4}
+                          mb={2}
+                          justifyContent="space-between"
+                        >
+                          <NetworkDisplay chainId={questChain.chainId} asTag />
+
+                          {questChain.chainId === '0x89' && (
+                            <Link
+                              href={`${
+                                AVAILABLE_NETWORK_INFO[questChain.chainId]
+                                  .openSeaUrl
+                              }/${questChain.token.tokenAddress}/${
+                                questChain.token.tokenId
+                              }`}
+                              isExternal
+                            >
+                              OpenSea <ExternalLinkIcon mx="2px" />
+                            </Link>
+                          )}
+                        </Flex>
+                        <Image
+                          src={ipfsUriToHttp(questChain.token.imageUrl)}
+                          alt="quest chain NFT badge"
+                          maxW="100%"
+                          maxH="100%"
+                        />
+                        <Text fontSize={12}>
+                          Token address: {questChain.token.tokenAddress}
+                        </Text>
+                        <Text fontSize={12}>
+                          Token id: {questChain.token.tokenId}
+                        </Text>
+                      </Flex>
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
                 {isAdmin &&
                   mode === Mode.MEMBER &&
                   !isEditingMembers &&
