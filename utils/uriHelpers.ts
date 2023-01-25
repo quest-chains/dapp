@@ -1,3 +1,5 @@
+import { getFromStorage, STORAGE_KEYS } from './storageHelpers';
+
 const IPFS_URL_ADDON = `ipfs/`;
 const IPNS_URL_ADDON = `ipns/`;
 const URL_ADDON_LENGTH = 5;
@@ -25,48 +27,85 @@ const parseUri = (
     const hashIndex = uri.indexOf('Qm');
     hash = uri.substring(hashIndex);
   }
+
   return { protocol, hash, name };
 };
 
-export const uriToHttpAsArray = (uri: string): string[] => {
-  if (!uri) return [];
-  if (uri.startsWith('data')) return [uri];
-  const { protocol, hash, name } = parseUri(uri);
+export const IPFS_GATEWAYS = [
+  'https://w3s.link',
+  'https://gateway.pinata.cloud',
+  'https://gateway.ipfs.io',
+  'https://cloudflare-ipfs.com',
+  'https://ipfs.io',
+  'https://dweb.link',
+];
 
-  switch (protocol) {
-    case 'https':
-      return [uri];
-    case 'http':
-      return [`https${uri.slice(4)}`, uri];
-    case 'ipfs':
-      if (hash.startsWith('ipfs')) {
-        const newHash = hash.split('/')[1];
-        return [
-          `https://w3s.link/ipfs/${newHash}`,
-          `https://gateway.ipfs.io/ipfs/${newHash}/`,
-          `https://gateway.pinata.cloud/ipfs/${newHash}/`,
-          `https://ipfs.io/ipfs/${newHash}/`,
-        ];
-      }
-      return [
-        `https://w3s.link/ipfs/${hash}`,
-        `https://gateway.ipfs.io/ipfs/${hash}/`,
-        `https://gateway.pinata.cloud/ipfs/${hash}/`,
-        `https://ipfs.io/ipfs/${hash}/`,
-      ];
-    case 'ipns':
-      return [
-        `https://gateway.ipfs.io/ipns/${name}/`,
-        `https://gateway.pinata.cloud/ipns/${name}/`,
-        `https://ipfs.io/ipns/${name}/`,
-      ];
-    default:
-      return [];
-  }
+const DEFAULT_IPFS_GATEWAY = IPFS_GATEWAYS[0];
+
+export const getIPFSGateway = (): string => {
+  const gateway = getFromStorage(STORAGE_KEYS.IPFS_GATEWAY);
+  if (gateway) return gateway;
+  return DEFAULT_IPFS_GATEWAY;
 };
 
 export const ipfsUriToHttp = (uri: string | null | undefined): string => {
   if (!uri) return '';
-  const array = uriToHttpAsArray(uri);
-  return array[0] ?? '';
+  if (uri.startsWith('data')) return uri;
+  const { protocol, hash, name } = parseUri(uri);
+  const ipfsGateway = getIPFSGateway();
+  const url = new URL(ipfsGateway);
+
+  switch (protocol) {
+    case 'https':
+    case 'http':
+      return uri;
+    case 'ipfs':
+      return `${url.protocol}//${url.hostname}/ipfs/${hash}`;
+    case 'ipns':
+      return `${url.protocol}//${url.hostname}/ipns/${name}`;
+    default:
+      return '';
+  }
+};
+
+const IMG_HASH = 'bafybeibwzifw52ttrkqlikfzext5akxu7lz4xiwjgwzmqcpdzmp3n5vnbe';
+
+export const checkIPFSGateway = (gatewayUrl: string): Promise<void> => {
+  const url = new URL(gatewayUrl);
+  const imgUrl = new URL(
+    `${url.protocol}//${
+      url.hostname
+    }/ipfs/${IMG_HASH}?now=${Date.now()}&filename=1x1.png#x-ipfs-companion-no-redirect`,
+  );
+
+  // we check if gateway is up by loading 1x1 px image:
+  // this is more robust check than loading js, as it won't be blocked
+  // by privacy protections present in modern browsers or in extensions such as Privacy Badger
+  const imgCheckTimeout = 15000;
+  return new Promise((resolve, reject) => {
+    const timeout = () => {
+      if (!timer) return false;
+      clearTimeout(timer);
+      timer = null;
+      return true;
+    };
+
+    let timer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+      if (timeout()) reject(new Error());
+    }, imgCheckTimeout);
+    const img = new Image();
+
+    img.onerror = () => {
+      timeout();
+      reject(new Error());
+    };
+
+    img.onload = () => {
+      // subdomain works
+      timeout();
+      resolve();
+    };
+
+    img.src = imgUrl.toString();
+  });
 };

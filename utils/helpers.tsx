@@ -23,6 +23,11 @@ export const handleError = (error: unknown) => {
 
 export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+export const uniqueList = (arr: string[]): string[] => {
+  const seen = new Set<string>();
+  return arr.filter(item => (seen.has(item) ? false : seen.add(item)));
+};
+
 export const handleTxLoading = (txHash: string, chainId: string): string => {
   return toast.loading(
     <Link href={getTxUrl(txHash, chainId)} _hover={{}} isExternal>
