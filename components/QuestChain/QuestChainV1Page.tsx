@@ -1150,20 +1150,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           justifyContent="space-between"
                         >
                           <NetworkDisplay chainId={questChain.chainId} asTag />
-
-                          {questChain.chainId === '0x89' && (
-                            <Link
-                              href={`${
-                                AVAILABLE_NETWORK_INFO[questChain.chainId]
-                                  .openSeaUrl
-                              }/${questChain.token.tokenAddress}/${
-                                questChain.token.tokenId
-                              }`}
-                              isExternal
-                            >
-                              OpenSea <ExternalLinkIcon mx="2px" />
-                            </Link>
-                          )}
                         </Flex>
                         <Image
                           src={ipfsUriToHttp(questChain.token.imageUrl)}
