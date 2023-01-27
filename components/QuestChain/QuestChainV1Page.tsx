@@ -1,6 +1,10 @@
-import { InfoIcon } from '@chakra-ui/icons';
+import { CopyIcon, ExternalLinkIcon, InfoIcon } from '@chakra-ui/icons';
 import {
   Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -11,13 +15,16 @@ import {
   Image,
   Input,
   Link as ChakraLink,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalHeader,
   ModalOverlay,
   Spinner,
   Text,
+  Tooltip,
   useDisclosure,
   useTimeout,
   VStack,
@@ -54,7 +61,7 @@ import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
-import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
+import { AVAILABLE_NETWORK_INFO, formatAddress, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import NFTForm from '../CreateChain/NFTForm';
@@ -133,6 +140,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     isOpen: isUpdateQuestChainConfirmationOpen,
     onOpen: onUpdateQuestChainConfirmationOpen,
     onClose: onUpdateQuestChainConfirmationClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isNFTModalOpen,
+    onOpen: onNFTModalOpen,
+    onClose: onNFTModalClose,
   } = useDisclosure();
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
@@ -404,6 +417,11 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
     },
     [refresh, questChain, chainId, provider, onEditNFTClose],
   );
+
+  const copyToClipboard = useCallback((value: string) => {
+    navigator.clipboard.writeText(value);
+    toast.success('Copied to clipboard');
+  }, []);
 
   return (
     <Page>
@@ -812,6 +830,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       maxW={373}
                       maxH={373}
                     />
+                    Here
                   </Flex>
                 )}
 
@@ -1112,9 +1131,103 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       alt="quest chain NFT badge"
                       maxW={373}
                       maxH={373}
+                      onClick={onNFTModalOpen}
+                      cursor="pointer"
                     />
                   </Flex>
                 )}
+                <Modal isOpen={isNFTModalOpen} onClose={onNFTModalClose}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>{questChain.token?.name}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <Flex mb={3} alignItems="start" direction="column">
+                        <Flex
+                          w="full"
+                          gap={4}
+                          mb={2}
+                          justifyContent="space-between"
+                        >
+                          <NetworkDisplay chainId={questChain.chainId} asTag />
+                        </Flex>
+                        <Image
+                          src={ipfsUriToHttp(questChain.token.imageUrl)}
+                          alt="quest chain NFT badge"
+                          maxW="100%"
+                          maxH="100%"
+                        />
+                        <Accordion allowMultiple w="full">
+                          <AccordionItem>
+                            <AccordionButton>
+                              <Box
+                                as="span"
+                                flex="1"
+                                textAlign="left"
+                                fontSize={13}
+                              >
+                                Additional Info
+                              </Box>
+                              <AccordionIcon />
+                            </AccordionButton>
+                            <AccordionPanel pb={1}>
+                              <Flex
+                                justifyContent="space-between"
+                                w="full"
+                                alignItems="center"
+                              >
+                                <Flex fontSize={12}>
+                                  Address:{' '}
+                                  <Tooltip
+                                    label={questChain.token.tokenAddress}
+                                  >
+                                    <Text fontWeight="bold" ml={2}>
+                                      {formatAddress(
+                                        questChain.token.tokenAddress,
+                                      )}
+                                    </Text>
+                                  </Tooltip>
+                                </Flex>
+                                <Button
+                                  variant="ghost"
+                                  p={0}
+                                  onClick={() =>
+                                    copyToClipboard(
+                                      questChain.token.tokenAddress,
+                                    )
+                                  }
+                                >
+                                  <CopyIcon />
+                                </Button>
+                              </Flex>
+                              <Flex
+                                justifyContent="space-between"
+                                w="full"
+                                alignItems="center"
+                              >
+                                <Flex fontSize={12}>
+                                  Id:
+                                  <Text fontWeight="bold" ml={2}>
+                                    {questChain.token.tokenId}
+                                  </Text>
+                                </Flex>
+                                <Button
+                                  variant="ghost"
+                                  p={0}
+                                  onClick={() =>
+                                    copyToClipboard(questChain.token.tokenId)
+                                  }
+                                >
+                                  <CopyIcon />
+                                </Button>
+                              </Flex>
+                            </AccordionPanel>
+                          </AccordionItem>
+                        </Accordion>
+                      </Flex>
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
                 {isAdmin &&
                   mode === Mode.MEMBER &&
                   !isEditingMembers &&
