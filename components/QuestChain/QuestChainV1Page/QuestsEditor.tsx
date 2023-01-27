@@ -5,17 +5,16 @@ import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
+import { EditingQuest } from '@/components/CreateChain/EditingQuest';
+import { QuestTile } from '@/components/QuestTile';
+import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-
-import { AddQuestBlock } from '../CreateChain/AddQuestBlock';
-import { EditingQuest } from '../CreateChain/EditingQuest';
-import { QuestTile } from '../QuestTile';
-import { SubmitButton } from '../SubmitButton';
 
 export const QuestsEditor: React.FC<{
   onExit: () => void;
