@@ -1,13 +1,7 @@
-import { CopyIcon } from '@chakra-ui/icons';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
   Flex,
+  Grid,
   Image,
   Modal,
   ModalBody,
@@ -53,63 +47,60 @@ export const NFTDetailsModal: React.FC<{
               maxW="100%"
               maxH="100%"
             />
-            <Accordion allowMultiple w="full">
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontSize={13}>
-                    Additional Info
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={1}>
-                  <Flex
-                    justifyContent="space-between"
-                    w="full"
-                    alignItems="center"
-                  >
-                    <Flex fontSize={12}>
-                      Address:{' '}
-                      <Tooltip label={questChain.token.tokenAddress}>
-                        <Text fontWeight="bold" ml={2}>
-                          {formatAddress(questChain.token.tokenAddress)}
-                        </Text>
-                      </Tooltip>
-                    </Flex>
-                    <Button
-                      variant="ghost"
-                      p={0}
-                      onClick={() =>
-                        copyToClipboard(questChain.token.tokenAddress)
-                      }
-                    >
-                      <CopyIcon />
-                    </Button>
-                  </Flex>
-                  <Flex
-                    justifyContent="space-between"
-                    w="full"
-                    alignItems="center"
-                  >
-                    <Flex fontSize={12}>
-                      Id:
-                      <Text fontWeight="bold" ml={2}>
-                        {questChain.token.tokenId}
-                      </Text>
-                    </Flex>
-                    <Button
-                      variant="ghost"
-                      p={0}
-                      onClick={() => copyToClipboard(questChain.token.tokenId)}
-                    >
-                      <CopyIcon />
-                    </Button>
-                  </Flex>
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
+            <Grid
+              templateColumns="1fr 4fr"
+              gap={2}
+              w="100%"
+              alignItems="center"
+            >
+              <NFTDetail
+                label="Address"
+                value={formatAddress(questChain.token.tokenAddress)}
+                onCopy={() => copyToClipboard(questChain.token.tokenAddress)}
+              />
+              <NFTDetail
+                label="ID"
+                value={questChain.token.tokenId}
+                onCopy={() => copyToClipboard(questChain.token.tokenId)}
+              />
+            </Grid>
           </Flex>
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 };
+
+const NFTDetail: React.FC<{
+  label: string;
+  value: string;
+  onCopy: () => void;
+}> = ({ label, value, onCopy }) => (
+  <>
+    <Text fontWeight="bold" textAlign="right" fontSize="lg">
+      {label}
+    </Text>
+    <Flex
+      align="center"
+      justify="space-between"
+      bg="blackAlpha.400"
+      p={2}
+      borderRadius={6}
+    >
+      <Text fontWeight="bold" ml={2}>
+        {value}
+      </Text>
+      <Button
+        bgColor="green.400"
+        color="black"
+        borderRadius="6"
+        px="1.25rem"
+        size="sm"
+        _hover={{ bgColor: 'green.700' }}
+        onClick={onCopy}
+      >
+        Copy
+      </Button>
+    </Flex>
+  </>
+);

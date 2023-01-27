@@ -15,16 +15,15 @@ import { ethers } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { AddUserIcon } from '@/components/icons/AddUserIcon';
+import { TrashOutlinedIcon } from '@/components/icons/TrashOutlinedIcon';
 import { Role } from '@/components/RoleTag';
+import { SubmitButton } from '@/components/SubmitButton';
 import { UserDisplay } from '@/components/UserDisplay';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-
-import { AddUserIcon } from '../icons/AddUserIcon';
-import { TrashOutlinedIcon } from '../icons/TrashOutlinedIcon';
-import { SubmitButton } from '../SubmitButton';
 
 const QuestChainRoles = {
   Owner: '0x0000000000000000000000000000000000000000000000000000000000000000',
