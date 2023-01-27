@@ -56,6 +56,7 @@ export const NFTDetailsModal: React.FC<{
               <NFTDetail
                 label="Address"
                 value={formatAddress(questChain.token.tokenAddress)}
+                tooltip={questChain.token.tokenAddress}
                 onCopy={() => copyToClipboard(questChain.token.tokenAddress)}
               />
               <NFTDetail
@@ -74,8 +75,9 @@ export const NFTDetailsModal: React.FC<{
 const NFTDetail: React.FC<{
   label: string;
   value: string;
+  tooltip?: string;
   onCopy: () => void;
-}> = ({ label, value, onCopy }) => (
+}> = ({ label, value, tooltip, onCopy }) => (
   <>
     <Text fontWeight="bold" textAlign="right" fontSize="lg">
       {label}
@@ -87,9 +89,17 @@ const NFTDetail: React.FC<{
       p={2}
       borderRadius={6}
     >
-      <Text fontWeight="bold" ml={2}>
-        {value}
-      </Text>
+      {tooltip ? (
+        <Tooltip label={tooltip} minW="370px" p={3}>
+          <Text fontWeight="bold" ml={2}>
+            {value}
+          </Text>
+        </Tooltip>
+      ) : (
+        <Text fontWeight="bold" ml={2}>
+          {value}
+        </Text>
+      )}
       <Button
         bgColor="green.400"
         color="black"
