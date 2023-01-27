@@ -162,10 +162,10 @@ export const WalletDisplay: React.FC = () => {
               </>
             )}
             <HStack justify="space-between" w="100%">
-              <NextLink href={`/profile/${address}`} passHref>
+              <NextLink href="/settings" passHref>
                 <Link display="block" _hover={{}}>
                   <SubmitButton px={4} fontSize="md" height={10} width="full">
-                    View Profile
+                    Settings
                   </SubmitButton>
                 </Link>
               </NextLink>
