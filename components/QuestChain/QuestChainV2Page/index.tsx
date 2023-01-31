@@ -98,14 +98,14 @@ const ChainStat: React.FC<{ label: string; value: string | JSX.Element }> = ({
   </Flex>
 );
 
-export type QuestChainV1PageProps = {
+export type QuestChainV2PageProps = {
   questChain: graphql.QuestChainInfoFragment;
   questStatuses: graphql.QuestStatusInfoFragment[];
   fetching: boolean;
   refresh: () => void;
 };
 
-export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
+export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
   questChain,
   questStatuses,
   fetching,
@@ -387,7 +387,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
           provider.getSigner(),
         );
 
-        const tx = await (contract as contracts.V1.QuestChain).setTokenURI(
+        const tx = await (contract as contracts.V2.QuestChain).setTokenURI(
           metadataUri,
         );
         toast.dismiss(tid);
