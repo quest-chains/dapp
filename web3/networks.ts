@@ -1,6 +1,8 @@
 import { INFURA_ID, SUPPORTED_NETWORKS } from '../utils/constants';
+import ArbitrumImage from './images/arbitrum.svg';
 import EthereumImage from './images/ethereum.svg';
 import GnosisImage from './images/gnosis.svg';
+import OptimismImage from './images/optimism.svg';
 import PolygonImage from './images/polygon.svg';
 
 export type NetworkInfo = {
@@ -13,36 +15,21 @@ export type NetworkInfo = {
     explorer: string;
     explorerLabel: string;
     rpc: string;
-    subgraphName: string;
-    subgraphUrl: string;
     image: string;
   };
 };
 
 export const CHAIN_URL_MAPPINGS: { [chainId: string]: string } = {
-  ethereum: '0x1',
   polygon: '0x89',
   gnosis: '0x64',
   goerli: '0x5',
+  optimism: '0xa',
+  arbitrum: '0xa4b1',
+  ['arbitrum-goerli']: '0x66eed',
   mumbai: '0x13881',
 };
 
 export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
-  '0x1': {
-    chainId: '0x1',
-    name: 'Ethereum Mainnet',
-    label: 'Ethereum',
-    urlName: 'ethereum',
-    symbol: 'ETH',
-    explorer: 'https://etherscan.io',
-    explorerLabel: 'Etherscan',
-    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
-    image: EthereumImage.src,
-    // TODO: deploy contract & subgraph
-    subgraphName: 'quest-chains/quest-chains-mainnet',
-    subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/quest-chains/quest-chains-mainnet',
-  },
   '0x89': {
     chainId: '0x89',
     name: 'Polygon Mainnet',
@@ -53,9 +40,6 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'PolygonScan',
     rpc: `https://polygon-rpc.com`,
     image: PolygonImage.src,
-    subgraphName: 'quest-chains/quest-chains-polygon',
-    subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/quest-chains/quest-chains-polygon',
   },
   '0x64': {
     chainId: '0x64',
@@ -63,13 +47,21 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     label: 'Gnosis',
     urlName: 'gnosis',
     symbol: 'xDAI',
-    explorer: 'https://blockscout.com/xdai/mainnet',
-    explorerLabel: 'Blockscout',
+    explorer: 'https://gnosisscan.io',
+    explorerLabel: 'GnosisScan',
     rpc: 'https://rpc.gnosischain.com/',
     image: GnosisImage.src,
-    subgraphName: 'quest-chains/quest-chains-xdai',
-    subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/quest-chains/quest-chains-xdai',
+  },
+  '0xa': {
+    chainId: '0xa',
+    name: 'Optimism Mainnet',
+    label: 'Optimism',
+    urlName: 'optimism',
+    symbol: 'ETH',
+    explorer: 'https://optimistic.etherscan.io',
+    explorerLabel: 'EtherScan',
+    rpc: 'https://mainnet.optimism.io',
+    image: OptimismImage.src,
   },
   '0x5': {
     chainId: '0x5',
@@ -78,12 +70,9 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     urlName: 'goerli',
     symbol: 'ETH',
     explorer: 'https://goerli.etherscan.io',
-    explorerLabel: 'Etherscan',
+    explorerLabel: 'EtherScan',
     rpc: `https://goerli.infura.io/v3/${INFURA_ID}`,
     image: EthereumImage.src,
-    subgraphName: 'quest-chains/quest-chains-goerli',
-    subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/quest-chains/quest-chains-goerli',
   },
   '0x13881': {
     chainId: '0x13881',
@@ -95,9 +84,28 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'PolygonScan',
     rpc: 'https://rpc-mumbai.maticvigil.com',
     image: PolygonImage.src,
-    subgraphName: 'quest-chains/quest-chains-mumbai',
-    subgraphUrl:
-      'https://api.thegraph.com/subgraphs/name/quest-chains/quest-chains-mumbai',
+  },
+  '0xa4b1': {
+    chainId: '0xa4b1',
+    name: 'Arbitrum One',
+    label: 'Arbitrum',
+    urlName: 'arbitrum',
+    symbol: 'ETH',
+    explorer: 'https://arbiscan.com',
+    explorerLabel: 'ArbiScan',
+    rpc: 'https://arb1.arbitrum.io/rpc',
+    image: ArbitrumImage.src,
+  },
+  '0x66eed': {
+    chainId: '0x66eed',
+    name: 'Arbitrum Goerli',
+    label: 'Arbitrum Goerli',
+    urlName: 'arbitrum-goerli',
+    symbol: 'ETH',
+    explorer: 'https://goerli.arbiscan.com',
+    explorerLabel: 'ArbiScan',
+    rpc: 'https://goerli-rollup.arbitrum.io/rpc',
+    image: ArbitrumImage.src,
   },
 };
 
