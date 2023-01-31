@@ -34,7 +34,10 @@ const QuestChainRoles = {
 };
 
 const changeRole = async (
-  contract: contracts.V1.QuestChain | contracts.V0.QuestChain,
+  contract:
+    | contracts.V0.QuestChain
+    | contracts.V1.QuestChain
+    | contracts.V2.QuestChain,
   address: string,
   oldRole: Role,
   newRole: Role,

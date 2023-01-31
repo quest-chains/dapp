@@ -86,9 +86,9 @@ export const Team: React.FC = () => {
               twitter="https://twitter.com/anthonyihediwa1"
             />
             <ProfileCard
-              name="LizardWizard"
+              name="Evgeniy"
               role="Community Manager"
-              image="/Landing/profile/lizard.png"
+              image="/Landing/profile/evgeniy.png"
               twitter="https://twitter.com/LizardResearch"
             />
             <ProfileCard
