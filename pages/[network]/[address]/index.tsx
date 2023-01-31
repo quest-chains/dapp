@@ -8,6 +8,7 @@ import React, { useCallback } from 'react';
 import { Page } from '@/components/Layout/Page';
 import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
 import { QuestChainV1Page } from '@/components/QuestChain/QuestChainV1Page';
+import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
 import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
@@ -103,8 +104,14 @@ const QuestChainPage: React.FC<Props> = ({
     );
   }
 
+  if (questChain.version === '1') {
+    return (
+      <QuestChainV1Page {...{ questChain, questStatuses, fetching, refresh }} />
+    );
+  }
+
   return (
-    <QuestChainV1Page {...{ questChain, questStatuses, fetching, refresh }} />
+    <QuestChainV2Page {...{ questChain, questStatuses, fetching, refresh }} />
   );
 };
 
