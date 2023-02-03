@@ -5,7 +5,10 @@ import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
+import {
+  AddQuestBlock,
+  defaultQuestAdvSetting,
+} from '@/components/CreateChain/AddQuestBlock';
 import { EditingQuest } from '@/components/CreateChain/EditingQuest';
 import { QuestTile } from '@/components/QuestTile';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -53,13 +56,49 @@ export const QuestsEditor: React.FC<{
 
   const existingLength = questChain.quests.length;
 
-  const onAddQuest = async (name: string, description: string) => {
+  const onAddQuest = async (
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => {
+    if (questAdvSetting !== null) {
+      setAdvanceSettingQuests(prevState => {
+        // For questIds pushing quests.length because the index of new quest will be equal to quests.length.
+        if (prevState)
+          return {
+            questIds: [...prevState?.questIds, quests.length],
+            questSettings: [...prevState?.questSettings, questAdvSetting],
+          };
+        else
+          return {
+            questIds: [quests.length],
+            questSettings: [questAdvSetting],
+          };
+      });
+    }
     setQuests([...quests, { name, description }]);
     return true;
   };
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
+    setAdvanceSettingQuests(prevState => {
+      const indexFound = prevState?.questIds.indexOf(index);
+      const questIds =
+        prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
+      const questSettings =
+        prevState?.questSettings.filter(
+          (questSetting, i) => i !== indexFound,
+        ) || [];
+
+      if (questIds?.length === 0 || questSettings?.length === 0) {
+        return undefined;
+      }
+      return {
+        questIds,
+        questSettings,
+      };
+    });
   };
 
   const onEditQuest = (
@@ -385,17 +424,23 @@ export const QuestsEditor: React.FC<{
                       ? advanceSettingQuests?.questSettings[
                           advanceSettingQuests?.questIds.indexOf(index)
                         ]
-                      : {
-                          paused: questChain.quests[index].paused,
-                          optional: questChain.quests[index].optional,
-                          skipReview: questChain.quests[index].skipReview,
+                      : index < existingLength
+                      ? {
+                          paused: questChain.quests[index]?.paused,
+                          optional: questChain.quests[index]?.optional,
+                          skipReview: questChain.quests[index]?.skipReview,
                         }
+                      : defaultQuestAdvSetting
                   }
-                  currentQuestAdvSettings={{
-                    paused: questChain.quests[index].paused,
-                    optional: questChain.quests[index].optional,
-                    skipReview: questChain.quests[index].skipReview,
-                  }}
+                  currentQuestAdvSettings={
+                    index < existingLength
+                      ? {
+                          paused: questChain.quests[index]?.paused,
+                          optional: questChain.quests[index]?.optional,
+                          skipReview: questChain.quests[index]?.skipReview,
+                        }
+                      : defaultQuestAdvSetting
+                  }
                 />
               ) : (
                 <QuestTile

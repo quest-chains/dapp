@@ -16,7 +16,6 @@ export const defaultQuestAdvSetting: QuestAdvSetting = {
   skipReview: false,
 };
 
-// TODO handle adv settings when component called from parents other than AddQuestBlock
 export const AddQuestBlock: React.FC<{
   onClose: () => void;
   onAdd: (
