@@ -3,8 +3,8 @@ import isEqual from 'lodash.isequal';
 import { MutableRefObject, useState } from 'react';
 
 import { MarkdownEditor } from '../MarkdownEditor';
+import QuestAdvancedSettings from '../QuestAdvancedSettings';
 import { SubmitButton } from '../SubmitButton';
-import QuestAdvancedSettings from '../TokenImage/QuestAdvancedSettings';
 import { defaultQuestAdvSetting } from './AddQuestBlock';
 import { QuestAdvSetting } from './QuestsForm';
 

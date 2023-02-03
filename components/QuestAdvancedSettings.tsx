@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
-import { QuestAdvSetting } from '../CreateChain/QuestsForm';
+import { QuestAdvSetting } from './CreateChain/QuestsForm';
 
 type Props = {
   questAdvSetting: QuestAdvSetting;

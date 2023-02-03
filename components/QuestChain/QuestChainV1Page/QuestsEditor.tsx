@@ -444,6 +444,7 @@ export const QuestsEditor: React.FC<{
             <AddQuestBlock
               onClose={() => setIsAddingQuest(false)}
               onAdd={onAddQuest}
+              questVersion={questChain.version}
             />
           </Flex>
         )}

@@ -7,7 +7,7 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
 
-import QuestAdvancedSettings from '../TokenImage/QuestAdvancedSettings';
+import QuestAdvancedSettings from '../QuestAdvancedSettings';
 import { QuestAdvSetting } from './QuestsForm';
 
 export const defaultQuestAdvSetting: QuestAdvSetting = {
@@ -25,7 +25,8 @@ export const AddQuestBlock: React.FC<{
     questAdvSetting: QuestAdvSetting | null,
   ) => Promise<boolean>;
   isAdding?: boolean;
-}> = ({ onClose, onAdd, isAdding = false }) => {
+  questVersion?: string;
+}> = ({ onClose, onAdd, isAdding = false, questVersion = '2' }) => {
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
 
@@ -82,12 +83,15 @@ export const AddQuestBlock: React.FC<{
           />
         </FormControl>
 
-        <FormControl px={4}>
-          <QuestAdvancedSettings
-            questAdvSetting={questAdvSetting}
-            setQuestAdvSetting={setQuestAdvSetting}
-          />
-        </FormControl>
+        {/* Do not show advance quest settings for quest version < 2 */}
+        {Number(questVersion) >= 2 ? (
+          <FormControl px={4}>
+            <QuestAdvancedSettings
+              questAdvSetting={questAdvSetting}
+              setQuestAdvSetting={setQuestAdvSetting}
+            />
+          </FormControl>
+        ) : null}
 
         <Flex
           align="center"

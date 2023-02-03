@@ -172,7 +172,6 @@ const Create: React.FC = () => {
         toast.dismiss(tid);
         const chainAddress = await awaitQuestChainAddress(receipt);
 
-        // TODO Show info related to secondary transaction
         // Send second tx to set questDetails
         if (advanceSettingQuests) {
           tid = toast.loading(
