@@ -793,8 +793,10 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                         .filter(
                           q => !!q.name && (mode === Mode.MEMBER || !q.paused),
                         )
-                        .map(
-                          ({ name, description, questId, paused }, index) => (
+                        .map((q, index) => {
+                          const { name, description, questId, paused } = q;
+
+                          return (
                             <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <QuestTile
@@ -825,20 +827,13 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                 <QuestEditor
                                   refresh={refresh}
                                   questChain={questChain}
-                                  quest={{
-                                    name,
-                                    description,
-                                    questId,
-                                    paused,
-                                    optional: false,
-                                    skipReview: false,
-                                  }}
+                                  quest={q}
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
                             </React.Fragment>
-                          ),
-                        )}
+                          );
+                        })}
                     </Accordion>
                   </>
                 )}

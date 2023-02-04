@@ -44,18 +44,48 @@ export const useNFTsToMintForAllChains = (
         setResults(
           allResults
             .reduce((t, a) => {
+              // add results from all chains to single array
               t.push(...a);
               return t;
             }, [])
-            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt))
-            .filter(
-              us =>
-                us.completed > 0 &&
-                us.completed === us.total &&
-                !us.chain.token.owners
+            .filter(us => {
+              // filter out quest chains for which nft is not mintable
+              const questChain = us.chain;
+
+              if (
+                questChain.token.owners
                   .map(o => o.id)
-                  .includes(address?.toLowerCase()),
-            )
+                  .includes(address?.toLowerCase())
+              )
+                return false;
+
+              let atLeastOnePassed = false;
+
+              const userStatus: Record<string, graphql.Status> = {};
+              us.questStatuses.forEach(({ quest, status }) => {
+                userStatus[quest.questId] = status;
+              });
+
+              for (let i = 0; i < questChain.quests.length; ++i) {
+                const quest = questChain.quests[i];
+                const status = userStatus[quest.questId];
+
+                if (
+                  !(
+                    quest.optional ||
+                    quest.paused ||
+                    status === graphql.Status.Pass
+                  )
+                )
+                  return false;
+
+                if (!atLeastOnePassed && status === graphql.Status.Pass)
+                  atLeastOnePassed = true;
+              }
+
+              return atLeastOnePassed;
+            })
+            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt))
             .map(us => ({
               questChain: us.chain,
               completed: us.completed,

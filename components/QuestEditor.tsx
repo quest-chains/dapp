@@ -14,13 +14,10 @@ import { getQuestChainContract } from '@/web3/contract';
 import { ConfirmationModal } from './ConfirmationModal';
 import { MarkdownEditor } from './MarkdownEditor';
 
-type ArrayElement<ArrayType extends readonly unknown[]> =
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
-
 type QuestEditorProps = {
   refresh: () => void;
   questChain: graphql.QuestChainInfoFragment;
-  quest: ArrayElement<graphql.QuestChainInfoFragment['quests']>;
+  quest: graphql.QuestInfoFragment;
   setEditingQuest: (sth: boolean) => void;
 };
 

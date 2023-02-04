@@ -10,6 +10,10 @@ import {
   defaultQuestAdvSetting,
 } from '@/components/CreateChain/AddQuestBlock';
 import { EditingQuest } from '@/components/CreateChain/EditingQuest';
+import {
+  AdvanceSettingQuests,
+  QuestAdvSetting,
+} from '@/components/CreateChain/QuestsForm';
 import { QuestTile } from '@/components/QuestTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
@@ -18,10 +22,6 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-import {
-  AdvanceSettingQuests,
-  QuestAdvSetting,
-} from '@/components/CreateChain/QuestsForm';
 
 export const QuestsEditor: React.FC<{
   onExit: () => void;
