@@ -106,10 +106,10 @@ export const QuestsForm: React.FC<{
   };
 
   const onEditQuest = (
+    index: number,
     name: string,
     description: string,
-    questAdvSetting: QuestAdvSetting | null,
-    index: number,
+    questAdvSetting: QuestAdvSetting | null = null,
   ) => {
     setIsEditingQuest(false);
     if (questAdvSetting) {

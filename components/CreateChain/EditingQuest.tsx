@@ -14,10 +14,10 @@ export const EditingQuest: React.FC<{
   setQuestName: (name: string) => void;
   setQuestDesc: (description: string) => void;
   onSave: (
+    index: number,
     name: string,
     description: string,
-    questAdvSetting: QuestAdvSetting | null,
-    index: number,
+    questAdvSetting?: QuestAdvSetting | null,
   ) => void;
   onCancel: () => void;
   index: number;
@@ -63,14 +63,13 @@ export const EditingQuest: React.FC<{
         <SubmitButton
           onClick={() =>
             onSave(
+              index,
               nameRef.current,
               descRef.current,
               // Update questAdvSetting if this.questAdvSetting different from currentQuestAdvSettings
               isEqual(questAdvSetting, currentQuestAdvSettings)
                 ? null
                 : questAdvSetting,
-
-              index,
             )
           }
           flex={1}

@@ -1,19 +1,12 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Accordion, Box, Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { Accordion, Button, Flex, HStack, Text } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
 import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import {
-  AddQuestBlock,
-  defaultQuestAdvSetting,
-} from '@/components/CreateChain/AddQuestBlock';
+import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
 import { EditingQuest } from '@/components/CreateChain/EditingQuest';
-import {
-  AdvanceSettingQuests,
-  QuestAdvSetting,
-} from '@/components/CreateChain/QuestsForm';
 import { QuestTile } from '@/components/QuestTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
@@ -41,8 +34,6 @@ export const QuestsEditor: React.FC<{
       description: q.description ?? '',
     })),
   );
-  const [advanceSettingQuests, setAdvanceSettingQuests] =
-    useState<AdvanceSettingQuests>();
 
   const [paused, setPaused] = useState<{ [questId: string]: boolean }>(
     questChain.quests.reduce(
@@ -56,104 +47,17 @@ export const QuestsEditor: React.FC<{
 
   const existingLength = questChain.quests.length;
 
-  const onAddQuest = async (
-    name: string,
-    description: string,
-    questAdvSetting: QuestAdvSetting | null,
-  ) => {
-    if (questAdvSetting !== null) {
-      setAdvanceSettingQuests(prevState => {
-        // For questIds pushing quests.length because the index of new quest will be equal to quests.length.
-        if (prevState)
-          return {
-            questIds: [...prevState?.questIds, quests.length],
-            questSettings: [...prevState?.questSettings, questAdvSetting],
-          };
-        else
-          return {
-            questIds: [quests.length],
-            questSettings: [questAdvSetting],
-          };
-      });
-    }
+  const onAddQuest = async (name: string, description: string) => {
     setQuests([...quests, { name, description }]);
     return true;
   };
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
-    setAdvanceSettingQuests(prevState => {
-      const indexFound = prevState?.questIds.indexOf(index);
-      const questIds =
-        prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
-      const questSettings =
-        prevState?.questSettings.filter(
-          (questSetting, i) => i !== indexFound,
-        ) || [];
-
-      if (questIds?.length === 0 || questSettings?.length === 0) {
-        return undefined;
-      }
-      return {
-        questIds,
-        questSettings,
-      };
-    });
   };
 
-  const onEditQuest = (
-    name: string,
-    description: string,
-    questAdvSetting: QuestAdvSetting | null,
-    index: number,
-  ) => {
+  const onEditQuest = (index: number, name: string, description: string) => {
     setIsEditingQuest(false);
-    if (questAdvSetting) {
-      setAdvanceSettingQuests(prevState => {
-        if (prevState) {
-          const indexFound = prevState?.questIds.indexOf(index);
-          // If index already present in questAdvSetting
-          if (indexFound !== -1) {
-            prevState.questSettings[indexFound] = questAdvSetting;
-            return {
-              questIds: [...prevState.questIds],
-              questSettings: [...prevState.questSettings],
-            };
-          }
-
-          // If index not present in questAdvSetting
-          return {
-            questIds: [...prevState.questIds, index],
-            questSettings: [...prevState.questSettings, questAdvSetting],
-          };
-        } else
-          return {
-            questIds: [index],
-            questSettings: [questAdvSetting],
-          };
-      });
-    } else {
-      const indexFound = advanceSettingQuests?.questIds.indexOf(index);
-      // if index is present in advanceSettingQuests then delete it from questIds and advSetting
-      if (indexFound !== -1) {
-        setAdvanceSettingQuests(prevState => {
-          const questIds =
-            prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
-          const questSettings =
-            prevState?.questSettings.filter(
-              (questSetting, i) => i !== indexFound,
-            ) || [];
-
-          if (questIds?.length === 0 || questSettings?.length === 0) {
-            return undefined;
-          }
-          return {
-            questIds,
-            questSettings,
-          };
-        });
-      }
-    }
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
 
@@ -303,11 +207,6 @@ export const QuestsEditor: React.FC<{
     [hasPaused, hasEdited, hasAdded],
   );
 
-  const hasAdvanceSettingsChanged = useMemo(
-    () => (advanceSettingQuests ? true : false),
-    [advanceSettingQuests],
-  );
-
   const onSave = useCallback(async () => {
     if (!chainId || !provider || questChain.chainId !== chainId) {
       toast.error(
@@ -322,56 +221,27 @@ export const QuestsEditor: React.FC<{
     let tid = '';
     let tx: providers.TransactionResponse | null;
     try {
-      if (hasChanged) {
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        ) as contracts.V1.QuestChain;
-        if (hasPaused) {
-          [tid, tx] = await onPause(contract);
-        } else if (hasEdited) {
-          [tid, tx] = await onEdit(contract);
-        } else {
-          [tid, tx] = await onAdd(contract);
-        }
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      ) as contracts.V1.QuestChain;
+      if (hasPaused) {
+        [tid, tx] = await onPause(contract);
+      } else if (hasEdited) {
+        [tid, tx] = await onEdit(contract);
+      } else {
+        [tid, tx] = await onAdd(contract);
       }
-
-      // Send second tx to set questDetails
-      if (advanceSettingQuests) {
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const questContract: contracts.V2.QuestChain =
-          contracts.V2.QuestChain__factory.connect(
-            questChain.address,
-            provider.getSigner(),
-          );
-
-        const tx = await questContract.configureQuests(
-          advanceSettingQuests.questIds,
-          advanceSettingQuests.questSettings,
-        );
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
-      }
-
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, chainId);
+      const receipt = await tx.wait(1);
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+      );
+      await waitUntilBlock(chainId, receipt.blockNumber);
+      toast.dismiss(tid);
       toast.success(`Successfully edited the quests`);
       refresh();
     } catch (error) {
@@ -392,8 +262,6 @@ export const QuestsEditor: React.FC<{
     questChain,
     onExit,
     refresh,
-    advanceSettingQuests,
-    hasChanged,
   ]);
 
   return (
@@ -417,30 +285,6 @@ export const QuestsEditor: React.FC<{
                   onSave={onEditQuest}
                   onCancel={() => setIsEditingQuest(false)}
                   index={index}
-                  questVersion={questChain.version}
-                  editedQuestAdvSettings={
-                    advanceSettingQuests &&
-                    advanceSettingQuests?.questIds.indexOf(index) !== -1
-                      ? advanceSettingQuests?.questSettings[
-                          advanceSettingQuests?.questIds.indexOf(index)
-                        ]
-                      : index < existingLength
-                      ? {
-                          paused: questChain.quests[index]?.paused,
-                          optional: questChain.quests[index]?.optional,
-                          skipReview: questChain.quests[index]?.skipReview,
-                        }
-                      : defaultQuestAdvSetting
-                  }
-                  currentQuestAdvSettings={
-                    index < existingLength
-                      ? {
-                          paused: questChain.quests[index]?.paused,
-                          optional: questChain.quests[index]?.optional,
-                          skipReview: questChain.quests[index]?.skipReview,
-                        }
-                      : defaultQuestAdvSetting
-                  }
                 />
               ) : (
                 <QuestTile
@@ -479,7 +323,6 @@ export const QuestsEditor: React.FC<{
                     setPaused(o => ({ ...o, [questId]: pause }))
                   }
                   isMember
-                  questChain={questChain}
                 />
               ),
             )}
@@ -489,7 +332,6 @@ export const QuestsEditor: React.FC<{
             <AddQuestBlock
               onClose={() => setIsAddingQuest(false)}
               onAdd={onAddQuest}
-              questVersion={questChain.version}
             />
           </Flex>
         )}
@@ -519,50 +361,36 @@ export const QuestsEditor: React.FC<{
       </Flex>
 
       {!isAddingQuest && !isEditingQuest && (
-        <Box w="full">
-          <Flex align="center" justify="space-between" gap={4} w="full">
-            {hasChanged || hasAdvanceSettingsChanged ? (
-              <SubmitButton
-                onClick={onSave}
-                flex={1}
-                isLoading={isSaving}
-                height={10}
-                px={6}
-                fontSize="sm"
-              >
-                Save Quests
-              </SubmitButton>
-            ) : null}
+        <Flex align="center" justify="space-between" gap={4} w="full">
+          {hasChanged && (
             <SubmitButton
-              onClick={onExit}
+              onClick={onSave}
               flex={1}
-              isDisabled={isSaving}
-              fontSize="sm"
-              bg="transparent"
+              isLoading={isSaving}
               height={10}
-              border="1px solid #9EFCE5"
-              color="#9EFCE5"
-              _hover={{
-                bg: 'whiteAlpha.200',
-              }}
               px={6}
+              fontSize="sm"
             >
-              Cancel
+              Save Quests
             </SubmitButton>
-          </Flex>
-          {hasChanged && hasAdvanceSettingsChanged ? (
-            <Flex
-              fontSize="xs"
-              color="whiteAlpha.600"
-              w="full"
-              justifyContent={'center'}
-              alignContent={'center'}
-              mt={'0.5rem'}
-            >
-              This action will trigger 2 transactions.
-            </Flex>
-          ) : null}
-        </Box>
+          )}
+          <SubmitButton
+            onClick={onExit}
+            flex={1}
+            isDisabled={isSaving}
+            fontSize="sm"
+            bg="transparent"
+            height={10}
+            border="1px solid #9EFCE5"
+            color="#9EFCE5"
+            _hover={{
+              bg: 'whiteAlpha.200',
+            }}
+            px={6}
+          >
+            Cancel
+          </SubmitButton>
+        </Flex>
       )}
     </>
   );
