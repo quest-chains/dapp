@@ -57,7 +57,7 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
         provider.getSigner(),
       );
 
-      const tx = await (questChain.version === '1'
+      const tx = await (Number(questChain.version) > 0
         ? (contract as contracts.V1.QuestChain).mintToken()
         : (contract as contracts.V0.QuestChain).mintToken(address));
       toast.dismiss(tid);

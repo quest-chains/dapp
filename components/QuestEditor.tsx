@@ -71,7 +71,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
           provider.getSigner(),
         );
 
-        const tx = await (questChain.version === '1'
+        const tx = await (Number(questChain.version) > 0
           ? (contract as contracts.V1.QuestChain).editQuests(
               [questId],
               [details],
