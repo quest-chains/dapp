@@ -1,4 +1,4 @@
-import { EditIcon, WarningIcon } from '@chakra-ui/icons';
+import { EditIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
@@ -154,6 +154,12 @@ export const QuestTile: React.FC<{
                   </Tag>
                 )}
               </Flex>
+              {questId && questChain?.quests[Number(questId)].optional && (
+                <Tag colorScheme="green" fontSize="xs">
+                  <InfoIcon boxSize=".75rem" mr={1} />
+                  Optional
+                </Tag>
+              )}
               <AccordionIcon ml={4} />
             </AccordionButton>
             {isMember && (
