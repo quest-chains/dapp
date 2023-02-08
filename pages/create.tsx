@@ -55,7 +55,7 @@ const Create: React.FC = () => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
@@ -341,7 +341,11 @@ const Create: React.FC = () => {
         flexDir="column"
         gap={8}
       >
-        <NFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
+        <NFTForm
+          onSubmit={onSubmitNFTMeta}
+          chainName={chainName}
+          submitLabel="Continue to Step 3"
+        />
         <Step3 />
         <Step4 />
       </Flex>
