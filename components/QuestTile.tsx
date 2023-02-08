@@ -13,7 +13,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { PowerIcon } from '@/components/icons/PowerIcon';
@@ -26,6 +26,8 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { QuestAdvSetting } from './CreateChain/QuestsForm';
+
 export const QuestTile: React.FC<{
   name: string;
   description: string;
@@ -37,7 +39,7 @@ export const QuestTile: React.FC<{
   userStatus?: UserStatusType;
   questChain?: graphql.QuestChainInfoFragment;
   refresh?: () => void;
-  isPaused?: boolean;
+  advSettings?: QuestAdvSetting;
   onTogglePause?: (questId: string, pause: boolean) => void;
   editDisabled?: boolean;
   pauseDisabled?: boolean;
@@ -52,7 +54,7 @@ export const QuestTile: React.FC<{
   userStatus,
   questChain,
   refresh,
-  isPaused = false,
+  advSettings = { paused: false, optional: false, skipReview: false },
   editDisabled = false,
   pauseDisabled = true,
   onTogglePause,
@@ -106,12 +108,7 @@ export const QuestTile: React.FC<{
     [chainId, provider, questChain, questId, refresh],
   );
 
-  const { optional, skipReview } = useMemo(() => {
-    if (!questId) return { optional: false, skipReview: false };
-    const quest = questChain?.quests[Number(questId)];
-    if (!quest) return { optional: false, skipReview: false };
-    return quest;
-  }, [questChain, questId]);
+  const { optional, skipReview, paused } = advSettings;
 
   return (
     <AccordionItem bg={bgColor} borderRadius={10} mb={3} border={0} w="100%">
@@ -162,7 +159,7 @@ export const QuestTile: React.FC<{
                   >
                     {name}
                   </Text>
-                  {isPaused && (
+                  {paused && (
                     <Tag colorScheme="orange" fontSize="xs">
                       <WarningIcon boxSize=".75rem" mr={1} />
                       Disabled
@@ -194,15 +191,15 @@ export const QuestTile: React.FC<{
 
                 {/* Only show for version lesser than 2 */}
                 {Number(questChain?.version) < 2 && !pauseDisabled && questId && (
-                  <Tooltip label={isPaused ? 'Enable Quest' : 'Disable Quest'}>
+                  <Tooltip label={paused ? 'Enable Quest' : 'Disable Quest'}>
                     <IconButton
                       aria-label=""
-                      bg={!isPaused ? 'transparent' : 'whiteAlpha.200'}
+                      bg={!paused ? 'transparent' : 'whiteAlpha.200'}
                       isLoading={isToggling}
                       onClick={() =>
                         onTogglePause
-                          ? onTogglePause(questId, !isPaused)
-                          : toggleQuestPaused(!isPaused)
+                          ? onTogglePause(questId, !paused)
+                          : toggleQuestPaused(!paused)
                       }
                       icon={<PowerIcon />}
                     />

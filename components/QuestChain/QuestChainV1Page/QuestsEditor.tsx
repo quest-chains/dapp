@@ -70,21 +70,6 @@ export const QuestsEditor: React.FC<{
       contract: contracts.V1.QuestChain,
     ): Promise<[string, providers.TransactionResponse]> => {
       let tid = toast.loading('Uploading Quests, please wait...');
-      const newQuests: {
-        questId: number;
-        details: { name: string; description: string };
-      }[] = [];
-
-      for (let i = questChain.quests.length; i < quests.length; ++i) {
-        const newQuest = quests[i];
-        const oldQuest = questChain.quests[i];
-        if (
-          newQuest.name !== oldQuest?.name ||
-          newQuest.description !== oldQuest?.description
-        ) {
-          newQuests.push({ questId: i, details: newQuest });
-        }
-      }
 
       const newQuestDetails = await Promise.all(
         quests
@@ -318,7 +303,11 @@ export const QuestsEditor: React.FC<{
                     isAddingQuest ||
                     isEditingQuest
                   }
-                  isPaused={paused[index.toString()] ?? false}
+                  advSettings={{
+                    paused: paused[index.toString()] ?? false,
+                    optional: false,
+                    skipReview: false,
+                  }}
                   onTogglePause={(questId: string, pause: boolean) =>
                     setPaused(o => ({ ...o, [questId]: pause }))
                   }

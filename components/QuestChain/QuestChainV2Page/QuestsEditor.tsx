@@ -10,10 +10,7 @@ import {
   defaultQuestAdvSetting,
 } from '@/components/CreateChain/AddQuestBlock';
 import { EditingQuest } from '@/components/CreateChain/EditingQuest';
-import {
-  AdvanceSettingQuests,
-  QuestAdvSetting,
-} from '@/components/CreateChain/QuestsForm';
+import { QuestAdvSetting } from '@/components/CreateChain/QuestsForm';
 import { QuestTile } from '@/components/QuestTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
@@ -35,23 +32,20 @@ export const QuestsEditor: React.FC<{
   const [questNameRef, setQuestName] = useInputText();
   const [questDescRef, setQuestDesc] = useInputText();
 
-  const [quests, setQuests] = useState<{ name: string; description: string }[]>(
+  const [quests, setQuests] = useState<
+    {
+      name: string;
+      description: string;
+      optional: boolean;
+      paused: boolean;
+      skipReview: boolean;
+    }[]
+  >(
     questChain.quests.map(q => ({
+      ...q,
       name: q.name ?? '',
       description: q.description ?? '',
     })),
-  );
-  const [advanceSettingQuests, setAdvanceSettingQuests] =
-    useState<AdvanceSettingQuests>();
-
-  const [paused, setPaused] = useState<{ [questId: string]: boolean }>(
-    questChain.quests.reduce(
-      (t, q) => ({
-        ...t,
-        [q.questId]: q.paused,
-      }),
-      {},
-    ),
   );
 
   const existingLength = questChain.quests.length;
@@ -61,44 +55,19 @@ export const QuestsEditor: React.FC<{
     description: string,
     questAdvSetting: QuestAdvSetting | null,
   ) => {
-    if (questAdvSetting !== null) {
-      setAdvanceSettingQuests(prevState => {
-        // For questIds pushing quests.length because the index of new quest will be equal to quests.length.
-        if (prevState)
-          return {
-            questIds: [...prevState?.questIds, quests.length],
-            questSettings: [...prevState?.questSettings, questAdvSetting],
-          };
-        else
-          return {
-            questIds: [quests.length],
-            questSettings: [questAdvSetting],
-          };
-      });
-    }
-    setQuests([...quests, { name, description }]);
+    setQuests([
+      ...quests,
+      {
+        name,
+        description,
+        ...(!!questAdvSetting ? questAdvSetting : defaultQuestAdvSetting),
+      },
+    ]);
     return true;
   };
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
-    setAdvanceSettingQuests(prevState => {
-      const indexFound = prevState?.questIds.indexOf(index);
-      const questIds =
-        prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
-      const questSettings =
-        prevState?.questSettings.filter(
-          (questSetting, i) => i !== indexFound,
-        ) || [];
-
-      if (questIds?.length === 0 || questSettings?.length === 0) {
-        return undefined;
-      }
-      return {
-        questIds,
-        questSettings,
-      };
-    });
   };
 
   const onEditQuest = (
@@ -108,101 +77,24 @@ export const QuestsEditor: React.FC<{
     questAdvSetting: QuestAdvSetting | null = null,
   ) => {
     setIsEditingQuest(false);
-    if (questAdvSetting) {
-      setAdvanceSettingQuests(prevState => {
-        if (prevState) {
-          const indexFound = prevState?.questIds.indexOf(index);
-          // If index already present in questAdvSetting
-          if (indexFound !== -1) {
-            prevState.questSettings[indexFound] = questAdvSetting;
-            return {
-              questIds: [...prevState.questIds],
-              questSettings: [...prevState.questSettings],
-            };
-          }
-
-          // If index not present in questAdvSetting
-          return {
-            questIds: [...prevState.questIds, index],
-            questSettings: [...prevState.questSettings, questAdvSetting],
-          };
-        } else
-          return {
-            questIds: [index],
-            questSettings: [questAdvSetting],
-          };
-      });
-    } else {
-      const indexFound = advanceSettingQuests?.questIds.indexOf(index);
-      // if index is present in advanceSettingQuests then delete it from questIds and advSetting
-      if (indexFound !== -1) {
-        setAdvanceSettingQuests(prevState => {
-          const questIds =
-            prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
-          const questSettings =
-            prevState?.questSettings.filter(
-              (questSetting, i) => i !== indexFound,
-            ) || [];
-
-          if (questIds?.length === 0 || questSettings?.length === 0) {
-            return undefined;
-          }
-          return {
-            questIds,
-            questSettings,
-          };
-        });
-      }
-    }
-    setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
+    setQuests(
+      quests.map((q, i) =>
+        i === index
+          ? { ...(questAdvSetting ? questAdvSetting : q), name, description }
+          : q,
+      ),
+    );
   };
 
   const [isSaving, setSaving] = useState(false);
 
   const { chainId, provider } = useWallet();
 
-  const onAdd = useCallback(
-    async (
-      contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
-      let tid = toast.loading('Uploading Quests, please wait...');
-      const newQuests: {
-        questId: number;
-        details: { name: string; description: string };
-      }[] = [];
-
-      for (let i = questChain.quests.length; i < quests.length; ++i) {
-        const newQuest = quests[i];
-        const oldQuest = questChain.quests[i];
-        if (
-          newQuest.name !== oldQuest?.name ||
-          newQuest.description !== oldQuest?.description
-        ) {
-          newQuests.push({ questId: i, details: newQuest });
-        }
-      }
-
-      const newQuestDetails = await Promise.all(
-        quests
-          .slice(questChain.quests.length, quests.length)
-          .map(details => uploadMetadata(details)),
-      );
-      toast.dismiss(tid);
-      tid = toast.loading(
-        'Waiting for Confirmation - Confirm the transaction in your Wallet',
-      );
-      const tx = await contract.createQuests(newQuestDetails);
-
-      return [tid, tx];
-    },
-    [questChain, quests],
-  );
-
   const onEdit = useCallback(
     async (
       contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
-      let tid = toast.loading('Uploading Quests, please wait...');
+    ): Promise<[string, providers.TransactionReceipt]> => {
+      let tid = toast.loading('Updating Quests, please wait...');
       const newQuests: {
         questId: number;
         details: { name: string; description: string };
@@ -212,10 +104,14 @@ export const QuestsEditor: React.FC<{
         const newQuest = quests[i];
         const oldQuest = questChain.quests[i];
         if (
-          newQuest.name !== oldQuest?.name ||
-          newQuest.description !== oldQuest?.description
+          oldQuest &&
+          (newQuest.name !== oldQuest?.name ||
+            newQuest.description !== oldQuest?.description)
         ) {
-          newQuests.push({ questId: i, details: newQuest });
+          newQuests.push({
+            questId: i,
+            details: { description: newQuest.description, name: newQuest.name },
+          });
         }
       }
 
@@ -225,6 +121,7 @@ export const QuestsEditor: React.FC<{
           detailsUri: uploadMetadata(details),
         })),
       );
+
       toast.dismiss(tid);
       tid = toast.loading(
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
@@ -233,60 +130,114 @@ export const QuestsEditor: React.FC<{
         newQuestDetails.map(q => q.questId),
         newQuestDetails.map(q => q.detailsUri),
       );
-      return [tid, tx];
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, questChain.chainId);
+      const receipt = await tx.wait(1);
+
+      return [tid, receipt];
     },
     [questChain, quests],
   );
 
-  const onPause = useCallback(
+  const onAdd = useCallback(
     async (
       contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
-      const tid = toast.loading(
-        'Waiting for Confirmation - Confirm the transaction in your Wallet',
-      );
+    ): Promise<[string, providers.TransactionReceipt]> => {
+      let tid = toast.loading('Adding Quests, please wait...');
       const newQuests: {
-        questId: string;
-        pause: boolean;
+        questId: number;
+        details: { name: string; description: string };
       }[] = [];
 
-      for (let i = 0; i < questChain.quests.length; ++i) {
+      for (let i = questChain.quests.length; i < quests.length; ++i) {
+        const newQuest = quests[i];
+        newQuests.push({
+          questId: i,
+          details: { name: newQuest.name, description: newQuest.description },
+        });
+      }
+
+      const newQuestDetails = await Promise.all(
+        newQuests.map(({ details }) => uploadMetadata(details)),
+      );
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
+      const tx = await contract.createQuests(newQuestDetails);
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, questChain.chainId);
+      const receipt = await tx.wait(1);
+
+      return [tid, receipt];
+    },
+    [questChain, quests],
+  );
+
+  const onConfigure = useCallback(
+    async (
+      contract: contracts.V2.QuestChain,
+    ): Promise<[string, providers.TransactionReceipt]> => {
+      let tid = toast.loading('Configuring Quests, please wait...');
+      const newQuests: {
+        questId: number;
+        details: { optional: boolean; paused: boolean; skipReview: boolean };
+      }[] = [];
+
+      for (let i = 0; i < quests.length; ++i) {
+        const newQuest = quests[i];
         const oldQuest = questChain.quests[i];
-        if (oldQuest.paused !== paused[oldQuest.questId]) {
-          newQuests.push({
-            questId: oldQuest.questId,
-            pause: paused[oldQuest.questId],
-          });
+        if (
+          newQuest.optional !== oldQuest?.optional ||
+          newQuest.paused !== oldQuest?.paused ||
+          newQuest.skipReview !== oldQuest?.skipReview
+        ) {
+          newQuests.push({ questId: i, details: newQuest });
         }
       }
 
+      toast.dismiss(tid);
+      tid = toast.loading(
+        'Waiting for Confirmation - Confirm the transaction in your Wallet',
+      );
       const tx = await contract.configureQuests(
         newQuests.map(q => q.questId),
-        newQuests.map(q => ({
-          paused: q.pause,
-          optional: false,
-          skipReview: false,
-        })),
+        newQuests.map(q => q.details),
       );
+      toast.dismiss(tid);
+      tid = handleTxLoading(tx.hash, questChain.chainId);
+      const receipt = await tx.wait(1);
 
-      return [tid, tx];
+      return [tid, receipt];
     },
-    [questChain, paused],
+    [questChain, quests],
   );
 
-  const hasEdited = useMemo(() => {
-    if (questChain.quests.length !== quests.length) return false;
+  const { hasEdited, hasAdvanceSettingsChanged } = useMemo(() => {
+    let edited = false;
+    let configured = false;
     for (let i = 0; i < quests.length; ++i) {
       const newQuest = quests[i];
       const oldQuest = questChain.quests[i];
       if (
-        newQuest.name !== oldQuest.name ||
-        newQuest.description !== oldQuest.description
-      )
-        return true;
+        oldQuest &&
+        (newQuest.name !== oldQuest.name ||
+          newQuest.description !== oldQuest.description)
+      ) {
+        edited = true;
+      }
+      if (
+        oldQuest
+          ? newQuest.optional !== oldQuest.optional ||
+            newQuest.paused !== oldQuest.paused ||
+            newQuest.skipReview !== oldQuest.skipReview
+          : newQuest.optional || newQuest.paused || newQuest.skipReview
+      ) {
+        configured = true;
+      }
     }
 
-    return false;
+    return { hasEdited: edited, hasAdvanceSettingsChanged: configured };
   }, [quests, questChain]);
 
   const hasAdded = useMemo(
@@ -294,23 +245,18 @@ export const QuestsEditor: React.FC<{
     [quests, questChain],
   );
 
-  const hasPaused = useMemo(() => {
-    for (let i = 0; i < questChain.quests.length; ++i) {
-      const oldQuest = questChain.quests[i];
-      if (oldQuest.paused !== paused[oldQuest.questId]) return true;
-    }
-    return false;
-  }, [paused, questChain]);
-
   const hasChanged = useMemo(
-    () => hasAdded || hasEdited || hasPaused,
-    [hasPaused, hasEdited, hasAdded],
+    () => hasAdded || hasEdited || hasAdvanceSettingsChanged,
+    [hasEdited, hasAdded, hasAdvanceSettingsChanged],
   );
 
-  const hasAdvanceSettingsChanged = useMemo(
-    () => (advanceSettingQuests ? true : false),
-    [advanceSettingQuests],
-  );
+  const numTransactions = useMemo(() => {
+    let tx = 0;
+    if (hasEdited) tx++;
+    if (hasAdded) tx++;
+    if (hasAdvanceSettingsChanged) tx++;
+    return tx;
+  }, [hasEdited, hasAdvanceSettingsChanged, hasAdded]);
 
   const onSave = useCallback(async () => {
     if (!chainId || !provider || questChain.chainId !== chainId) {
@@ -321,52 +267,32 @@ export const QuestsEditor: React.FC<{
       );
       return;
     }
+
+    if (!hasChanged) return;
     setSaving(true);
 
     let tid = '';
-    let tx: providers.TransactionResponse | null;
     try {
       let receipt: providers.TransactionReceipt | undefined;
-      if (hasChanged) {
-        const contract = getQuestChainContract(
-          questChain.address,
-          questChain.version,
-          provider.getSigner(),
-        ) as contracts.V2.QuestChain;
-        if (hasPaused) {
-          [tid, tx] = await onPause(contract);
-        } else if (hasEdited) {
-          [tid, tx] = await onEdit(contract);
-        } else {
-          [tid, tx] = await onAdd(contract);
-        }
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        receipt = await tx.wait(1);
-        toast.dismiss(tid);
+      const contract = getQuestChainContract(
+        questChain.address,
+        questChain.version,
+        provider.getSigner(),
+      ) as contracts.V2.QuestChain;
+      if (hasEdited) {
+        [tid, receipt] = await onEdit(contract);
       }
+      if (hasAdded) {
+        if (tid) toast.dismiss(tid);
+        [tid, receipt] = await onAdd(contract);
+      }
+      if (hasAdvanceSettingsChanged) {
+        if (tid) toast.dismiss(tid);
+        [tid, receipt] = await onConfigure(contract);
+      }
+      if (tid) toast.dismiss(tid);
 
       // Send second tx to set questDetails
-      if (advanceSettingQuests) {
-        tid = toast.loading(
-          'Waiting for Confirmation - Confirm the transaction in your Wallet',
-        );
-        const questContract: contracts.V2.QuestChain =
-          contracts.V2.QuestChain__factory.connect(
-            questChain.address,
-            provider.getSigner(),
-          );
-
-        const tx = await questContract.configureQuests(
-          advanceSettingQuests.questIds,
-          advanceSettingQuests.questSettings,
-        );
-        toast.dismiss(tid);
-        tid = handleTxLoading(tx.hash, chainId);
-        receipt = await tx.wait(1);
-        toast.dismiss(tid);
-      }
-
       if (receipt) {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
@@ -385,18 +311,18 @@ export const QuestsEditor: React.FC<{
       onExit();
     }
   }, [
-    hasPaused,
-    onPause,
+    hasChanged,
+    hasAdvanceSettingsChanged,
+    onConfigure,
     hasEdited,
     onEdit,
+    hasAdded,
     onAdd,
     chainId,
     provider,
     questChain,
     onExit,
     refresh,
-    advanceSettingQuests,
-    hasChanged,
   ]);
 
   return (
@@ -409,8 +335,9 @@ export const QuestsEditor: React.FC<{
       >
         <Accordion allowMultiple w="full" defaultIndex={[]}>
           {quests &&
-            quests.map(({ name, description }, index) =>
-              isEditingQuest && editingQuestIndex === index ? (
+            quests.map((q, index) => {
+              const { name, description } = q;
+              return isEditingQuest && editingQuestIndex === index ? (
                 <EditingQuest
                   key={name + description}
                   nameRef={questNameRef}
@@ -421,40 +348,25 @@ export const QuestsEditor: React.FC<{
                   onCancel={() => setIsEditingQuest(false)}
                   index={index}
                   questVersion={questChain.version}
-                  editedQuestAdvSettings={
-                    advanceSettingQuests &&
-                    advanceSettingQuests?.questIds.indexOf(index) !== -1
-                      ? advanceSettingQuests?.questSettings[
-                          advanceSettingQuests?.questIds.indexOf(index)
-                        ]
-                      : index < existingLength
-                      ? {
-                          paused: questChain.quests[index]?.paused,
-                          optional: questChain.quests[index]?.optional,
-                          skipReview: questChain.quests[index]?.skipReview,
-                        }
-                      : defaultQuestAdvSetting
-                  }
+                  editedQuestAdvSettings={q}
                   currentQuestAdvSettings={
                     index < existingLength
-                      ? {
-                          paused: questChain.quests[index]?.paused,
-                          optional: questChain.quests[index]?.optional,
-                          skipReview: questChain.quests[index]?.skipReview,
-                        }
+                      ? questChain.quests[index]
                       : defaultQuestAdvSetting
                   }
                 />
               ) : (
                 <QuestTile
                   key={name + description}
-                  name={`${index + 1}. ${name}`}
+                  name={`${Number(index + 1)
+                    .toString()
+                    .padStart(2, '0')}. ${name}`}
                   description={description}
                   questId={
                     index < existingLength ? index.toString() : undefined
                   }
                   onRemoveQuest={
-                    index < existingLength || isSaving || hasPaused
+                    index < existingLength || isSaving
                       ? undefined
                       : () => onRemoveQuest(index)
                   }
@@ -464,28 +376,13 @@ export const QuestsEditor: React.FC<{
                     setIsEditingQuest(true);
                     setEditingQuestIndex(index);
                   }}
-                  editDisabled={
-                    (hasAdded && index < existingLength) ||
-                    hasPaused ||
-                    isSaving ||
-                    isAddingQuest
-                  }
-                  pauseDisabled={
-                    (hasAdded && index < existingLength) ||
-                    hasEdited ||
-                    isSaving ||
-                    isAddingQuest ||
-                    isEditingQuest
-                  }
-                  isPaused={paused[index.toString()] ?? false}
-                  onTogglePause={(questId: string, pause: boolean) =>
-                    setPaused(o => ({ ...o, [questId]: pause }))
-                  }
+                  editDisabled={isSaving || isAddingQuest}
+                  advSettings={q}
                   isMember
                   questChain={questChain}
                 />
-              ),
-            )}
+              );
+            })}
         </Accordion>
         {isAddingQuest && (
           <Flex w="100%" mt={3}>
@@ -496,35 +393,31 @@ export const QuestsEditor: React.FC<{
             />
           </Flex>
         )}
-        {!isAddingQuest &&
-          !isEditingQuest &&
-          !isSaving &&
-          !hasEdited &&
-          !hasPaused && (
-            <>
-              <Button
-                w="100%"
-                isDisabled={isEditingQuest}
-                onClick={() => setIsAddingQuest(true)}
-                py={7}
-                borderRadius={8}
-                color="white"
-                textTransform="uppercase"
-                mb={3}
-              >
-                <HStack spacing={2} align="center">
-                  <AddIcon fontSize="sm" />
-                  <Text>Add a quest</Text>
-                </HStack>
-              </Button>
-            </>
-          )}
+        {!isAddingQuest && !isEditingQuest && !isSaving && (
+          <>
+            <Button
+              w="100%"
+              isDisabled={isEditingQuest}
+              onClick={() => setIsAddingQuest(true)}
+              py={7}
+              borderRadius={8}
+              color="white"
+              textTransform="uppercase"
+              mb={3}
+            >
+              <HStack spacing={2} align="center">
+                <AddIcon fontSize="sm" />
+                <Text>Add a quest</Text>
+              </HStack>
+            </Button>
+          </>
+        )}
       </Flex>
 
       {!isAddingQuest && !isEditingQuest && (
         <Box w="full">
           <Flex align="center" justify="space-between" gap={4} w="full">
-            {hasChanged || hasAdvanceSettingsChanged ? (
+            {hasChanged ? (
               <SubmitButton
                 onClick={onSave}
                 flex={1}
@@ -553,7 +446,7 @@ export const QuestsEditor: React.FC<{
               Cancel
             </SubmitButton>
           </Flex>
-          {hasChanged && hasAdvanceSettingsChanged ? (
+          {numTransactions > 1 ? (
             <Flex
               fontSize="xs"
               color="whiteAlpha.600"
@@ -562,7 +455,7 @@ export const QuestsEditor: React.FC<{
               alignContent={'center'}
               mt={'0.5rem'}
             >
-              This action will trigger 2 transactions.
+              This action will trigger {numTransactions} transactions.
             </Flex>
           ) : null}
         </Box>
