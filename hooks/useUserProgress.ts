@@ -1,5 +1,5 @@
 import { graphql } from '@quest-chains/sdk';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { UserStatusType } from './useUserStatus';
 
@@ -17,43 +17,52 @@ export const useUserProgress = (
   questChain: graphql.QuestChainInfoFragment | null,
   userStatus: UserStatusType,
 ): UserProgresstype => {
-  const [progress, setProgress] = useState({
-    total: 0,
-    inReviewCount: 0,
-    completeCount: 0,
-  });
-  useEffect(() => {
-    if (questChain) {
-      if (questChain?.quests) {
-        const inReviewCount = questChain.quests.filter(
-          quest =>
-            !quest.paused &&
-            userStatus[quest.questId]?.status === graphql.Status.Review,
-        ).length;
-        const completeCount = questChain.quests.filter(
-          quest =>
-            !quest.paused &&
-            userStatus[quest.questId]?.status === graphql.Status.Pass,
-        ).length;
+  const progress = useMemo(() => {
+    if (!questChain?.quests)
+      return {
+        total: 0,
+        inReviewCount: 0,
+        completeCount: 0,
+      };
+    const inReviewCount = questChain.quests.filter(
+      quest =>
+        !quest.paused &&
+        userStatus[quest.questId]?.status === graphql.Status.Review,
+    ).length;
+    const completeCount = questChain.quests.filter(
+      quest =>
+        !quest.paused &&
+        userStatus[quest.questId]?.status === graphql.Status.Pass,
+    ).length;
 
-        setProgress({
-          inReviewCount: inReviewCount || 0,
-          completeCount: completeCount || 0,
-          total: questChain.quests.filter(q => !q.paused).length || 0,
-        });
-      }
-    }
+    return {
+      inReviewCount: inReviewCount || 0,
+      completeCount: completeCount || 0,
+      total: questChain.quests.filter(q => !q.paused).length || 0,
+    };
   }, [questChain, userStatus]);
 
-  const canMint = useMemo(
-    () =>
-      !!address &&
-      !!questChain?.token &&
-      !questChain.token.owners.find(o => o.id === address.toLowerCase()) &&
-      progress.completeCount > 0 &&
-      progress.completeCount === progress.total,
-    [questChain, address, progress],
-  );
+  const canMint = useMemo(() => {
+    if (!address) return false;
+    if (!questChain?.token) return false;
+    if (questChain.token.owners.find(o => o.id === address.toLowerCase()))
+      return false;
+
+    let atLeastOnePassed = false;
+
+    for (let i = 0; i < questChain.quests.length; ++i) {
+      const quest = questChain.quests[i];
+      const status = userStatus[quest.questId]?.status;
+
+      if (!(quest.optional || quest.paused || status === graphql.Status.Pass))
+        return false;
+
+      if (!atLeastOnePassed && status === graphql.Status.Pass)
+        atLeastOnePassed = true;
+    }
+
+    return atLeastOnePassed;
+  }, [questChain, address, userStatus]);
 
   return { progress, canMint };
 };

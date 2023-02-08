@@ -9,7 +9,7 @@ import {
   Image,
 } from '@chakra-ui/react';
 import { ImageProps } from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DropImageType } from '@/hooks/useDropFiles';
 
@@ -39,6 +39,10 @@ export const UploadImageForm = ({
     defaultImageUriInput ?? '',
   );
 
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => setReady(true), []);
+
   return (
     <FormControl
       {...(isDisabled ? { cursor: 'not-allowed' } : {})}
@@ -49,7 +53,7 @@ export const UploadImageForm = ({
       </FormLabel>
       {imageFile && (
         <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
-          {typeof window !== 'undefined' && (
+          {ready && (
             <Image
               {...imageProps}
               alt={`${label} imageFile`}
@@ -73,13 +77,11 @@ export const UploadImageForm = ({
       )}
       {!imageFile && defaultImageUri && onResetDefaultImage && (
         <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
-          {typeof window !== 'undefined' && (
-            <Image
-              {...imageProps}
-              alt={`${label} imageFile`}
-              src={defaultImageUri}
-            />
-          )}
+          <Image
+            {...imageProps}
+            alt={`${label} imageFile`}
+            src={defaultImageUri}
+          />
           <IconButton
             pos="absolute"
             size="sm"

@@ -792,12 +792,16 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                         .filter(
                           q => !!q.name && (mode === Mode.MEMBER || !q.paused),
                         )
-                        .map(
-                          ({ name, description, questId, paused }, index) => (
+                        .map((q, index) => {
+                          const { name, description, questId } = q;
+
+                          return (
                             <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <QuestTile
-                                  name={`${index + 1}. ${name}`}
+                                  name={`${Number(index + 1)
+                                    .toString()
+                                    .padStart(2, '0')}. ${name}`}
                                   description={description ?? ''}
                                   bgColor={getQuestBGColor(
                                     userStatus[questId]?.status,
@@ -814,7 +818,7 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                   questId={questId}
                                   questChain={questChain}
                                   userStatus={userStatus}
-                                  isPaused={paused}
+                                  advSettings={q}
                                   refresh={refresh}
                                 />
                               )}
@@ -824,20 +828,13 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                 <QuestEditor
                                   refresh={refresh}
                                   questChain={questChain}
-                                  quest={{
-                                    name,
-                                    description,
-                                    questId,
-                                    paused,
-                                    skipReview: false,
-                                    optional: false,
-                                  }}
+                                  quest={q}
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
                             </React.Fragment>
-                          ),
-                        )}
+                          );
+                        })}
                     </Accordion>
                   </>
                 )}

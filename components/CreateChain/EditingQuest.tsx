@@ -1,17 +1,26 @@
 import { Flex, Input } from '@chakra-ui/react';
-import { MutableRefObject } from 'react';
+import { MutableRefObject, useEffect, useState } from 'react';
 
 import { MarkdownEditor } from '../MarkdownEditor';
+import QuestAdvancedSettings from '../QuestAdvancedSettings';
 import { SubmitButton } from '../SubmitButton';
+import { defaultQuestAdvSetting } from './AddQuestBlock';
+import { QuestAdvSetting } from './QuestsForm';
 
 export const EditingQuest: React.FC<{
   nameRef: MutableRefObject<string>;
   descRef: MutableRefObject<string>;
   setQuestName: (name: string) => void;
   setQuestDesc: (description: string) => void;
-  onSave: (name: string, description: string, index: number) => void;
+  onSave: (
+    index: number,
+    name: string,
+    description: string,
+    questAdvSetting?: QuestAdvSetting | null,
+  ) => void;
   onCancel: () => void;
   index: number;
+  advSettings?: QuestAdvSetting;
 }> = ({
   nameRef,
   descRef,
@@ -20,7 +29,17 @@ export const EditingQuest: React.FC<{
   onSave,
   index,
   onCancel,
+  advSettings,
 }) => {
+  const [questAdvSetting, setQuestAdvSetting] = useState(
+    advSettings || defaultQuestAdvSetting,
+  );
+
+  useEffect(
+    () => setQuestAdvSetting(advSettings || defaultQuestAdvSetting),
+    [advSettings],
+  );
+
   return (
     <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
       <Input
@@ -30,9 +49,20 @@ export const EditingQuest: React.FC<{
         onChange={e => setQuestName(e.target.value)}
       />
       <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
+
+      {/* Advanced Settings for QuestChain version 2*/}
+      {advSettings ? (
+        <QuestAdvancedSettings
+          questAdvSetting={questAdvSetting}
+          setQuestAdvSetting={setQuestAdvSetting}
+        />
+      ) : null}
+
       <Flex align="center" justify="space-between" gap={4} w="full">
         <SubmitButton
-          onClick={() => onSave(nameRef.current, descRef.current, index)}
+          onClick={() =>
+            onSave(index, nameRef.current, descRef.current, questAdvSetting)
+          }
           flex={1}
           fontSize="sm"
           height={10}

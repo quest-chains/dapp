@@ -21,7 +21,10 @@ import { TwitterShareButton } from 'react-share';
 
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
-import { QuestsForm } from '@/components/CreateChain/QuestsForm';
+import {
+  QuestAdvSetting,
+  QuestsForm,
+} from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
 import Step0 from '@/components/CreateChain/Step0';
 import { TwitterIcon } from '@/components/icons/TwitterIcon';
@@ -109,7 +112,13 @@ const Create: React.FC = () => {
 
   const onPublishQuestChain = useCallback(
     async (
-      quests: { name: string; description: string }[],
+      quests: {
+        name: string;
+        description: string;
+        optional: boolean;
+        skipReview: boolean;
+        paused: boolean;
+      }[],
       startAsDisabled: boolean,
     ) => {
       setSubmitting(true);
@@ -122,7 +131,9 @@ const Create: React.FC = () => {
         tid = toast.loading('Uploading Quests, please wait...');
         const metadata: Metadata[] = quests;
         const hashes = await Promise.all(
-          metadata.map(quest => uploadMetadata(quest)),
+          metadata.map(({ name, description }) =>
+            uploadMetadata({ name, description }),
+          ),
         );
         questsDetails = hashes.map(hash => `ipfs://${hash}`);
         toast.dismiss(tid);
@@ -141,8 +152,8 @@ const Create: React.FC = () => {
           quests: questsDetails,
           paused: startAsDisabled,
         };
-        const factoryContract: contracts.V1.QuestChainFactory =
-          contracts.V1.QuestChainFactory__factory.connect(
+        const factoryContract: contracts.V2.QuestChainFactory =
+          contracts.V2.QuestChainFactory__factory.connect(
             factoryAddress,
             provider.getSigner(),
           );
@@ -156,19 +167,58 @@ const Create: React.FC = () => {
         );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
+        let receipt = await tx.wait(1);
         toast.dismiss(tid);
+
+        const chainAddress = await awaitQuestChainAddress(receipt);
+
+        const advanceSettingQuests: {
+          index: number;
+          settings: QuestAdvSetting;
+        }[] = [];
+
+        quests.forEach((q, index) => {
+          if (q.optional || q.skipReview || q.paused) {
+            advanceSettingQuests.push({ index, settings: q });
+          }
+        });
+
+        // Send second tx to set questDetails
+        if (advanceSettingQuests.length > 0) {
+          tid = toast.loading(
+            'Waiting for Confirmation - Confirm the transaction in your Wallet',
+          );
+          const questContract: contracts.V2.QuestChain =
+            contracts.V2.QuestChain__factory.connect(
+              chainAddress,
+              provider.getSigner(),
+            );
+
+          const tx = await questContract.configureQuests(
+            advanceSettingQuests.map(({ index }) => index),
+            advanceSettingQuests.map(
+              ({ settings: { optional, skipReview, paused } }) => ({
+                optional,
+                paused,
+                skipReview,
+              }),
+            ),
+          );
+          toast.dismiss(tid);
+          tid = handleTxLoading(tx.hash, chainId);
+          receipt = await tx.wait(1);
+          toast.dismiss(tid);
+        }
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
         await waitUntilBlock(chainId, receipt.blockNumber);
+        toast.dismiss(tid);
         onOpen();
 
-        const chainAddress = await awaitQuestChainAddress(receipt);
         // @ts-ignore
         window.plausible(TrackEvent.ChainCreated);
         setChainAddress(chainAddress);
-        toast.dismiss(tid);
       } catch (error) {
         // @ts-ignore
         window.plausible(TrackEvent.ChainCreateFailed);

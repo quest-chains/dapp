@@ -1,27 +1,59 @@
 import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
 
+import QuestAdvancedSettings from '../QuestAdvancedSettings';
+import { QuestAdvSetting } from './QuestsForm';
+
+export const defaultQuestAdvSetting: QuestAdvSetting = {
+  paused: false,
+  optional: false,
+  skipReview: false,
+};
+
 export const AddQuestBlock: React.FC<{
   onClose: () => void;
-  onAdd: (name: string, desc: string) => Promise<boolean>;
+  onAdd: (
+    name: string,
+    desc: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => Promise<boolean>;
   isAdding?: boolean;
-}> = ({ onClose, onAdd, isAdding = false }) => {
+  questVersion?: string;
+}> = ({ onClose, onAdd, isAdding = false, questVersion = '2' }) => {
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
 
+  const [questAdvSetting, setQuestAdvSetting] = useState(
+    defaultQuestAdvSetting,
+  );
+
   const onSubmit = useCallback(async () => {
-    const success = await onAdd(nameRef.current, descRef.current);
+    const success = await onAdd(
+      nameRef.current,
+      descRef.current,
+      questAdvSetting,
+    );
     if (success) {
       setName('');
       setDescription('');
+      setQuestAdvSetting(defaultQuestAdvSetting);
       onClose();
     }
-  }, [onAdd, onClose, nameRef, descRef, setName, setDescription]);
+  }, [
+    onAdd,
+    onClose,
+    nameRef,
+    descRef,
+    questAdvSetting,
+    setName,
+    setDescription,
+    setQuestAdvSetting,
+  ]);
 
   return (
     <form style={{ width: '100%' }}>
@@ -47,6 +79,18 @@ export const AddQuestBlock: React.FC<{
             onChange={setDescription}
           />
         </FormControl>
+
+        {/* Do not show advance quest settings for quest version < 2 */}
+        {Number(questVersion) >= 2 ? (
+          <FormControl px={4}>
+            <QuestAdvancedSettings
+              questAdvSetting={questAdvSetting}
+              setQuestAdvSetting={setQuestAdvSetting}
+              isCreatingQuest={true}
+            />
+          </FormControl>
+        ) : null}
+
         <Flex
           align="center"
           justify="space-between"

@@ -11,18 +11,30 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
-import { AddQuestBlock } from './AddQuestBlock';
+import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
+
+export interface QuestAdvSetting {
+  paused: boolean;
+  optional: boolean;
+  skipReview: boolean;
+}
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
-    quests: { name: string; description: string }[],
+    quests: {
+      name: string;
+      description: string;
+      optional: boolean;
+      skipReview: boolean;
+      paused: boolean;
+    }[],
     startAsDisabled: boolean,
   ) => void | Promise<void>;
   isSubmitting: boolean;
@@ -36,12 +48,25 @@ export const QuestsForm: React.FC<{
 
   const [startAsDisabled, setStartAsDisabled] = useState(false);
 
-  const [quests, setQuests] = useState<{ name: string; description: string }[]>(
-    [],
-  );
+  const [quests, setQuests] = useState<
+    {
+      name: string;
+      description: string;
+      optional: boolean;
+      skipReview: boolean;
+      paused: boolean;
+    }[]
+  >([]);
 
-  const onAddQuest = async (name: string, description: string) => {
-    setQuests([...quests, { name, description }]);
+  const onAddQuest = async (
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => {
+    setQuests([
+      ...quests,
+      { name, description, ...(questAdvSetting ?? defaultQuestAdvSetting) },
+    ]);
     return true;
   };
 
@@ -49,10 +74,38 @@ export const QuestsForm: React.FC<{
     setQuests(quests.filter((_, i) => i !== index));
   };
 
-  const onEditQuest = (name: string, description: string, index: number) => {
+  const onEditQuest = (
+    index: number,
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null = null,
+  ) => {
     setIsEditingQuest(false);
-    setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
+    setQuests(
+      quests.map((q, i) =>
+        i === index
+          ? { ...(questAdvSetting ? questAdvSetting : q), name, description }
+          : q,
+      ),
+    );
   };
+
+  const onlyOptionalQuests = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (quests.find(s => !s.optional)) return false;
+    return true;
+  }, [quests]);
+
+  const hasAdvancedSettings = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (
+      quests.some(
+        ({ optional, skipReview, paused }) => optional || skipReview || paused,
+      )
+    )
+      return true;
+    return false;
+  }, [quests]);
 
   return (
     <>
@@ -91,7 +144,7 @@ export const QuestsForm: React.FC<{
         >
           <Accordion allowMultiple w="full" defaultIndex={[]}>
             {quests &&
-              quests.map(({ name, description }, index) =>
+              quests.map(({ name, description, ...q }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
@@ -102,6 +155,7 @@ export const QuestsForm: React.FC<{
                     onSave={onEditQuest}
                     onCancel={() => setIsEditingQuest(false)}
                     index={index}
+                    advSettings={q}
                   />
                 ) : (
                   <QuestTile
@@ -115,6 +169,7 @@ export const QuestsForm: React.FC<{
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
+                    advSettings={q}
                   />
                 ),
               )}
@@ -177,17 +232,51 @@ export const QuestsForm: React.FC<{
         </Tooltip>
       </Flex>
 
-      <Flex w="full" gap={4}>
-        <SubmitButton
-          isDisabled={isSubmitting}
-          isLoading={isSubmitting}
-          onClick={() => onPublishQuestChain(quests, startAsDisabled)}
-          flex={1}
-          fontSize={{ base: 12, md: 16 }}
+      {onlyOptionalQuests ? (
+        <Flex
+          fontSize="sm"
+          color="whiteAlpha.600"
+          w="full"
+          justifyContent={'center'}
+          alignContent={'center'}
+          textAlign="center"
+          direction="column"
+          mt={'0.5rem'}
         >
-          PUBLISH QUEST CHAIN
-        </SubmitButton>
-      </Flex>
+          <Text>All the quests in this quest chain are optional.</Text>
+          <Text>
+            The questers must complete at least one of the quests to be eligible
+            to mint the completion NFT.
+          </Text>
+        </Flex>
+      ) : null}
+
+      <Box w="full">
+        <Flex w="full" gap={4}>
+          <SubmitButton
+            isDisabled={isSubmitting}
+            isLoading={isSubmitting}
+            onClick={() => onPublishQuestChain(quests, startAsDisabled)}
+            flex={1}
+            fontSize={{ base: 12, md: 16 }}
+          >
+            PUBLISH QUEST CHAIN
+          </SubmitButton>
+        </Flex>
+        {hasAdvancedSettings ? (
+          <Flex
+            fontSize="xs"
+            color="whiteAlpha.600"
+            w="full"
+            justifyContent={'center'}
+            alignContent={'center'}
+            textAlign="center"
+            mt={'0.5rem'}
+          >
+            This action will trigger 2 transactions.
+          </Flex>
+        ) : null}
+      </Box>
     </>
   );
 };
