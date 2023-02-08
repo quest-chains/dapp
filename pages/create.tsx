@@ -163,13 +163,9 @@ const Create: React.FC = () => {
         );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
+        let receipt = await tx.wait(1);
         toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
-        toast.dismiss(tid);
+
         const chainAddress = await awaitQuestChainAddress(receipt);
 
         // Send second tx to set questDetails
@@ -189,19 +185,19 @@ const Create: React.FC = () => {
           );
           toast.dismiss(tid);
           tid = handleTxLoading(tx.hash, chainId);
-          const receipt = await tx.wait(1);
+          receipt = await tx.wait(1);
           toast.dismiss(tid);
-          tid = toast.loading(
-            'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-          );
-          await waitUntilBlock(chainId, receipt.blockNumber);
         }
+        tid = toast.loading(
+          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
+        );
+        await waitUntilBlock(chainId, receipt.blockNumber);
+        toast.dismiss(tid);
         onOpen();
 
         // @ts-ignore
         window.plausible(TrackEvent.ChainCreated);
         setChainAddress(chainAddress);
-        toast.dismiss(tid);
       } catch (error) {
         // @ts-ignore
         window.plausible(TrackEvent.ChainCreateFailed);

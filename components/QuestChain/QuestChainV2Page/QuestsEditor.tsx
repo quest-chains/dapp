@@ -326,6 +326,7 @@ export const QuestsEditor: React.FC<{
     let tid = '';
     let tx: providers.TransactionResponse | null;
     try {
+      let receipt: providers.TransactionReceipt | undefined;
       if (hasChanged) {
         const contract = getQuestChainContract(
           questChain.address,
@@ -341,12 +342,7 @@ export const QuestsEditor: React.FC<{
         }
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
-        toast.dismiss(tid);
-        tid = toast.loading(
-          'Transaction confirmed. Waiting for The Graph to index the transaction data.',
-        );
-        await waitUntilBlock(chainId, receipt.blockNumber);
+        receipt = await tx.wait(1);
         toast.dismiss(tid);
       }
 
@@ -367,8 +363,11 @@ export const QuestsEditor: React.FC<{
         );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
-        const receipt = await tx.wait(1);
+        receipt = await tx.wait(1);
         toast.dismiss(tid);
+      }
+
+      if (receipt) {
         tid = toast.loading(
           'Transaction confirmed. Waiting for The Graph to index the transaction data.',
         );
