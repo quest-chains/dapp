@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import Script from 'next/script';
 import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
+import { hotjar } from 'react-hotjar';
 
 import { AppLayout } from '@/components/Layout/AppLayout';
 import { globalStyles, theme } from '@/utils/theme';
@@ -21,6 +22,10 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
 
   function ForceDarkMode(props: { children: JSX.Element }) {
     const { colorMode, toggleColorMode } = useColorMode();
+
+    useEffect(() => {
+      hotjar.initialize(3277457, 6);
+    }, []);
 
     useEffect(() => {
       if (colorMode === 'dark') return;
