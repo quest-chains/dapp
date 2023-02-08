@@ -1,6 +1,7 @@
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Collapse,
   Divider,
   Flex,
   FormLabel,
@@ -43,6 +44,7 @@ const QuestAdvancedSettings = ({
           justify={'space-evenly'}
           align={'center'}
           gap={'1'}
+          cursor={'pointer'}
         >
           <Text
             whiteSpace={'nowrap'}
@@ -61,8 +63,7 @@ const QuestAdvancedSettings = ({
         <Divider />
       </Flex>
 
-      {/* TODO this component changes width of the parent. See if this is okay, else fix it. */}
-      {isAdvancedSetOpen ? (
+      <Collapse in={isAdvancedSetOpen} animateOpacity>
         <Flex
           mt={'1rem'}
           lineHeight={'3rem'}
@@ -72,7 +73,7 @@ const QuestAdvancedSettings = ({
           pb={4}
         >
           {/* TODO child Select options are not exactly like figma */}
-          <Box px={1}>
+          <Box>
             The quest is{' '}
             <Select
               rounded={'full'}
@@ -90,6 +91,7 @@ const QuestAdvancedSettings = ({
                   };
                 })
               }
+              cursor="pointer"
             >
               <option value="required">required</option>
               <option value="optional">optional</option>
@@ -114,14 +116,15 @@ const QuestAdvancedSettings = ({
                   };
                 })
               }
+              cursor="pointer"
             >
               <option value="reviewed_manually">reviewed manually</option>
               <option value="auto_accepted">auto-accepted</option>
             </Select>
           </Box>
           <Divider />
-          <Flex align={'center'} justify={'space-between'} px={1}>
-            <FormLabel htmlFor="questDisabled" mb="0">
+          <Flex align={'center'} justify="space-between">
+            <FormLabel htmlFor="questDisabled" mb="0" fontWeight="normal">
               {isCreatingQuest ? 'Start' : 'Set'} quest as disabled
             </FormLabel>
             {/* TODO Not exactly like figma */}
@@ -141,7 +144,7 @@ const QuestAdvancedSettings = ({
           </Flex>
           <Divider />
         </Flex>
-      ) : null}
+      </Collapse>
     </div>
   );
 };

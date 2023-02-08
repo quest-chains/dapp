@@ -58,7 +58,7 @@ export const AddQuestBlock: React.FC<{
   return (
     <form style={{ width: '100%' }}>
       <VStack spacing={4} pb={4} w="100%">
-        <FormControl isRequired px={4}>
+        <FormControl isRequired>
           <FormLabel htmlFor="name">Quest Name</FormLabel>
           <Input
             color="white"
@@ -70,7 +70,7 @@ export const AddQuestBlock: React.FC<{
             placeholder="Quest Name"
           />
         </FormControl>
-        <FormControl isRequired px={4}>
+        <FormControl isRequired>
           <FormLabel htmlFor="description">Quest Description</FormLabel>
           <MarkdownEditor
             height="12rem"
@@ -82,7 +82,7 @@ export const AddQuestBlock: React.FC<{
 
         {/* Do not show advance quest settings for quest version < 2 */}
         {Number(questVersion) >= 2 ? (
-          <FormControl px={4}>
+          <FormControl>
             <QuestAdvancedSettings
               questAdvSetting={questAdvSetting}
               setQuestAdvSetting={setQuestAdvSetting}

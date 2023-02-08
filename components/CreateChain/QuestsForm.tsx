@@ -111,8 +111,8 @@ export const QuestsForm: React.FC<{
     <>
       <VStack
         w="full"
+        minW={{ base: 0, lg: '3xl' }}
         align="stretch"
-        spacing={10}
         boxShadow="inset 0px 0px 0px 1px white"
         borderRadius={10}
         px={{ base: 4, md: 12 }}
@@ -227,7 +227,7 @@ export const QuestsForm: React.FC<{
             isChecked={startAsDisabled}
             onChange={() => setStartAsDisabled(!startAsDisabled)}
           >
-            <Text borderBottom="dotted 1px">Start quest chain as disabled</Text>
+            <Text fontSize={10}>Start quest chain as disabled</Text>
           </Checkbox>
         </Tooltip>
       </Flex>

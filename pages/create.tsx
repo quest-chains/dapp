@@ -55,7 +55,7 @@ const Create: React.FC = () => {
   const [chainUri, setChainUri] = useState('');
   const [nftUri, setNFTUri] = useState('');
   const [nftUrl, setNFTUrl] = useState('');
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
   const [ownerAddresses, setOwnerAddresses] = useState([address || '']);
   const [adminAddresses, setAdminAddresses] = useState(['']);
   const [editorAddresses, setEditorAddresses] = useState(['']);
