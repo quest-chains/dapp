@@ -34,6 +34,8 @@ import { TwitterShareButton } from 'react-share';
 
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { AddQuestBlock } from '@/components/CreateChain/AddQuestBlock';
+import { EditIcon } from '@/components/icons/EditIcon';
+import { TwitterIcon } from '@/components/icons/TwitterIcon';
 import { Page } from '@/components/Layout/Page';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -41,8 +43,8 @@ import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { MembersDisplay } from '@/components/MembersDisplay';
 import { MintNFTTile } from '@/components/MintNFTTile';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
+import { QuestEditor } from '@/components/QuestChain/QuestChainV0Page/QuestEditor';
 import { QuestChainPauseStatus } from '@/components/QuestChainPauseStatus';
-import { QuestEditor } from '@/components/QuestEditor';
 import { QuestTile } from '@/components/QuestTile';
 import { Role } from '@/components/RoleTag';
 import { HeadComponent } from '@/components/Seo';
@@ -58,9 +60,6 @@ import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-
-import { EditIcon } from '../icons/EditIcon';
-import { TwitterIcon } from '../icons/TwitterIcon';
 
 const { Status } = graphql;
 
@@ -308,9 +307,9 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
           provider.getSigner(),
         );
 
-        const tx = await (questChain.version === '1'
-          ? (contract as contracts.V1.QuestChain).createQuests([details])
-          : (contract as contracts.V0.QuestChain).createQuest(details));
+        const tx = await (contract as contracts.V0.QuestChain).createQuest(
+          details,
+        );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
