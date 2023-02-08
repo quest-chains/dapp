@@ -4,15 +4,14 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { useInputText } from '@/hooks/useInputText';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-
-import { ConfirmationModal } from './ConfirmationModal';
-import { MarkdownEditor } from './MarkdownEditor';
 
 type QuestEditorProps = {
   refresh: () => void;
@@ -71,12 +70,10 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
           provider.getSigner(),
         );
 
-        const tx = await (Number(questChain.version) > 0
-          ? (contract as contracts.V1.QuestChain).editQuests(
-              [questId],
-              [details],
-            )
-          : (contract as contracts.V0.QuestChain).editQuest(questId, details));
+        const tx = await (contract as contracts.V0.QuestChain).editQuest(
+          questId,
+          details,
+        );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
         const receipt = await tx.wait(1);
