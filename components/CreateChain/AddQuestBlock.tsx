@@ -88,6 +88,7 @@ export const AddQuestBlock: React.FC<{
             <QuestAdvancedSettings
               questAdvSetting={questAdvSetting}
               setQuestAdvSetting={setQuestAdvSetting}
+              isCreatingQuest={true}
             />
           </FormControl>
         ) : null}

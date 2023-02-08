@@ -15,11 +15,13 @@ import { QuestAdvSetting } from './CreateChain/QuestsForm';
 type Props = {
   questAdvSetting: QuestAdvSetting;
   setQuestAdvSetting: Dispatch<SetStateAction<QuestAdvSetting>>;
+  isCreatingQuest?: boolean;
 };
 
 const QuestAdvancedSettings = ({
   questAdvSetting,
   setQuestAdvSetting,
+  isCreatingQuest = false,
 }: Props) => {
   const [isAdvancedSetOpen, setIsAdvancedSetOpen] = useState(false);
 
@@ -120,7 +122,7 @@ const QuestAdvancedSettings = ({
           <Divider />
           <Flex align={'center'} justify={'space-between'}>
             <FormLabel htmlFor="questDisabled" mb="0">
-              Start quest as disabled
+              {isCreatingQuest ? 'Start' : 'Set'} quest as disabled
             </FormLabel>
             {/* TODO Not exactly like figma */}
             <Switch
