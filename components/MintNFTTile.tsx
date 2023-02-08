@@ -28,14 +28,12 @@ import { MastodonShareButton } from './MastodonShareButton';
 
 type QuestChainTileProps = {
   questChain: graphql.QuestChainInfoFragment;
-  completed: number;
   onSuccess?: () => void;
   QCURL: string;
 };
 
 export const MintNFTTile: React.FC<QuestChainTileProps> = ({
   questChain,
-  completed,
   onSuccess,
   QCURL,
 }) => {

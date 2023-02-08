@@ -1,29 +1,30 @@
-import { EditIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
+import { EditIcon, WarningIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
   Flex,
+  HStack,
   IconButton,
   Tag,
   Text,
   Tooltip,
+  VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
+import { PowerIcon } from '@/components/icons/PowerIcon';
+import { TrashOutlinedIcon } from '@/components/icons/TrashOutlinedIcon';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { UploadProofButton } from '@/components/UploadProofButton';
 import { UserStatusType } from '@/hooks/useUserStatus';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
-
-import { PowerIcon } from './icons/PowerIcon';
-import { TrashOutlinedIcon } from './icons/TrashOutlinedIcon';
-import { UploadProofButton } from './UploadProofButton';
 
 export const QuestTile: React.FC<{
   name: string;
@@ -105,6 +106,13 @@ export const QuestTile: React.FC<{
     [chainId, provider, questChain, questId, refresh],
   );
 
+  const { optional, skipReview } = useMemo(() => {
+    if (!questId) return { optional: false, skipReview: false };
+    const quest = questChain?.quests[Number(questId)];
+    if (!quest) return { optional: false, skipReview: false };
+    return quest;
+  }, [questChain, questId]);
+
   return (
     <AccordionItem bg={bgColor} borderRadius={10} mb={3} border={0} w="100%">
       {({ isExpanded }) => (
@@ -128,38 +136,47 @@ export const QuestTile: React.FC<{
                   : 4
               }
             >
-              <Flex flex="1" textAlign="left" gap={2}>
-                <Text
-                  display="-webkit-box"
-                  fontWeight="bold"
-                  textOverflow="ellipsis"
-                  overflow="hidden"
-                  maxW="calc(100%)"
-                  sx={
-                    isExpanded
-                      ? {}
-                      : {
-                          lineClamp: 1,
-                          WebkitLineClamp: 1,
-                          WebkitBoxOrient: 'vertical',
-                        }
-                  }
-                >
-                  {name}
-                </Text>
-                {isPaused && (
-                  <Tag colorScheme="orange" fontSize="xs">
-                    <WarningIcon boxSize=".75rem" mr={1} />
-                    Disabled
-                  </Tag>
+              <VStack
+                flex={1}
+                align="stretch"
+                justify="start"
+                spacing={0}
+                py={optional || skipReview ? 0 : 2.5}
+              >
+                <Flex textAlign="left" gap={2}>
+                  <Text
+                    display="-webkit-box"
+                    fontWeight="bold"
+                    textOverflow="ellipsis"
+                    overflow="hidden"
+                    maxW="calc(100%)"
+                    sx={
+                      isExpanded
+                        ? {}
+                        : {
+                            lineClamp: 1,
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: 'vertical',
+                          }
+                    }
+                  >
+                    {name}
+                  </Text>
+                  {isPaused && (
+                    <Tag colorScheme="orange" fontSize="xs">
+                      <WarningIcon boxSize=".75rem" mr={1} />
+                      Disabled
+                    </Tag>
+                  )}
+                </Flex>
+                {(optional || skipReview) && (
+                  <HStack spacing={1} fontSize="sm" color="whiteAlpha.600">
+                    {optional && <Text as="span">optional</Text>}
+                    {optional && skipReview && <Text as="span">·</Text>}
+                    {skipReview && <Text as="span">auto review</Text>}
+                  </HStack>
                 )}
-              </Flex>
-              {questId && questChain?.quests[Number(questId)].optional && (
-                <Tag colorScheme="green" fontSize="xs">
-                  <InfoIcon boxSize=".75rem" mr={1} />
-                  Optional
-                </Tag>
-              )}
+              </VStack>
               <AccordionIcon ml={4} />
             </AccordionButton>
             {isMember && (
