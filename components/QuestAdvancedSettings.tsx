@@ -92,7 +92,7 @@ const QuestAdvancedSettings = ({
               <option value="required">required</option>
               <option value="optional">optional</option>
             </Select>{' '}
-            and submissions of proof will be reviewed{' '}
+            and submissions of proof will be{' '}
             <Select
               rounded={'full'}
               variant="filled"
