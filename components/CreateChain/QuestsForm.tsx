@@ -11,7 +11,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
@@ -142,10 +142,10 @@ export const QuestsForm: React.FC<{
       if (indexFound !== -1) {
         setAdvanceSettingQuests(prevState => {
           const questIds =
-            prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
+            prevState?.questIds.filter((_questId, i) => i !== indexFound) || [];
           const questSettings =
             prevState?.questSettings.filter(
-              (questSetting, i) => i !== indexFound,
+              (_questSetting, i) => i !== indexFound,
             ) || [];
 
           if (questIds?.length === 0 || questSettings?.length === 0) {
@@ -160,6 +160,15 @@ export const QuestsForm: React.FC<{
     }
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
+
+  const onlyOptionalQuests = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (quests.length !== advanceSettingQuests?.questSettings.length)
+      return false;
+    if (advanceSettingQuests?.questSettings.find(s => !s.optional))
+      return false;
+    return true;
+  }, [quests, advanceSettingQuests]);
 
   return (
     <>
@@ -293,6 +302,25 @@ export const QuestsForm: React.FC<{
         </Tooltip>
       </Flex>
 
+      {onlyOptionalQuests ? (
+        <Flex
+          fontSize="sm"
+          color="whiteAlpha.600"
+          w="full"
+          justifyContent={'center'}
+          alignContent={'center'}
+          textAlign="center"
+          direction="column"
+          mt={'0.5rem'}
+        >
+          <Text>All the quests in this quest chain are optional.</Text>
+          <Text>
+            The questers must complete at least one of the quests to be eligible
+            to mint the completion NFT.
+          </Text>
+        </Flex>
+      ) : null}
+
       <Box w="full">
         <Flex w="full" gap={4}>
           <SubmitButton
@@ -314,6 +342,7 @@ export const QuestsForm: React.FC<{
             w="full"
             justifyContent={'center'}
             alignContent={'center'}
+            textAlign="center"
             mt={'0.5rem'}
           >
             This action will trigger 2 transactions.

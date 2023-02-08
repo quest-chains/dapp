@@ -412,6 +412,12 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
     [refresh, questChain, chainId, provider, onEditNFTClose],
   );
 
+  const onlyOptionalQuests = useMemo(() => {
+    if (questChain.quests.length === 0) return false;
+    if (questChain.quests.find(q => !q.optional)) return false;
+    return true;
+  }, [questChain]);
+
   return (
     <Page>
       <HeadComponent
@@ -1009,6 +1015,26 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   )}
 
                 {/* Mint Tile */}
+                {!canMint && mode === Mode.QUESTER && onlyOptionalQuests ? (
+                  <Flex
+                    fontSize="sm"
+                    color="whiteAlpha.600"
+                    w="full"
+                    justifyContent={'center'}
+                    alignContent={'center'}
+                    textAlign="center"
+                    direction="column"
+                    mt={4}
+                  >
+                    <Text>
+                      All the quests in this quest chain are optional.
+                    </Text>
+                    <Text>
+                      You must complete at least one of the quests to be
+                      eligible to mint the completion NFT.
+                    </Text>
+                  </Flex>
+                ) : null}
                 {canMint && mode === Mode.QUESTER && (
                   <Flex pt={6} w="100%">
                     <MintNFTTile
