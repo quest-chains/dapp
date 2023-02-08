@@ -20,11 +20,6 @@ import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
 
-export interface AdvanceSettingQuests {
-  questIds: number[];
-  questSettings: QuestAdvSetting[];
-}
-
 export interface QuestAdvSetting {
   paused: boolean;
   optional: boolean;
@@ -36,9 +31,11 @@ export const QuestsForm: React.FC<{
     quests: {
       name: string;
       description: string;
+      optional: boolean;
+      skipReview: boolean;
+      paused: boolean;
     }[],
     startAsDisabled: boolean,
-    advanceSettingQuests: AdvanceSettingQuests | undefined,
   ) => void | Promise<void>;
   isSubmitting: boolean;
 }> = ({ onPublishQuestChain, isSubmitting }) => {
@@ -55,54 +52,26 @@ export const QuestsForm: React.FC<{
     {
       name: string;
       description: string;
+      optional: boolean;
+      skipReview: boolean;
+      paused: boolean;
     }[]
   >([]);
-  const [advanceSettingQuests, setAdvanceSettingQuests] =
-    useState<AdvanceSettingQuests>();
 
   const onAddQuest = async (
     name: string,
     description: string,
     questAdvSetting: QuestAdvSetting | null,
   ) => {
-    if (questAdvSetting !== null) {
-      setAdvanceSettingQuests(prevState => {
-        // For questIds pushing quests.length because the index of new quest will be equal to quests.length.
-        if (prevState)
-          return {
-            questIds: [...prevState?.questIds, quests.length],
-            questSettings: [...prevState?.questSettings, questAdvSetting],
-          };
-        else
-          return {
-            questIds: [quests.length],
-            questSettings: [questAdvSetting],
-          };
-      });
-    }
-    setQuests([...quests, { name, description }]);
+    setQuests([
+      ...quests,
+      { name, description, ...(questAdvSetting ?? defaultQuestAdvSetting) },
+    ]);
     return true;
   };
 
   const onRemoveQuest = (index: number) => {
     setQuests(quests.filter((_, i) => i !== index));
-    setAdvanceSettingQuests(prevState => {
-      const indexFound = prevState?.questIds.indexOf(index);
-      const questIds =
-        prevState?.questIds.filter((questId, i) => i !== indexFound) || [];
-      const questSettings =
-        prevState?.questSettings.filter(
-          (questSetting, i) => i !== indexFound,
-        ) || [];
-
-      if (questIds?.length === 0 || questSettings?.length === 0) {
-        return undefined;
-      }
-      return {
-        questIds,
-        questSettings,
-      };
-    });
   };
 
   const onEditQuest = (
@@ -112,63 +81,31 @@ export const QuestsForm: React.FC<{
     questAdvSetting: QuestAdvSetting | null = null,
   ) => {
     setIsEditingQuest(false);
-    if (questAdvSetting) {
-      setAdvanceSettingQuests(prevState => {
-        if (prevState) {
-          const indexFound = prevState?.questIds.indexOf(index);
-          // If index already present in questAdvSetting
-          if (indexFound !== -1) {
-            prevState.questSettings[indexFound] = questAdvSetting;
-            return {
-              questIds: [...prevState.questIds],
-              questSettings: [...prevState.questSettings],
-            };
-          }
-
-          // If index not present in questAdvSetting
-          return {
-            questIds: [...prevState.questIds, index],
-            questSettings: [...prevState.questSettings, questAdvSetting],
-          };
-        } else
-          return {
-            questIds: [index],
-            questSettings: [questAdvSetting],
-          };
-      });
-    } else {
-      const indexFound = advanceSettingQuests?.questIds.indexOf(index);
-      // if index is present in advanceSettingQuests then delete it from questIds and advSetting
-      if (indexFound !== -1) {
-        setAdvanceSettingQuests(prevState => {
-          const questIds =
-            prevState?.questIds.filter((_questId, i) => i !== indexFound) || [];
-          const questSettings =
-            prevState?.questSettings.filter(
-              (_questSetting, i) => i !== indexFound,
-            ) || [];
-
-          if (questIds?.length === 0 || questSettings?.length === 0) {
-            return undefined;
-          }
-          return {
-            questIds,
-            questSettings,
-          };
-        });
-      }
-    }
-    setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
+    setQuests(
+      quests.map((q, i) =>
+        i === index
+          ? { ...(questAdvSetting ? questAdvSetting : q), name, description }
+          : q,
+      ),
+    );
   };
 
   const onlyOptionalQuests = useMemo(() => {
     if (quests.length === 0) return false;
-    if (quests.length !== advanceSettingQuests?.questSettings.length)
-      return false;
-    if (advanceSettingQuests?.questSettings.find(s => !s.optional))
-      return false;
+    if (quests.find(s => !s.optional)) return false;
     return true;
-  }, [quests, advanceSettingQuests]);
+  }, [quests]);
+
+  const hasAdvancedSettings = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (
+      quests.some(
+        ({ optional, skipReview, paused }) => optional || skipReview || paused,
+      )
+    )
+      return true;
+    return false;
+  }, [quests]);
 
   return (
     <>
@@ -207,7 +144,7 @@ export const QuestsForm: React.FC<{
         >
           <Accordion allowMultiple w="full" defaultIndex={[]}>
             {quests &&
-              quests.map(({ name, description }, index) =>
+              quests.map(({ name, description, ...q }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
@@ -218,15 +155,7 @@ export const QuestsForm: React.FC<{
                     onSave={onEditQuest}
                     onCancel={() => setIsEditingQuest(false)}
                     index={index}
-                    questVersion={'2'}
-                    editedQuestAdvSettings={
-                      advanceSettingQuests?.questIds.indexOf(index) !== -1
-                        ? advanceSettingQuests?.questSettings[
-                            advanceSettingQuests?.questIds.indexOf(index)
-                          ]
-                        : undefined
-                    }
-                    currentQuestAdvSettings={defaultQuestAdvSetting}
+                    advSettings={q}
                   />
                 ) : (
                   <QuestTile
@@ -240,6 +169,7 @@ export const QuestsForm: React.FC<{
                       setIsEditingQuest(true);
                       setEditingQuestIndex(index);
                     }}
+                    advSettings={q}
                   />
                 ),
               )}
@@ -326,16 +256,14 @@ export const QuestsForm: React.FC<{
           <SubmitButton
             isDisabled={isSubmitting}
             isLoading={isSubmitting}
-            onClick={() =>
-              onPublishQuestChain(quests, startAsDisabled, advanceSettingQuests)
-            }
+            onClick={() => onPublishQuestChain(quests, startAsDisabled)}
             flex={1}
             fontSize={{ base: 12, md: 16 }}
           >
             PUBLISH QUEST CHAIN
           </SubmitButton>
         </Flex>
-        {advanceSettingQuests ? (
+        {hasAdvancedSettings ? (
           <Flex
             fontSize="xs"
             color="whiteAlpha.600"

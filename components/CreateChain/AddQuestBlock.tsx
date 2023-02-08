@@ -1,5 +1,4 @@
 import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
-import isequal from 'lodash.isequal';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -37,8 +36,7 @@ export const AddQuestBlock: React.FC<{
     const success = await onAdd(
       nameRef.current,
       descRef.current,
-      // TODO check if we update paused to default
-      isequal(questAdvSetting, defaultQuestAdvSetting) ? null : questAdvSetting,
+      questAdvSetting,
     );
     if (success) {
       setName('');

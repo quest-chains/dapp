@@ -33,7 +33,7 @@ const QuestAdvancedSettings = ({
         align={'center'}
         w={'100%'}
         gap={'1'}
-        my={'0.5rem'}
+        my={3}
         cursor={'pointer'}
         onClick={() => setIsAdvancedSetOpen(prev => !prev)}
       >
@@ -65,14 +65,14 @@ const QuestAdvancedSettings = ({
       {isAdvancedSetOpen ? (
         <Flex
           mt={'1rem'}
-          px="4"
           lineHeight={'3rem'}
           justify={'start'}
           flexDirection={'column'}
           gap={'1rem'}
+          pb={4}
         >
           {/* TODO child Select options are not exactly like figma */}
-          <Box>
+          <Box px={1}>
             The quest is{' '}
             <Select
               rounded={'full'}
@@ -120,7 +120,7 @@ const QuestAdvancedSettings = ({
             </Select>
           </Box>
           <Divider />
-          <Flex align={'center'} justify={'space-between'}>
+          <Flex align={'center'} justify={'space-between'} px={1}>
             <FormLabel htmlFor="questDisabled" mb="0">
               {isCreatingQuest ? 'Start' : 'Set'} quest as disabled
             </FormLabel>

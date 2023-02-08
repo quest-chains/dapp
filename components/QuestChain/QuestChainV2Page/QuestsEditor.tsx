@@ -347,13 +347,7 @@ export const QuestsEditor: React.FC<{
                   onSave={onEditQuest}
                   onCancel={() => setIsEditingQuest(false)}
                   index={index}
-                  questVersion={questChain.version}
-                  editedQuestAdvSettings={q}
-                  currentQuestAdvSettings={
-                    index < existingLength
-                      ? questChain.quests[index]
-                      : defaultQuestAdvSetting
-                  }
+                  advSettings={q}
                 />
               ) : (
                 <QuestTile

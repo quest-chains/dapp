@@ -1,6 +1,5 @@
 import { Flex, Input } from '@chakra-ui/react';
-import isEqual from 'lodash.isequal';
-import { MutableRefObject, useState } from 'react';
+import { MutableRefObject, useEffect, useState } from 'react';
 
 import { MarkdownEditor } from '../MarkdownEditor';
 import QuestAdvancedSettings from '../QuestAdvancedSettings';
@@ -21,10 +20,7 @@ export const EditingQuest: React.FC<{
   ) => void;
   onCancel: () => void;
   index: number;
-  // TODO see if makes sense to keep these optional
-  questVersion?: string;
-  editedQuestAdvSettings?: QuestAdvSetting;
-  currentQuestAdvSettings?: QuestAdvSetting;
+  advSettings?: QuestAdvSetting;
 }> = ({
   nameRef,
   descRef,
@@ -33,12 +29,15 @@ export const EditingQuest: React.FC<{
   onSave,
   index,
   onCancel,
-  questVersion,
-  editedQuestAdvSettings,
-  currentQuestAdvSettings,
+  advSettings,
 }) => {
   const [questAdvSetting, setQuestAdvSetting] = useState(
-    editedQuestAdvSettings || defaultQuestAdvSetting,
+    advSettings || defaultQuestAdvSetting,
+  );
+
+  useEffect(
+    () => setQuestAdvSetting(advSettings || defaultQuestAdvSetting),
+    [advSettings],
   );
 
   return (
@@ -52,7 +51,7 @@ export const EditingQuest: React.FC<{
       <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
 
       {/* Advanced Settings for QuestChain version 2*/}
-      {Number(questVersion) > 1 ? (
+      {advSettings ? (
         <QuestAdvancedSettings
           questAdvSetting={questAdvSetting}
           setQuestAdvSetting={setQuestAdvSetting}
@@ -62,15 +61,7 @@ export const EditingQuest: React.FC<{
       <Flex align="center" justify="space-between" gap={4} w="full">
         <SubmitButton
           onClick={() =>
-            onSave(
-              index,
-              nameRef.current,
-              descRef.current,
-              // Update questAdvSetting if this.questAdvSetting different from currentQuestAdvSettings
-              isEqual(questAdvSetting, currentQuestAdvSettings)
-                ? null
-                : questAdvSetting,
-            )
+            onSave(index, nameRef.current, descRef.current, questAdvSetting)
           }
           flex={1}
           fontSize="sm"

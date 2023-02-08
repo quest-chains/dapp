@@ -22,7 +22,7 @@ import { TwitterShareButton } from 'react-share';
 import { MetadataForm } from '@/components/CreateChain/MetadataForm';
 import NFTForm from '@/components/CreateChain/NFTForm';
 import {
-  AdvanceSettingQuests,
+  QuestAdvSetting,
   QuestsForm,
 } from '@/components/CreateChain/QuestsForm';
 import { Member, RolesForm } from '@/components/CreateChain/RolesForm';
@@ -115,9 +115,11 @@ const Create: React.FC = () => {
       quests: {
         name: string;
         description: string;
+        optional: boolean;
+        skipReview: boolean;
+        paused: boolean;
       }[],
       startAsDisabled: boolean,
-      advanceSettingQuests: AdvanceSettingQuests | undefined,
     ) => {
       setSubmitting(true);
       if (!address || !chainId || !provider || !isSupportedNetwork(chainId))
@@ -129,7 +131,9 @@ const Create: React.FC = () => {
         tid = toast.loading('Uploading Quests, please wait...');
         const metadata: Metadata[] = quests;
         const hashes = await Promise.all(
-          metadata.map(quest => uploadMetadata(quest)),
+          metadata.map(({ name, description }) =>
+            uploadMetadata({ name, description }),
+          ),
         );
         questsDetails = hashes.map(hash => `ipfs://${hash}`);
         toast.dismiss(tid);
@@ -168,8 +172,19 @@ const Create: React.FC = () => {
 
         const chainAddress = await awaitQuestChainAddress(receipt);
 
+        const advanceSettingQuests: {
+          index: number;
+          settings: QuestAdvSetting;
+        }[] = [];
+
+        quests.forEach((q, index) => {
+          if (q.optional || q.skipReview || q.paused) {
+            advanceSettingQuests.push({ index, settings: q });
+          }
+        });
+
         // Send second tx to set questDetails
-        if (advanceSettingQuests) {
+        if (advanceSettingQuests.length > 0) {
           tid = toast.loading(
             'Waiting for Confirmation - Confirm the transaction in your Wallet',
           );
@@ -180,8 +195,14 @@ const Create: React.FC = () => {
             );
 
           const tx = await questContract.configureQuests(
-            advanceSettingQuests.questIds,
-            advanceSettingQuests.questSettings,
+            advanceSettingQuests.map(({ index }) => index),
+            advanceSettingQuests.map(
+              ({ settings: { optional, skipReview, paused } }) => ({
+                optional,
+                paused,
+                skipReview,
+              }),
+            ),
           );
           toast.dismiss(tid);
           tid = handleTxLoading(tx.hash, chainId);
