@@ -31,6 +31,7 @@ import {
   switchChainOnMetaMask,
   useWallet,
 } from '@/web3';
+import { getEthersProvider } from '@/web3/providers';
 
 export const WalletDisplay: React.FC = () => {
   const { address, chainId, isMetaMask, disconnect } = useWallet();
@@ -63,6 +64,7 @@ export const WalletDisplay: React.FC = () => {
                 address={address}
                 size={32}
                 generatedAvatarType="jazzicon"
+                provider={getEthersProvider('0x1')}
               />
               <Flex flexDir="column">
                 <Text fontWeight="bold" fontSize="normal">
