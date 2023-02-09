@@ -28,14 +28,12 @@ import { MastodonShareButton } from './MastodonShareButton';
 
 type QuestChainTileProps = {
   questChain: graphql.QuestChainInfoFragment;
-  completed: number;
   onSuccess?: () => void;
   QCURL: string;
 };
 
 export const MintNFTTile: React.FC<QuestChainTileProps> = ({
   questChain,
-  completed,
   onSuccess,
   QCURL,
 }) => {
@@ -94,9 +92,9 @@ export const MintNFTTile: React.FC<QuestChainTileProps> = ({
     >
       <Image src={VictoryCupImage.src} alt="Success" />
       <Text>
-        {`You have successfully finished ${
-          completed > 1 ? `all ${completed} quests` : 'all quests'
-        } from ${questChain.name ?? 'this quest chain'}.`}
+        {`You have successfully completed all required quests from ${
+          questChain.name ?? 'this quest chain'
+        }.`}
       </Text>
       <Button
         w="100%"

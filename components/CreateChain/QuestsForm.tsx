@@ -11,18 +11,35 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
 import { QuestTile } from '../QuestTile';
 import { SubmitButton } from '../SubmitButton';
-import { AddQuestBlock } from './AddQuestBlock';
+import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
+
+export type QuestAdvSetting = {
+  paused: boolean;
+  optional: boolean;
+  skipReview: boolean;
+};
+
+export type QuestDraft = {
+  name: string;
+  description: string;
+} & QuestAdvSetting;
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
-    quests: { name: string; description: string }[],
+    quests: {
+      name: string;
+      description: string;
+      optional: boolean;
+      skipReview: boolean;
+      paused: boolean;
+    }[],
     startAsDisabled: boolean,
   ) => void | Promise<void>;
   isSubmitting: boolean;
@@ -35,13 +52,19 @@ export const QuestsForm: React.FC<{
   const [questDescRef, setQuestDesc] = useInputText();
 
   const [startAsDisabled, setStartAsDisabled] = useState(false);
+  const [draggingQuest, setDraggingQuest] = useState(-1);
 
-  const [quests, setQuests] = useState<{ name: string; description: string }[]>(
-    [],
-  );
+  const [quests, setQuests] = useState<QuestDraft[]>([]);
 
-  const onAddQuest = async (name: string, description: string) => {
-    setQuests([...quests, { name, description }]);
+  const onAddQuest = async (
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null,
+  ) => {
+    setQuests([
+      ...quests,
+      { name, description, ...(questAdvSetting ?? defaultQuestAdvSetting) },
+    ]);
     return true;
   };
 
@@ -49,23 +72,81 @@ export const QuestsForm: React.FC<{
     setQuests(quests.filter((_, i) => i !== index));
   };
 
-  const onEditQuest = (name: string, description: string, index: number) => {
+  const onEditQuest = (
+    index: number,
+    name: string,
+    description: string,
+    questAdvSetting: QuestAdvSetting | null = null,
+  ) => {
     setIsEditingQuest(false);
-    setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
+    setQuests(
+      quests.map((q, i) =>
+        i === index
+          ? { ...(questAdvSetting ? questAdvSetting : q), name, description }
+          : q,
+      ),
+    );
   };
+
+  const onlyOptionalQuests = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (quests.find(s => !s.optional)) return false;
+    return true;
+  }, [quests]);
+
+  const hasAdvancedSettings = useMemo(() => {
+    if (quests.length === 0) return false;
+    if (
+      quests.some(
+        ({ optional, skipReview, paused }) => optional || skipReview || paused,
+      )
+    )
+      return true;
+    return false;
+  }, [quests]);
+
+  const onDropQuest = useCallback(
+    (dropIndex: number) => {
+      if (draggingQuest === -1) return;
+      setDraggingQuest(-1);
+      if (draggingQuest === dropIndex) return;
+      setQuests(oldQuests => {
+        const newQuests: QuestDraft[] = [];
+        oldQuests.forEach((quest, index) => {
+          if (index === dropIndex && draggingQuest > dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+          if (index !== draggingQuest) {
+            newQuests.push({
+              ...quest,
+            });
+          }
+          if (index === dropIndex && draggingQuest < dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+        });
+        return newQuests;
+      });
+    },
+    [draggingQuest],
+  );
 
   return (
     <>
       <VStack
         w="full"
+        minW={{ base: 0, lg: '3xl' }}
         align="stretch"
-        spacing={10}
         boxShadow="inset 0px 0px 0px 1px white"
         borderRadius={10}
         px={{ base: 4, md: 12 }}
         py={8}
       >
-        <HStack w="full">
+        <HStack w="full" mb={6}>
           <Box
             py={1}
             px={3}
@@ -89,9 +170,9 @@ export const QuestsForm: React.FC<{
           alignItems="center"
           flexDir="column"
         >
-          <Accordion allowMultiple w="full" defaultIndex={[]}>
-            {quests &&
-              quests.map(({ name, description }, index) =>
+          {!!quests.length && (
+            <Accordion allowMultiple w="full" defaultIndex={[]}>
+              {quests.map(({ name, description, ...q }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
@@ -102,23 +183,36 @@ export const QuestsForm: React.FC<{
                     onSave={onEditQuest}
                     onCancel={() => setIsEditingQuest(false)}
                     index={index}
+                    advSettings={q}
                   />
                 ) : (
-                  <QuestTile
-                    key={name + description}
-                    name={`${index + 1}. ${name}`}
-                    description={description}
-                    onRemoveQuest={() => onRemoveQuest(index)}
-                    onEditQuest={() => {
-                      setQuestName(name);
-                      setQuestDesc(description);
-                      setIsEditingQuest(true);
-                      setEditingQuestIndex(index);
-                    }}
-                  />
+                  <Flex
+                    w="100%"
+                    key={index + name + description}
+                    onDragStart={() => setDraggingQuest(index)}
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => onDropQuest(index)}
+                    draggable={!isEditingQuest}
+                  >
+                    <QuestTile
+                      name={`${Number(index + 1)
+                        .toString()
+                        .padStart(2, '0')}. ${name}`}
+                      description={description}
+                      onRemoveQuest={() => onRemoveQuest(index)}
+                      onEditQuest={() => {
+                        setQuestName(name);
+                        setQuestDesc(description);
+                        setIsEditingQuest(true);
+                        setEditingQuestIndex(index);
+                      }}
+                      advSettings={q}
+                    />
+                  </Flex>
                 ),
               )}
-          </Accordion>
+            </Accordion>
+          )}
           {isAddingQuest && (
             <AddQuestBlock
               onClose={() => setIsAddingQuest(false)}
@@ -172,22 +266,56 @@ export const QuestsForm: React.FC<{
             isChecked={startAsDisabled}
             onChange={() => setStartAsDisabled(!startAsDisabled)}
           >
-            <Text borderBottom="dotted 1px">Start quest chain as disabled</Text>
+            <Text fontSize={10}>Start quest chain as disabled</Text>
           </Checkbox>
         </Tooltip>
       </Flex>
 
-      <Flex w="full" gap={4}>
-        <SubmitButton
-          isDisabled={isSubmitting}
-          isLoading={isSubmitting}
-          onClick={() => onPublishQuestChain(quests, startAsDisabled)}
-          flex={1}
-          fontSize={{ base: 12, md: 16 }}
+      {onlyOptionalQuests ? (
+        <Flex
+          fontSize="sm"
+          color="whiteAlpha.600"
+          w="full"
+          justifyContent={'center'}
+          alignContent={'center'}
+          textAlign="center"
+          direction="column"
+          mt={'0.5rem'}
         >
-          PUBLISH QUEST CHAIN
-        </SubmitButton>
-      </Flex>
+          <Text>All the quests in this quest chain are optional.</Text>
+          <Text>
+            The questers must complete at least one of the quests to be eligible
+            to mint the completion NFT.
+          </Text>
+        </Flex>
+      ) : null}
+
+      <Box w="full">
+        <Flex w="full" gap={4}>
+          <SubmitButton
+            isDisabled={isSubmitting}
+            isLoading={isSubmitting}
+            onClick={() => onPublishQuestChain(quests, startAsDisabled)}
+            flex={1}
+            fontSize={{ base: 12, md: 16 }}
+          >
+            PUBLISH QUEST CHAIN
+          </SubmitButton>
+        </Flex>
+        {hasAdvancedSettings ? (
+          <Flex
+            fontSize="xs"
+            color="whiteAlpha.600"
+            w="full"
+            justifyContent={'center'}
+            alignContent={'center'}
+            textAlign="center"
+            mt={'0.5rem'}
+          >
+            This action will trigger 2 transactions.
+          </Flex>
+        ) : null}
+      </Box>
     </>
   );
 };

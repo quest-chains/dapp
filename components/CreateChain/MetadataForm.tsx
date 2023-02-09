@@ -137,6 +137,8 @@ export const MetadataForm: React.FC<{
     setSlug,
   ]);
 
+  const [nameLength, setNameLength] = useState(nameRef.current.length);
+
   return (
     <VStack
       w="100%"
@@ -166,15 +168,20 @@ export const MetadataForm: React.FC<{
       <form>
         <VStack w="100%" align="stretch" mb={10} spacing={4}>
           <FormControl w="full" isRequired={true}>
-            <FormLabel htmlFor="name">Name</FormLabel>
+            <Flex align="center" justify="space-between" w="100%">
+              <FormLabel htmlFor="name">Name</FormLabel>
+              <Text fontSize="sm">{nameLength} / 120</Text>
+            </Flex>
             <Input
               color="white"
               defaultValue={nameRef.current}
               bg="#0F172A"
               id="name"
+              maxLength={120}
               onChange={e => {
                 setName(e.target.value);
                 fetchSearchResults(slugify(e.target.value));
+                setNameLength(e.target.value.length);
               }}
               placeholder="Quest chain name"
             />
@@ -182,6 +189,7 @@ export const MetadataForm: React.FC<{
 
           <FormControl w="full" isRequired={true}>
             <FormLabel htmlFor="description">Description</FormLabel>
+            {/* TODO add hover effect similar to Name */}
             <MarkdownEditor
               value={descRef.current}
               placeholder="Quest chain description"

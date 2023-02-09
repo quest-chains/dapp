@@ -13,13 +13,10 @@ import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-type ArrayElement<ArrayType extends readonly unknown[]> =
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
-
 type QuestEditorProps = {
   refresh: () => void;
   questChain: graphql.QuestChainInfoFragment;
-  quest: ArrayElement<graphql.QuestChainInfoFragment['quests']>;
+  quest: graphql.QuestInfoFragment;
   setEditingQuest: (sth: boolean) => void;
 };
 

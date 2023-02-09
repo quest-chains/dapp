@@ -44,7 +44,8 @@ const NFTForm3D: React.FC<{
     nftUrl: string | undefined,
   ) => void | Promise<void>;
   submitLabel?: string;
-}> = ({ chainName, onBack, onSubmit, submitLabel = 'Continue to Step 3' }) => {
+  show: boolean;
+}> = ({ chainName, onBack, onSubmit, submitLabel, show }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
 
@@ -124,7 +125,12 @@ const NFTForm3D: React.FC<{
   }, [onSubmit, starLength, name, description, bgIndex, gemIndex]);
 
   return (
-    <VStack w="100%" align="stretch" spacing={8}>
+    <VStack
+      w="100%"
+      align="stretch"
+      spacing={8}
+      display={show ? 'initial' : 'none'}
+    >
       <Flex
         w="100%"
         flexDirection={{ base: 'column', lg: 'row-reverse' }}

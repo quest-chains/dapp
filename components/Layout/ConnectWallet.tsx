@@ -4,8 +4,8 @@ import { utils } from 'ethers';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useENS } from '@/hooks/useENS';
-import { ZERO_ADDRESS } from '@/utils/constants';
 import { formatAddress, useWallet } from '@/web3';
+import { getEthersProvider } from '@/web3/providers';
 
 export const ConnectWallet: React.FC = () => {
   const { connectWallet, isConnecting, isConnected, disconnect, address } =
@@ -27,14 +27,15 @@ export const ConnectWallet: React.FC = () => {
       fontSize={14}
       height={10}
     >
-      {!isConnected || !address ? (
+      {!address || !isConnected ? (
         'Connect Wallet'
       ) : (
         <HStack spacing={2} position="relative">
           <Davatar
-            address={address ?? ZERO_ADDRESS}
+            address={address}
             size={20}
             generatedAvatarType="jazzicon"
+            provider={getEthersProvider('0x1')}
           />
           <Text
             transition="opacity 0.25s"

@@ -25,7 +25,8 @@ const CustomNFTForm2D: React.FC<{
     nftUrl: string | undefined,
   ) => void | Promise<void>;
   submitLabel?: string;
-}> = ({ chainName, onBack, onSubmit, submitLabel = 'Continue to Step 3' }) => {
+  show: boolean;
+}> = ({ chainName, onBack, onSubmit, submitLabel, show }) => {
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
 
@@ -71,7 +72,13 @@ const CustomNFTForm2D: React.FC<{
   }, [imageFile, name, description, onSubmit]);
 
   return (
-    <Flex w="100%" gap={8} mb={12} flexDir="column">
+    <Flex
+      w="100%"
+      gap={8}
+      mb={12}
+      flexDir="column"
+      display={show ? 'flex' : 'none'}
+    >
       <Flex flexDir="column" w={{ md: 'xl' }} alignSelf="center">
         <UploadImageForm
           {...uploadImageProps}

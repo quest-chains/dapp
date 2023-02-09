@@ -194,6 +194,19 @@ export const UploadProof: React.FC<{
               formControlProps={{ mb: 4 }}
             />
             <UploadFilesForm {...dropFilesProps} />
+            <Flex
+              fontSize="xs"
+              color="whiteAlpha.600"
+              w="full"
+              justifyContent={'center'}
+              alignContent={'center'}
+            >
+              This submission will be{' '}
+              {questChain?.quests[Number(questId)].skipReview
+                ? 'automatically'
+                : 'manually'}{' '}
+              reviewed.
+            </Flex>
           </ModalBody>
 
           <ModalFooter alignItems="baseline">

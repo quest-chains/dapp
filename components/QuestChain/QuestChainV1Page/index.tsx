@@ -969,7 +969,8 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   !isEditingQuests &&
                   !isEditingMembers &&
                   !isTogglingPauseStatus &&
-                  !isEditingNFT && (
+                  !isEditingNFT &&
+                  numSubmissionsToReview > 0 && (
                     <Flex
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
@@ -979,32 +980,28 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                     >
                       <Flex justifyContent="center" alignItems="center">
                         <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
-                        {numSubmissionsToReview > 0
-                          ? `${numSubmissionsToReview} submissions are awaiting review`
-                          : 'There are no submissions that are awaiting review'}
+                        {numSubmissionsToReview} submissions are awaiting review
                       </Flex>
-                      {numSubmissionsToReview > 0 && (
-                        <NextLink
-                          as={`/${
-                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
-                          }/${questChain.address}/review`}
-                          href={`/${
-                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
-                          }/[address]/review`}
-                          passHref
-                        >
-                          <ChakraLink display="block" _hover={{}}>
-                            <SubmitButton
-                              fontSize={14}
-                              fontWeight="bold"
-                              height={10}
-                              px={6}
-                            >
-                              Review Submissions
-                            </SubmitButton>
-                          </ChakraLink>
-                        </NextLink>
-                      )}
+                      <NextLink
+                        as={`/${
+                          AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                        }/${questChain.address}/review`}
+                        href={`/${
+                          AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                        }/[address]/review`}
+                        passHref
+                      >
+                        <ChakraLink display="block" _hover={{}}>
+                          <SubmitButton
+                            fontSize={14}
+                            fontWeight="bold"
+                            height={10}
+                            px={6}
+                          >
+                            Review Submissions
+                          </SubmitButton>
+                        </ChakraLink>
+                      </NextLink>
                     </Flex>
                   )}
 
@@ -1068,11 +1065,14 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                             q =>
                               !!q.name && (mode === Mode.MEMBER || !q.paused),
                           )
-                          .map(
-                            ({ name, description, questId, paused }, index) => (
+                          .map((q, index) => {
+                            const { name, description, questId } = q;
+                            return (
                               <QuestTile
                                 key={questId}
-                                name={`${index + 1}. ${name}`}
+                                name={`${Number(index + 1)
+                                  .toString()
+                                  .padStart(2, '0')}. ${name}`}
                                 description={description ?? ''}
                                 bgColor={getQuestBGColor(
                                   userStatus[questId]?.status,
@@ -1085,12 +1085,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                                 questId={questId}
                                 questChain={questChain}
                                 userStatus={userStatus}
-                                isPaused={paused}
+                                advSettings={q}
                                 refresh={refresh}
                                 editDisabled
                               />
-                            ),
-                          )}
+                            );
+                          })}
                       </Accordion>
                     )}
                   </>

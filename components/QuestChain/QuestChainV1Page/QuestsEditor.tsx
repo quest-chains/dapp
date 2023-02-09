@@ -27,6 +27,7 @@ export const QuestsEditor: React.FC<{
 
   const [questNameRef, setQuestName] = useInputText();
   const [questDescRef, setQuestDesc] = useInputText();
+  const [draggingQuest, setDraggingQuest] = useState(-1);
 
   const [quests, setQuests] = useState<{ name: string; description: string }[]>(
     questChain.quests.map(q => ({
@@ -56,7 +57,7 @@ export const QuestsEditor: React.FC<{
     setQuests(quests.filter((_, i) => i !== index));
   };
 
-  const onEditQuest = (name: string, description: string, index: number) => {
+  const onEditQuest = (index: number, name: string, description: string) => {
     setIsEditingQuest(false);
     setQuests(quests.map((_, i) => (i === index ? { name, description } : _)));
   };
@@ -70,21 +71,6 @@ export const QuestsEditor: React.FC<{
       contract: contracts.V1.QuestChain,
     ): Promise<[string, providers.TransactionResponse]> => {
       let tid = toast.loading('Uploading Quests, please wait...');
-      const newQuests: {
-        questId: number;
-        details: { name: string; description: string };
-      }[] = [];
-
-      for (let i = questChain.quests.length; i < quests.length; ++i) {
-        const newQuest = quests[i];
-        const oldQuest = questChain.quests[i];
-        if (
-          newQuest.name !== oldQuest?.name ||
-          newQuest.description !== oldQuest?.description
-        ) {
-          newQuests.push({ questId: i, details: newQuest });
-        }
-      }
 
       const newQuestDetails = await Promise.all(
         quests
@@ -264,6 +250,37 @@ export const QuestsEditor: React.FC<{
     refresh,
   ]);
 
+  const onDropQuest = useCallback(
+    (dropIndex: number) => {
+      if (draggingQuest === -1) return;
+      setDraggingQuest(-1);
+      if (draggingQuest === dropIndex) return;
+      if (dropIndex < questChain.quests.length) return;
+      setQuests(oldQuests => {
+        const newQuests: { name: string; description: string }[] = [];
+        oldQuests.forEach((quest, index) => {
+          if (index === dropIndex && draggingQuest > dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+          if (index !== draggingQuest) {
+            newQuests.push({
+              ...quest,
+            });
+          }
+          if (index === dropIndex && draggingQuest < dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+        });
+        return newQuests;
+      });
+    },
+    [draggingQuest, questChain],
+  );
+
   return (
     <>
       <Flex
@@ -287,43 +304,59 @@ export const QuestsEditor: React.FC<{
                   index={index}
                 />
               ) : (
-                <QuestTile
-                  key={name + description}
-                  name={`${index + 1}. ${name}`}
-                  description={description}
-                  questId={
-                    index < existingLength ? index.toString() : undefined
-                  }
-                  onRemoveQuest={
-                    index < existingLength || isSaving || hasPaused
-                      ? undefined
-                      : () => onRemoveQuest(index)
-                  }
-                  onEditQuest={() => {
-                    setQuestName(name);
-                    setQuestDesc(description);
-                    setIsEditingQuest(true);
-                    setEditingQuestIndex(index);
-                  }}
-                  editDisabled={
-                    (hasAdded && index < existingLength) ||
-                    hasPaused ||
-                    isSaving ||
-                    isAddingQuest
-                  }
-                  pauseDisabled={
-                    (hasAdded && index < existingLength) ||
-                    hasEdited ||
-                    isSaving ||
-                    isAddingQuest ||
-                    isEditingQuest
-                  }
-                  isPaused={paused[index.toString()] ?? false}
-                  onTogglePause={(questId: string, pause: boolean) =>
-                    setPaused(o => ({ ...o, [questId]: pause }))
-                  }
-                  isMember
-                />
+                <Flex
+                  w="100%"
+                  key={index + name + description}
+                  {...(index >= questChain.quests.length
+                    ? {
+                        onDragStart: () => setDraggingQuest(index),
+                        onDragOver: e => e.preventDefault(),
+                        onDrop: () => onDropQuest(index),
+                        draggable: !isEditingQuest,
+                      }
+                    : {})}
+                >
+                  <QuestTile
+                    name={`${index + 1}. ${name}`}
+                    description={description}
+                    questId={
+                      index < existingLength ? index.toString() : undefined
+                    }
+                    onRemoveQuest={
+                      index < existingLength || isSaving || hasPaused
+                        ? undefined
+                        : () => onRemoveQuest(index)
+                    }
+                    onEditQuest={() => {
+                      setQuestName(name);
+                      setQuestDesc(description);
+                      setIsEditingQuest(true);
+                      setEditingQuestIndex(index);
+                    }}
+                    editDisabled={
+                      (hasAdded && index < existingLength) ||
+                      hasPaused ||
+                      isSaving ||
+                      isAddingQuest
+                    }
+                    pauseDisabled={
+                      (hasAdded && index < existingLength) ||
+                      hasEdited ||
+                      isSaving ||
+                      isAddingQuest ||
+                      isEditingQuest
+                    }
+                    advSettings={{
+                      paused: paused[index.toString()] ?? false,
+                      optional: false,
+                      skipReview: false,
+                    }}
+                    onTogglePause={(questId: string, pause: boolean) =>
+                      setPaused(o => ({ ...o, [questId]: pause }))
+                    }
+                    isMember
+                  />
+                </Flex>
               ),
             )}
         </Accordion>

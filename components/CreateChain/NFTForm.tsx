@@ -21,7 +21,7 @@ const NFTForm: React.FC<{
     nftUrl: string | undefined,
   ) => void | Promise<void>;
   chainName: string;
-  submitLabel?: string;
+  submitLabel: string;
 }> = ({ onSubmit, chainName, showStep = true, submitLabel }) => {
   const [tab, setTab] = useState(TABS[0]);
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
@@ -77,27 +77,24 @@ const NFTForm: React.FC<{
           </Button>
         ))}
       </Flex>
-      {tab === TABS[0] && (
-        <NFTForm2D
-          chainName={chainName}
-          onSubmit={onSubmit}
-          submitLabel={submitLabel}
-        />
-      )}
-      {tab === TABS[1] && (
-        <NFTForm3D
-          chainName={chainName}
-          onSubmit={onSubmit}
-          submitLabel={submitLabel}
-        />
-      )}
-      {tab === TABS[2] && (
-        <NFTFormCustom
-          chainName={chainName}
-          onSubmit={onSubmit}
-          submitLabel={submitLabel}
-        />
-      )}
+      <NFTForm2D
+        chainName={chainName}
+        onSubmit={onSubmit}
+        submitLabel={submitLabel}
+        show={tab === TABS[0]}
+      />
+      <NFTForm3D
+        chainName={chainName}
+        onSubmit={onSubmit}
+        submitLabel={submitLabel}
+        show={tab === TABS[1]}
+      />
+      <NFTFormCustom
+        chainName={chainName}
+        onSubmit={onSubmit}
+        submitLabel={submitLabel}
+        show={tab === TABS[2]}
+      />
     </VStack>
   );
 };

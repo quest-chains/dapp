@@ -663,27 +663,6 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                 </Flex>
               )}
               <Flex mb={12}>
-                {/* to be implemented eventually */}
-                {/* 
-                {mode === Mode.QUESTER &&
-                  progress.completeCount === 0 &&
-                  progress.inReviewCount === 0 &&
-                  progress.total !== 0 && (
-                    <Button
-                      borderWidth={1}
-                      borderColor="main"
-                      px={12}
-                      py={2}
-                      bgColor="main"
-                      borderRadius="full"
-                      color="black"
-                      _hover={{
-                        bgColor: 'main.950',
-                      }}
-                    >
-                      START PLAYING
-                    </Button>
-                  )} */}
                 {mode === Mode.MEMBER &&
                   numSubmissionsToReview != 0 &&
                   isReviewer && (
@@ -792,12 +771,16 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                         .filter(
                           q => !!q.name && (mode === Mode.MEMBER || !q.paused),
                         )
-                        .map(
-                          ({ name, description, questId, paused }, index) => (
+                        .map((q, index) => {
+                          const { name, description, questId } = q;
+
+                          return (
                             <React.Fragment key={questId}>
                               {!(isEditingQuest && questEditId === questId) && (
                                 <QuestTile
-                                  name={`${index + 1}. ${name}`}
+                                  name={`${Number(index + 1)
+                                    .toString()
+                                    .padStart(2, '0')}. ${name}`}
                                   description={description ?? ''}
                                   bgColor={getQuestBGColor(
                                     userStatus[questId]?.status,
@@ -814,7 +797,7 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                   questId={questId}
                                   questChain={questChain}
                                   userStatus={userStatus}
-                                  isPaused={paused}
+                                  advSettings={q}
                                   refresh={refresh}
                                 />
                               )}
@@ -824,20 +807,13 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                                 <QuestEditor
                                   refresh={refresh}
                                   questChain={questChain}
-                                  quest={{
-                                    name,
-                                    description,
-                                    questId,
-                                    paused,
-                                    skipReview: false,
-                                    optional: false,
-                                  }}
+                                  quest={q}
                                   setEditingQuest={setEditingQuest}
                                 />
                               )}
                             </React.Fragment>
-                          ),
-                        )}
+                          );
+                        })}
                     </Accordion>
                   </>
                 )}
