@@ -975,7 +975,8 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   !isEditingQuests &&
                   !isEditingMembers &&
                   !isTogglingPauseStatus &&
-                  !isEditingNFT && (
+                  !isEditingNFT &&
+                  numSubmissionsToReview > 0 && (
                     <Flex
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
@@ -985,32 +986,28 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                     >
                       <Flex justifyContent="center" alignItems="center">
                         <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
-                        {numSubmissionsToReview > 0
-                          ? `${numSubmissionsToReview} submissions are awaiting review`
-                          : 'There are no submissions that are awaiting review'}
+                        {numSubmissionsToReview} submissions are awaiting review
                       </Flex>
-                      {numSubmissionsToReview > 0 && (
-                        <NextLink
-                          as={`/${
-                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
-                          }/${questChain.address}/review`}
-                          href={`/${
-                            AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
-                          }/[address]/review`}
-                          passHref
-                        >
-                          <ChakraLink display="block" _hover={{}}>
-                            <SubmitButton
-                              fontSize={14}
-                              fontWeight="bold"
-                              height={10}
-                              px={6}
-                            >
-                              Review Submissions
-                            </SubmitButton>
-                          </ChakraLink>
-                        </NextLink>
-                      )}
+                      <NextLink
+                        as={`/${
+                          AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                        }/${questChain.address}/review`}
+                        href={`/${
+                          AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
+                        }/[address]/review`}
+                        passHref
+                      >
+                        <ChakraLink display="block" _hover={{}}>
+                          <SubmitButton
+                            fontSize={14}
+                            fontWeight="bold"
+                            height={10}
+                            px={6}
+                          >
+                            Review Submissions
+                          </SubmitButton>
+                        </ChakraLink>
+                      </NextLink>
                     </Flex>
                   )}
 
