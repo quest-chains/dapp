@@ -149,7 +149,7 @@ export const QuestsForm: React.FC<{
         px={{ base: 4, md: 12 }}
         py={8}
       >
-        <HStack w="full">
+        <HStack w="full" mb={6}>
           <Box
             py={1}
             px={3}
@@ -173,9 +173,9 @@ export const QuestsForm: React.FC<{
           alignItems="center"
           flexDir="column"
         >
-          <Accordion allowMultiple w="full" defaultIndex={[]}>
-            {quests &&
-              quests.map(({ name, description, ...q }, index) =>
+          {!!quests.length && (
+            <Accordion allowMultiple w="full" defaultIndex={[]}>
+              {quests.map(({ name, description, ...q }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
@@ -198,9 +198,7 @@ export const QuestsForm: React.FC<{
                     draggable={!isEditingQuest}
                   >
                     <QuestTile
-                      name={`${Number(index + 1)
-                        .toString()
-                        .padStart(2, '0')}. ${name}`}
+                      name={`${Number(index + 1).toString()}. ${name}`}
                       description={description}
                       onRemoveQuest={() => onRemoveQuest(index)}
                       onEditQuest={() => {
@@ -214,7 +212,8 @@ export const QuestsForm: React.FC<{
                   </Flex>
                 ),
               )}
-          </Accordion>
+            </Accordion>
+          )}
           {isAddingQuest && (
             <AddQuestBlock
               onClose={() => setIsAddingQuest(false)}
