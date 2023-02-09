@@ -195,7 +195,9 @@ export const QuestsForm: React.FC<{
                     draggable={!isEditingQuest}
                   >
                     <QuestTile
-                      name={`${Number(index + 1).toString()}. ${name}`}
+                      name={`${Number(index + 1)
+                        .toString()
+                        .padStart(2, '0')}. ${name}`}
                       description={description}
                       onRemoveQuest={() => onRemoveQuest(index)}
                       onEditQuest={() => {
