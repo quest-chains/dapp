@@ -1,4 +1,11 @@
-import { Flex, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -55,23 +62,31 @@ export const AddQuestBlock: React.FC<{
     setQuestAdvSetting,
   ]);
 
+  const [nameLength, setNameLength] = useState(nameRef.current.length);
+
   return (
     <form style={{ width: '100%' }}>
       <VStack spacing={4} pb={4} w="100%">
         <FormControl isRequired>
-          <FormLabel htmlFor="name">Quest Name</FormLabel>
+          <Flex align="center" justify="space-between" w="100%">
+            <FormLabel fontSize="sm">Quest Name</FormLabel>
+            <Text fontSize="0.8125rem">{nameLength} / 120</Text>
+          </Flex>
           <Input
             color="white"
             defaultValue={nameRef.current}
             bg="#0F172A"
             id="name"
-            maxLength={60}
-            onChange={e => setName(e.target.value)}
+            maxLength={120}
+            onChange={e => {
+              setName(e.target.value);
+              setNameLength(e.target.value.length);
+            }}
             placeholder="Quest Name"
           />
         </FormControl>
         <FormControl isRequired>
-          <FormLabel htmlFor="description">Quest Description</FormLabel>
+          <FormLabel fontSize="sm">Quest Description</FormLabel>
           <MarkdownEditor
             height="12rem"
             value={descRef.current}
