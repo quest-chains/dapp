@@ -20,19 +20,16 @@ import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
 
-export interface QuestAdvSetting {
+export type QuestAdvSetting = {
   paused: boolean;
   optional: boolean;
   skipReview: boolean;
-}
+};
 
-type QuestDraft = {
+export type QuestDraft = {
   name: string;
   description: string;
-  optional: boolean;
-  skipReview: boolean;
-  paused: boolean;
-};
+} & QuestAdvSetting;
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
