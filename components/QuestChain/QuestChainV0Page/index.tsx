@@ -663,27 +663,6 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
                 </Flex>
               )}
               <Flex mb={12}>
-                {/* to be implemented eventually */}
-                {/* 
-                {mode === Mode.QUESTER &&
-                  progress.completeCount === 0 &&
-                  progress.inReviewCount === 0 &&
-                  progress.total !== 0 && (
-                    <Button
-                      borderWidth={1}
-                      borderColor="main"
-                      px={12}
-                      py={2}
-                      bgColor="main"
-                      borderRadius="full"
-                      color="black"
-                      _hover={{
-                        bgColor: 'main.950',
-                      }}
-                    >
-                      START PLAYING
-                    </Button>
-                  )} */}
                 {mode === Mode.MEMBER &&
                   numSubmissionsToReview != 0 &&
                   isReviewer && (
