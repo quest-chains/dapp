@@ -1,4 +1,4 @@
-import { Flex, Input } from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
 import { MutableRefObject, useEffect, useState } from 'react';
 
 import { MarkdownEditor } from '../MarkdownEditor';
@@ -40,15 +40,30 @@ export const EditingQuest: React.FC<{
     [advSettings],
   );
 
+  const [nameLength, setNameLength] = useState(nameRef.current.length);
+
   return (
     <Flex flexDir="column" bg="gray.900" borderRadius={10} gap={3} mb={3} p={4}>
-      <Input
-        bg="#0F172A"
-        defaultValue={nameRef.current}
-        maxLength={60}
-        onChange={e => setQuestName(e.target.value)}
-      />
-      <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
+      <FormControl isRequired>
+        <Flex align="center" justify="space-between" w="100%">
+          <FormLabel fontSize="sm">Quest Name</FormLabel>
+          <Text fontSize="0.8125rem">{nameLength} / 120</Text>
+        </Flex>
+        <Input
+          bg="#0F172A"
+          defaultValue={nameRef.current}
+          maxLength={120}
+          flex={1}
+          onChange={e => {
+            setQuestName(e.target.value);
+            setNameLength(e.target.value.length);
+          }}
+        />
+      </FormControl>
+      <FormControl isRequired>
+        <FormLabel fontSize="sm">Quest Description</FormLabel>
+        <MarkdownEditor value={descRef.current ?? ''} onChange={setQuestDesc} />
+      </FormControl>
 
       {/* Advanced Settings for QuestChain version 2*/}
       {advSettings ? (

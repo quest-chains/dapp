@@ -65,11 +65,10 @@ const QuestAdvancedSettings = ({
 
       <Collapse in={isAdvancedSetOpen} animateOpacity>
         <Flex
-          mt={'1rem'}
           lineHeight={'3rem'}
           justify={'start'}
           flexDirection={'column'}
-          gap={'1rem'}
+          gap={4}
           pb={4}
         >
           {/* TODO child Select options are not exactly like figma */}
@@ -92,6 +91,7 @@ const QuestAdvancedSettings = ({
                 })
               }
               cursor="pointer"
+              fontSize="sm"
             >
               <option value="required">required</option>
               <option value="optional">optional</option>
@@ -117,6 +117,7 @@ const QuestAdvancedSettings = ({
                 })
               }
               cursor="pointer"
+              fontSize="sm"
             >
               <option value="reviewed_manually">reviewed manually</option>
               <option value="auto_accepted">auto-accepted</option>
@@ -129,8 +130,9 @@ const QuestAdvancedSettings = ({
             </FormLabel>
             {/* TODO Not exactly like figma */}
             <Switch
-              id="questDisabled"
+              mr={2}
               size="lg"
+              id="questDisabled"
               isChecked={questAdvSetting.paused}
               onChange={e =>
                 setQuestAdvSetting(prevState => {
