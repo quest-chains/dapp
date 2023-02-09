@@ -131,7 +131,7 @@ export const QuestTile: React.FC<{
             }
           >
             <AccordionButton
-              py={5}
+              py={3.5}
               _hover={{ bgColor: 'whiteAlpha.200' }}
               borderRadius={8}
               pl={
