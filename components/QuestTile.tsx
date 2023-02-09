@@ -10,6 +10,7 @@ import {
   Tag,
   Text,
   Tooltip,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
@@ -26,6 +27,7 @@ import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { QuestAdvSetting } from './CreateChain/QuestsForm';
 
 export const QuestTile: React.FC<{
@@ -61,6 +63,11 @@ export const QuestTile: React.FC<{
 }) => {
   const { chainId, provider } = useWallet();
   const [isToggling, setToggling] = useState(false);
+  const {
+    isOpen: isRemoveModalOpen,
+    onClose: onRemoveModalClose,
+    onOpen: onRemoveModalOpen,
+  } = useDisclosure();
 
   const toggleQuestPaused = useCallback(
     async (pause: boolean) => {
@@ -209,7 +216,7 @@ export const QuestTile: React.FC<{
                   <Tooltip label="Delete Quest">
                     <IconButton
                       icon={<TrashOutlinedIcon />}
-                      onClick={onRemoveQuest}
+                      onClick={onRemoveModalOpen}
                       aria-label=""
                       bg="transparent"
                     />
@@ -231,6 +238,17 @@ export const QuestTile: React.FC<{
             )}
           </AccordionPanel>
           {isExpanded && <ReviewComment {...{ userStatus, questId }} />}
+          <ConfirmationModal
+            title={`Deleting Quest - ${name}`}
+            content="Are you sure you want to delete this quest?"
+            isOpen={isRemoveModalOpen}
+            onClose={onRemoveModalClose}
+            onSubmit={() => {
+              onRemoveQuest?.();
+              onRemoveModalClose();
+            }}
+            submitLabel="Delete"
+          />
         </>
       )}
     </AccordionItem>
