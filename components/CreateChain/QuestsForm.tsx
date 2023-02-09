@@ -11,7 +11,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useInputText } from '@/hooks/useInputText';
 
@@ -20,11 +20,16 @@ import { SubmitButton } from '../SubmitButton';
 import { AddQuestBlock, defaultQuestAdvSetting } from './AddQuestBlock';
 import { EditingQuest } from './EditingQuest';
 
-export interface QuestAdvSetting {
+export type QuestAdvSetting = {
   paused: boolean;
   optional: boolean;
   skipReview: boolean;
-}
+};
+
+export type QuestDraft = {
+  name: string;
+  description: string;
+} & QuestAdvSetting;
 
 export const QuestsForm: React.FC<{
   onPublishQuestChain: (
@@ -47,16 +52,9 @@ export const QuestsForm: React.FC<{
   const [questDescRef, setQuestDesc] = useInputText();
 
   const [startAsDisabled, setStartAsDisabled] = useState(false);
+  const [draggingQuest, setDraggingQuest] = useState(-1);
 
-  const [quests, setQuests] = useState<
-    {
-      name: string;
-      description: string;
-      optional: boolean;
-      skipReview: boolean;
-      paused: boolean;
-    }[]
-  >([]);
+  const [quests, setQuests] = useState<QuestDraft[]>([]);
 
   const onAddQuest = async (
     name: string,
@@ -107,18 +105,48 @@ export const QuestsForm: React.FC<{
     return false;
   }, [quests]);
 
+  const onDropQuest = useCallback(
+    (dropIndex: number) => {
+      if (draggingQuest === -1) return;
+      setDraggingQuest(-1);
+      if (draggingQuest === dropIndex) return;
+      setQuests(oldQuests => {
+        const newQuests: QuestDraft[] = [];
+        oldQuests.forEach((quest, index) => {
+          if (index === dropIndex && draggingQuest > dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+          if (index !== draggingQuest) {
+            newQuests.push({
+              ...quest,
+            });
+          }
+          if (index === dropIndex && draggingQuest < dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+        });
+        return newQuests;
+      });
+    },
+    [draggingQuest],
+  );
+
   return (
     <>
       <VStack
         w="full"
+        minW={{ base: 0, lg: '3xl' }}
         align="stretch"
-        spacing={10}
         boxShadow="inset 0px 0px 0px 1px white"
         borderRadius={10}
         px={{ base: 4, md: 12 }}
         py={8}
       >
-        <HStack w="full">
+        <HStack w="full" mb={6}>
           <Box
             py={1}
             px={3}
@@ -142,9 +170,9 @@ export const QuestsForm: React.FC<{
           alignItems="center"
           flexDir="column"
         >
-          <Accordion allowMultiple w="full" defaultIndex={[]}>
-            {quests &&
-              quests.map(({ name, description, ...q }, index) =>
+          {!!quests.length && (
+            <Accordion allowMultiple w="full" defaultIndex={[]}>
+              {quests.map(({ name, description, ...q }, index) =>
                 isEditingQuest && editingQuestIndex === index ? (
                   <EditingQuest
                     key={name + description}
@@ -158,22 +186,33 @@ export const QuestsForm: React.FC<{
                     advSettings={q}
                   />
                 ) : (
-                  <QuestTile
-                    key={name + description}
-                    name={`${index + 1}. ${name}`}
-                    description={description}
-                    onRemoveQuest={() => onRemoveQuest(index)}
-                    onEditQuest={() => {
-                      setQuestName(name);
-                      setQuestDesc(description);
-                      setIsEditingQuest(true);
-                      setEditingQuestIndex(index);
-                    }}
-                    advSettings={q}
-                  />
+                  <Flex
+                    w="100%"
+                    key={index + name + description}
+                    onDragStart={() => setDraggingQuest(index)}
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => onDropQuest(index)}
+                    draggable={!isEditingQuest}
+                  >
+                    <QuestTile
+                      name={`${Number(index + 1)
+                        .toString()
+                        .padStart(2, '0')}. ${name}`}
+                      description={description}
+                      onRemoveQuest={() => onRemoveQuest(index)}
+                      onEditQuest={() => {
+                        setQuestName(name);
+                        setQuestDesc(description);
+                        setIsEditingQuest(true);
+                        setEditingQuestIndex(index);
+                      }}
+                      advSettings={q}
+                    />
+                  </Flex>
                 ),
               )}
-          </Accordion>
+            </Accordion>
+          )}
           {isAddingQuest && (
             <AddQuestBlock
               onClose={() => setIsAddingQuest(false)}
@@ -227,7 +266,7 @@ export const QuestsForm: React.FC<{
             isChecked={startAsDisabled}
             onChange={() => setStartAsDisabled(!startAsDisabled)}
           >
-            <Text borderBottom="dotted 1px">Start quest chain as disabled</Text>
+            <Text fontSize={10}>Start quest chain as disabled</Text>
           </Checkbox>
         </Tooltip>
       </Flex>

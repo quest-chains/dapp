@@ -10,7 +10,10 @@ import {
   defaultQuestAdvSetting,
 } from '@/components/CreateChain/AddQuestBlock';
 import { EditingQuest } from '@/components/CreateChain/EditingQuest';
-import { QuestAdvSetting } from '@/components/CreateChain/QuestsForm';
+import {
+  QuestAdvSetting,
+  QuestDraft,
+} from '@/components/CreateChain/QuestsForm';
 import { QuestTile } from '@/components/QuestTile';
 import { SubmitButton } from '@/components/SubmitButton';
 import { useInputText } from '@/hooks/useInputText';
@@ -31,6 +34,7 @@ export const QuestsEditor: React.FC<{
 
   const [questNameRef, setQuestName] = useInputText();
   const [questDescRef, setQuestDesc] = useInputText();
+  const [draggingQuest, setDraggingQuest] = useState(-1);
 
   const [quests, setQuests] = useState<
     {
@@ -325,6 +329,37 @@ export const QuestsEditor: React.FC<{
     refresh,
   ]);
 
+  const onDropQuest = useCallback(
+    (dropIndex: number) => {
+      if (draggingQuest === -1) return;
+      setDraggingQuest(-1);
+      if (draggingQuest === dropIndex) return;
+      if (dropIndex < questChain.quests.length) return;
+      setQuests(oldQuests => {
+        const newQuests: QuestDraft[] = [];
+        oldQuests.forEach((quest, index) => {
+          if (index === dropIndex && draggingQuest > dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+          if (index !== draggingQuest) {
+            newQuests.push({
+              ...quest,
+            });
+          }
+          if (index === dropIndex && draggingQuest < dropIndex) {
+            newQuests.push({
+              ...oldQuests[draggingQuest],
+            });
+          }
+        });
+        return newQuests;
+      });
+    },
+    [draggingQuest, questChain],
+  );
+
   return (
     <>
       <Flex
@@ -350,31 +385,43 @@ export const QuestsEditor: React.FC<{
                   advSettings={q}
                 />
               ) : (
-                <QuestTile
-                  key={name + description}
-                  name={`${Number(index + 1)
-                    .toString()
-                    .padStart(2, '0')}. ${name}`}
-                  description={description}
-                  questId={
-                    index < existingLength ? index.toString() : undefined
-                  }
-                  onRemoveQuest={
-                    index < existingLength || isSaving
-                      ? undefined
-                      : () => onRemoveQuest(index)
-                  }
-                  onEditQuest={() => {
-                    setQuestName(name);
-                    setQuestDesc(description);
-                    setIsEditingQuest(true);
-                    setEditingQuestIndex(index);
-                  }}
-                  editDisabled={isSaving || isAddingQuest}
-                  advSettings={q}
-                  isMember
-                  questChain={questChain}
-                />
+                <Flex
+                  w="100%"
+                  key={index + name + description}
+                  {...(index >= questChain.quests.length
+                    ? {
+                        onDragStart: () => setDraggingQuest(index),
+                        onDragOver: e => e.preventDefault(),
+                        onDrop: () => onDropQuest(index),
+                        draggable: !isEditingQuest,
+                      }
+                    : {})}
+                >
+                  <QuestTile
+                    name={`${Number(index + 1)
+                      .toString()
+                      .padStart(2, '0')}. ${name}`}
+                    description={description}
+                    questId={
+                      index < existingLength ? index.toString() : undefined
+                    }
+                    onRemoveQuest={
+                      index < existingLength || isSaving
+                        ? undefined
+                        : () => onRemoveQuest(index)
+                    }
+                    onEditQuest={() => {
+                      setQuestName(name);
+                      setQuestDesc(description);
+                      setIsEditingQuest(true);
+                      setEditingQuestIndex(index);
+                    }}
+                    editDisabled={isSaving || isAddingQuest}
+                    advSettings={q}
+                    isMember
+                    questChain={questChain}
+                  />
+                </Flex>
               );
             })}
         </Accordion>

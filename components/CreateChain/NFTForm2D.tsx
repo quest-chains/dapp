@@ -41,8 +41,9 @@ const NFTForm2D: React.FC<{
     metadataUri: string,
     nftUrl: string | undefined,
   ) => void | Promise<void>;
-  submitLabel?: string;
-}> = ({ chainName, onBack, onSubmit, submitLabel = 'Continue to Step 3' }) => {
+  submitLabel: string;
+  show: boolean;
+}> = ({ chainName, onBack, onSubmit, submitLabel, show }) => {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
   const [bgIndex, setBgIndex] = useState<number>(0);
@@ -103,7 +104,12 @@ const NFTForm2D: React.FC<{
   }, [onSubmit, bgIndex, gemIndex, starLength, name, description]);
 
   return (
-    <VStack w="100%" align="stretch" spacing={8}>
+    <VStack
+      w="100%"
+      align="stretch"
+      spacing={8}
+      display={show ? 'initial' : 'none'}
+    >
       <Flex
         w="100%"
         flexDirection={{ base: 'column', lg: 'row-reverse' }}

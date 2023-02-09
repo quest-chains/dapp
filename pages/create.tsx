@@ -341,7 +341,11 @@ const Create: React.FC = () => {
         flexDir="column"
         gap={8}
       >
-        <NFTForm onSubmit={onSubmitNFTMeta} chainName={chainName} />
+        <NFTForm
+          onSubmit={onSubmitNFTMeta}
+          chainName={chainName}
+          submitLabel="Continue to Step 3"
+        />
         <Step3 />
         <Step4 />
       </Flex>
