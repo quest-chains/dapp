@@ -1,5 +1,3 @@
-import 'react-medium-image-zoom/dist/styles.css';
-
 import { AttachmentIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   AccordionButton,
