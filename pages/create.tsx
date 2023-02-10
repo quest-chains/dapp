@@ -280,7 +280,13 @@ const Create: React.FC = () => {
                 GET STARTED
               </SubmitButton>
             ) : (
-              <SubmitButton onClick={connectWallet} px={32}>
+              <SubmitButton
+                onClick={async () => {
+                  await connectWallet();
+                  setStep(1);
+                }}
+                px={32}
+              >
                 Connect wallet to Get Started
               </SubmitButton>
             )}
