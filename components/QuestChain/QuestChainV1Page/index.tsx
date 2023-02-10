@@ -819,7 +819,6 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                       maxW={373}
                       maxH={373}
                     />
-                    Here
                   </Flex>
                 )}
 
