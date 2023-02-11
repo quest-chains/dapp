@@ -1,10 +1,10 @@
+// Do NOT change order of CSS files
 import '@/assets/styles/bg.scss';
 import '@/assets/styles/fonts.css';
 import 'react-markdown-editor-lite/lib/index.css';
 import '@/assets/styles/custom-markdown-editor.scss';
 import '@/assets/styles/react-medium-image-zoom.css';
 
-// Do NOT change order of CSS files
 import { ChakraProvider, useColorMode } from '@chakra-ui/react';
 import { Global } from '@emotion/react';
 import { AppProps } from 'next/app';
@@ -18,34 +18,29 @@ import { AppLayout } from '@/components/Layout/AppLayout';
 import { globalStyles, theme } from '@/utils/theme';
 import { WalletProvider } from '@/web3';
 
+const ForceDarkMode: React.FC<{ children: JSX.Element }> = ({ children }) => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  useEffect(() => {
+    hotjar.initialize(3277457, 6);
+  }, []);
+
+  useEffect(() => {
+    if (colorMode === 'dark') return;
+    toggleColorMode();
+  }, [colorMode, toggleColorMode]);
+
+  return children;
+};
+
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
-  const router = useRouter();
-
-  function ForceDarkMode(props: { children: JSX.Element }) {
-    const { colorMode, toggleColorMode } = useColorMode();
-
-    useEffect(() => {
-      hotjar.initialize(3277457, 6);
-    }, []);
-
-    useEffect(() => {
-      if (colorMode === 'dark') return;
-      toggleColorMode();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [colorMode]);
-
-    return props.children;
-  }
+  const { asPath } = useRouter();
 
   return (
     <ChakraProvider resetCSS theme={theme}>
       <ForceDarkMode>
         <React.Fragment>
-          <div
-            className={
-              router.pathname === '/' ? 'background-root' : 'background'
-            }
-          >
+          <div className={asPath === '/' ? 'background-root' : 'background'}>
             <span></span>
             <span></span>
             <span></span>
