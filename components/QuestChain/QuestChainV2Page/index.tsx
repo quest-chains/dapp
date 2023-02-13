@@ -950,11 +950,12 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   </Flex>
                   <Box position="relative" w="4rem">
                     <Text textAlign="right">
-                      {`${Math.round(
+                      {(
                         (progress.total
                           ? progress.completeCount / progress.total
-                          : 0) * 100,
-                      )}%`}
+                          : 0) * 100
+                      ).toFixed(0)}
+                      %
                     </Text>
                     <Text
                       position="absolute"
