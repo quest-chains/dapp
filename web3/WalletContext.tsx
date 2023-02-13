@@ -11,6 +11,11 @@ import {
 import { toast } from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
+import { MongoUser } from '@/lib/mongodb/types';
+import { fetchWithHeaders } from '@/utils/fetchWithHeaders';
+import { removeFromStorage, STORAGE_KEYS } from '@/utils/storageHelpers';
+
+import { authenticateWallet } from './auth';
 import { isSupportedNetwork } from './helpers';
 import { switchChainOnMetaMask } from './metamask';
 import { CHAIN_ID, SUPPORTED_NETWORK_INFO } from './networks';
@@ -20,6 +25,7 @@ export type WalletContextType = {
   provider: providers.Web3Provider | null | undefined;
   chainId: string | null | undefined;
   address: string | null | undefined;
+  user: MongoUser | null | undefined;
   connectWallet: () => Promise<void>;
   disconnect: () => void;
   isConnecting: boolean;
@@ -32,6 +38,7 @@ export const WalletContext = createContext<WalletContextType>({
   provider: null,
   chainId: null,
   address: null,
+  user: null,
   connectWallet: async () => undefined,
   disconnect: () => undefined,
   isConnecting: true,
@@ -41,6 +48,7 @@ export const WalletContext = createContext<WalletContextType>({
 });
 
 type WalletStateType = {
+  user?: MongoUser | null;
   provider?: providers.Web3Provider | null;
   chainId?: string | null;
   address?: string | null;
@@ -50,12 +58,18 @@ type WalletStateType = {
 const web3Modal =
   typeof window !== 'undefined' ? new Web3Modal(WEB3_MODAL_OPTIONS) : null;
 
+const connectUserWithMongo = async (): Promise<MongoUser | null> => {
+  const res = await fetchWithHeaders('/api/connect', 'POST');
+  if (!res.ok || res.status !== 200) return null;
+  return (await res.json()) as MongoUser;
+};
+
 export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
   const [walletState, setWalletState] = useState<WalletStateType>({});
 
-  const { provider, chainId, address, isMetaMask } = walletState;
+  const { provider, chainId, address, isMetaMask, user } = walletState;
 
   const [isConnecting, setConnecting] = useState<boolean>(true);
 
@@ -65,23 +79,34 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   );
 
   const disconnect = useCallback(async () => {
+    removeFromStorage(STORAGE_KEYS.AUTH_TOKEN);
     web3Modal?.clearCachedProvider();
     setWalletState({});
   }, []);
 
   const setWalletProvider = useCallback(
-    async (prov: providers.ExternalProvider) => {
+    async (prov: providers.ExternalProvider, onlyNetworkChange = false) => {
       const ethersProvider = new providers.Web3Provider(prov);
       const network = (await ethersProvider.getNetwork()).chainId;
-      const signerAddress = await ethersProvider.getSigner().getAddress();
-
       const chainId = `0x${network.toString(16)}`;
-      setWalletState({
-        provider: ethersProvider,
-        chainId,
-        address: signerAddress.toLowerCase(),
-        isMetaMask: prov.isMetaMask,
-      });
+
+      if (onlyNetworkChange) {
+        setWalletState(old => ({ ...old, chainId }));
+      } else {
+        const signerAddress = await ethersProvider.getSigner().getAddress();
+        const token = await authenticateWallet(ethersProvider);
+        if (!token) throw new Error('Could not authenticate wallet');
+        const user = await connectUserWithMongo();
+        if (!user) throw new Error('Could not connect user');
+
+        setWalletState({
+          provider: ethersProvider,
+          chainId,
+          address: signerAddress.toLowerCase(),
+          isMetaMask: prov.isMetaMask,
+          user,
+        });
+      }
     },
     [],
   );
@@ -112,7 +137,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         });
         modalProvider.on('chainChanged', async (chainId: string) => {
           if (isSupportedNetwork(chainId)) {
-            setWalletProvider(modalProvider);
+            setWalletProvider(modalProvider, true);
           } else {
             let success = false;
             if (isMetaMask) {
@@ -164,6 +189,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       value={{
         provider,
         address,
+        user,
         chainId,
         connectWallet,
         isConnected,
