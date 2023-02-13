@@ -52,8 +52,8 @@ export const EditProfileModal: React.FC<{
         setUsernameError('Username cannot be empty.');
         return;
       }
-      if (username.length < 4) {
-        setUsernameError('Username must be longer than 3 characters.');
+      if (username.length < 3) {
+        setUsernameError('Username must be at least 3 characters long.');
         return;
       }
       if (!/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/.test(username)) {
