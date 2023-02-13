@@ -2,6 +2,7 @@ import '@/assets/styles/bg.scss';
 import '@/assets/styles/fonts.css';
 import 'react-markdown-editor-lite/lib/index.css';
 import '@/assets/styles/custom-markdown-editor.scss';
+import '@/assets/styles/react-medium-image-zoom.css';
 
 // Do NOT change order of CSS files
 import { ChakraProvider, useColorMode } from '@chakra-ui/react';

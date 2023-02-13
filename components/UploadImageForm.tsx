@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ImageProps } from 'next/image';
 import { useEffect, useState } from 'react';
+import Zoom from 'react-medium-image-zoom';
 
 import { DropImageType } from '@/hooks/useDropFiles';
 
@@ -54,11 +55,13 @@ export const UploadImageForm = ({
       {imageFile && (
         <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
           {ready && (
-            <Image
-              {...imageProps}
-              alt={`${label} imageFile`}
-              src={window.URL.createObjectURL(imageFile)}
-            />
+            <Zoom>
+              <Image
+                {...imageProps}
+                alt={`${label} imageFile`}
+                src={window.URL.createObjectURL(imageFile)}
+              />
+            </Zoom>
           )}
           <IconButton
             pos="absolute"
@@ -77,11 +80,14 @@ export const UploadImageForm = ({
       )}
       {!imageFile && defaultImageUri && onResetDefaultImage && (
         <Flex pos="relative" {...(isDisabled ? { pointerEvents: 'none' } : {})}>
-          <Image
-            {...imageProps}
-            alt={`${label} imageFile`}
-            src={defaultImageUri}
-          />
+          <Zoom>
+            <Image
+              {...imageProps}
+              alt={`${label} imageFile`}
+              src={defaultImageUri}
+            />
+          </Zoom>
+
           <IconButton
             pos="absolute"
             size="sm"
