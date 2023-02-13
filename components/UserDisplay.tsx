@@ -1,12 +1,12 @@
 import { Button, HStack, Link, Text } from '@chakra-ui/react';
-import Davatar from '@davatar/react';
 import NextLink from 'next/link';
 
 import { useENS } from '@/hooks/useENS';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { formatAddress, useWallet } from '@/web3';
-import { getEthersProvider } from '@/web3/providers';
 
 import { PoHBadge } from './PoHBadge';
+import { UserAvatar } from './UserAvatar';
 
 export const UserDisplay: React.FC<{
   address?: string | undefined | null;
@@ -18,6 +18,9 @@ export const UserDisplay: React.FC<{
   const { ens } = useENS(address);
 
   const isUser = userAddress?.toLowerCase() === address?.toLowerCase();
+  const { profile } = useUserProfile(address ?? '');
+
+  const displayName = profile?.username ?? formatAddress(address, ens);
 
   if (!address) return null;
   return (
@@ -25,14 +28,9 @@ export const UserDisplay: React.FC<{
       <Link _hover={{}} borderRadius="full">
         <Button variant="ghost" size={size} height={8} px={2}>
           <HStack position="relative" color={color}>
-            <Davatar
-              address={address}
-              size={20}
-              generatedAvatarType="jazzicon"
-              provider={getEthersProvider('0x1')}
-            />
+            <UserAvatar address={address} profile={profile} size={20} />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {isUser ? 'YOURSELF' : formatAddress(address, ens)}
+              {isUser ? 'YOURSELF' : displayName}
             </Text>
             {hasPoH && <PoHBadge address={address} />}
           </HStack>

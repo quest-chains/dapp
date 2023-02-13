@@ -2,11 +2,9 @@ import { utils } from 'ethers';
 import { Db } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { verifyToken } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb/client';
 import { MongoUser } from '@/lib/mongodb/types';
-
-import { verifyToken } from './auth';
-const { ENCRYPTION_SECRET } = process.env;
 
 export const authHandler =
   (
@@ -16,9 +14,7 @@ export const authHandler =
       res: NextApiResponse,
     ) => Promise<unknown>,
   ) =>
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    if (!ENCRYPTION_SECRET) return res.status(405).end();
+  async (req: NextApiRequest, res: NextApiResponse): Promise<unknown> => {
     let client: Db | null;
     try {
       client = await clientPromise;

@@ -16,11 +16,14 @@ export const usePoH = (
   address: string | null | undefined,
 ): {
   registered: boolean;
+  fetching: boolean;
 } => {
   const [registered, setRegistered] = useState<boolean>(false);
+  const [fetching, setFetching] = useState<boolean>(false);
 
-  const getPOH = useCallback(async () => {
+  const getPoH = useCallback(async () => {
     try {
+      setFetching(true);
       const data = await client
         .query(getRegisteredStatus, { id: address })
         .toPromise();
@@ -29,16 +32,18 @@ export const usePoH = (
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
+    } finally {
+      setFetching(false);
     }
   }, [address]);
 
   useEffect(() => {
-    getPOH();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+    getPoH();
+  }, [getPoH]);
 
   return {
     registered,
+    fetching,
   };
 };
 
