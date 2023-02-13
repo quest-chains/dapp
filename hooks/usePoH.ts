@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createClient } from 'urql';
 
 import { Role } from '@/components/RoleTag';
@@ -28,7 +28,7 @@ export const usePoH = (
         .query(getRegisteredStatus, { id: address })
         .toPromise();
 
-      setRegistered(data?.data?.submission?.registered || false);
+      setRegistered(data?.data?.submission?.registered ?? false);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
@@ -54,7 +54,8 @@ export const usePoHs = (roles: {
     [addr: string]: boolean;
   };
 } => {
-  const addresses = Object.keys(roles);
+  const addresses = useMemo(() => Object.keys(roles), [roles]);
+
   const [statusesPoH, setStatusesPoH] = useState<{
     [addr: string]: boolean;
   }>({});
@@ -67,11 +68,12 @@ export const usePoHs = (roles: {
         .query(getRegisteredStatuses, { id: addresses })
         .toPromise();
 
-      const submissions = data?.data?.submissions;
+      const submissions = data?.data?.submissions ?? [];
       addresses.forEach(address => {
-        statuses[address] = submissions.find(
-          (submission: { id: string }) => submission.id === address,
-        );
+        statuses[address] =
+          submissions.find(
+            (submission: { id: string }) => submission.id === address,
+          )?.registered ?? false;
       });
 
       setStatusesPoH(statuses);
@@ -83,8 +85,7 @@ export const usePoHs = (roles: {
 
   useEffect(() => {
     getStatuses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getStatuses]);
 
   return {
     statuses: statusesPoH,
