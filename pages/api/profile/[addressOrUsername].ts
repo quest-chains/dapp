@@ -26,7 +26,7 @@ export const getProfile = async (req: NextApiRequest, res: NextApiResponse) => {
       projection: { address: 1, username: 1, avatarUri: 1 },
     });
 
-    if (!user) res.status(404).end();
+    if (!user) return res.status(404).end();
 
     return res.status(200).json(user);
   } catch (error) {
