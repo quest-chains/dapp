@@ -8,6 +8,13 @@ import { MongoUser } from '@/lib/mongodb/types';
 const USERNAME_REGEX = /^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/;
 const URI_REGEX = /^(ipfs|http|https):\/\/[^ "]+$/;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isDuplicateKeyError = (error: any, key: string): boolean => {
+  if (error?.code !== 11000 || error?.codeName !== 'DuplicateKey') return false;
+  if (!error?.keyValue?.[key]) return false;
+  return true;
+};
+
 export const updateProfile = authHandler(
   async (user: MongoUser, req: NextApiRequest, res: NextApiResponse) => {
     if (req.method !== 'PUT') return res.status(405).end();
@@ -42,7 +49,12 @@ export const updateProfile = authHandler(
       return res.status(200).json(updatedUser.value);
     } catch (error) {
       console.error('Error updating user:', error);
-      return res.status(500).end();
+      if (isDuplicateKeyError(error, 'username')) {
+        return res
+          .status(406)
+          .json({ error: `username "${username}" already exists` });
+      }
+      return res.status(500).json({ error: 'internal server error' });
     }
   },
 );

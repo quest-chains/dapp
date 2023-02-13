@@ -86,18 +86,19 @@ export const EditProfileModal: React.FC<{
         'PUT',
         toUpdate,
       );
-      if (res.ok && res.status === 200) {
+      if (res.status === 200) {
         window.location.href = '/profile/' + username;
         toast.dismiss(tid);
         tid = toast.success('Profile successfully updated!');
         onClose();
       } else {
-        throw new Error('Got status code: ' + res.status);
+        const { error } = await res.json();
+        throw new Error(error);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.dismiss(tid);
-      toast.error('Unable to update profile');
+      toast.error('Unable to update profile: ' + (error as Error).message);
     } finally {
       setLoading(false);
     }
