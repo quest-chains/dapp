@@ -80,3 +80,45 @@ export const useAddressFromENS = (
     fetching,
   };
 };
+
+export const useENSAvatar = (
+  address: string | null | undefined,
+): {
+  avatar: string | null | undefined;
+  fetching: boolean;
+} => {
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+
+  const populateAvatar = useCallback(async () => {
+    if (!address || !utils.isAddress(address)) {
+      setAvatar(null);
+      return;
+    }
+    try {
+      setFetching(true);
+      const ethProvider = getEthersProvider('0x1');
+      if (ethProvider) {
+        const ens = await ethProvider.lookupAddress(address);
+        const resolver = ens ? await ethProvider.getResolver(ens) : null;
+        const avatar = resolver ? await resolver.getAvatar() : null;
+
+        setAvatar(avatar?.url ?? null);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error populating Avatar', error);
+    } finally {
+      setFetching(false);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    populateAvatar();
+  }, [populateAvatar]);
+
+  return {
+    avatar,
+    fetching,
+  };
+};
