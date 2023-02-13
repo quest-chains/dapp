@@ -14,7 +14,7 @@ export const connect = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const address = verifyToken(token);
 
-  if (!utils.isAddress) return res.status(401).end();
+  if (!address || !utils.isAddress(address)) return res.status(401).end();
 
   const client = await clientPromise;
 

@@ -25,6 +25,13 @@ export const initIndexes = async (client: Db): Promise<Db> => {
     { unique: true, partialFilterExpression: { address: { $type: 'string' } } },
   );
   await usersCollection.createIndex(
+    { username: 1 },
+    {
+      unique: true,
+      partialFilterExpression: { username: { $type: 'string' } },
+    },
+  );
+  await usersCollection.createIndex(
     { email: 1 },
     { unique: true, partialFilterExpression: { email: { $type: 'string' } } },
   );
