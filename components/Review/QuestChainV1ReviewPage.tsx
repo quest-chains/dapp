@@ -2,7 +2,6 @@ import {
   Accordion,
   Box,
   Flex,
-  Spinner,
   TabPanel,
   TabPanels,
   Tabs,
@@ -37,6 +36,8 @@ import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+import { LoadingState } from '../LoadingState';
 
 type Props = {
   questChain: graphql.QuestChainInfoFragment;
@@ -340,7 +341,7 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
       </Flex>
       <VStack w="100%" spacing={6}>
         {fetching ? (
-          <Spinner color="main" />
+          <LoadingState my={6} />
         ) : (
           <Tabs w="full" p={0} onChange={index => setTabIndex(index)}>
             <ReviewTabsList

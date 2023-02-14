@@ -1,4 +1,4 @@
-import { Spinner, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
 
 import { Page } from '@/components/Layout/Page';
+import { LoadingState } from '@/components/LoadingState';
 import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
 import { QuestChainV1Page } from '@/components/QuestChain/QuestChainV1Page';
 import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
@@ -71,22 +72,25 @@ const QuestChainPage: React.FC<Props> = ({
     refreshQuests();
   }, [refreshQuests, refreshStatus]);
 
-  if (isFallback) {
+  if (isFallback || fetching || (!questChain && !!inputQuestChain)) {
     return (
-      <Page>
-        <Spinner color="main" />
+      <Page w="100%" align="center">
+        <LoadingState my={20} />
       </Page>
     );
   }
   if (!questChain) {
     return (
-      <Page>
+      <Page w="100%" align="center">
         <HeadComponent
           title={'Quest Chain Not Found'}
           description={'This quest chain does not exist'}
           url={QUESTCHAINS_URL}
         />
-        <Text> Quest chain not found! </Text>
+        <Text fontSize="lg" fontWeight="bold">
+          {' '}
+          Quest chain not found!{' '}
+        </Text>
       </Page>
     );
   }
