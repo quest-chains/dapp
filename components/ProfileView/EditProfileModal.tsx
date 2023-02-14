@@ -14,6 +14,7 @@ import {
   ModalOverlay,
   VStack,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -31,7 +32,9 @@ export const EditProfileModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
-  const { user } = useWallet();
+  const { user, setUser } = useWallet();
+
+  const { push } = useRouter();
 
   const [usernameRef, setUsername] = useInputText();
   const [usernameError, setUsernameError] = useState('');
@@ -87,10 +90,11 @@ export const EditProfileModal: React.FC<{
         toUpdate,
       );
       if (res.status === 200) {
-        window.location.href = '/profile/' + username;
+        setUser(await res.json());
         toast.dismiss(tid);
         tid = toast.success('Profile successfully updated!');
         onClose();
+        push('/profile/' + username);
       } else {
         const { error } = await res.json();
         throw new Error(error);
@@ -102,7 +106,7 @@ export const EditProfileModal: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [usernameRef, imageFile, imageRemoved, user, onClose]);
+  }, [usernameRef, imageFile, imageRemoved, user, setUser, push, onClose]);
 
   useEffect(() => {
     if (isOpen && user) {

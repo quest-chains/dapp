@@ -32,6 +32,7 @@ export type WalletContextType = {
   ens: string | null | undefined;
   ensAvatar: string | null | undefined;
   user: MongoUser | null | undefined;
+  setUser: (_user: MongoUser | null | undefined) => void;
   connectWallet: () => Promise<void>;
   disconnect: () => void;
   isConnecting: boolean;
@@ -47,6 +48,7 @@ export const WalletContext = createContext<WalletContextType>({
   ens: null,
   ensAvatar: null,
   user: null,
+  setUser: (_user: MongoUser | null | undefined) => undefined,
   connectWallet: async () => undefined,
   disconnect: () => undefined,
   isConnecting: true,
@@ -223,6 +225,7 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         ens,
         ensAvatar,
         user,
+        setUser,
         chainId,
         connectWallet,
         isConnected,
