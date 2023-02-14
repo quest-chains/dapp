@@ -15,7 +15,7 @@ export const fetchProfileFromName = async (
   const query: { address?: string; username?: string } = {};
   if (utils.isAddress(name)) {
     query.address = name.toLowerCase();
-  } else if (name.length > 3) {
+  } else if (name.length >= 3) {
     query.username = name;
   } else
     return {

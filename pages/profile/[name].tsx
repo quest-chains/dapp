@@ -53,7 +53,9 @@ const Profile: React.FC<{
           <Heading color="white" fontSize={50}>
             Profile
           </Heading>
-          <Text>User not found</Text>
+          <Text fontSize="lg" fontWeight="bold">
+            User not found
+          </Text>
         </VStack>
       </Page>
     );
@@ -135,9 +137,6 @@ export const getServerSideProps = async (
   const displayName =
     profile?.username ?? isENS ? name : formatAddress(profileAddress, ens);
 
-  if (!profileAddress || !displayName) {
-    return { notFound: true };
-  }
   return {
     props: {
       name,
