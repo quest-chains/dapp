@@ -709,6 +709,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           via="questchainz"
                         >
                           <Button
+                            as="div"
                             bgColor="#4A99E9"
                             p={4}
                             h={7}

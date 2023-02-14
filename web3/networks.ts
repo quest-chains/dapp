@@ -19,17 +19,18 @@ export type NetworkInfo = {
   };
 };
 
-export const CHAIN_URL_MAPPINGS: { [chainId: string]: string } = {
-  polygon: '0x89',
-  gnosis: '0x64',
-  goerli: '0x5',
-  optimism: '0xa',
-  arbitrum: '0xa4b1',
-  ['arbitrum-goerli']: '0x66eed',
-  mumbai: '0x13881',
-};
-
 export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
+  '0x1': {
+    chainId: '0x1',
+    name: 'Ethereum Mainnet',
+    label: 'ethereum',
+    urlName: 'ethereum',
+    symbol: 'ETH',
+    explorer: 'https://etherscan.com',
+    explorerLabel: 'EtherScan',
+    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    image: EthereumImage.src,
+  },
   '0x89': {
     chainId: '0x89',
     name: 'Polygon Mainnet',
@@ -107,6 +108,19 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     rpc: 'https://goerli-rollup.arbitrum.io/rpc',
     image: ArbitrumImage.src,
   },
+};
+
+export const CHAIN_URL_MAPPINGS: {
+  [chainId: string]: string;
+} = {
+  polygon: '0x89',
+  gnosis: '0x64',
+  goerli: '0x5',
+  optimism: '0xa',
+  arbitrum: '0xa4b1',
+  ['arbitrum-goerli']: '0x66eed',
+  mumbai: '0x13881',
+  mainnet: '0x1',
 };
 
 const getNetworkInfo = (networks: string[] | undefined): NetworkInfo => {

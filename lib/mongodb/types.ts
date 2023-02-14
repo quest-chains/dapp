@@ -7,8 +7,8 @@ export type MongoUser = WithId<{
   createdAt: Date;
   updatedAt: Date;
   username: Maybe<string>;
+  avatarUri: Maybe<string>;
   email: Maybe<string>;
   isAdmin: Maybe<boolean>;
-  profilePicture: Maybe<string>;
   verified: Maybe<boolean>;
 }>;

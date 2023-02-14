@@ -16,8 +16,8 @@ import { useWallet } from '@/web3';
 export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
   onSearchOpen,
 }) => {
-  const { address, isConnected } = useWallet();
-  const router = useRouter();
+  const { address, isConnected, user } = useWallet();
+  const { asPath } = useRouter();
 
   const isSmallerScreen = useBreakpointValue({ base: true, xl: false });
 
@@ -42,13 +42,12 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
 
       <HStack gap={2}>
         {isConnected && (
-          <NextLink href={`/profile/${address}`} passHref>
+          <NextLink href={`/profile/${user?.username ?? address}`}>
             <Text
               px={1}
               cursor="pointer"
               boxShadow={
-                router.query.address?.toString()?.toLowerCase() ===
-                address?.toLowerCase()
+                asPath === `/profile/${user?.username ?? address}`
                   ? '0 4px 2px -2px #1f7165'
                   : 'none'
               }
@@ -63,12 +62,12 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             </Text>
           </NextLink>
         )}
-        <NextLink href="/explore" passHref>
+        <NextLink href="/explore">
           <Text
             px={1}
             cursor="pointer"
             boxShadow={
-              router.pathname === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
+              asPath === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
             }
             _hover={{
               boxShadow: '0 4px 2px -2px #1f7165',
@@ -80,11 +79,11 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             {isSmallerScreen ? 'Explore' : 'Explore'}
           </Text>
         </NextLink>
-        <NextLink href="/create" passHref>
+        <NextLink href="/create">
           <Button
             borderWidth={1}
             bg="none"
-            borderColor={router.pathname === '/create' ? 'main' : 'white'}
+            borderColor={asPath === '/create' ? 'main' : 'white'}
             _hover={{
               bgColor: 'whiteAlpha.100',
               borderColor: 'main',

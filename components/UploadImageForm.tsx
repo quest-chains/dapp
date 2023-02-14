@@ -4,6 +4,8 @@ import {
   Flex,
   FormControl,
   FormControlProps,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   IconButton,
   Image,
@@ -27,6 +29,8 @@ export const UploadImageForm = ({
   defaultImageUri: defaultImageUriInput,
   onResetDefaultImage,
   isDisabled = false,
+  errorMessage = '',
+  helperText = '',
 }: DropImageType & {
   defaultImageUri?: string | null | undefined;
   onResetDefaultImage?: () => void;
@@ -35,6 +39,8 @@ export const UploadImageForm = ({
   formControlProps?: FormControlProps;
   imageProps?: Omit<ImageProps, 'src'> & BoxProps;
   isDisabled?: boolean;
+  errorMessage?: string;
+  helperText?: string;
 }) => {
   const [defaultImageUri, setDefaultImageUri] = useState<string>(
     defaultImageUriInput ?? '',
@@ -48,6 +54,7 @@ export const UploadImageForm = ({
     <FormControl
       {...(isDisabled ? { cursor: 'not-allowed' } : {})}
       {...formControlProps}
+      isInvalid={!!errorMessage}
     >
       <FormLabel color={labelColor} htmlFor="imageInput">
         {label}
@@ -125,6 +132,10 @@ export const UploadImageForm = ({
             height="100%"
           >{`Drag 'n' drop an image here`}</Flex>
         </Flex>
+      )}
+      {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
+      {!errorMessage && helperText && (
+        <FormHelperText>{helperText}</FormHelperText>
       )}
     </FormControl>
   );
