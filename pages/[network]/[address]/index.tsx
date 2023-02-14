@@ -1,4 +1,4 @@
-import { Text } from '@chakra-ui/react';
+import { Heading } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
@@ -10,10 +10,9 @@ import { LoadingState } from '@/components/LoadingState';
 import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
 import { QuestChainV1Page } from '@/components/QuestChain/QuestChainV1Page';
 import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
-import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
 const {
@@ -74,23 +73,15 @@ const QuestChainPage: React.FC<Props> = ({
 
   if (isFallback || fetching || (!questChain && !!inputQuestChain)) {
     return (
-      <Page w="100%" align="center">
+      <Page align="center">
         <LoadingState my={20} />
       </Page>
     );
   }
   if (!questChain) {
     return (
-      <Page w="100%" align="center">
-        <HeadComponent
-          title={'Quest Chain Not Found'}
-          description={'This quest chain does not exist'}
-          url={QUESTCHAINS_URL}
-        />
-        <Text fontSize="lg" fontWeight="bold">
-          {' '}
-          Quest chain not found!{' '}
-        </Text>
+      <Page align="center">
+        <Heading fontSize={36}>Quest chain not found!</Heading>
       </Page>
     );
   }

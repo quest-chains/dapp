@@ -44,19 +44,8 @@ const Profile: React.FC<{
 
   if (!profileAddress)
     return (
-      <Page>
-        <HeadComponent
-          title="Profile"
-          url={QUESTCHAINS_URL + '/profile/' + name}
-        />
-        <VStack spacing={6} pb={8}>
-          <Heading color="white" fontSize={50}>
-            Profile
-          </Heading>
-          <Text fontSize="lg" fontWeight="bold">
-            User not found
-          </Text>
-        </VStack>
+      <Page align="center">
+        <Heading fontSize={36}>Profile not found!</Heading>
       </Page>
     );
 
