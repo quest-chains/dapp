@@ -11,11 +11,11 @@ import {
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
+import SearchQuestChains from '@/components/Explore/SearchQuestChains';
 import { MenuLandingDesktop } from '@/components/Landing/MenuLandingDesktop';
 import { MenuLandingMobile } from '@/components/Landing/MenuLandingMobile';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
-import SearchQuestChains from '@/components/SearchQuestChains';
 
 import { DesktopMenu } from './DesktopMenu';
 import { MobileMenu } from './MobileMenu';
