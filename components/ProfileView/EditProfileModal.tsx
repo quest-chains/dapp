@@ -142,7 +142,7 @@ export const EditProfileModal: React.FC<{
                 ) : (
                   <FormHelperText>
                     Enter a username that will be visible across the Quest
-                    Chains platform. It must be atleast 4 characters long and
+                    Chains platform. It must be atleast 3 characters long and
                     contain only _ or -. It must also start and end with an
                     alphanumeric character.
                   </FormHelperText>

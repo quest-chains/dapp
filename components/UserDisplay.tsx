@@ -24,7 +24,11 @@ export const UserDisplay: React.FC<{
 
   if (!address) return null;
   return (
-    <NextLink as={`/profile/${address}`} href="/profile/[address]" passHref>
+    <NextLink
+      as={`/profile/${profile?.username ?? address}`}
+      href="/profile/[name]"
+      passHref
+    >
       <Link _hover={{}} borderRadius="full">
         <Button variant="ghost" size={size} height={8} px={2}>
           <HStack position="relative" color={color}>

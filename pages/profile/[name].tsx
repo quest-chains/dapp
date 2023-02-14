@@ -9,6 +9,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { utils } from 'ethers';
 import { GetStaticPropsContext } from 'next';
 
 import { Page } from '@/components/Layout/Page';
@@ -127,7 +128,9 @@ export const getServerSideProps = async (
     isENS && address ? address : name,
   );
 
-  const profileAddress = (profile?.address ?? address ?? '').toLowerCase();
+  const profileAddress = (
+    utils.isAddress(name) ? name : profile?.address ?? address ?? ''
+  ).toLowerCase();
 
   const displayName =
     profile?.username ?? isENS ? name : formatAddress(profileAddress, ens);

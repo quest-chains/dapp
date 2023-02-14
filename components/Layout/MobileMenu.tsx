@@ -23,8 +23,8 @@ export const MobileMenu: React.FC<{
   toggleOpen: () => void;
   onSearchOpen: () => void;
 }> = ({ isOpen, toggleOpen, onSearchOpen }) => {
-  const router = useRouter();
-  const { isConnected, address } = useWallet();
+  const { asPath } = useRouter();
+  const { isConnected, address, user } = useWallet();
 
   return (
     <>
@@ -43,65 +43,67 @@ export const MobileMenu: React.FC<{
           <ModalBody h="100%">
             <VStack spacing={6} h="100%" w="100%" justify="center">
               {isConnected ? <WalletDisplay /> : <ConnectWallet />}
-              <NextLink href="/create" passHref>
-                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
-                  <Button
-                    borderWidth={1}
-                    bg="none"
-                    borderColor={
-                      router.pathname === '/create' ? 'main' : 'white'
-                    }
-                    _hover={{
-                      bgColor: 'whiteAlpha.100',
-                      borderColor: 'main',
-                    }}
-                    transition="0.25s"
-                    px={5}
-                    py={2}
-                    borderRadius="full"
-                  >
-                    <Text color="white">Create a chain</Text>
-                  </Button>
-                </ChakraLink>
-              </NextLink>
-              <NextLink href="/explore" passHref>
-                <ChakraLink display="block" _hover={{}} onClick={toggleOpen}>
-                  <Text
-                    color="main"
-                    boxShadow={
-                      router.pathname === '/explore'
-                        ? '0 4px 2px -2px #1f7165'
-                        : 'none'
-                    }
-                    _hover={{
-                      boxShadow: '0 4px 2px -2px #1f7165',
-                    }}
-                    transition="0.25s"
-                  >
-                    Explore
-                  </Text>
-                </ChakraLink>
-              </NextLink>
+              <ChakraLink
+                as={NextLink}
+                href="/create"
+                display="block"
+                _hover={{}}
+                onClick={toggleOpen}
+              >
+                <Button
+                  borderWidth={1}
+                  bg="none"
+                  borderColor={asPath === '/create' ? 'main' : 'white'}
+                  _hover={{
+                    bgColor: 'whiteAlpha.100',
+                    borderColor: 'main',
+                  }}
+                  transition="0.25s"
+                  px={5}
+                  py={2}
+                  borderRadius="full"
+                >
+                  <Text color="white">Create a chain</Text>
+                </Button>
+              </ChakraLink>
+              <ChakraLink
+                as={NextLink}
+                href="/explore"
+                display="block"
+                _hover={{}}
+                onClick={toggleOpen}
+              >
+                <Text
+                  color="main"
+                  boxShadow={
+                    asPath === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
+                  }
+                  _hover={{
+                    boxShadow: '0 4px 2px -2px #1f7165',
+                  }}
+                  transition="0.25s"
+                >
+                  Explore
+                </Text>
+              </ChakraLink>
               {isConnected && (
-                <NextLink href={`/profile/${address}`} passHref>
-                  <ChakraLink display="block" _hover={{}}>
-                    <Text
-                      boxShadow={
-                        router.query.address?.toString()?.toLowerCase() ===
-                        address?.toLowerCase()
-                          ? '0 4px 2px -2px #1f7165'
-                          : 'none'
-                      }
-                      _hover={{
-                        boxShadow: '0 4px 2px -2px #1f7165',
-                      }}
-                      transition="0.25s"
-                      color="main"
-                    >
-                      My Profile
-                    </Text>
-                  </ChakraLink>
-                </NextLink>
+                <ChakraLink
+                  as={NextLink}
+                  href={`/profile/${user?.username ?? address}`}
+                  display="block"
+                  boxShadow={
+                    asPath === `/profile/${user?.username ?? address}`
+                      ? '0 4px 2px -2px #1f7165'
+                      : 'none'
+                  }
+                  _hover={{
+                    boxShadow: '0 4px 2px -2px #1f7165',
+                  }}
+                  transition="0.25s"
+                  color="main"
+                >
+                  My Profile
+                </ChakraLink>
               )}
               <Button
                 color="whiteAlpha.800"
