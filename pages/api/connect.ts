@@ -1,5 +1,4 @@
 import { utils } from 'ethers';
-import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { verifyToken } from '@/lib/auth';
@@ -20,17 +19,22 @@ export const connect = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const usersCollection = client.collection('users');
 
-  const user = await usersCollection.findOne({ address });
-  if (user) {
-    return res.status(200).json(user);
+  const result = await usersCollection.findOneAndUpdate(
+    { address },
+    {
+      $set: { updatedAt: new Date() },
+      $setOnInsert: {
+        createdAt: new Date(),
+        address,
+      },
+    },
+    { returnDocument: 'after', upsert: true },
+  );
+
+  if (result?.value) {
+    return res.status(200).json(result.value);
   }
-  const newUser = {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    address,
-  };
-  const { insertedId } = await usersCollection.insertOne(newUser);
-  return res.status(200).json({ _id: new ObjectId(insertedId), ...newUser });
+  return res.status(500).end();
 };
 
 export default connect;

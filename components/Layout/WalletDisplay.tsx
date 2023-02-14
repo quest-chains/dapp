@@ -40,7 +40,8 @@ export const WalletDisplay: React.FC = () => {
     md: 'bottom-end',
   }) as PlacementWithLogical;
 
-  if (!address || !chainId || !user) return null;
+  if (!address || !chainId) return null;
+
   const isSupportedChain = isSupportedNetwork(chainId);
   return (
     <Popover placement={placement} gutter={20} trigger="hover">
@@ -61,7 +62,7 @@ export const WalletDisplay: React.FC = () => {
               <UserAvatar address={address} profile={user} size={32} />
               <Flex flexDir="column">
                 <Text fontWeight="bold" fontSize="normal">
-                  {user.username ?? formatAddress(address, ens)}
+                  {user?.username ?? formatAddress(address, ens)}
                 </Text>
                 <Text fontSize="small">
                   {AVAILABLE_NETWORK_INFO[chainId].label}
