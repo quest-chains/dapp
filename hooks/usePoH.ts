@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createClient } from 'urql';
 
 import { Role } from '@/components/RoleTag';
@@ -12,6 +12,16 @@ const client = createClient({
   url: PoHAPI,
 });
 
+export const fetchPoH = async (
+  address: string | null | undefined,
+): Promise<boolean> => {
+  if (!address) return false;
+  const data = await client
+    .query(getRegisteredStatus, { id: address })
+    .toPromise();
+  return data?.data?.submission?.registered ?? false;
+};
+
 export const usePoH = (
   address: string | null | undefined,
 ): {
@@ -24,11 +34,7 @@ export const usePoH = (
   const getPoH = useCallback(async () => {
     try {
       setFetching(true);
-      const data = await client
-        .query(getRegisteredStatus, { id: address })
-        .toPromise();
-
-      setRegistered(data?.data?.submission?.registered ?? false);
+      setRegistered(await fetchPoH(address));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
@@ -54,14 +60,14 @@ export const usePoHs = (roles: {
     [addr: string]: boolean;
   };
 } => {
-  const addresses = useMemo(() => Object.keys(roles), [roles]);
-
   const [statusesPoH, setStatusesPoH] = useState<{
     [addr: string]: boolean;
   }>({});
 
   const getStatuses = useCallback(async () => {
     try {
+      const addresses = Object.keys(roles);
+
       const statuses: { [addr: string]: boolean } = {};
 
       const data = await client
@@ -81,7 +87,7 @@ export const usePoHs = (roles: {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
     }
-  }, [addresses]);
+  }, [roles]);
 
   useEffect(() => {
     getStatuses();

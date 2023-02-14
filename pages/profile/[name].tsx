@@ -1,18 +1,25 @@
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { CopyIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Button,
-  Flex,
+  Divider,
   Grid,
   Heading,
+  HStack,
+  IconButton,
   Link,
   Text,
+  Tooltip,
+  useClipboard,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { utils } from 'ethers';
-import { GetStaticPropsContext } from 'next';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Page } from '@/components/Layout/Page';
+import { LoadingState } from '@/components/LoadingState';
 import { PoHBadge } from '@/components/PoHBadge';
 import { EditProfileModal } from '@/components/ProfileView/EditProfileModal';
 import { UserActionsNeeded } from '@/components/ProfileView/UserActionsNeeded';
@@ -22,25 +29,117 @@ import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
-import { usePoH } from '@/hooks/usePoH';
+import { fetchPoH } from '@/hooks/usePoH';
+import { fetchUserProfile } from '@/hooks/useUserProfile';
 import { MongoUser } from '@/lib/mongodb/types';
-import { fetchProfileFromName } from '@/lib/profile';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
-const Profile: React.FC<{
-  name: string;
+type ProfileData = {
   displayName: string;
   profileAddress: string;
   profile: MongoUser | null;
-}> = ({ name, displayName, profileAddress, profile }) => {
-  const { registered, fetching: fetchingPoH } = usePoH(profileAddress);
+};
+
+const useProfileData = (
+  name: string,
+): {
+  fetching: boolean;
+  pohRegistered: boolean;
+  displayName: string;
+  profileAddress: string;
+  profileENS: string;
+  profile: MongoUser | null;
+} & ProfileData => {
+  const [profileData, setProfileData] = useState<{
+    pohRegistered: boolean;
+    displayName: string;
+    profileAddress: string;
+    profileENS: string;
+    profile: MongoUser | null;
+  }>({
+    pohRegistered: false,
+    profileAddress: '',
+    profileENS: '',
+    displayName: '',
+    profile: null,
+  });
+  const [fetching, setFetching] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setFetching(true);
+      const isENS = name.endsWith('.eth');
+
+      const [address, ens] = await Promise.all([
+        fetchAddressFromENS(name),
+        fetchENSFromAddress(name),
+      ]);
+
+      const profile = await fetchUserProfile(isENS && address ? address : name);
+
+      const profileAddress = (
+        utils.isAddress(name) ? name : profile?.address ?? address ?? ''
+      ).toLowerCase();
+
+      const profileENS = isENS ? name : ens ?? '';
+
+      const displayName = profile?.username ?? (isENS ? name : '');
+
+      const pohRegistered = await fetchPoH(profileAddress);
+
+      setProfileData({
+        profileAddress,
+        profileENS,
+        displayName,
+        profile,
+        pohRegistered,
+      });
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+      setProfileData({
+        pohRegistered: false,
+        profileAddress: '',
+        profileENS: '',
+        displayName: '',
+        profile: null,
+      });
+    } finally {
+      setFetching(false);
+    }
+  }, [name]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { fetching: fetching, ...profileData };
+};
+
+const Profile: React.FC = () => {
+  const {
+    query: { name },
+  } = useRouter();
+
+  const { pohRegistered, displayName, profileAddress, profile, fetching } =
+    useProfileData(name?.toString() ?? '');
 
   const { address, chainId } = useWallet();
 
   const isLoggedInUser = profileAddress === address?.toLowerCase();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { onCopy, hasCopied } = useClipboard(
+    utils.isAddress(profileAddress) ? utils.getAddress(profileAddress) : '',
+  );
+
+  if (fetching)
+    return (
+      <Page align="center">
+        <LoadingState my={20} />
+      </Page>
+    );
 
   if (!profileAddress)
     return (
@@ -68,28 +167,41 @@ const Profile: React.FC<{
         )}
 
         <UserAvatar address={profileAddress} profile={profile} size={150} />
-        <Flex alignItems="center">
-          <Link
-            isExternal
-            href={getAddressUrl(profileAddress, chainId)}
-            _hover={{
-              textDecor: 'none',
-            }}
-            mr={2}
-          >
-            <Button
-              color="main"
-              fontSize={20}
-              fontWeight="bold"
-              rightIcon={<ExternalLinkIcon />}
-            >
-              <Text as="span">{displayName}</Text>
-            </Button>
-          </Link>
-          {registered && !fetchingPoH && (
-            <PoHBadge address={profileAddress} size={6} />
+
+        <VStack spacing={2}>
+          {displayName && (
+            <>
+              <HStack spacing={0}>
+                <Text fontSize={20} fontWeight="bold">
+                  {displayName}
+                </Text>
+                {pohRegistered && (
+                  <Box pl={2}>
+                    <PoHBadge address={profileAddress} size={6} />
+                  </Box>
+                )}
+              </HStack>
+              <Divider w="2rem" />
+            </>
           )}
-        </Flex>
+          <HStack spacing={3}>
+            <Link isExternal href={getAddressUrl(profileAddress, chainId)}>
+              {formatAddress(profileAddress, '')}
+            </Link>
+            <Tooltip
+              label={hasCopied ? 'Copied!' : 'Click to copy address'}
+              closeOnClick={false}
+            >
+              <IconButton
+                bg="none"
+                onClick={onCopy}
+                size="sm"
+                icon={<CopyIcon fontSize="1rem" />}
+                aria-label="Copy address"
+              />
+            </Tooltip>
+          </HStack>
+        </VStack>
       </VStack>
 
       <Grid templateColumns="repeat(1, 1fr)" gap={20}>
@@ -100,40 +212,6 @@ const Profile: React.FC<{
       </Grid>
     </Page>
   );
-};
-
-type QueryParams = { name: string };
-
-export const getServerSideProps = async (
-  context: GetStaticPropsContext<QueryParams>,
-) => {
-  const name = context.params?.name ?? '';
-
-  const isENS = name.endsWith('.eth');
-
-  const address = await fetchAddressFromENS(name);
-
-  const ens = await fetchENSFromAddress(name);
-
-  const { user: profile } = await fetchProfileFromName(
-    isENS && address ? address : name,
-  );
-
-  const profileAddress = (
-    utils.isAddress(name) ? name : profile?.address ?? address ?? ''
-  ).toLowerCase();
-
-  const displayName =
-    profile?.username ?? isENS ? name : formatAddress(profileAddress, ens);
-
-  return {
-    props: {
-      name,
-      displayName,
-      profileAddress,
-      profile: profile ? { ...profile, _id: profile._id.toString() } : null,
-    },
-  };
 };
 
 export default Profile;
