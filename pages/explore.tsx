@@ -1,5 +1,6 @@
+import { Featured } from '@/components/Explore/Featured';
+import SearchQuestChains from '@/components/Explore/SearchQuestChains';
 import { Page } from '@/components/Layout/Page';
-import SearchQuestChains from '@/components/SearchQuestChains';
 import { HeadComponent } from '@/components/Seo';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 
@@ -11,6 +12,7 @@ const Explore: React.FC = () => {
         description="Browse through the catalogue of quest chains"
         url={QUESTCHAINS_URL + '/explore'}
       />
+      <Featured />
       <SearchQuestChains />
     </Page>
   );
