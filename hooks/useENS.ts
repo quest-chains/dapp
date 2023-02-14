@@ -3,6 +3,17 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { getEthersProvider } from '@/web3/providers';
 
+export const fetchENSFromAddress = async (
+  address: string | null | undefined,
+): Promise<string | null> => {
+  if (!address || !utils.isAddress(address)) return null;
+  const ethProvider = getEthersProvider('0x1');
+  if (!ethProvider) return null;
+
+  const ens = await ethProvider.lookupAddress(address);
+  return ens;
+};
+
 export const useENS = (
   address: string | null | undefined,
 ): {
@@ -13,17 +24,10 @@ export const useENS = (
   const [fetching, setFetching] = useState(false);
 
   const populateENS = useCallback(async () => {
-    if (!address || !utils.isAddress(address)) {
-      setENS(null);
-      return;
-    }
     try {
       setFetching(true);
-      const ethProvider = getEthersProvider('0x1');
-      if (ethProvider) {
-        const ens = await ethProvider.lookupAddress(address);
-        setENS(ens);
-      }
+      const name = await fetchENSFromAddress(address);
+      setENS(name);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error populating ENS', error);
@@ -42,6 +46,17 @@ export const useENS = (
   };
 };
 
+export const fetchAddressFromENS = async (
+  name: string | null | undefined,
+): Promise<string | null> => {
+  if (!name || !name.endsWith('.eth')) return null;
+  const ethProvider = getEthersProvider('0x1');
+  if (!ethProvider) return null;
+
+  const addr = await ethProvider.resolveName(name);
+  return constants.AddressZero === addr ? null : addr;
+};
+
 export const useAddressFromENS = (
   ens: string,
 ): {
@@ -52,17 +67,10 @@ export const useAddressFromENS = (
   const [fetching, setFetching] = useState(false);
 
   const populateAddress = useCallback(async () => {
-    if (!ens || !ens.endsWith('.eth')) {
-      setAddress(null);
-      return;
-    }
     try {
       setFetching(true);
-      const ethProvider = getEthersProvider('0x1');
-      if (ethProvider) {
-        const addr = await ethProvider.resolveName(ens);
-        setAddress(constants.AddressZero === addr ? null : addr);
-      }
+      const addr = await fetchAddressFromENS(ens);
+      setAddress(addr);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error populating ENS', error);

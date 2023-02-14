@@ -5,12 +5,10 @@ import {
   Grid,
   Heading,
   Link,
-  Spinner,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { utils } from 'ethers';
 import { GetStaticPropsContext } from 'next';
 
 import { Page } from '@/components/Layout/Page';
@@ -22,59 +20,26 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
-import { useAddressFromENS, useENS } from '@/hooks/useENS';
+import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { usePoH } from '@/hooks/usePoH';
-import { useUserProfile } from '@/hooks/useUserProfile';
+import { MongoUser } from '@/lib/mongodb/types';
+import { fetchProfileFromName } from '@/lib/profile';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
-const Profile: React.FC<{ name: string }> = ({ name }) => {
-  const { address: addressFromENS, fetching: fetchingAddressFromENS } =
-    useAddressFromENS(name.endsWith('.eth') ? name : '');
-
-  const { ens: ensFromAddress, fetching: fetchingENSFromAddress } = useENS(
-    utils.isAddress(name) ? name : '',
-  );
-
-  const { profile, fetching: fetchingProfile } = useUserProfile(
-    name.endsWith('.eth') ? addressFromENS ?? '' : name,
-  );
-
-  const profileAddress = profile?.address ?? addressFromENS ?? '';
-
+const Profile: React.FC<{
+  name: string;
+  displayName: string;
+  profileAddress: string;
+  profile: MongoUser | null;
+}> = ({ name, displayName, profileAddress, profile }) => {
   const { registered, fetching: fetchingPoH } = usePoH(profileAddress);
 
   const { address, chainId } = useWallet();
 
   const isLoggedInUser = profileAddress === address?.toLowerCase();
-  const displayName =
-    profile?.username ?? name.endsWith('.eth')
-      ? name
-      : formatAddress(profileAddress, ensFromAddress);
-
-  const isLoading =
-    fetchingAddressFromENS ||
-    fetchingENSFromAddress ||
-    fetchingProfile ||
-    fetchingPoH;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  if (isLoading)
-    return (
-      <Page>
-        <HeadComponent
-          title="Profile"
-          url={QUESTCHAINS_URL + '/profile/' + name}
-        />
-        <VStack spacing={6} pb={8}>
-          <Heading color="white" fontSize={50}>
-            Profile
-          </Heading>
-          <Spinner width="5rem" height="5rem" color="main" />
-        </VStack>
-      </Page>
-    );
 
   if (!profileAddress)
     return (
@@ -129,7 +94,9 @@ const Profile: React.FC<{ name: string }> = ({ name }) => {
               <Text as="span">{displayName}</Text>
             </Button>
           </Link>
-          {registered && <PoHBadge address={profileAddress} size={6} />}
+          {registered && !fetchingPoH && (
+            <PoHBadge address={profileAddress} size={6} />
+          )}
         </Flex>
       </VStack>
 
@@ -150,12 +117,30 @@ export const getServerSideProps = async (
 ) => {
   const name = context.params?.name ?? '';
 
-  if (!name) {
+  const isENS = name.endsWith('.eth');
+
+  const address = await fetchAddressFromENS(name);
+
+  const ens = await fetchENSFromAddress(name);
+
+  const { user: profile } = await fetchProfileFromName(
+    isENS && address ? address : name,
+  );
+
+  const profileAddress = (profile?.address ?? address ?? '').toLowerCase();
+
+  const displayName =
+    profile?.username ?? isENS ? name : formatAddress(profileAddress, ens);
+
+  if (!profileAddress || !displayName) {
     return { notFound: true };
   }
   return {
     props: {
       name,
+      displayName,
+      profileAddress,
+      profile: profile ? { ...profile, _id: profile._id.toString() } : null,
     },
   };
 };
