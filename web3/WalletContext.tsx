@@ -48,7 +48,7 @@ export const WalletContext = createContext<WalletContextType>({
   ens: null,
   ensAvatar: null,
   user: null,
-  setUser: (_user: MongoUser | null | undefined) => undefined,
+  setUser: () => undefined,
   connectWallet: async () => undefined,
   disconnect: () => undefined,
   isConnecting: true,
