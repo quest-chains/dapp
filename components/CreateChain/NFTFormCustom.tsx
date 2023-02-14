@@ -4,6 +4,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Text,
   Textarea,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -86,12 +87,15 @@ const CustomNFTForm2D: React.FC<{
           formControlProps={{ mb: '4' }}
         />
         <FormControl isRequired>
-          <FormLabel htmlFor="name">Name</FormLabel>
+          <Flex align="center" justify="space-between" w="100%">
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Text fontSize="sm">{name.length} / 36</Text>
+          </Flex>
           <Input
             value={name}
             onChange={e => setName(e.target.value)}
             minLength={1}
-            maxLength={35}
+            maxLength={36}
             id="name"
             bg="#0F172A"
             placeholder="NFT Badge Name"
@@ -99,12 +103,15 @@ const CustomNFTForm2D: React.FC<{
           />
         </FormControl>
         <FormControl isRequired>
-          <FormLabel htmlFor="description">Description</FormLabel>
+          <Flex align="center" justify="space-between" w="100%">
+            <FormLabel htmlFor="description">Description</FormLabel>
+            <Text fontSize="sm">{description.length} / 36</Text>
+          </Flex>
           <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             minLength={1}
-            maxLength={100}
+            maxLength={120}
             bg="#0F172A"
             placeholder="NFT Badge Description"
           />

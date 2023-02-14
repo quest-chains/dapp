@@ -70,14 +70,14 @@ export const AddQuestBlock: React.FC<{
         <FormControl isRequired>
           <Flex align="center" justify="space-between" w="100%">
             <FormLabel fontSize="sm">Quest Name</FormLabel>
-            <Text fontSize="0.8125rem">{nameLength} / 120</Text>
+            <Text fontSize="0.8125rem">{nameLength} / 90</Text>
           </Flex>
           <Input
             color="white"
             defaultValue={nameRef.current}
             bg="#0F172A"
             id="name"
-            maxLength={120}
+            maxLength={90}
             onChange={e => {
               setName(e.target.value);
               setNameLength(e.target.value.length);

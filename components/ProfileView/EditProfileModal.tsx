@@ -1,5 +1,6 @@
 import {
   Button,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -12,6 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
@@ -118,6 +120,8 @@ export const EditProfileModal: React.FC<{
     }
   }, [isOpen, user, setUsername, onResetImage]);
 
+  const [nameLength, setNameLength] = useState(usernameRef.current.length);
+
   if (!user) return null;
 
   return (
@@ -130,15 +134,21 @@ export const EditProfileModal: React.FC<{
           <form>
             <VStack w="100%" align="stretch" mb={10} spacing={4}>
               <FormControl w="full" isInvalid={!!usernameError} isRequired>
-                <FormLabel htmlFor="name">Username</FormLabel>
+                <Flex align="center" justify="space-between" w="100%">
+                  <FormLabel htmlFor="name">Username</FormLabel>
+                  <Text fontSize="sm">{nameLength} / 30</Text>
+                </Flex>
                 <Input
                   color="white"
                   isDisabled={isLoading}
                   defaultValue={usernameRef.current}
                   bg="#0F172A"
                   id="name"
-                  maxLength={120}
-                  onChange={e => setUsername(e.target.value)}
+                  maxLength={30}
+                  onChange={e => {
+                    setUsername(e.target.value);
+                    setNameLength(e.target.value.length);
+                  }}
                   placeholder="username"
                 />
                 {usernameError ? (

@@ -170,14 +170,14 @@ export const MetadataForm: React.FC<{
           <FormControl w="full" isRequired={true}>
             <Flex align="center" justify="space-between" w="100%">
               <FormLabel htmlFor="name">Name</FormLabel>
-              <Text fontSize="sm">{nameLength} / 120</Text>
+              <Text fontSize="sm">{nameLength} / 90</Text>
             </Flex>
             <Input
               color="white"
               defaultValue={nameRef.current}
               bg="#0F172A"
               id="name"
-              maxLength={120}
+              maxLength={90}
               onChange={e => {
                 setName(e.target.value);
                 fetchSearchResults(slugify(e.target.value));

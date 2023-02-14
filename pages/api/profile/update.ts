@@ -25,6 +25,7 @@ export const updateProfile = authHandler(
       typeof username !== 'string' ||
       !username ||
       username.length < 3 ||
+      username.length > 30 ||
       !USERNAME_REGEX.test(username)
     )
       return res.status(400).json({ error: 'invalid username string' });
