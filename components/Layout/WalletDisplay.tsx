@@ -21,7 +21,6 @@ import React from 'react';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useENS } from '@/hooks/useENS';
 import {
   AVAILABLE_NETWORK_INFO,
   formatAddress,
@@ -34,8 +33,7 @@ import {
 import { UserAvatar } from '../UserAvatar';
 
 export const WalletDisplay: React.FC = () => {
-  const { address, chainId, isMetaMask, disconnect, user } = useWallet();
-  const { ens } = useENS(address);
+  const { address, chainId, isMetaMask, disconnect, user, ens } = useWallet();
 
   const placement = useBreakpointValue({
     base: 'bottom',

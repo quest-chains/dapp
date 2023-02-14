@@ -3,6 +3,7 @@ import { Box } from '@chakra-ui/react';
 import { useENSAvatar } from '@/hooks/useENS';
 import { MongoUser } from '@/lib/mongodb/types';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { useWallet } from '@/web3';
 
 import { Jazzicon } from './Jazzicon';
 
@@ -10,7 +11,13 @@ const ENSAvatar: React.FC<{
   address: string;
   size: number;
 }> = ({ address, size }) => {
-  const { avatar: avatarUri } = useENSAvatar(address);
+  const { ensAvatar: walletAvatar, address: walletAddress } = useWallet();
+
+  const isWalletUser = walletAddress === address.toLowerCase();
+
+  const { avatar } = useENSAvatar(isWalletUser ? '' : address);
+
+  const avatarUri = isWalletUser ? walletAvatar : avatar;
 
   if (avatarUri)
     return (

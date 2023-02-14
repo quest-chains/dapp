@@ -11,6 +11,10 @@ import {
 import { toast } from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
+import {
+  fetchAvatarFromAddressOrENS,
+  fetchENSFromAddress,
+} from '@/hooks/useENS';
 import { MongoUser } from '@/lib/mongodb/types';
 import { fetchWithHeaders } from '@/utils/fetchWithHeaders';
 import { removeFromStorage, STORAGE_KEYS } from '@/utils/storageHelpers';
@@ -25,6 +29,8 @@ export type WalletContextType = {
   provider: providers.Web3Provider | null | undefined;
   chainId: string | null | undefined;
   address: string | null | undefined;
+  ens: string | null | undefined;
+  ensAvatar: string | null | undefined;
   user: MongoUser | null | undefined;
   connectWallet: () => Promise<void>;
   disconnect: () => void;
@@ -38,6 +44,8 @@ export const WalletContext = createContext<WalletContextType>({
   provider: null,
   chainId: null,
   address: null,
+  ens: null,
+  ensAvatar: null,
   user: null,
   connectWallet: async () => undefined,
   disconnect: () => undefined,
@@ -48,7 +56,6 @@ export const WalletContext = createContext<WalletContextType>({
 });
 
 type WalletStateType = {
-  user?: MongoUser | null;
   provider?: providers.Web3Provider | null;
   chainId?: string | null;
   address?: string | null;
@@ -60,8 +67,20 @@ const web3Modal =
 
 const connectUserWithMongo = async (): Promise<MongoUser | null> => {
   const res = await fetchWithHeaders('/api/connect', 'POST');
-  if (!res.ok || res.status !== 200) return null;
+  if (!res.ok || res.status !== 200) {
+    console.error('Could not connect user');
+    return null;
+  }
+
   return (await res.json()) as MongoUser;
+};
+
+const fetchENSData = async (
+  address: string,
+): Promise<{ ens: string | null; ensAvatar: string | null }> => {
+  const ens = await fetchENSFromAddress(address);
+  const ensAvatar = await fetchAvatarFromAddressOrENS(ens);
+  return { ens, ensAvatar };
 };
 
 export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
@@ -69,7 +88,14 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
 }) => {
   const [walletState, setWalletState] = useState<WalletStateType>({});
 
-  const { provider, chainId, address, isMetaMask, user } = walletState;
+  const { provider, chainId, address, isMetaMask } = walletState;
+
+  const [{ ens, ensAvatar }, setENS] = useState<{
+    ens?: string | null;
+    ensAvatar?: string | null;
+  }>({});
+
+  const [user, setUser] = useState<MongoUser | null>();
 
   const [isConnecting, setConnecting] = useState<boolean>(true);
 
@@ -94,17 +120,22 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         setWalletState(old => ({ ...old, chainId }));
       } else {
         const signerAddress = await ethersProvider.getSigner().getAddress();
+
+        // setup ens in background
+        fetchENSData(signerAddress).then(setENS);
+
+        // sign message in foreground
         const token = await authenticateWallet(ethersProvider);
         if (!token) throw new Error('Could not authenticate wallet');
-        const user = await connectUserWithMongo();
-        if (!user) throw new Error('Could not connect user');
+
+        // connect user with backend database in background
+        connectUserWithMongo().then(setUser);
 
         setWalletState({
           provider: ethersProvider,
           chainId,
           address: signerAddress.toLowerCase(),
           isMetaMask: prov.isMetaMask,
-          user,
         });
       }
     },
@@ -189,6 +220,8 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       value={{
         provider,
         address,
+        ens,
+        ensAvatar,
         user,
         chainId,
         connectWallet,

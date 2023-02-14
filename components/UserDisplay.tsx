@@ -14,13 +14,22 @@ export const UserDisplay: React.FC<{
   size?: 'sm' | 'md' | 'lg';
   hasPoH?: boolean;
 }> = ({ address, color = 'white', size = 'md', hasPoH }) => {
-  const { address: userAddress } = useWallet();
-  const { ens } = useENS(address);
+  const {
+    address: walletAddress,
+    ens: walletENS,
+    user: walletProfile,
+  } = useWallet();
 
-  const isUser = userAddress?.toLowerCase() === address?.toLowerCase();
-  const { profile } = useUserProfile(address ?? '');
+  const isWalletUser = walletAddress?.toLowerCase() === address?.toLowerCase();
 
-  const displayName = profile?.username ?? formatAddress(address, ens);
+  const { ens } = useENS(isWalletUser ? '' : address);
+  const displayENS = isWalletUser ? walletENS : ens;
+
+  const { profile } = useUserProfile(isWalletUser ? '' : address ?? '');
+  const displayProfile = isWalletUser ? walletProfile : profile;
+
+  const displayName =
+    displayProfile?.username ?? formatAddress(address, displayENS);
 
   if (!address) return null;
 
@@ -32,7 +41,7 @@ export const UserDisplay: React.FC<{
           <HStack position="relative" color={color}>
             <UserAvatar address={address} profile={profile} size={20} />
             <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {isUser ? 'YOURSELF' : displayName}
+              {isWalletUser ? 'YOURSELF' : displayName}
             </Text>
             {hasPoH && <PoHBadge address={address} />}
           </HStack>

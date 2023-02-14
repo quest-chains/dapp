@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 
 import { ConnectWallet } from '@/components/Layout/ConnectWallet';
 import { useWallet } from '@/web3';
@@ -24,7 +25,22 @@ export const MobileMenu: React.FC<{
   onSearchOpen: () => void;
 }> = ({ isOpen, toggleOpen, onSearchOpen }) => {
   const { asPath } = useRouter();
-  const { isConnected, address, user } = useWallet();
+  const { isConnected, address, user, ens } = useWallet();
+
+  const name = useMemo(
+    () => user?.username ?? ens ?? address,
+    [user, ens, address],
+  );
+
+  const isProfilePath = useMemo(() => {
+    if (!asPath.startsWith('/profile/')) return false;
+    const param = asPath.slice('/profile/'.length);
+    return (
+      param === user?.username ||
+      param === ens ||
+      param.toLowerCase() === address
+    );
+  }, [asPath, user, ens, address]);
 
   return (
     <>
@@ -87,23 +103,25 @@ export const MobileMenu: React.FC<{
                 </Text>
               </ChakraLink>
               {isConnected && (
-                <ChakraLink
-                  as={NextLink}
-                  href={`/profile/${user?.username ?? address}`}
-                  display="block"
-                  boxShadow={
-                    asPath === `/profile/${user?.username ?? address}`
-                      ? '0 4px 2px -2px #1f7165'
-                      : 'none'
-                  }
-                  _hover={{
-                    boxShadow: '0 4px 2px -2px #1f7165',
-                  }}
-                  transition="0.25s"
-                  color="main"
+                <NextLink
+                  as={`/profile/${name}`}
+                  href="/profile/[name]"
+                  passHref
                 >
-                  My Profile
-                </ChakraLink>
+                  <ChakraLink
+                    display="block"
+                    boxShadow={
+                      isProfilePath ? '0 4px 2px -2px #1f7165' : 'none'
+                    }
+                    _hover={{
+                      boxShadow: '0 4px 2px -2px #1f7165',
+                    }}
+                    transition="0.25s"
+                    color="main"
+                  >
+                    My Profile
+                  </ChakraLink>
+                </NextLink>
               )}
               <Button
                 color="whiteAlpha.800"

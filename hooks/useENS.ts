@@ -89,8 +89,27 @@ export const useAddressFromENS = (
   };
 };
 
+export const fetchAvatarFromAddressOrENS = async (
+  name: string | null | undefined,
+): Promise<string | null> => {
+  if (!name) return null;
+  const ethProvider = getEthersProvider('0x1');
+  if (!ethProvider) return null;
+
+  let ens: string | null = null;
+  if (utils.isAddress(name)) {
+    ens = await ethProvider.lookupAddress(name);
+  } else if (name.endsWith('.eth')) {
+    ens = name;
+  }
+
+  const resolver = ens ? await ethProvider.getResolver(ens) : null;
+  const avatar = resolver ? await resolver.getAvatar() : null;
+  return avatar?.url ?? null;
+};
+
 export const useENSAvatar = (
-  address: string | null | undefined,
+  name: string | null | undefined,
 ): {
   avatar: string | null | undefined;
   fetching: boolean;
@@ -99,27 +118,17 @@ export const useENSAvatar = (
   const [fetching, setFetching] = useState(false);
 
   const populateAvatar = useCallback(async () => {
-    if (!address || !utils.isAddress(address)) {
-      setAvatar(null);
-      return;
-    }
     try {
       setFetching(true);
-      const ethProvider = getEthersProvider('0x1');
-      if (ethProvider) {
-        const ens = await ethProvider.lookupAddress(address);
-        const resolver = ens ? await ethProvider.getResolver(ens) : null;
-        const avatar = resolver ? await resolver.getAvatar() : null;
-
-        setAvatar(avatar?.url ?? null);
-      }
+      const avatarUri = await fetchAvatarFromAddressOrENS(name);
+      setAvatar(avatarUri);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error populating Avatar', error);
     } finally {
       setFetching(false);
     }
-  }, [address]);
+  }, [name]);
 
   useEffect(() => {
     populateAvatar();

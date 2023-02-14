@@ -1,11 +1,5 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import {
-  Flex,
-  Heading,
-  Link as ChakraLink,
-  Spinner,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, Heading, Link as ChakraLink, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
 import { ethers } from 'ethers';
