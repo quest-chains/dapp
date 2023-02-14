@@ -37,7 +37,7 @@ const ENSAvatar: React.FC<{
 
 export const UserAvatar: React.FC<{
   address: string | null | undefined;
-  profile: MongoUser | null;
+  profile: MongoUser | null | undefined;
   size: number;
 }> = ({ address, profile, size }) => {
   const avatarUri = profile?.avatarUri;
