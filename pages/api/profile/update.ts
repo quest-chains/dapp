@@ -5,7 +5,7 @@ import { authHandler } from '@/lib/authHandler';
 import clientPromise from '@/lib/mongodb/client';
 import { MongoUser } from '@/lib/mongodb/types';
 
-const USERNAME_REGEX = /^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/;
+const USERNAME_REGEX = /^[A-Za-z0-9]+(?:[_\-\.][A-Za-z0-9]+)*$/;
 const URI_REGEX = /^(ipfs|http|https):\/\/[^ "]+$/;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

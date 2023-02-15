@@ -35,11 +35,11 @@ export const EditProfileModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
-  const { user, setUser } = useWallet();
+  const { user, ens, setUser } = useWallet();
 
   const { push } = useRouter();
 
-  const [username, setUsername] = useState(user?.username ?? '');
+  const [username, setUsername] = useState(user?.username ?? ens ?? '');
   const [usernameError, setUsernameError] = useState('');
 
   const uploadImageProps = useDropImage();
@@ -65,16 +65,16 @@ export const EditProfileModal: React.FC<{
       return false;
     }
 
-    if (!/^[A-Za-z0-9-_]+$/.test(username)) {
+    if (!/^[A-Za-z0-9_\-\.]+$/.test(username)) {
       setUsernameError(
-        'Username can only contain letters, numbers, hyphens, and underscores.',
+        'Username can only contain letters, numbers, hyphens, dots, and underscores.',
       );
       return false;
     }
 
-    if (!/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/.test(username)) {
+    if (!/^[A-Za-z0-9]+(?:[_\-\.][A-Za-z0-9]+)*$/.test(username)) {
       setUsernameError(
-        'Username cannot have consecutive or adjacent hyphens or underscores.',
+        'Username cannot have consecutive or adjacent hyphens, dots or underscores.',
       );
       return false;
     }
@@ -130,13 +130,13 @@ export const EditProfileModal: React.FC<{
 
   useEffect(() => {
     if (isOpen) {
-      setUsername(user?.username ?? '');
+      setUsername(user?.username ?? ens ?? '');
       onResetImage();
       setUsernameError('');
       setImageError('');
       setImageRemoved(false);
     }
-  }, [isOpen, user, setUsername, onResetImage]);
+  }, [isOpen, user, ens, setUsername, onResetImage]);
 
   const {
     isOpen: isConfirmationOpen,
@@ -219,7 +219,6 @@ export const EditProfileModal: React.FC<{
                     color="white"
                     isDisabled={isLoading}
                     value={username}
-                    pattern="[a-zA-z0-9_-]"
                     bg="#0F172A"
                     id="name"
                     maxLength={30}
@@ -247,6 +246,9 @@ export const EditProfileModal: React.FC<{
                   imageProps={{
                     h: '16rem',
                     w: '16rem',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
                   }}
                   dropzoneProps={{
                     ...uploadImageProps.dropzoneProps,

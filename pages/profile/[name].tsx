@@ -175,7 +175,7 @@ export const getStaticProps = async (
 
   const profileENS = isENS ? name : ens ?? '';
 
-  const displayName = profile?.username ?? (isENS ? name : '');
+  const displayName = profile?.username ?? (isENS ? name : ens ?? '');
 
   const pohRegistered = await fetchPoH(profileAddress);
 
