@@ -58,13 +58,14 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
       <Flex
         direction="column"
         align="center"
-        h={completed === 0 || !!completed ? '14.5rem' : '12rem'}
+        // TODO is this required for in the new flow
+        h={completed === 0 || !!completed ? '16.5rem' : '14rem'}
       >
         <VStack
           cursor="pointer"
           align="stretch"
           w="full"
-          py={4}
+          py={6}
           px={8}
           transition="all 0.25s"
           _hover={{
@@ -79,20 +80,21 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           flex={1}
           borderRadius={8}
           pos="relative"
+          justifyContent={'end'}
         >
           <Flex justifyContent="space-between">
             <Text
               fontSize="xl"
-              fontWeight="bold"
-              color="main"
-              letterSpacing={4}
+              fontFamily={'Museo Moderno'}
+              fontWeight="700"
+              lineHeight="24px"
               display="-webkit-box"
               textOverflow="ellipsis"
               overflow="hidden"
               maxW="calc(100%)"
               sx={{
-                lineClamp: 1,
-                WebkitLineClamp: 1,
+                lineClamp: 2,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
               }}
             >
@@ -123,6 +125,8 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           )}
           <Text
             display="-webkit-box"
+            lineHeight={'20px'}
+            color="whiteAlpha.700"
             textOverflow="ellipsis"
             overflow="hidden"
             maxW="calc(100%)"
@@ -131,13 +135,16 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
             }}
-            flex={1}
           >
             {removeMd(description ?? '')}
           </Text>
           <Flex justifyContent="space-between">
-            <Text>{quests} quests</Text>
-            <NetworkDisplay asTag chainId={chainId} />
+            {/* TODO in Figma the color is #BFA4C7 which is not exactly purple 100 */}
+            <Text color="purple.100">{quests} quests</Text>
+            <NetworkDisplay
+              chainId={chainId}
+              textProps={{ color: 'purple.100' }}
+            />
           </Flex>
           {imageUrl && (
             <Box
@@ -155,30 +162,6 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
             />
           )}
         </VStack>
-        {quests > 0 && (
-          <Box
-            boxShadow="0px 2px 4px rgba(0, 0, 0, 0.1)"
-            border="1px solid white"
-            borderTop="0"
-            borderBottomRadius={8}
-            opacity="0.9"
-            w="95%"
-            h="0.5rem"
-            bg="#202327"
-          />
-        )}
-        {quests > 1 && (
-          <Box
-            boxShadow="0px 2px 4px rgba(0, 0, 0, 0.1)"
-            border="1px solid white"
-            borderTop="0"
-            borderBottomRadius={8}
-            opacity="0.9"
-            w="90%"
-            h="0.5rem"
-            bg="#202327"
-          />
-        )}
       </Flex>
     </ChakraLink>
   </NextLink>
