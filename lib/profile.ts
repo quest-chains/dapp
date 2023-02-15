@@ -49,3 +49,24 @@ export const fetchProfileFromName = async (
     };
   }
 };
+
+export const fetchProfileNames = async (): Promise<string[]> => {
+  try {
+    const client = await clientPromise;
+    const usersCollection = client.collection('users');
+
+    const users = (await usersCollection
+      .find(
+        {},
+        {
+          projection: { username: 1, address: 1 },
+        },
+      )
+      .toArray()) as unknown as { username?: string | null; address: string }[];
+
+    return users.map(u => (u.username ? u.username : u.address));
+  } catch (error) {
+    console.error('Error finding user:', error);
+    return [];
+  }
+};

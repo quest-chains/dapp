@@ -15,8 +15,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { utils } from 'ethers';
+import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
 
 import { Page } from '@/components/Layout/Page';
 import { LoadingState } from '@/components/LoadingState';
@@ -30,99 +30,23 @@ import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
-import { fetchUserProfile } from '@/hooks/useUserProfile';
-import { MongoUser } from '@/lib/mongodb/types';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { fetchProfileFromName, fetchProfileNames } from '@/lib/profile';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
-type ProfileData = {
-  displayName: string;
-  profileAddress: string;
-  profile: MongoUser | null;
-};
+type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
-const useProfileData = (
-  name: string,
-): {
-  fetching: boolean;
-  pohRegistered: boolean;
-  displayName: string;
-  profileAddress: string;
-  profileENS: string;
-  profile: MongoUser | null;
-} & ProfileData => {
-  const [profileData, setProfileData] = useState<{
-    pohRegistered: boolean;
-    displayName: string;
-    profileAddress: string;
-    profileENS: string;
-    profile: MongoUser | null;
-  }>({
-    pohRegistered: false,
-    profileAddress: '',
-    profileENS: '',
-    displayName: '',
-    profile: null,
-  });
-  const [fetching, setFetching] = useState(true);
+const Profile: React.FC<Props> = ({
+  name,
+  pohRegistered,
+  displayName,
+  profileAddress,
+  profile: inputProfile,
+}) => {
+  const { fetching, profile } = useUserProfile(profileAddress);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setFetching(true);
-      const isENS = name.endsWith('.eth');
-
-      const [address, ens] = await Promise.all([
-        fetchAddressFromENS(name),
-        fetchENSFromAddress(name),
-      ]);
-
-      const profile = await fetchUserProfile(isENS && address ? address : name);
-
-      const profileAddress = (
-        utils.isAddress(name) ? name : profile?.address ?? address ?? ''
-      ).toLowerCase();
-
-      const profileENS = isENS ? name : ens ?? '';
-
-      const displayName = profile?.username ?? (isENS ? name : '');
-
-      const pohRegistered = await fetchPoH(profileAddress);
-
-      setProfileData({
-        profileAddress,
-        profileENS,
-        displayName,
-        profile,
-        pohRegistered,
-      });
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-      setProfileData({
-        pohRegistered: false,
-        profileAddress: '',
-        profileENS: '',
-        displayName: '',
-        profile: null,
-      });
-    } finally {
-      setFetching(false);
-    }
-  }, [name]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return { fetching: fetching, ...profileData };
-};
-
-const Profile: React.FC = () => {
-  const {
-    query: { name },
-  } = useRouter();
-
-  const { pohRegistered, displayName, profileAddress, profile, fetching } =
-    useProfileData(name?.toString() ?? '');
+  const { isFallback } = useRouter();
 
   const { address, chainId } = useWallet();
 
@@ -134,7 +58,7 @@ const Profile: React.FC = () => {
     utils.isAddress(profileAddress) ? utils.getAddress(profileAddress) : '',
   );
 
-  if (fetching)
+  if (isFallback || fetching || (!profile && !!inputProfile))
     return (
       <Page align="center">
         <LoadingState my={20} />
@@ -212,6 +136,62 @@ const Profile: React.FC = () => {
       </Grid>
     </Page>
   );
+};
+
+type QueryParams = { name: string };
+
+export async function getStaticPaths() {
+  const names = await fetchProfileNames();
+  const paths: { params: QueryParams }[] = names.map(name => ({
+    params: {
+      name,
+    },
+  }));
+  return {
+    paths,
+    fallback: true,
+  };
+}
+
+export const getStaticProps = async (
+  context: GetStaticPropsContext<QueryParams>,
+) => {
+  const name = context.params?.name ?? '';
+
+  const isENS = name.endsWith('.eth');
+
+  const [address, ens] = await Promise.all([
+    fetchAddressFromENS(name),
+    fetchENSFromAddress(name),
+  ]);
+
+  const { user: profile } = await fetchProfileFromName(
+    isENS && address ? address : name,
+  );
+
+  const profileAddress = (
+    utils.isAddress(name) ? name : profile?.address ?? address ?? ''
+  ).toLowerCase();
+
+  const profileENS = isENS ? name : ens ?? '';
+
+  const displayName = profile?.username ?? (isENS ? name : '');
+
+  const pohRegistered = await fetchPoH(profileAddress);
+
+  const props = {
+    name,
+    profileAddress,
+    profileENS,
+    displayName,
+    profile: profile ? { ...profile, _id: profile._id.toString() } : null,
+    pohRegistered,
+  };
+
+  return {
+    props,
+    revalidate: 60,
+  };
 };
 
 export default Profile;
