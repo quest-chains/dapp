@@ -14,6 +14,8 @@ import { QuestChainTile } from '@/components/QuestChainTile';
 import { useDelay } from '@/hooks/useDelay';
 import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
+import { LoadingState } from '../LoadingState';
+
 const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [value, setValue] = useState('');
   const delayedSetValue = useDelay(setValue);
@@ -58,15 +60,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         </Text>
       )}
       <VStack w="full" gap={4} flex={1}>
-        {fetching && (
-          <Spinner
-            size="xl"
-            thickness="2px"
-            speed="0.67s"
-            color="white"
-            my="4rem"
-          />
-        )}
+        {fetching && <LoadingState my={12} />}
 
         <Grid
           gap={4}
