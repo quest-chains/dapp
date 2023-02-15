@@ -18,7 +18,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spinner,
   Text,
   useBoolean,
   useBreakpointValue,
@@ -41,6 +40,8 @@ import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
+
+import { LoadingState } from '../LoadingState';
 
 const CollapsableText: React.FC<{
   title: string | null | undefined;
@@ -269,7 +270,7 @@ export const QuestChainV0ReviewPage: React.FC<Props> = ({
       </VStack>
       <VStack w="100%" spacing={6}>
         {fetching ? (
-          <Spinner color="main" />
+          <LoadingState my={6} />
         ) : (
           <>
             <Text

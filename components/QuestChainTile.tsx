@@ -108,11 +108,17 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           {completed && (
             <Flex justify="space-between" align="center">
               <Progress
-                value={(completed / quests) * 100 || 1}
+                value={
+                  completed >= quests
+                    ? 100
+                    : Number(((completed / quests) * 100).toFixed(2))
+                }
                 size="xs"
                 w="80%"
               />
-              <Text whiteSpace="nowrap">{(completed / quests) * 100} %</Text>
+              <Text whiteSpace="nowrap">
+                {((completed / quests) * 100).toFixed(0)} %
+              </Text>
             </Flex>
           )}
           <Text

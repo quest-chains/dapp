@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 
 import { ConnectWallet } from '@/components/Layout/ConnectWallet';
 import { WalletDisplay } from '@/components/Layout/WalletDisplay';
@@ -16,10 +17,25 @@ import { useWallet } from '@/web3';
 export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
   onSearchOpen,
 }) => {
-  const { address, isConnected } = useWallet();
-  const router = useRouter();
+  const { address, isConnected, user, ens } = useWallet();
+  const { asPath } = useRouter();
 
   const isSmallerScreen = useBreakpointValue({ base: true, xl: false });
+
+  const name = useMemo(
+    () => user?.username ?? ens ?? address,
+    [user, ens, address],
+  );
+
+  const isProfilePath = useMemo(() => {
+    if (!asPath.startsWith('/profile/')) return false;
+    const param = asPath.slice('/profile/'.length);
+    return (
+      param === user?.username ||
+      param === ens ||
+      param.toLowerCase() === address
+    );
+  }, [asPath, user, ens, address]);
 
   return (
     <Flex zIndex={2} justify="space-between" w="full" pl={10}>
@@ -42,16 +58,11 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
 
       <HStack gap={2}>
         {isConnected && (
-          <NextLink href={`/profile/${address}`} passHref>
+          <NextLink as={`/profile/${name}`} href="/profile/[name]" passHref>
             <Text
               px={1}
               cursor="pointer"
-              boxShadow={
-                router.query.address?.toString()?.toLowerCase() ===
-                address?.toLowerCase()
-                  ? '0 4px 2px -2px #1f7165'
-                  : 'none'
-              }
+              boxShadow={isProfilePath ? '0 4px 2px -2px #1f7165' : 'none'}
               _hover={{
                 boxShadow: '0 4px 2px -2px #1f7165',
               }}
@@ -63,12 +74,12 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             </Text>
           </NextLink>
         )}
-        <NextLink href="/explore" passHref>
+        <NextLink href="/explore">
           <Text
             px={1}
             cursor="pointer"
             boxShadow={
-              router.pathname === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
+              asPath === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
             }
             _hover={{
               boxShadow: '0 4px 2px -2px #1f7165',
@@ -80,11 +91,11 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             {isSmallerScreen ? 'Explore' : 'Explore'}
           </Text>
         </NextLink>
-        <NextLink href="/create" passHref>
+        <NextLink href="/create">
           <Button
             borderWidth={1}
             bg="none"
-            borderColor={router.pathname === '/create' ? 'main' : 'white'}
+            borderColor={asPath === '/create' ? 'main' : 'white'}
             _hover={{
               bgColor: 'whiteAlpha.100',
               borderColor: 'main',

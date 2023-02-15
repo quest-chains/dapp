@@ -101,7 +101,7 @@ export const QuestEditor: React.FC<QuestEditorProps> = ({
       <Flex>
         <Input
           mb={3}
-          maxLength={60}
+          maxLength={90}
           defaultValue={questNameRef.current ?? ''}
           onChange={e => setQuestName(e.target.value)}
           bg="#0F172A"

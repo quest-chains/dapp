@@ -23,8 +23,22 @@
     "react/display-name": "off",
     "react/no-unescaped-entities": "warn",
     "react-hooks/rules-of-hooks": "error",
-    "no-console": "error",
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": ["error"]
+      }
+    ]
   },
   "globals": {
     "React": "writable"

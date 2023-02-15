@@ -46,7 +46,7 @@ import { AVAILABLE_NETWORK_INFO, isSupportedNetwork, useWallet } from '@/web3';
 const Create: React.FC = () => {
   const router = useRouter();
 
-  const { address, provider, chainId, globalInfo } = useWallet();
+  const { address, provider, chainId, globalInfo, connectWallet } = useWallet();
 
   const [chainName, setChainName] = useState('');
   const [chainDescription, setChainDescription] = useState('');
@@ -275,9 +275,21 @@ const Create: React.FC = () => {
         <Flex w="full" flexDir="column" gap={8}>
           <Step0 />
           <Flex w="full" justifyContent="center">
-            <SubmitButton onClick={() => setStep(1)} px={32}>
-              GET STARTED
-            </SubmitButton>
+            {address ? (
+              <SubmitButton onClick={() => setStep(1)} px={32}>
+                GET STARTED
+              </SubmitButton>
+            ) : (
+              <SubmitButton
+                onClick={async () => {
+                  await connectWallet();
+                  setStep(1);
+                }}
+                px={32}
+              >
+                Connect wallet to Get Started
+              </SubmitButton>
+            )}
           </Flex>
         </Flex>
       )}

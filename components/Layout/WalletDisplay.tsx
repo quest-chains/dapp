@@ -16,13 +16,11 @@ import {
   useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
-import Davatar from '@davatar/react';
 import NextLink from 'next/link';
 import React from 'react';
 
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useENS } from '@/hooks/useENS';
 import {
   AVAILABLE_NETWORK_INFO,
   formatAddress,
@@ -31,11 +29,11 @@ import {
   switchChainOnMetaMask,
   useWallet,
 } from '@/web3';
-import { getEthersProvider } from '@/web3/providers';
+
+import { UserAvatar } from '../UserAvatar';
 
 export const WalletDisplay: React.FC = () => {
-  const { address, chainId, isMetaMask, disconnect } = useWallet();
-  const { ens } = useENS(address);
+  const { address, chainId, isMetaMask, disconnect, user, ens } = useWallet();
 
   const placement = useBreakpointValue({
     base: 'bottom',
@@ -43,6 +41,7 @@ export const WalletDisplay: React.FC = () => {
   }) as PlacementWithLogical;
 
   if (!address || !chainId) return null;
+
   const isSupportedChain = isSupportedNetwork(chainId);
   return (
     <Popover placement={placement} gutter={20} trigger="hover">
@@ -60,15 +59,10 @@ export const WalletDisplay: React.FC = () => {
               alignItems="center"
               gap={3}
             >
-              <Davatar
-                address={address}
-                size={32}
-                generatedAvatarType="jazzicon"
-                provider={getEthersProvider('0x1')}
-              />
+              <UserAvatar address={address} profile={user} size={32} />
               <Flex flexDir="column">
                 <Text fontWeight="bold" fontSize="normal">
-                  {formatAddress(address, ens)}
+                  {user?.username ?? formatAddress(address, ens)}
                 </Text>
                 <Text fontSize="small">
                   {AVAILABLE_NETWORK_INFO[chainId].label}

@@ -12,33 +12,44 @@ const client = createClient({
   url: PoHAPI,
 });
 
+export const fetchPoH = async (
+  address: string | null | undefined,
+): Promise<boolean> => {
+  if (!address) return false;
+  const data = await client
+    .query(getRegisteredStatus, { id: address })
+    .toPromise();
+  return data?.data?.submission?.registered ?? false;
+};
+
 export const usePoH = (
   address: string | null | undefined,
 ): {
   registered: boolean;
+  fetching: boolean;
 } => {
   const [registered, setRegistered] = useState<boolean>(false);
+  const [fetching, setFetching] = useState<boolean>(false);
 
-  const getPOH = useCallback(async () => {
+  const getPoH = useCallback(async () => {
     try {
-      const data = await client
-        .query(getRegisteredStatus, { id: address })
-        .toPromise();
-
-      setRegistered(data?.data?.submission?.registered || false);
+      setFetching(true);
+      setRegistered(await fetchPoH(address));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
+    } finally {
+      setFetching(false);
     }
   }, [address]);
 
   useEffect(() => {
-    getPOH();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+    getPoH();
+  }, [getPoH]);
 
   return {
     registered,
+    fetching,
   };
 };
 
@@ -49,24 +60,26 @@ export const usePoHs = (roles: {
     [addr: string]: boolean;
   };
 } => {
-  const addresses = Object.keys(roles);
   const [statusesPoH, setStatusesPoH] = useState<{
     [addr: string]: boolean;
   }>({});
 
   const getStatuses = useCallback(async () => {
     try {
+      const addresses = Object.keys(roles);
+
       const statuses: { [addr: string]: boolean } = {};
 
       const data = await client
         .query(getRegisteredStatuses, { id: addresses })
         .toPromise();
 
-      const submissions = data?.data?.submissions;
+      const submissions = data?.data?.submissions ?? [];
       addresses.forEach(address => {
-        statuses[address] = submissions.find(
-          (submission: { id: string }) => submission.id === address,
-        );
+        statuses[address] =
+          submissions.find(
+            (submission: { id: string }) => submission.id === address,
+          )?.registered ?? false;
       });
 
       setStatusesPoH(statuses);
@@ -74,12 +87,11 @@ export const usePoHs = (roles: {
       // eslint-disable-next-line no-console
       console.error('Error fetching Proof of Humanity', error);
     }
-  }, [addresses]);
+  }, [roles]);
 
   useEffect(() => {
     getStatuses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getStatuses]);
 
   return {
     statuses: statusesPoH,

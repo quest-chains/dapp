@@ -119,7 +119,6 @@ export const QuestChains: React.FC = () => {
               Learn more
             </Heading>
 
-            {/* @ts-expect-error */}
             <Link to="what" spy={true} smooth={true} duration={500}>
               <ArrowDownIcon h={10} w={10} cursor="pointer" />
             </Link>

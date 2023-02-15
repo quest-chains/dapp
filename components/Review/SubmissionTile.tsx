@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import Zoom from 'react-medium-image-zoom';
 import removeMd from 'remove-markdown';
 
 import { CommentIcon } from '@/components/icons/CommentIcon';
@@ -107,23 +108,16 @@ export const SubmissionTile: React.FC<{
                 </AccordionButton>
               </Flex>
             </Flex>
-            <Flex w="full" h="full" gap={2} pr={8} position="relative">
+            <Flex w="full" h="full" gap={4} pr={8} position="relative">
               {imageUrl && (
-                <Link
-                  isExternal
-                  href={imageUrl}
-                  _hover={{}}
-                  minW="fit-content"
-                  minH="fit-content"
-                >
+                <Zoom>
                   <Image
                     src={imageUrl}
                     alt="submission pic"
                     w={isExpanded ? '18rem' : '6rem'}
                     minH="fit-content"
-                    pr={4}
                   />
-                </Link>
+                </Zoom>
               )}
 
               <Box flexGrow={1}>

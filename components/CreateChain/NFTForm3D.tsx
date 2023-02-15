@@ -12,6 +12,7 @@ import {
   SliderMark,
   SliderThumb,
   SliderTrack,
+  Text,
   Textarea,
   Tooltip,
   VStack,
@@ -159,24 +160,30 @@ const NFTForm3D: React.FC<{
           <Image src={ThreeSixty.src} alt="Edit" mr={3} />
 
           <FormControl isRequired>
-            <FormLabel htmlFor="name">Name</FormLabel>
+            <Flex align="center" justify="space-between" w="100%">
+              <FormLabel htmlFor="name">Name</FormLabel>
+              <Text fontSize="sm">{name.length} / 36</Text>
+            </Flex>
             <Input
               value={name}
               onChange={e => setName(e.target.value)}
               minLength={1}
-              maxLength={35}
+              maxLength={36}
               id="name"
               bg="#0F172A"
               placeholder="NFT Badge Name"
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel htmlFor="description">Description</FormLabel>
+            <Flex align="center" justify="space-between" w="100%">
+              <FormLabel htmlFor="description">Description</FormLabel>
+              <Text fontSize="sm">{description.length} / 120</Text>
+            </Flex>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               minLength={1}
-              maxLength={100}
+              maxLength={120}
               bg="#0F172A"
               placeholder="NFT Badge Description"
             />
@@ -192,9 +199,7 @@ const NFTForm3D: React.FC<{
           pr={{ base: 0, md: 40 }}
         >
           <FormControl isRequired>
-            <FormLabel htmlFor="description" fontWeight="bold">
-              Background Shape
-            </FormLabel>
+            <FormLabel htmlFor="backgroundShape">Background Shape</FormLabel>
             <HStack spacing={6}>
               {backgrounds.map((bg, bgId) => (
                 <Tooltip label={`${backgroundNames[bgId]} Background`} key={bg}>

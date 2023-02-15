@@ -709,6 +709,7 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                           via="questchainz"
                         >
                           <Button
+                            as="div"
                             bgColor="#4A99E9"
                             p={4}
                             h={7}
@@ -944,11 +945,12 @@ export const QuestChainV1Page: React.FC<QuestChainV1PageProps> = ({
                   </Flex>
                   <Box position="relative" w="4rem">
                     <Text textAlign="right">
-                      {`${Math.round(
+                      {(
                         (progress.total
                           ? progress.completeCount / progress.total
-                          : 0) * 100,
-                      )}%`}
+                          : 0) * 100
+                      ).toFixed(0)}
+                      %
                     </Text>
                     <Text
                       position="absolute"

@@ -1,5 +1,5 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Flex, Link as ChakraLink, Spinner, Text } from '@chakra-ui/react';
+import { Flex, Heading, Link as ChakraLink, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
 import { ethers } from 'ethers';
@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 
 import { Page } from '@/components/Layout/Page';
+import { LoadingState } from '@/components/LoadingState';
 import { QuestChainV0ReviewPage } from '@/components/Review/QuestChainV0ReviewPage';
 import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPage';
 import { HeadComponent } from '@/components/Seo';
@@ -59,18 +60,23 @@ const Review: React.FC<Props> = ({
     [questChain, address],
   );
 
-  if (isFallback || fetching || isConnecting) {
+  if (
+    isFallback ||
+    fetching ||
+    isConnecting ||
+    (!questChain && !!inputQuestChain)
+  ) {
     return (
-      <Page>
-        <Spinner color="main" />
+      <Page align="center">
+        <LoadingState />
       </Page>
     );
   }
 
   if (!questChain) {
     return (
-      <Page>
-        <Text>Quest chain not found!</Text>
+      <Page align="center">
+        <Heading fontSize={36}>Quest chain not found!</Heading>
       </Page>
     );
   }

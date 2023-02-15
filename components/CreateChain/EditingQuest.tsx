@@ -47,12 +47,12 @@ export const EditingQuest: React.FC<{
       <FormControl isRequired>
         <Flex align="center" justify="space-between" w="100%">
           <FormLabel fontSize="sm">Quest Name</FormLabel>
-          <Text fontSize="0.8125rem">{nameLength} / 120</Text>
+          <Text fontSize="0.8125rem">{nameLength} / 90</Text>
         </Flex>
         <Input
           bg="#0F172A"
           defaultValue={nameRef.current}
-          maxLength={120}
+          maxLength={90}
           flex={1}
           onChange={e => {
             setQuestName(e.target.value);
