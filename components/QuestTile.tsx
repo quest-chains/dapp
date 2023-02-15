@@ -197,21 +197,23 @@ export const QuestTile: React.FC<{
                 )}
 
                 {/* Only show for version lesser than 2 */}
-                {Number(questChain?.version) < 2 && !pauseDisabled && questId && (
-                  <Tooltip label={paused ? 'Enable Quest' : 'Disable Quest'}>
-                    <IconButton
-                      aria-label=""
-                      bg={!paused ? 'transparent' : 'whiteAlpha.200'}
-                      isLoading={isToggling}
-                      onClick={() =>
-                        onTogglePause
-                          ? onTogglePause(questId, !paused)
-                          : toggleQuestPaused(!paused)
-                      }
-                      icon={<PowerIcon />}
-                    />
-                  </Tooltip>
-                )}
+                {Number(questChain?.version) < 2 &&
+                  !pauseDisabled &&
+                  questId && (
+                    <Tooltip label={paused ? 'Enable Quest' : 'Disable Quest'}>
+                      <IconButton
+                        aria-label=""
+                        bg={!paused ? 'transparent' : 'whiteAlpha.200'}
+                        isLoading={isToggling}
+                        onClick={() =>
+                          onTogglePause
+                            ? onTogglePause(questId, !paused)
+                            : toggleQuestPaused(!paused)
+                        }
+                        icon={<PowerIcon />}
+                      />
+                    </Tooltip>
+                  )}
                 {onRemoveQuest && (
                   <Tooltip label="Delete Quest">
                     <IconButton
