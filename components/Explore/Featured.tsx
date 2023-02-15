@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { Flex, IconButton, Text } from '@chakra-ui/react';
+import { Flex, Heading, IconButton, Text } from '@chakra-ui/react';
 
 import { CHAIN_URL_MAPPINGS } from '@/web3';
 
@@ -9,7 +9,9 @@ export const Featured: React.FC = () => {
   return (
     <Flex w="full" direction="column">
       <Flex justifyContent="space-between">
-        <Text>Featured</Text>
+        <Heading fontSize={28} fontWeight="normal">
+          Featured quest chains
+        </Heading>
         <Flex>
           <IconButton
             aria-label="Left"
