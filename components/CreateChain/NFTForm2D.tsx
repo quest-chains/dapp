@@ -156,7 +156,7 @@ const NFTForm2D: React.FC<{
           <FormControl isRequired>
             <Flex align="center" justify="space-between" w="100%">
               <FormLabel htmlFor="description">Description</FormLabel>
-              <Text fontSize="sm">{description.length} / 36</Text>
+              <Text fontSize="sm">{description.length} / 120</Text>
             </Flex>
             <Textarea
               value={description}
