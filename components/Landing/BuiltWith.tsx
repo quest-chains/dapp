@@ -147,7 +147,6 @@ export const BuiltWith: React.FC = () => {
           </Flex>
         </Grid>
       </Flex>
-      {/* @ts-expect-error */}
       <Link to="quest-chains" spy={true} smooth={true} duration={800}>
         <Image
           src="/Landing/Up.svg"

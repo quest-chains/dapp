@@ -5,7 +5,7 @@ import { authHandler } from '@/lib/authHandler';
 import clientPromise from '@/lib/mongodb/client';
 import { MongoUser } from '@/lib/mongodb/types';
 
-const USERNAME_REGEX = /^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/;
+const USERNAME_REGEX = /^[A-Za-z0-9]+(?:[_\-\.][A-Za-z0-9]+)*$/;
 const URI_REGEX = /^(ipfs|http|https):\/\/[^ "]+$/;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +25,7 @@ export const updateProfile = authHandler(
       typeof username !== 'string' ||
       !username ||
       username.length < 3 ||
+      username.length > 30 ||
       !USERNAME_REGEX.test(username)
     )
       return res.status(400).json({ error: 'invalid username string' });

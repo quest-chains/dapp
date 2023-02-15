@@ -12,14 +12,15 @@ import {
 import { SubmitButton } from './SubmitButton';
 
 interface DialogProps {
-  title: string;
-  isDisabled?: boolean;
-  isLoading?: boolean;
-  content: string;
   isOpen: boolean;
   onClose: () => void;
+  title: string;
+  content: string;
   onSubmit: () => void;
+  cancelLabel?: string;
   submitLabel?: string;
+  isDisabled?: boolean;
+  isLoading?: boolean;
 }
 
 export const ConfirmationModal: React.FC<DialogProps> = ({
@@ -30,13 +31,14 @@ export const ConfirmationModal: React.FC<DialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  cancelLabel = 'Cancel',
   submitLabel = 'Confirm',
 }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="30rem">
           <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{content}</ModalBody>
@@ -47,7 +49,7 @@ export const ConfirmationModal: React.FC<DialogProps> = ({
               onClick={onClose}
               borderRadius="full"
             >
-              Cancel
+              {cancelLabel}
             </Button>
             <SubmitButton
               mt={4}

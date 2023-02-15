@@ -133,10 +133,8 @@ export const UploadImageForm = ({
           >{`Drag 'n' drop an image here`}</Flex>
         </Flex>
       )}
-      {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
-      {!errorMessage && helperText && (
-        <FormHelperText>{helperText}</FormHelperText>
-      )}
+      <FormErrorMessage>{errorMessage}</FormErrorMessage>
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };
