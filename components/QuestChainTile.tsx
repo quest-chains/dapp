@@ -1,6 +1,5 @@
 import { WarningIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Flex,
   Link as ChakraLink,
   Progress,
@@ -29,6 +28,7 @@ type QuestChainTileProps = {
   quests: number;
   onClick?: () => void;
   paused?: boolean;
+  featured?: boolean;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -42,6 +42,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   imageUrl,
   onClick = () => undefined,
   paused = false,
+  featured = false,
 }) => (
   <NextLink
     as={`/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug || address}`}
@@ -65,8 +66,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           cursor="pointer"
           align="stretch"
           w="full"
-          py={'28px'}
-          px={'24px'}
+          p={featured ? '28px 36px' : '24px 28px;'}
           transition="all 0.25s"
           _hover={{
             // On hover the background image is not show. Show imo does not look great.
