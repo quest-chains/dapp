@@ -69,6 +69,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           px={'24px'}
           transition="all 0.25s"
           _hover={{
+            // On hover the background image is not show. Show imo does not look great.
             background:
               'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%), #4A0662;',
             borderColor: 'main',
@@ -83,6 +84,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           borderRadius={8}
           pos="relative"
           justifyContent={'end'}
+          // TODO Not looking exactly like figma
           background={
             imageUrl
               ? `linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%), url(${ipfsUriToHttp(
