@@ -66,7 +66,8 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           gap={4}
           templateColumns={{
             base: 'repeat(1, 1fr)',
-            md: 'repeat(4, minmax(0, 1fr))',
+            md: 'repeat(3, minmax(0, 1fr))',
+            lg: 'repeat(4, minmax(0, 1fr))',
           }}
         >
           {!fetching &&
