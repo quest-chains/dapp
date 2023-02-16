@@ -65,22 +65,31 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           cursor="pointer"
           align="stretch"
           w="full"
-          py={6}
-          px={8}
+          py={'28px'}
+          px={'24px'}
           transition="all 0.25s"
           _hover={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            background:
+              'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%), #4A0662;',
             borderColor: 'main',
+            boxShadow: '0px 0px 20px rgba(45, 248, 199, 0.32);',
           }}
           fontWeight="400"
-          backdropFilter="blur(40px)"
-          boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-          border="1px solid white"
+          border="2px solid"
+          // TODO not the exact color as in figma
+          borderColor={'whiteAlpha.500'}
           spacing={4}
           flex={1}
           borderRadius={8}
           pos="relative"
           justifyContent={'end'}
+          background={
+            imageUrl
+              ? `linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%), url(${ipfsUriToHttp(
+                  imageUrl,
+                )})`
+              : 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#111111'
+          }
         >
           <Flex justifyContent="space-between">
             <Text
@@ -146,21 +155,6 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
               textProps={{ color: 'purple.100' }}
             />
           </Flex>
-          {imageUrl && (
-            <Box
-              pos="absolute"
-              w="100%"
-              h="100%"
-              top="0"
-              left="0"
-              zIndex="-1"
-              backgroundSize="cover"
-              backgroundPosition="center"
-              backgroundImage={ipfsUriToHttp(imageUrl)}
-              opacity="0.1"
-              m="0 !important"
-            />
-          )}
         </VStack>
       </Flex>
     </ChakraLink>
