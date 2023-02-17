@@ -49,7 +49,7 @@ export const useENS = (
 export const fetchAddressFromENS = async (
   name: string | null | undefined,
 ): Promise<string | null> => {
-  if (!name || !name.endsWith('.eth')) return null;
+  if (!name) return null;
   const ethProvider = getEthersProvider('0x1');
   if (!ethProvider) return null;
 
