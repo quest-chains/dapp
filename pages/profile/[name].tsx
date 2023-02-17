@@ -158,12 +158,11 @@ export const getStaticProps = async (
 ) => {
   const name = context.params?.name ?? '';
 
-  const isENS = name.endsWith('.eth');
-
   const [address, ens] = await Promise.all([
     fetchAddressFromENS(name),
     fetchENSFromAddress(name),
   ]);
+  const isENS = utils.isAddress(name) ? false : address ? true : false;
 
   const { user: profile } = await fetchProfileFromName(
     isENS && address ? address : name,
