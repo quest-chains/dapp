@@ -162,9 +162,7 @@ export const getStaticProps = async (
     fetchAddressFromENS(name),
     fetchENSFromAddress(name),
   ]);
-  const isENS =
-    name.endsWith('.eth') ||
-    (utils.isAddress(name) ? false : address ? true : false);
+  const isENS = utils.isAddress(name) ? false : address ? true : false;
 
   const { user: profile } = await fetchProfileFromName(
     isENS && address ? address : name,

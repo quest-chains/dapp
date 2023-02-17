@@ -99,7 +99,7 @@ export const fetchAvatarFromAddressOrENS = async (
   let ens: string | null = null;
   if (utils.isAddress(name)) {
     ens = await ethProvider.lookupAddress(name);
-  } else if (name.endsWith('.eth')) {
+  } else {
     ens = name;
   }
 
