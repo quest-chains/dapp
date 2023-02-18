@@ -24,7 +24,7 @@ import { QuestChainTile } from '../QuestChainTile';
 
 const QuestChainWithProgress: React.FC<{ userStatus: graphql.UserStatus }> = ({
   userStatus: {
-    chain: { chainId, address, name, description, imageUrl, slug },
+    chain: { chainId, address, name, description, imageUrl, slug, createdBy },
     completed,
     total,
   },
@@ -39,6 +39,7 @@ const QuestChainWithProgress: React.FC<{ userStatus: graphql.UserStatus }> = ({
       quests: total,
       completed,
       imageUrl,
+      createdBy: createdBy.id,
     }}
     key={address}
   />

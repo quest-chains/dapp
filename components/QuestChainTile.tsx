@@ -17,10 +17,12 @@ import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO } from '@/web3';
 
 import { NetworkDisplay } from './NetworkDisplay';
+import { UserDisplay } from './UserDisplay';
 
 type QuestChainTileProps = {
   address: string;
   chainId: string;
+  createdBy: string;
   name?: string | undefined | null;
   description?: string | undefined | null;
   slug?: string | undefined | null;
@@ -34,6 +36,7 @@ type QuestChainTileProps = {
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   address,
   name,
+  createdBy,
   description,
   slug,
   chainId,
@@ -93,69 +96,83 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
               : 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#111111'
           }
         >
-          <Flex justifyContent="space-between">
-            <Text
-              fontSize="xl"
-              fontFamily={'Museo Moderno'}
-              fontWeight="700"
-              lineHeight="24px"
-              display="-webkit-box"
-              textOverflow="ellipsis"
-              overflow="hidden"
-              maxW="calc(100%)"
-              sx={{
-                lineClamp: 2,
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
-              {name}
-            </Text>
-            {paused && (
-              <Tag variant="subtle" colorScheme="orange" borderRadius="full">
-                <TagLeftIcon as={WarningIcon} boxSize="1.25rem" />
-                <TagLabel color="white">Disabled</TagLabel>
-              </Tag>
-            )}
-          </Flex>
-          {completed && (
-            <Flex justify="space-between" align="center">
-              <Progress
-                value={
-                  completed >= quests
-                    ? 100
-                    : Number(((completed / quests) * 100).toFixed(2))
-                }
-                size="xs"
-                w="80%"
-              />
-              <Text whiteSpace="nowrap">
-                {((completed / quests) * 100).toFixed(0)} %
-              </Text>
-            </Flex>
-          )}
-          <Text
-            display="-webkit-box"
-            lineHeight={'20px'}
-            color="whiteAlpha.700"
-            textOverflow="ellipsis"
-            overflow="hidden"
-            maxW="calc(100%)"
-            sx={{
-              lineClamp: 2,
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-            }}
+          <Flex
+            justifyContent={'space-between'}
+            flexDirection={'column'}
+            flex={'1'}
           >
-            {removeMd(description ?? '')}
-          </Text>
-          <Flex justifyContent="space-between">
-            {/* TODO in Figma the color is #BFA4C7 which is not exactly purple 100 */}
-            <Text color="purple.100">{quests} quests</Text>
-            <NetworkDisplay
-              chainId={chainId}
-              textProps={{ color: 'purple.100' }}
-            />
+            <UserDisplay address={createdBy} size="sm" />
+
+            <Box>
+              <Flex justifyContent="space-between">
+                <Text
+                  fontSize="xl"
+                  fontFamily={'Museo Moderno'}
+                  fontWeight="700"
+                  lineHeight="24px"
+                  display="-webkit-box"
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  maxW="calc(100%)"
+                  sx={{
+                    lineClamp: 2,
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
+                  {name}
+                </Text>
+                {paused && (
+                  <Tag
+                    variant="subtle"
+                    colorScheme="orange"
+                    borderRadius="full"
+                  >
+                    <TagLeftIcon as={WarningIcon} boxSize="1.25rem" />
+                    <TagLabel color="white">Disabled</TagLabel>
+                  </Tag>
+                )}
+              </Flex>
+              {completed && (
+                <Flex justify="space-between" align="center">
+                  <Progress
+                    value={
+                      completed >= quests
+                        ? 100
+                        : Number(((completed / quests) * 100).toFixed(2))
+                    }
+                    size="xs"
+                    w="80%"
+                  />
+                  <Text whiteSpace="nowrap">
+                    {((completed / quests) * 100).toFixed(0)} %
+                  </Text>
+                </Flex>
+              )}
+              <Text
+                display="-webkit-box"
+                lineHeight={'20px'}
+                color="whiteAlpha.700"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                maxW="calc(100%)"
+                sx={{
+                  lineClamp: 2,
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                }}
+              >
+                {removeMd(description ?? '')}
+              </Text>
+              <Flex justifyContent="space-between">
+                {/* TODO in Figma the color is #BFA4C7 which is not exactly purple 100 */}
+                <Text color="purple.100">{quests} quests</Text>
+                <NetworkDisplay
+                  chainId={chainId}
+                  textProps={{ color: 'purple.100' }}
+                />
+              </Flex>
+            </Box>
           </Flex>
         </VStack>
       </Flex>

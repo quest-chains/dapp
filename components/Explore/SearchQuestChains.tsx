@@ -82,6 +82,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 chainId,
                 quests,
                 imageUrl,
+                createdBy,
               }) => (
                 <QuestChainTile
                   {...{
@@ -90,6 +91,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                     description,
                     slug,
                     chainId,
+                    createdBy: createdBy.id,
                     quests: quests.filter(q => !q.paused).length,
                     imageUrl,
                     onClick: onClose,
