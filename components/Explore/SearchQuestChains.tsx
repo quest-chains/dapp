@@ -1,6 +1,7 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import {
   Grid,
+  HStack,
   Input,
   InputGroup,
   InputLeftElement,
@@ -15,10 +16,17 @@ import { useDelay } from '@/hooks/useDelay';
 import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
 import { LoadingState } from '../LoadingState';
+import Filters from './Filters';
+import Sort from './Sort';
 
 const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [value, setValue] = useState('');
   const delayedSetValue = useDelay(setValue);
+  const [category, setCategory] = useState('');
+  const [chain, setChain] = useState('');
+  const [nftType, setNftType] = useState('');
+  const [verified, setVerified] = useState('');
+  const [sortBy, setSortBy] = useState('');
 
   const { fetching, results, error } = useQuestChainSearchForAllChains(
     value.toLowerCase(),
@@ -50,15 +58,20 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         />
       </InputGroup> */}
 
-      {!fetching && (
-        <Text fontSize={20} textTransform="uppercase" color="white">
-          {error
-            ? 'Error: Something went wrong!'
-            : `${results.length} quest chain${
-                results.length === 1 ? '' : 's'
-              } found`}
-        </Text>
-      )}
+      <HStack w="full" justifyContent="space-between">
+        <Filters
+          category={category}
+          setCategory={setCategory}
+          chain={chain}
+          setChain={setChain}
+          nftType={nftType}
+          setNftType={setNftType}
+          verified={verified}
+          setVerified={setVerified}
+        />
+        <Sort sortBy={sortBy} setSortBy={setSortBy} />
+      </HStack>
+
       <VStack w="full" gap={4} flex={1}>
         {fetching && <LoadingState my={12} />}
 
