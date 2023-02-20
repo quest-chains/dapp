@@ -289,6 +289,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
       name: chainNameRef.current,
       description: chainDescRef.current,
       slug: questChain?.slug || '',
+      categories: questChain?.categories || [],
       image_url: removeCoverImage
         ? undefined
         : questChain.imageUrl ?? undefined,
@@ -339,11 +340,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
   }, [
     chainId,
     provider,
-    questChain.chainId,
-    questChain.imageUrl,
-    questChain.address,
-    questChain.version,
-    questChain.slug,
+    questChain,
     chainNameRef,
     chainDescRef,
     removeCoverImage,
