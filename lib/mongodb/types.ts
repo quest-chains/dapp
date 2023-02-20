@@ -12,3 +12,9 @@ export type MongoUser = WithId<{
   isAdmin: Maybe<boolean>;
   verified: Maybe<boolean>;
 }>;
+
+export type MongoCategory = WithId<{
+  value: string;
+  label: string;
+  description: Maybe<string>;
+}>;
