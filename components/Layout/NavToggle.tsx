@@ -25,7 +25,7 @@ export const NavToggle: React.FC<BoxProps & { isOpen: boolean }> = ({
         zIndex: 1500,
         pos: 'fixed',
         top: 5,
-        right: 8,
+        right: 4,
       }}
       {...props}
     >

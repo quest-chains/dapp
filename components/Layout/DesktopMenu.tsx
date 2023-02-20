@@ -38,7 +38,7 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
   }, [asPath, user, ens, address]);
 
   return (
-    <Flex zIndex={2} justify="space-between" w="full" pl={10}>
+    <Flex zIndex={2} justify="space-between" w="full">
       <Button
         color="whiteAlpha.800"
         bgColor="whiteAlpha.200"

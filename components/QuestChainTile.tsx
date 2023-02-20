@@ -68,8 +68,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           cursor="pointer"
           align="stretch"
           w="full"
-          py={'28px'}
-          px={'24px'}
+          p={6}
           transition="all 0.25s"
           _hover={{
             // On hover the background image is not show. Show imo does not look great.
@@ -103,7 +102,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
           >
             <UserDisplay address={createdBy} size="sm" />
 
-            <Box>
+            <Flex direction="column" gap={2}>
               <Flex justifyContent="space-between">
                 <Text
                   fontSize="xl"
@@ -156,6 +155,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
                 textOverflow="ellipsis"
                 overflow="hidden"
                 maxW="calc(100%)"
+                fontSize={14}
                 sx={{
                   lineClamp: 2,
                   WebkitLineClamp: 2,
@@ -172,7 +172,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
                   textProps={{ color: 'purple.100' }}
                 />
               </Flex>
-            </Box>
+            </Flex>
           </Flex>
         </VStack>
       </Flex>

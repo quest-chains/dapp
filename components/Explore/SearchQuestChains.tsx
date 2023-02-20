@@ -1,5 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import {
+  Flex,
   Grid,
   HStack,
   Input,
@@ -38,7 +39,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   }
 
   return (
-    <VStack alignItems="flex-start" gap={4} w="full">
+    <Flex alignItems="flex-start" gap={4} w="full" direction="column" mt={0}>
       {/* <InputGroup maxW="2xl" size="lg">
         <InputLeftElement pointerEvents="none">
           {fetching ? (
@@ -58,7 +59,16 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         />
       </InputGroup> */}
 
-      <HStack w="full" justifyContent="space-between">
+      <Flex
+        w="full"
+        justifyContent="space-between"
+        direction={{
+          base: 'column',
+          md: 'row',
+        }}
+        gap={4}
+        mb={4}
+      >
         <Filters
           category={category}
           setCategory={setCategory}
@@ -70,18 +80,19 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           setVerified={setVerified}
         />
         <Sort sortBy={sortBy} setSortBy={setSortBy} />
-      </HStack>
+      </Flex>
 
       <VStack w="full" gap={4} flex={1}>
         {fetching && <LoadingState my={12} />}
 
         <Grid
-          gap={4}
+          gap={5}
           templateColumns={{
-            base: 'repeat(1, 1fr)',
+            base: 'repeat(1, 100%)',
             md: 'repeat(3, minmax(0, 1fr))',
             lg: 'repeat(4, minmax(0, 1fr))',
           }}
+          maxW="full"
         >
           {!fetching &&
             !error &&
@@ -115,7 +126,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             )}
         </Grid>
       </VStack>
-    </VStack>
+    </Flex>
   );
 };
 
