@@ -1,3 +1,5 @@
+'use client';
+
 import { CloseIcon } from '@chakra-ui/icons';
 import { Button, Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
@@ -9,6 +11,7 @@ import { useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { useFilteredQuestChains } from '@/hooks/useFilteredQuestChains';
+import { useIsDevelopment } from '@/hooks/useIsDevelopment';
 
 import { LoadingState } from '../LoadingState';
 import FilterDropdown from './FilterDropdown';
@@ -39,9 +42,19 @@ export enum SortBy {
   Oldest = 'Oldest',
 }
 
-export type Filter = Record<Category | Network, boolean>;
+export enum NetworkDevelopment {
+  Mumbai = 'Mumbai',
+  Polygon = 'Polygon',
+  Goerli = 'Goerli',
+  Gnosis = 'Gnosis',
+}
+
+// set a variable that defines whether this is developement or production
+
+export type Filter = Record<Category | Network | NetworkDevelopment, boolean>;
 
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+  const isDevelopment = useIsDevelopment();
   const [sortBy, setSortBy] = useState<Record<SortBy, boolean>>({
     // [SortBy.Popularity]: false,
     [SortBy.Newest]: true,
@@ -65,6 +78,15 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     [Network.Optimism]: false,
     [Network.Arbitrum]: false,
     [Network.Gnosis]: false,
+  });
+
+  const [networkDevelopment, setNetworkDevelopment] = useState<
+    Record<NetworkDevelopment, boolean>
+  >({
+    [NetworkDevelopment.Mumbai]: false,
+    [NetworkDevelopment.Polygon]: false,
+    [NetworkDevelopment.Goerli]: false,
+    [NetworkDevelopment.Gnosis]: false,
   });
 
   const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
@@ -93,8 +115,10 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   const { fetching, results, error } = useFilteredQuestChains(
     filters,
-    // second parameter should be networks that are true
-    networks,
+    (isDevelopment ? networkDevelopment : networks) as Record<
+      Network | NetworkDevelopment,
+      boolean
+    >,
   );
 
   if (error) {
@@ -120,8 +144,12 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             label="Categories"
           />
           <FilterDropdown
-            filter={networks as Filter}
-            setFilters={setNetworks}
+            filter={
+              isDevelopment
+                ? (networkDevelopment as Filter)
+                : (networks as Filter)
+            }
+            setFilters={isDevelopment ? setNetworkDevelopment : setNetworks}
             label="Networks"
           />
         </HStack>
@@ -139,15 +167,23 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               onClick={() => setCategories({ ...categories, [key]: false })}
             />
           ))}
-        {Object.entries(networks)
+        {Object.entries(isDevelopment ? networkDevelopment : networks)
           .filter(([_, value]) => value)
           .map(([key]) => (
             <FilterButton
               key={key}
               label={key}
-              onClick={() => setNetworks({ ...networks, [key]: false })}
+              onClick={() =>
+                isDevelopment
+                  ? setNetworkDevelopment({
+                      ...networkDevelopment,
+                      [key]: false,
+                    })
+                  : setNetworks({ ...networks, [key]: false })
+              }
             />
           ))}
+        {/* <Text>{Object.keys(lol)}</Text> */}
         {/* if there is more than 1 filter active, display a button to clear all filters */}
         {[...Object.values(categories), ...Object.values(networks)].filter(
           v => v,
@@ -167,12 +203,22 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 [Category.Others]: false,
                 [Category.Ecosystem]: false,
               });
-              setNetworks({
-                [Network.Polygon]: false,
-                [Network.Optimism]: false,
-                [Network.Arbitrum]: false,
-                [Network.Gnosis]: false,
-              });
+              if (!isDevelopment) {
+                setNetworks({
+                  [Network.Polygon]: false,
+                  [Network.Optimism]: false,
+                  [Network.Arbitrum]: false,
+                  [Network.Gnosis]: false,
+                });
+              }
+              if (isDevelopment) {
+                setNetworkDevelopment({
+                  [NetworkDevelopment.Mumbai]: false,
+                  [NetworkDevelopment.Polygon]: false,
+                  [NetworkDevelopment.Goerli]: false,
+                  [NetworkDevelopment.Gnosis]: false,
+                });
+              }
             }}
           />
         )}

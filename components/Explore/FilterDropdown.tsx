@@ -11,11 +11,13 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-import { Category, Filter, Network } from './QuestChains';
+import { Category, Filter, Network, NetworkDevelopment } from './QuestChains';
 
 const FilterDropdown: React.FC<{
   filter: Filter;
-  setFilters: (value: Record<Category | Network, boolean>) => void;
+  setFilters: (
+    value: Record<Category | Network | NetworkDevelopment, boolean>,
+  ) => void;
   label: string;
 }> = ({ filter, setFilters, label }) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
@@ -49,14 +51,20 @@ const FilterDropdown: React.FC<{
                 <Flex justifyContent="space-between" key={index}>
                   <Text fontSize="sm">{category}</Text>
                   <Checkbox
-                    isChecked={filter[category as Category | Network]}
+                    isChecked={
+                      filter[
+                        category as Category | Network | NetworkDevelopment
+                      ]
+                    }
                     iconColor="white"
                     bgColor="transparent"
                     onChange={() =>
                       setFilters({
                         ...filter,
-                        [category as Category | Network]:
-                          !filter[category as Category | Network],
+                        [category as Category | Network | NetworkDevelopment]:
+                          !filter[
+                            category as Category | Network | NetworkDevelopment
+                          ],
                       })
                     }
                   />

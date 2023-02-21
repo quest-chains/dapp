@@ -1,13 +1,13 @@
 import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { Network } from '@/components/Explore/QuestChains';
+import { Network, NetworkDevelopment } from '@/components/Explore/QuestChains';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
 export const useFilteredQuestChains = (
   filters: graphql.QuestChainFiltersInfo,
-  networks: Record<Network, boolean>,
+  networks: Record<Network | NetworkDevelopment, boolean>,
 ): {
   error: unknown;
   fetching: boolean;
