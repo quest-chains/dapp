@@ -9,6 +9,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
+import {
+  OrderDirection,
+  QuestChain_OrderBy,
+} from '@quest-chains/sdk/dist/graphql';
 import { useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
@@ -23,9 +27,10 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
     const f: graphql.QuestChainFiltersInfo = {};
-    if (value) {
-      f.search = value.toLowerCase();
-    }
+    f.search = value.toLowerCase();
+
+    f.orderBy = QuestChain_OrderBy.UpdatedAt;
+    f.orderDirection = OrderDirection.Desc;
 
     f.onlyEnabled = true;
 

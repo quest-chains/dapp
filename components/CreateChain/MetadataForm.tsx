@@ -10,7 +10,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Select from 'react-select';
