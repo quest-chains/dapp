@@ -24,6 +24,7 @@ const Form = {
 
 export const theme = extendTheme({
   breakpoints: {
+    '4xl': '128em',
     '3xl': '108em',
     '2xl': '96em',
     base: '0em',

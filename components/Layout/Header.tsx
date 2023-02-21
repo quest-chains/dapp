@@ -15,7 +15,7 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
       <Flex
         justify="space-between"
         w="100%"
-        maxW="125rem"
+        maxW={{ base: '100rem', '4xl': '125rem' }}
         px={{ base: 4, md: 4, lg: 12, xl: 32 }}
       >
         <NextLink href="/explore" passHref>
