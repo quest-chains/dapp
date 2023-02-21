@@ -1,9 +1,14 @@
 import { CloseIcon } from '@chakra-ui/icons';
 import { Button, Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { graphql } from '@quest-chains/sdk';
+import {
+  OrderDirection,
+  QuestChain_OrderBy,
+} from '@quest-chains/sdk/dist/graphql';
+import { useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
-import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
+import { useFilteredQuestChains } from '@/hooks/useFilteredQuestChains';
 
 import { LoadingState } from '../LoadingState';
 import FilterDropdown from './FilterDropdown';
@@ -29,7 +34,7 @@ export enum Network {
 }
 
 export enum SortBy {
-  Popularity = 'Popularity',
+  // Popularity = 'Popularity',
   Newest = 'Newest',
   Oldest = 'Oldest',
 }
@@ -38,7 +43,7 @@ export type Filter = Record<Category | Network, boolean>;
 
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [sortBy, setSortBy] = useState<Record<SortBy, boolean>>({
-    [SortBy.Popularity]: false,
+    // [SortBy.Popularity]: false,
     [SortBy.Newest]: true,
     [SortBy.Oldest]: false,
   });
@@ -62,7 +67,35 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     [Network.Gnosis]: false,
   });
 
-  const { fetching, results, error } = useQuestChainSearchForAllChains('');
+  const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
+    const f: graphql.QuestChainFiltersInfo = {};
+    if (categories) {
+      // assign all the categories that are true to the filter
+      f.categories = Object.keys(categories).filter(
+        key => categories[key as Category],
+      );
+    }
+
+    if (sortBy) {
+      if (sortBy[SortBy.Newest]) {
+        f.orderBy = QuestChain_OrderBy.UpdatedAt;
+        f.orderDirection = OrderDirection.Desc;
+      } else if (sortBy[SortBy.Oldest]) {
+        f.orderBy = QuestChain_OrderBy.UpdatedAt;
+        f.orderDirection = OrderDirection.Asc;
+      }
+    }
+
+    f.onlyEnabled = true;
+
+    return f;
+  }, [categories, sortBy]);
+
+  const { fetching, results, error } = useFilteredQuestChains(
+    filters,
+    // second parameter should be networks that are true
+    networks,
+  );
 
   if (error) {
     // eslint-disable-next-line no-console

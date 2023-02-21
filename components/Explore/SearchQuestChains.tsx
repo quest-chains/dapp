@@ -8,7 +8,8 @@ import {
   Spinner,
   VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { graphql } from '@quest-chains/sdk';
+import { useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { useDelay } from '@/hooks/useDelay';
@@ -20,9 +21,18 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const [value, setValue] = useState('');
   const delayedSetValue = useDelay(setValue);
 
-  const { fetching, results, error } = useQuestChainSearchForAllChains(
-    value.toLowerCase(),
-  );
+  const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
+    const f: graphql.QuestChainFiltersInfo = {};
+    if (value) {
+      f.search = value.toLowerCase();
+    }
+
+    f.onlyEnabled = true;
+
+    return f;
+  }, [value]);
+
+  const { fetching, results, error } = useQuestChainSearchForAllChains(filters);
 
   if (error) {
     // eslint-disable-next-line no-console

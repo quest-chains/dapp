@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestChainSearchForAllChains = (
-  search: string,
+  search: graphql.QuestChainFiltersInfo,
 ): {
   error: unknown;
   fetching: boolean;
@@ -21,7 +21,7 @@ export const useQuestChainSearchForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            graphql.getQuestChainsFromSearch(chainId, search),
+            graphql.getQuestChainsFromFilters(chainId, search),
           ),
         );
         if (!isMounted) return;
