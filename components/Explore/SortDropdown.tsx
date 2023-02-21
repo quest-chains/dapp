@@ -22,7 +22,7 @@ const SortDropdown: React.FC<{
 
   return (
     <Popover
-      placement="bottom-start"
+      placement="bottom-end"
       isOpen={isOpen}
       onOpen={onOpen}
       onClose={onClose}
