@@ -8,7 +8,9 @@ export const useIsDevelopment = (): boolean => {
 
   useEffect(() => {
     if (hasWindow) {
-      const isDevelopment = process.env.NODE_ENV === 'development';
+      const isDevelopment =
+        process.env.NODE_ENV === 'development' ||
+        process.env.NODE_ENV === 'test';
       setIsDevelopment(isDevelopment);
     }
   }, [hasWindow]);
