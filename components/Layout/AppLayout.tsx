@@ -86,6 +86,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           pt="6rem"
           pb={8}
           px={{ base: 4, md: 4, lg: 12, xl: 32 }}
+          maxW="125rem"
         >
           {children}
         </Flex>
