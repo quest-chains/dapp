@@ -1,4 +1,5 @@
-import { Flex, Grid, HStack, VStack } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
+import { Button, Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
@@ -9,7 +10,6 @@ import FilterDropdown from './FilterDropdown';
 import SortDropdown from './SortDropdown';
 
 export enum Category {
-  All = 'All',
   NFT = 'NFT',
   GameFi = 'GameFi',
   DeFi = 'DeFi',
@@ -22,7 +22,6 @@ export enum Category {
 }
 
 export enum Network {
-  All = 'All',
   Polygon = 'Polygon',
   Optimism = 'Optimism',
   Arbitrum = 'Arbitrum',
@@ -45,7 +44,6 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   });
 
   const [categories, setCategories] = useState<Record<Category, boolean>>({
-    [Category.All]: false,
     [Category.NFT]: false,
     [Category.GameFi]: false,
     [Category.DeFi]: false,
@@ -58,7 +56,6 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   });
 
   const [networks, setNetworks] = useState<Record<Network, boolean>>({
-    [Network.All]: false,
     [Network.Polygon]: false,
     [Network.Optimism]: false,
     [Network.Arbitrum]: false,
@@ -82,7 +79,6 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           md: 'row',
         }}
         gap={4}
-        mb={4}
       >
         <HStack>
           <FilterDropdown
@@ -99,6 +95,54 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         <SortDropdown sortBy={sortBy} setSortBy={setSortBy} label="Sort by" />
         {/* <Sort sortBy={sortBy} setSortBy={setSortBy} /> */}
       </Flex>
+
+      <HStack mb={4}>
+        {Object.entries(categories)
+          .filter(([_, value]) => value)
+          .map(([key]) => (
+            <FilterButton
+              key={key}
+              label={key}
+              onClick={() => setCategories({ ...categories, [key]: false })}
+            />
+          ))}
+        {Object.entries(networks)
+          .filter(([_, value]) => value)
+          .map(([key]) => (
+            <FilterButton
+              key={key}
+              label={key}
+              onClick={() => setNetworks({ ...networks, [key]: false })}
+            />
+          ))}
+        {/* if there is more than 1 filter active, display a button to clear all filters */}
+        {[...Object.values(categories), Object.values(networks)].filter(v => v)
+          .length > 1 && (
+          <FilterButton
+            label="Clear all filters"
+            bgColor="transparent"
+            onClick={() => {
+              setCategories({
+                [Category.NFT]: false,
+                [Category.GameFi]: false,
+                [Category.DeFi]: false,
+                [Category.DAO]: false,
+                [Category.SocialFi]: false,
+                [Category.Metaverse]: false,
+                [Category.Tools]: false,
+                [Category.Others]: false,
+                [Category.Ecosystem]: false,
+              });
+              setNetworks({
+                [Network.Polygon]: false,
+                [Network.Optimism]: false,
+                [Network.Arbitrum]: false,
+                [Network.Gnosis]: false,
+              });
+            }}
+          />
+        )}
+      </HStack>
 
       <VStack w="full" gap={4} flex={1}>
         {fetching && <LoadingState my={12} />}
@@ -147,5 +191,25 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     </Flex>
   );
 };
+
+const FilterButton: React.FC<{
+  label: string;
+  onClick: () => void;
+  bgColor?: string;
+}> = ({ label, onClick, bgColor = '#0F2E27' }) => (
+  <Button
+    bgColor={bgColor}
+    borderRadius="full"
+    px={6}
+    borderColor="green.900"
+    borderWidth={1}
+    gap={2}
+    alignItems="center"
+    onClick={onClick}
+  >
+    <CloseIcon boxSize={2} w={3} />
+    <Text fontSize="sm">{label}</Text>
+  </Button>
+);
 
 export default QuestChains;
