@@ -1,4 +1,4 @@
-import { Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
+import { Flex, Grid, HStack, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
@@ -6,7 +6,7 @@ import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForA
 
 import { LoadingState } from '../LoadingState';
 import FilterDropdown from './FilterDropdown';
-import Sort from './Sort';
+import SortDropdown from './SortDropdown';
 
 export enum Category {
   All = 'All',
@@ -28,10 +28,21 @@ export enum Network {
   Arbitrum = 'Arbitrum',
   Gnosis = 'Gnosis',
 }
+
+export enum SortBy {
+  Popularity = 'Popularity',
+  Newest = 'Newest',
+  Oldest = 'Oldest',
+}
+
 export type Filter = Record<Category | Network, boolean>;
 
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState<Record<SortBy, boolean>>({
+    [SortBy.Popularity]: false,
+    [SortBy.Newest]: true,
+    [SortBy.Oldest]: false,
+  });
 
   const [categories, setCategories] = useState<Record<Category, boolean>>({
     [Category.All]: false,
@@ -85,7 +96,8 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             label="Networks"
           />
         </HStack>
-        <Sort sortBy={sortBy} setSortBy={setSortBy} />
+        <SortDropdown sortBy={sortBy} setSortBy={setSortBy} label="Sort by" />
+        {/* <Sort sortBy={sortBy} setSortBy={setSortBy} /> */}
       </Flex>
 
       <VStack w="full" gap={4} flex={1}>
