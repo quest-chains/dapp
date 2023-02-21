@@ -662,7 +662,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   bg="transparent"
                   height={10}
                   border="1px solid #9EFCE5"
-                  color="#9EFCE5"
+                  color="green.200"
                   onClick={() => {
                     setEditingQuestChain(false);
                     onResetImage();

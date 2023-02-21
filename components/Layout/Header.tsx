@@ -8,10 +8,10 @@ export const Header: React.FC<{ children: JSX.Element }> = ({ children }) => {
       justify="space-between"
       h={20}
       zIndex={1000}
-      background="linear-gradient(rgba(255, 255, 255, 0.1), transparent)"
       backdropFilter="blur(8px)"
       pos="fixed"
       px={{ base: 4, md: 4, lg: 12, xl: 32 }}
+      background="linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 100%)"
     >
       <NextLink href="/explore" passHref>
         <ChakraLink display="block" _hover={{}} w={16}>

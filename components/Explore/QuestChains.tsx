@@ -1,28 +1,21 @@
-import { SearchIcon } from '@chakra-ui/icons';
-import {
-  Flex,
-  Grid,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Spinner,
-  VStack,
-} from '@chakra-ui/react';
+import { Flex, Grid, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
-import { useDelay } from '@/hooks/useDelay';
 import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
 import { LoadingState } from '../LoadingState';
+import Filters from './Filters';
+import Sort from './Sort';
 
-const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  const [value, setValue] = useState('');
-  const delayedSetValue = useDelay(setValue);
+const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+  const [category, setCategory] = useState('');
+  const [chain, setChain] = useState('');
+  const [nftType, setNftType] = useState('');
+  const [verified, setVerified] = useState('');
+  const [sortBy, setSortBy] = useState('');
 
-  const { fetching, results, error } = useQuestChainSearchForAllChains(
-    value.toLowerCase(),
-  );
+  const { fetching, results, error } = useQuestChainSearchForAllChains('');
 
   if (error) {
     // eslint-disable-next-line no-console
@@ -31,43 +24,40 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   return (
     <Flex alignItems="flex-start" gap={4} w="full" direction="column" mt={0}>
-      <InputGroup
-        maxW="2xl"
-        size="lg"
-        position="fixed"
-        zIndex={1}
-        w="calc(100% - 30px)"
+      <Flex
+        w="full"
+        justifyContent="space-between"
+        direction={{
+          base: 'column',
+          md: 'row',
+        }}
+        gap={4}
+        mb={4}
       >
-        <InputLeftElement pointerEvents="none">
-          {fetching ? (
-            <Spinner size="sm" color="white" />
-          ) : (
-            <SearchIcon color="white" />
-          )}
-        </InputLeftElement>
-        <Input
-          backdropFilter="blur(40px)"
-          color="white"
-          border="none"
-          boxShadow="inset 0px 0px 0px 1px gray"
-          placeholder="Search chains by name or description"
-          onChange={e => delayedSetValue(e.target.value)}
-          mb={6}
-          width="calc(100% - 20px)"
+        <Filters
+          category={category}
+          setCategory={setCategory}
+          chain={chain}
+          setChain={setChain}
+          nftType={nftType}
+          setNftType={setNftType}
+          verified={verified}
+          setVerified={setVerified}
         />
-      </InputGroup>
+        <Sort sortBy={sortBy} setSortBy={setSortBy} />
+      </Flex>
 
-      <VStack w="full" gap={4} flex={1} position="relative" top={20}>
+      <VStack w="full" gap={4} flex={1}>
         {fetching && <LoadingState my={12} />}
 
         <Grid
           gap={5}
           templateColumns={{
             base: 'repeat(1, 100%)',
-            md: 'repeat(2,  minmax(0, 1fr))',
+            md: 'repeat(3, minmax(0, 1fr))',
+            lg: 'repeat(4, minmax(0, 1fr))',
           }}
           maxW="full"
-          pr={3}
         >
           {!fetching &&
             !error &&
@@ -105,4 +95,4 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   );
 };
 
-export default SearchQuestChains;
+export default QuestChains;

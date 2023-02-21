@@ -7,7 +7,6 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 
 import { ConnectWallet } from '@/components/Layout/ConnectWallet';
@@ -18,7 +17,6 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
   onSearchOpen,
 }) => {
   const { address, isConnected, user, ens } = useWallet();
-  const { asPath } = useRouter();
 
   const isSmallerScreen = useBreakpointValue({ base: true, xl: false });
 
@@ -27,42 +25,32 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
     [user, ens, address],
   );
 
-  const isProfilePath = useMemo(() => {
-    if (!asPath.startsWith('/profile/')) return false;
-    const param = asPath.slice('/profile/'.length);
-    return (
-      param === user?.username ||
-      param === ens ||
-      param.toLowerCase() === address
-    );
-  }, [asPath, user, ens, address]);
-
   return (
     <Flex zIndex={2} justify="space-between" w="full">
       <Button
         color="whiteAlpha.800"
         bgColor="whiteAlpha.200"
         border="none"
-        borderRadius="full"
+        borderRadius={4}
         fontWeight="light"
         onClick={onSearchOpen}
         minW="7.5rem"
         justifyContent="flex-start"
-        px={6}
+        px={8}
+        ml={16}
       >
         <SearchIcon color="white" mr={3} />
-        <Text fontSize="sm" color="whiteAlpha.800">
-          {isSmallerScreen ? 'Search' : 'Search chains by name or description'}
+        <Text fontSize="sm" color="whiteAlpha.600" fontWeight="bold">
+          {isSmallerScreen ? 'search' : 'search chains by name or description'}
         </Text>
       </Button>
 
-      <HStack gap={2}>
+      <HStack gap={2} fontSize="sm">
         {isConnected && (
           <NextLink as={`/profile/${name}`} href="/profile/[name]" passHref>
             <Text
               px={1}
               cursor="pointer"
-              boxShadow={isProfilePath ? '0 4px 2px -2px #1f7165' : 'none'}
               _hover={{
                 boxShadow: '0 4px 2px -2px #1f7165',
               }}
@@ -78,9 +66,6 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
           <Text
             px={1}
             cursor="pointer"
-            boxShadow={
-              asPath === '/explore' ? '0 4px 2px -2px #1f7165' : 'none'
-            }
             _hover={{
               boxShadow: '0 4px 2px -2px #1f7165',
             }}
@@ -94,8 +79,8 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
         <NextLink href="/create">
           <Button
             borderWidth={1}
-            bg="none"
-            borderColor={asPath === '/create' ? 'main' : 'white'}
+            borderColor="green.200"
+            bgColor="rgba(158, 252, 229, 0.15)"
             _hover={{
               bgColor: 'whiteAlpha.100',
               borderColor: 'main',
@@ -105,7 +90,7 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             py={2}
             borderRadius="full"
           >
-            <Text fontWeight="700" color="white">
+            <Text fontWeight="700" color="green.200" fontSize="sm">
               {isSmallerScreen ? 'Create' : 'Create a chain'}
             </Text>
           </Button>

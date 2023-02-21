@@ -109,7 +109,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       >
         <ModalOverlay />
         <ModalContent maxW="44rem">
-          <ModalBody py={2} m={4}>
+          <ModalBody py={2} m={4} p={0}>
             <SearchQuestChains onClose={onSearchClose} />
           </ModalBody>
         </ModalContent>
