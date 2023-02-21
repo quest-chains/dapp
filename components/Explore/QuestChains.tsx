@@ -185,9 +185,10 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           ))}
         {/* <Text>{Object.keys(lol)}</Text> */}
         {/* if there is more than 1 filter active, display a button to clear all filters */}
-        {[...Object.values(categories), ...Object.values(networks)].filter(
-          v => v,
-        ).length > 1 && (
+        {[
+          ...Object.values(categories),
+          ...Object.values(isDevelopment ? networkDevelopment : networks),
+        ].filter(v => v).length > 1 && (
           <FilterButton
             label="Clear all filters"
             bgColor="transparent"
