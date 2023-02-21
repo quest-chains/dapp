@@ -1,7 +1,7 @@
 import { HStack, Select, Text } from '@chakra-ui/react';
 
-enum SortBy {
-  'Popularity' = 'Popularity',
+export enum SortBy {
+  // 'Popularity' = 'Popularity',
   'Newest' = 'Newest',
   'Oldest' = 'Oldest',
 }
@@ -26,7 +26,7 @@ const Sort: React.FC<{
       >
         <option value={SortBy.Newest}>Newest</option>
         <option value={SortBy.Oldest}>Oldest</option>
-        <option value={SortBy.Popularity}>Popularity</option>
+        {/*  <option value={SortBy.Popularity}>Popularity</option> */}
       </Select>
     </HStack>
   );

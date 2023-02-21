@@ -7,8 +7,6 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { CHAIN_URL_MAPPINGS } from '@/web3';
-
 import { QuestChainTile } from '../QuestChainTile';
 import Carousel from './Carousel';
 

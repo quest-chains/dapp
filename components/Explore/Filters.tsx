@@ -1,59 +1,54 @@
 import { HStack, Select, Text } from '@chakra-ui/react';
 
-import { CHAIN_URL_MAPPINGS } from '@/web3';
+import { useCategories } from '@/hooks/useCategories';
+import { SUPPORTED_NETWORK_INFO } from '@/web3';
 
-enum Category {
-  All = 'All',
-  NFT = 'NFT',
-  GameFi = 'GameFi',
-  DeFi = 'DeFi',
-  DAO = 'DAO',
-  SocialFi = 'SocialFi',
-  Metaverse = 'Metaverse',
-  Tools = 'Tools',
-  Others = 'Others',
-  Ecosystem = 'Ecosystem',
-}
+// enum NftType {
+//   'All' = 'All',
+//   '2D' = '2D',
+//   '3D' = '3D',
+//   'Custom' = 'Custom',
+// }
 
-enum NftType {
-  'All' = 'All',
-  '2D' = '2D',
-  '3D' = '3D',
-  'Custom' = 'Custom',
-}
-
-enum Verified {
-  'All' = 'All',
-  'Verified' = 'Verified',
-  'Unverified' = 'Unverified',
-}
+// enum Verified {
+//   'All' = 'All',
+//   'Verified' = 'Verified',
+//   'Unverified' = 'Unverified',
+// }
 
 const Filters: React.FC<{
-  category: string;
-  setCategory: (value: string) => void;
-  chain: string;
-  setChain: (value: string) => void;
-  nftType: string;
-  setNftType: (value: string) => void;
-  verified: string;
-  setVerified: (value: string) => void;
+  category: string | undefined;
+  setCategory: React.Dispatch<React.SetStateAction<string | undefined>>;
+  network: string | undefined;
+  setNetwork: React.Dispatch<React.SetStateAction<string | undefined>>;
+  // nftType: string;
+  // setNftType: (value: string) => void;
+  // verified: string;
+  // setVerified: (value: string) => void;
 }> = ({
-  category,
+  category = 'ALL',
   setCategory,
-  chain,
-  setChain,
-  nftType,
-  setNftType,
-  verified,
-  setVerified,
+  network = 'ALL',
+  setNetwork,
+  // nftType,
+  // setNftType,
+  // verified,
+  // setVerified,
 }) => {
+  const { categories } = useCategories();
+
   return (
     <HStack>
       <Text fontSize="sm">Filter by</Text>
       <Select
-        onChange={e => setCategory(e.target.value)}
+        onChange={e => {
+          if (e.target.value === 'ALL') {
+            setCategory(undefined);
+          } else {
+            setCategory(e.target.value);
+          }
+        }}
         value={category}
-        placeholder="Category"
         w="auto"
         fontSize={14}
         fontWeight="bold"
@@ -62,21 +57,22 @@ const Filters: React.FC<{
         borderColor="transparent"
         cursor="pointer"
       >
-        <option value={Category.All}>All</option>
-        <option value={Category.NFT}>NFT</option>
-        <option value={Category.GameFi}>GameFi</option>
-        <option value={Category.DeFi}>DeFi</option>
-        <option value={Category.DAO}>DAO</option>
-        <option value={Category.SocialFi}>SocialFi</option>
-        <option value={Category.Metaverse}>Metaverse</option>
-        <option value={Category.Tools}>Tools</option>
-        <option value={Category.Others}>Others</option>
-        <option value={Category.Ecosystem}>Ecosystem</option>
+        <option value={'ALL'}>All Categories</option>
+        {categories.map(c => (
+          <option key={c.value} value={c.value}>
+            {c.label}
+          </option>
+        ))}
       </Select>
       <Select
-        onChange={e => setChain(e.target.value)}
-        value={chain}
-        placeholder="Network"
+        onChange={e => {
+          if (e.target.value === 'ALL') {
+            setNetwork(undefined);
+          } else {
+            setNetwork(e.target.value);
+          }
+        }}
+        value={network}
         w="auto"
         fontSize={14}
         fontWeight="bold"
@@ -85,13 +81,14 @@ const Filters: React.FC<{
         borderColor="transparent"
         cursor="pointer"
       >
-        <option value="All">All</option>
-        <option value={CHAIN_URL_MAPPINGS.polygon}>Polygon</option>
-        <option value={CHAIN_URL_MAPPINGS.optimism}>Optimism</option>
-        <option value={CHAIN_URL_MAPPINGS.arbitrum}>Arbitrum</option>
-        <option value={CHAIN_URL_MAPPINGS.gnosis}>Gnosis</option>
+        <option value="ALL">All Networks</option>
+        {Object.values(SUPPORTED_NETWORK_INFO).map(c => (
+          <option key={c.chainId} value={c.chainId}>
+            {c.label}
+          </option>
+        ))}
       </Select>
-      <Select
+      {/* <Select
         onChange={e => setNftType(e.target.value)}
         value={nftType}
         placeholder="NFT Type"
@@ -123,7 +120,7 @@ const Filters: React.FC<{
         <option value={Verified.All}>All</option>
         <option value={Verified.Verified}>Verified</option>
         <option value={Verified.Unverified}>Unverified</option>
-      </Select>
+      </Select> */}
     </HStack>
   );
 };

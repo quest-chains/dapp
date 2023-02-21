@@ -1,10 +1,12 @@
 import { graphql } from '@quest-chains/sdk';
+import { isSupportedNetwork } from '@quest-chains/sdk/dist/graphql';
 import { useEffect, useState } from 'react';
 
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
-export const useQuestChainSearchForAllChains = (
-  search: string,
+export const useFilteredQuestChains = (
+  filters: graphql.QuestChainFiltersInfo,
+  network: string | undefined = undefined,
 ): {
   error: unknown;
   fetching: boolean;
@@ -19,21 +21,24 @@ export const useQuestChainSearchForAllChains = (
     (async () => {
       try {
         setFetching(true);
-        const allResults = await Promise.all(
-          SUPPORTED_NETWORKS.map(async chainId =>
-            graphql.getQuestChainsFromSearch(chainId, search),
-          ),
-        );
+        let chains: graphql.QuestChainInfoFragment[] = [];
+
+        if (network && isSupportedNetwork(network)) {
+          chains = await graphql.getQuestChainsFromFilters(network, filters);
+        } else {
+          const allResults = await Promise.all(
+            SUPPORTED_NETWORKS.map(async n =>
+              graphql.getQuestChainsFromFilters(n, filters),
+            ),
+          );
+          chains = allResults.reduce((t, a) => {
+            t.push(...a);
+            return t;
+          }, []);
+        }
         if (!isMounted) return;
 
-        setResults(
-          allResults
-            .reduce((t, a) => {
-              t.push(...a);
-              return t;
-            }, [])
-            .sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt)),
-        );
+        setResults(chains);
       } catch (err) {
         setError(err);
         setResults([]);
@@ -45,7 +50,7 @@ export const useQuestChainSearchForAllChains = (
     return () => {
       isMounted = false;
     };
-  }, [search]);
+  }, [filters, network]);
 
   return {
     fetching,

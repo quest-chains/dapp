@@ -1,21 +1,62 @@
-import { Flex, Grid, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { SearchIcon } from '@chakra-ui/icons';
+import {
+  Flex,
+  Grid,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Spinner,
+  VStack,
+} from '@chakra-ui/react';
+import { graphql } from '@quest-chains/sdk';
+import {
+  OrderDirection,
+  QuestChain_OrderBy,
+} from '@quest-chains/sdk/dist/graphql';
+import { useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
-import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
+import { useDelay } from '@/hooks/useDelay';
+import { useFilteredQuestChains } from '@/hooks/useFilteredQuestChains';
 
 import { LoadingState } from '../LoadingState';
 import Filters from './Filters';
-import Sort from './Sort';
+import Sort, { SortBy } from './Sort';
 
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  const [category, setCategory] = useState('');
-  const [chain, setChain] = useState('');
-  const [nftType, setNftType] = useState('');
-  const [verified, setVerified] = useState('');
+  const [value, setValue] = useState('');
+  const delayedSetValue = useDelay(setValue);
+  const [category, setCategory] = useState<string | undefined>();
+  const [network, setNetwork] = useState<string | undefined>();
+  // const [nftType, setNftType] = useState('');
+  // const [verified, setVerified] = useState('');
   const [sortBy, setSortBy] = useState('');
 
-  const { fetching, results, error } = useQuestChainSearchForAllChains('');
+  const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
+    const f: graphql.QuestChainFiltersInfo = {};
+    if (value) {
+      f.search = value.toLowerCase();
+    }
+    if (category) {
+      f.categories = [category];
+    }
+
+    if (sortBy) {
+      if (sortBy === SortBy.Newest) {
+        f.orderBy = QuestChain_OrderBy.UpdatedAt;
+        f.orderDirection = OrderDirection.Desc;
+      } else if (sortBy === SortBy.Oldest) {
+        f.orderBy = QuestChain_OrderBy.UpdatedAt;
+        f.orderDirection = OrderDirection.Asc;
+      }
+    }
+
+    f.onlyEnabled = true;
+
+    return f;
+  }, [value, category, sortBy]);
+
+  const { fetching, results, error } = useFilteredQuestChains(filters, network);
 
   if (error) {
     // eslint-disable-next-line no-console
@@ -24,6 +65,24 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   return (
     <Flex alignItems="flex-start" gap={4} w="full" direction="column" mt={0}>
+      <InputGroup maxW="2xl" size="lg">
+        <InputLeftElement pointerEvents="none">
+          {fetching ? (
+            <Spinner size="sm" color="white" />
+          ) : (
+            <SearchIcon color="white" />
+          )}
+        </InputLeftElement>
+        <Input
+          backdropFilter="blur(40px)"
+          color="white"
+          border="none"
+          boxShadow="inset 0px 0px 0px 1px gray"
+          placeholder="Search chains by name or description"
+          onChange={e => delayedSetValue(e.target.value)}
+          mb={6}
+        />
+      </InputGroup>
       <Flex
         w="full"
         justifyContent="space-between"
@@ -37,12 +96,8 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         <Filters
           category={category}
           setCategory={setCategory}
-          chain={chain}
-          setChain={setChain}
-          nftType={nftType}
-          setNftType={setNftType}
-          verified={verified}
-          setVerified={setVerified}
+          network={network}
+          setNetwork={setNetwork}
         />
         <Sort sortBy={sortBy} setSortBy={setSortBy} />
       </Flex>

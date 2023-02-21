@@ -1,6 +1,5 @@
 import { WarningIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Flex,
   Link as ChakraLink,
   Progress,
