@@ -91,7 +91,8 @@ const Filters: React.FC<{
         <option value={CHAIN_URL_MAPPINGS.arbitrum}>Arbitrum</option>
         <option value={CHAIN_URL_MAPPINGS.gnosis}>Gnosis</option>
       </Select>
-      <Select
+      {/* prepared for implementation */}
+      {/* <Select
         onChange={e => setNftType(e.target.value)}
         value={nftType}
         placeholder="NFT Type"
@@ -107,8 +108,9 @@ const Filters: React.FC<{
         <option value={NftType['2D']}>2D</option>
         <option value={NftType['3D']}>3D</option>
         <option value={NftType.Custom}>Custom</option>
-      </Select>
-      <Select
+      </Select> */}
+      {/* prepared for implementation */}
+      {/* <Select
         onChange={e => setVerified(e.target.value)}
         value={verified}
         placeholder="Verified"
@@ -123,7 +125,7 @@ const Filters: React.FC<{
         <option value={Verified.All}>All</option>
         <option value={Verified.Verified}>Verified</option>
         <option value={Verified.Unverified}>Unverified</option>
-      </Select>
+      </Select> */}
     </HStack>
   );
 };
