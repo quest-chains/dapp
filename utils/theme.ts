@@ -126,6 +126,24 @@ export const theme = extendTheme({
     Input,
     Button,
     Form,
+    Checkbox: {
+      baseStyle: {
+        control: {
+          bg: 'transparent',
+          _checked: {
+            bg: 'transparent',
+            _hover: {
+              bg: 'transparent',
+              borderColor: 'white',
+            },
+            borderColor: 'white',
+          },
+          _hover: {
+            bg: 'transparent',
+          },
+        },
+      },
+    },
   },
 });
 

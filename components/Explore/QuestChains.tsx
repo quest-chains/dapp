@@ -1,19 +1,58 @@
-import { Flex, Grid, VStack } from '@chakra-ui/react';
+import { Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
 import { useQuestChainSearchForAllChains } from '@/hooks/useQuestChainSearchForAllChains';
 
 import { LoadingState } from '../LoadingState';
-import Filters from './Filters';
+import FilterDropdown from './FilterDropdown';
 import Sort from './Sort';
 
+export enum Category {
+  All = 'All',
+  NFT = 'NFT',
+  GameFi = 'GameFi',
+  DeFi = 'DeFi',
+  DAO = 'DAO',
+  SocialFi = 'SocialFi',
+  Metaverse = 'Metaverse',
+  Tools = 'Tools',
+  Others = 'Others',
+  Ecosystem = 'Ecosystem',
+}
+
+export enum Network {
+  All = 'All',
+  Polygon = 'Polygon',
+  Optimism = 'Optimism',
+  Arbitrum = 'Arbitrum',
+  Gnosis = 'Gnosis',
+}
+export type Filter = Record<Category | Network, boolean>;
+
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  const [category, setCategory] = useState('');
-  const [chain, setChain] = useState('');
-  const [nftType, setNftType] = useState('');
-  const [verified, setVerified] = useState('');
   const [sortBy, setSortBy] = useState('');
+
+  const [categories, setCategories] = useState<Record<Category, boolean>>({
+    [Category.All]: false,
+    [Category.NFT]: false,
+    [Category.GameFi]: false,
+    [Category.DeFi]: false,
+    [Category.DAO]: false,
+    [Category.SocialFi]: false,
+    [Category.Metaverse]: false,
+    [Category.Tools]: false,
+    [Category.Others]: false,
+    [Category.Ecosystem]: false,
+  });
+
+  const [networks, setNetworks] = useState<Record<Network, boolean>>({
+    [Network.All]: false,
+    [Network.Polygon]: false,
+    [Network.Optimism]: false,
+    [Network.Arbitrum]: false,
+    [Network.Gnosis]: false,
+  });
 
   const { fetching, results, error } = useQuestChainSearchForAllChains('');
 
@@ -34,16 +73,18 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         gap={4}
         mb={4}
       >
-        <Filters
-          category={category}
-          setCategory={setCategory}
-          chain={chain}
-          setChain={setChain}
-          nftType={nftType}
-          setNftType={setNftType}
-          verified={verified}
-          setVerified={setVerified}
-        />
+        <HStack>
+          <FilterDropdown
+            filter={categories as Filter}
+            setFilters={setCategories}
+            label="Categories"
+          />
+          <FilterDropdown
+            filter={networks as Filter}
+            setFilters={setNetworks}
+            label="Networks"
+          />
+        </HStack>
         <Sort sortBy={sortBy} setSortBy={setSortBy} />
       </Flex>
 
