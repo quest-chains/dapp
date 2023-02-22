@@ -5,42 +5,34 @@ import {
   IconButton,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useFeaturedQuestChains } from '@/hooks/useFeaturedQuestChains';
+
+import { LoadingState } from '../LoadingState';
 import { QuestChainTile } from '../QuestChainTile';
 import Carousel from './Carousel';
 
-const featuredQuestChains = [
-  {
-    address: '0x0fe8c3464aa12eb43ec3f0322e4631479f16ddd6',
-    chainId: '0x89',
-    createdBy: {
-      id: '0x1cd031ced1d63ac57592ca291f9c5c4772fe7549',
-    },
-    name: 'Roving with Rionna: The Craft of Writing - Symbolism  ',
-    description:
-      'Hello and Welcome to the Roving with Rionna: The Craft of Writing Quest!   ',
-    imageUrl:
-      'ipfs://bafkreigdqj452cggpnwvprbdbsrs5dqbmz56wokmj6nxg44s7w5lppxzim',
-    slug: 'roving-with-rionna-the-craft-of-writing-symbolism',
-  },
-];
-
 export const Featured: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
-  const handlePrev = () => {
-    setCurrentSlide(currentSlide - 1);
-  };
+  const handlePrev = () => setCurrentSlide(currentSlide - 1);
+  const handleNext = () => setCurrentSlide(currentSlide + 1);
 
-  const handleNext = () => {
-    setCurrentSlide(currentSlide + 1);
-  };
-  const maxChildrenPerSlide = isSmallScreen ? 1 : 3;
-  const numberOfSlides = 6 / maxChildrenPerSlide;
+  const maxChildrenPerSlide =
+    useBreakpointValue({
+      base: 1,
+      md: 2,
+      xl: 3,
+    }) ?? 3;
 
-  const arrayOfSix = [1, 2, 3, 4, 5, 6];
+  const { results, fetching } = useFeaturedQuestChains();
+
+  let numberOfSlides = Math.ceil((results.length * 1.0) / maxChildrenPerSlide);
+
+  numberOfSlides = numberOfSlides > 0 ? numberOfSlides : 1;
+
+  useEffect(() => setCurrentSlide(0), [maxChildrenPerSlide]);
 
   return (
     <Flex w="full" direction="column">
@@ -64,23 +56,31 @@ export const Featured: React.FC = () => {
           />
         </Flex>
       </Flex>
-      {/* <Flex justify="space-between" w="full" alignItems="stretch" gap={6}> */}
-      <Carousel gap={50} currentSlide={currentSlide}>
-        {arrayOfSix.map(_item => (
-          <QuestChainTile
-            key={_item}
-            quests={1}
-            chainId={featuredQuestChains[0].chainId}
-            address={featuredQuestChains[0].address}
-            name={featuredQuestChains[0].name}
-            description={featuredQuestChains[0].description}
-            imageUrl={featuredQuestChains[0].imageUrl}
-            createdBy={featuredQuestChains[0].createdBy.id}
-            slug={featuredQuestChains[0].slug}
-          />
-        ))}
-      </Carousel>
-      {/* </Flex> */}
+      {fetching ? (
+        <Flex w="100%" justify="center" align="center" h="17rem">
+          <LoadingState />
+        </Flex>
+      ) : (
+        <Carousel
+          currentSlide={currentSlide}
+          maxChildrenPerSlide={maxChildrenPerSlide}
+        >
+          {results.map(item => (
+            <QuestChainTile
+              key={item.address}
+              quests={item.numQuests}
+              chainId={item.chainId}
+              address={item.address}
+              name={item.name}
+              description={item.description}
+              imageUrl={item.imageUrl}
+              createdBy={item.createdBy.id}
+              slug={item.slug}
+              featured
+            />
+          ))}
+        </Carousel>
+      )}
     </Flex>
   );
 };

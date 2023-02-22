@@ -8,11 +8,13 @@ export const useQuestChainSearchForAllChains = (
 ): {
   error: unknown;
   fetching: boolean;
-  results: graphql.QuestChainInfoFragment[];
+  results: graphql.QuestChainDisplayFragment[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainDisplayFragment[]>(
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;

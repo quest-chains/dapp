@@ -30,6 +30,7 @@ type QuestChainTileProps = {
   quests: number;
   onClick?: () => void;
   paused?: boolean;
+  featured?: boolean;
 };
 
 export const QuestChainTile: React.FC<QuestChainTileProps> = ({
@@ -44,6 +45,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
   imageUrl,
   onClick = () => undefined,
   paused = false,
+  featured = false,
 }) => (
   <NextLink
     as={`/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${slug || address}`}
@@ -61,25 +63,31 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
         direction="column"
         align="center"
         // TODO is this required for in the new flow
-        h={completed === 0 || !!completed ? '16.5rem' : '14rem'}
+        h={completed === 0 || !!completed || featured ? '16.5rem' : '14rem'}
       >
         <VStack
           cursor="pointer"
           align="stretch"
           w="full"
           p={6}
-          transition="all 0.25s"
+          pt={4}
+          transition="border-color 0.15s, box-shadow 0.15s"
           _hover={{
             // On hover the background image is not show. Show imo does not look great.
-            background:
-              'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%), #4A0662;',
+            background: imageUrl
+              ? `linear-gradient(180deg, rgba(0, 0, 0, 0.8) 24.63%, rgba(0, 0, 0, 1) 70.9%), url(${ipfsUriToHttp(
+                  imageUrl,
+                )})`
+              : 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#4A0662',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
             borderColor: 'main',
             boxShadow: '0px 0px 20px rgba(45, 248, 199, 0.32);',
           }}
           fontWeight="400"
           border="2px solid"
           // TODO not the exact color as in figma
-          borderColor={'whiteAlpha.500'}
+          borderColor={'gray'}
           spacing={4}
           flex={1}
           borderRadius={8}
@@ -93,18 +101,22 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
                 )})`
               : 'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#111111'
           }
+          backgroundPosition="center"
+          backgroundSize="cover"
         >
           <Flex
             justifyContent={'space-between'}
             flexDirection={'column'}
             flex={'1'}
           >
-            <UserDisplay address={createdBy} size="sm" />
+            <Flex ml={-2}>
+              <UserDisplay address={createdBy} size="xs" />
+            </Flex>
 
             <Flex direction="column" gap={2}>
               <Flex justifyContent="space-between">
                 <Text
-                  fontSize="xl"
+                  fontSize={featured ? '2xl' : 'xl'}
                   fontFamily={'Museo Moderno'}
                   fontWeight="700"
                   lineHeight="24px"
@@ -131,7 +143,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
                   </Tag>
                 )}
               </Flex>
-              {completed && (
+              {typeof completed === 'number' && (
                 <Flex justify="space-between" align="center">
                   <Progress
                     value={
@@ -147,28 +159,34 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
                   </Text>
                 </Flex>
               )}
-              <Text
-                display="-webkit-box"
-                lineHeight={'20px'}
-                color="whiteAlpha.700"
-                textOverflow="ellipsis"
-                overflow="hidden"
-                maxW="calc(100%)"
-                fontSize={14}
-                sx={{
-                  lineClamp: 2,
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                }}
-              >
-                {removeMd(description ?? '')}
-              </Text>
+              <Flex w="100%" align="end" h="3rem">
+                <Text
+                  display="-webkit-box"
+                  lineHeight={'20px'}
+                  color="whiteAlpha.700"
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  maxW="calc(100%)"
+                  fontSize={featured ? '14px' : '13px'}
+                  sx={{
+                    lineClamp: 2,
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
+                  {removeMd(description ?? '')}
+                </Text>
+              </Flex>
               <Flex justifyContent="space-between">
                 {/* TODO in Figma the color is #BFA4C7 which is not exactly purple 100 */}
-                <Text color="purple.100">{quests} quests</Text>
+                <Text color="purple.100" fontSize="13px">
+                  {quests} quests
+                </Text>
                 <NetworkDisplay
                   chainId={chainId}
-                  textProps={{ color: 'purple.100' }}
+                  imageProps={{ boxSize: '1rem' }}
+                  textProps={{ color: 'purple.100', fontSize: '13px' }}
+                  spacing={1}
                 />
               </Flex>
             </Flex>

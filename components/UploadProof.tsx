@@ -33,11 +33,10 @@ import { UploadImageForm } from './UploadImageForm';
 
 export const UploadProof: React.FC<{
   refresh: () => void;
-  questId: string;
-  name: string;
-  questChain: graphql.QuestChainInfoFragment;
+  quest: graphql.QuestInfoFragment;
+  questChain: graphql.QuestChainDisplayFragment;
   profile?: boolean;
-}> = ({ refresh, questId, name, questChain, profile }) => {
+}> = ({ refresh, quest, questChain, profile }) => {
   const { chainId, provider, address } = useWallet();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -77,7 +76,7 @@ export const UploadProof: React.FC<{
         imageFile ? await uploadFiles([imageFile]) : '',
       ]);
       const metadata: Metadata = {
-        name: `Submission - QuestChain - ${questChain.name} - Quest - ${questId}. ${name} User - ${address}`,
+        name: `Submission - QuestChain - ${questChain.name} - Quest - ${quest.questId}. ${quest.name} User - ${address}`,
         description: proofDescRef.current,
         image_url: imageHash ? `ipfs://${imageHash}` : undefined,
         external_url: filesHash ? `ipfs://${filesHash}` : undefined,
@@ -98,10 +97,13 @@ export const UploadProof: React.FC<{
 
       const tx = await (Number(questChain.version) > 0
         ? (contract as contracts.V1.QuestChain).submitProofs(
-            [questId],
+            [quest.questId],
             [details],
           )
-        : (contract as contracts.V0.QuestChain).submitProof(questId, details));
+        : (contract as contracts.V0.QuestChain).submitProof(
+            quest.questId,
+            details,
+          ));
       toast.dismiss(tid);
       tid = handleTxLoading(tx.hash, chainId);
       const receipt = await tx.wait(1);
@@ -127,8 +129,7 @@ export const UploadProof: React.FC<{
     proofDescRef,
     files,
     imageFile,
-    questId,
-    name,
+    quest,
     onModalClose,
     refresh,
     address,
@@ -173,7 +174,7 @@ export const UploadProof: React.FC<{
       <Modal isOpen={isOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
         <ModalContent maxW="40rem">
-          <ModalHeader>Upload Proof - {name}</ModalHeader>
+          <ModalHeader>Upload Proof - {quest.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl isRequired>
@@ -202,10 +203,7 @@ export const UploadProof: React.FC<{
               alignContent={'center'}
             >
               This submission will be{' '}
-              {questChain?.quests[Number(questId)].skipReview
-                ? 'automatically'
-                : 'manually'}{' '}
-              reviewed.
+              {quest.skipReview ? 'automatically' : 'manually'} reviewed.
             </Flex>
           </ModalBody>
 

@@ -1720,10 +1720,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@quest-chains/sdk@0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@quest-chains/sdk/-/sdk-0.2.5.tgz#62a77ff874c33e2389e550fe84d15122328c6a64"
-  integrity sha512-rKbz0/RNk/4ywlTIG1fBVImzqchHKlHRjH9Qlam4MDgdTnD9Sgvw4xJa3T0iko7nJZ52jjPCKSnRyMEnLilJ3g==
+"@quest-chains/sdk@0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@quest-chains/sdk/-/sdk-0.2.6.tgz#42f615141338aaabb9ae190fee686f909726b48d"
+  integrity sha512-OsBW4ihgcN/8FKYD8JaB4/mGoLSp4IUimPlDlz1zw5wW2ePW1NU3DpaWj6o3FIsOlz2Ewr8xAt4R3iJdLalTag==
   dependencies:
     ajv "^8.11.0"
     axios "^1.1.1"

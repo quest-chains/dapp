@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Button,
   Checkbox,
@@ -11,15 +11,15 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-import { Category, Filter, Network, NetworkDevelopment } from './QuestChains';
+export type FilterOption = { label: string; value: string };
 
-const FilterDropdown: React.FC<{
-  filter: Filter;
-  setFilters: (
-    value: Record<Category | Network | NetworkDevelopment, boolean>,
-  ) => void;
+export const FilterDropdown: React.FC<{
+  filter: Record<string, boolean>;
+  options: FilterOption[];
+  setFilters: (value: Record<string, boolean>) => void;
   label: string;
-}> = ({ filter, setFilters, label }) => {
+  isMultiple?: boolean;
+}> = ({ filter, options, setFilters, label, isMultiple = true }) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
 
   return (
@@ -32,43 +32,71 @@ const FilterDropdown: React.FC<{
       <PopoverTrigger>
         <Button
           gap={3}
-          fontSize={14}
+          fontSize="sm"
           fontWeight="bold"
           bgColor="whiteAlpha.100"
-          borderRadius={24}
-          // borderColor="transparent"
+          borderRadius="full"
+          size="lg"
         >
           <Text>{label}</Text>
-          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          <ChevronDownIcon
+            fontSize="md"
+            transform={isOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
+            transition="all 0.15s"
+          />
         </Button>
       </PopoverTrigger>
-      <PopoverContent bgColor="#0F172A" maxW={200}>
-        {/* <PopoverArrow /> */}
-        <PopoverBody gap={2}>
-          <Flex direction="column" gap={3}>
-            {Object.keys(filter).map((category, index) => {
+      <PopoverContent
+        bgColor="#0F172A"
+        borderRadius="8px"
+        border="1px solid #475569"
+        boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
+        maxW="200px"
+      >
+        <PopoverBody px={0}>
+          <Flex direction="column">
+            {options.map(option => {
+              const checked = filter[option.value];
+              let changes = {};
+              if (!isMultiple) {
+                const trueKey = Object.keys(filter).find(
+                  k => filter[k] === true,
+                );
+                if (trueKey) {
+                  changes = { [trueKey]: false };
+                }
+              }
+
               return (
-                <Flex justifyContent="space-between" key={index}>
-                  <Text fontSize="sm">{category}</Text>
-                  <Checkbox
-                    isChecked={
-                      filter[
-                        category as Category | Network | NetworkDevelopment
-                      ]
-                    }
-                    iconColor="white"
-                    bgColor="transparent"
-                    onChange={() =>
-                      setFilters({
-                        ...filter,
-                        [category as Category | Network | NetworkDevelopment]:
-                          !filter[
-                            category as Category | Network | NetworkDevelopment
-                          ],
-                      })
-                    }
-                  />
-                </Flex>
+                <Checkbox
+                  key={option.value}
+                  isChecked={checked}
+                  {...(isMultiple
+                    ? {
+                        iconColor: 'white',
+                        bgColor: 'transparent',
+                      }
+                    : {
+                        variant: 'circular',
+                        fontSize: 'xs',
+                      })}
+                  onChange={() =>
+                    setFilters({
+                      ...filter,
+                      ...changes,
+                      [option.value]: !checked,
+                    })
+                  }
+                  flexDirection="row-reverse"
+                  justifyContent="space-between"
+                  width="100%"
+                  py={2}
+                  pr={5}
+                  pl={3}
+                  _hover={{ bg: 'whiteAlpha.100' }}
+                >
+                  {option.label}
+                </Checkbox>
               );
             })}
           </Flex>
@@ -77,5 +105,3 @@ const FilterDropdown: React.FC<{
     </Popover>
   );
 };
-
-export default FilterDropdown;

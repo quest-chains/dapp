@@ -1,46 +1,48 @@
-import { Box, Flex, Grid, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Grid, GridItem, SimpleGrid } from '@chakra-ui/react';
+import { useMemo } from 'react';
 
 interface Props {
   children: React.ReactNode[];
-  gap?: number;
   currentSlide: number;
+  maxChildrenPerSlide: number;
 }
 
-const Carousel: React.FC<Props> = ({ children, currentSlide }) => {
-  const isSmallScreen = useBreakpointValue({ base: true, md: false });
-
-  const maxChildrenPerSlide = isSmallScreen ? 1 : 3;
+const Carousel: React.FC<Props> = ({
+  children,
+  currentSlide,
+  maxChildrenPerSlide,
+}) => {
   const numberOfSlides = children.length / maxChildrenPerSlide;
 
-  const slidesSmall = children;
-  const slidesBig = [
-    children.slice(0, maxChildrenPerSlide),
-    children.slice(maxChildrenPerSlide, maxChildrenPerSlide * 2),
-  ];
+  const slides = useMemo(() => {
+    const s = [];
+    const copy = children.slice();
+    while (copy.length > 0) {
+      s.push(copy.splice(0, maxChildrenPerSlide));
+    }
+    return s;
+  }, [children, maxChildrenPerSlide]);
 
   return (
     <div style={{ position: 'relative', overflow: 'hidden' }}>
       <Grid
         w="full"
         gridTemplateColumns={`repeat(${numberOfSlides}, 100%)`}
-        ml={`calc(${-currentSlide * 100}% - ${currentSlide * 1.5 * 16}px)`}
+        gridAutoFlow="column"
+        ml={`calc(${-currentSlide * 100}% - ${currentSlide * 1.25 * 16}px)`}
         transition="margin-left 0.5s ease-in-out"
         py={6}
-        gap={6}
+        gap={5}
       >
-        {isSmallScreen
-          ? slidesSmall.map((child, index) => (
-              <Flex w="100%" key={index}>
-                {child}
-              </Flex>
-            ))
-          : slidesBig.map((slide, index) => (
-              <Flex gap={6} w="100%" key={index}>
-                {slide.map((child, index) => (
-                  <Box key={index}>{child}</Box>
-                ))}
-              </Flex>
-            ))}
+        {slides.map((slide, index) => (
+          <GridItem key={index}>
+            <SimpleGrid columns={maxChildrenPerSlide} gap={5} w="100%">
+              {slide.map((child, index) => (
+                <Box key={index}>{child}</Box>
+              ))}
+            </SimpleGrid>
+          </GridItem>
+        ))}
       </Grid>
     </div>
   );

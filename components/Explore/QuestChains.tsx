@@ -7,106 +7,126 @@ import {
   OrderDirection,
   QuestChain_OrderBy,
 } from '@quest-chains/sdk/dist/graphql';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { QuestChainTile } from '@/components/QuestChainTile';
+import { useCategories } from '@/hooks/useCategories';
 import { useFilteredQuestChains } from '@/hooks/useFilteredQuestChains';
-import { useIsDevelopment } from '@/hooks/useIsDevelopment';
+import { SUPPORTED_NETWORK_INFO } from '@/web3';
 
 import { LoadingState } from '../LoadingState';
-import FilterDropdown from './FilterDropdown';
-import SortDropdown from './SortDropdown';
-
-export enum Category {
-  NFT = 'NFT',
-  GameFi = 'GameFi',
-  DeFi = 'DeFi',
-  DAO = 'DAO',
-  SocialFi = 'SocialFi',
-  Metaverse = 'Metaverse',
-  Tools = 'Tools',
-  Others = 'Others',
-  Ecosystem = 'Ecosystem',
-}
-
-export enum Network {
-  Polygon = 'Polygon',
-  Optimism = 'Optimism',
-  Arbitrum = 'Arbitrum',
-  Gnosis = 'Gnosis',
-}
+import { FilterDropdown, FilterOption } from './FilterDropdown';
 
 export enum SortBy {
-  // Popularity = 'Popularity',
-  Newest = 'Newest',
-  Oldest = 'Oldest',
+  POPULARITY = 'POPULARITY',
+  NEWEST = 'NEWEST',
+  OLDEST = 'OLDEST',
+  MOST_QUESTS = 'MOST_QUESTS',
+  FEWEST_QUESTS = 'FEWEST_QUESTS',
 }
 
-export enum NetworkDevelopment {
-  Mumbai = 'Mumbai',
-  Polygon = 'Polygon',
-  Goerli = 'Goerli',
-  Gnosis = 'Gnosis',
-}
+const SortOptions: FilterOption[] = [
+  { label: 'Popularity', value: SortBy.POPULARITY },
+  { label: 'Newest first', value: SortBy.NEWEST },
+  { label: 'Oldest first', value: SortBy.OLDEST },
+  { label: 'Most quests first', value: SortBy.MOST_QUESTS },
+  { label: 'Fewest quests first', value: SortBy.FEWEST_QUESTS },
+];
 
-// set a variable that defines whether this is developement or production
+const getSorter = (sortValue: string): graphql.QuestChainFiltersInfo => {
+  switch (sortValue) {
+    case SortBy.POPULARITY:
+      return {
+        orderBy: QuestChain_OrderBy.NumCompletedQuesters,
+        orderDirection: OrderDirection.Desc,
+      };
+    case SortBy.NEWEST:
+      return {
+        orderBy: QuestChain_OrderBy.UpdatedAt,
+        orderDirection: OrderDirection.Desc,
+      };
+    case SortBy.OLDEST:
+      return {
+        orderBy: QuestChain_OrderBy.UpdatedAt,
+        orderDirection: OrderDirection.Desc,
+      };
+    case SortBy.MOST_QUESTS:
+      return {
+        orderBy: QuestChain_OrderBy.QuestCount,
+        orderDirection: OrderDirection.Desc,
+      };
+    case SortBy.FEWEST_QUESTS:
+      return {
+        orderBy: QuestChain_OrderBy.QuestCount,
+        orderDirection: OrderDirection.Desc,
+      };
+    default:
+      return {};
+  }
+};
 
-export type Filter = Record<Category | Network | NetworkDevelopment, boolean>;
+const networkOptions: FilterOption[] = Object.values(
+  SUPPORTED_NETWORK_INFO,
+).map(n => ({
+  value: n.chainId,
+  label: n.label,
+}));
 
 const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
-  const isDevelopment = useIsDevelopment();
-  const [sortBy, setSortBy] = useState<Record<SortBy, boolean>>({
-    // [SortBy.Popularity]: false,
-    [SortBy.Newest]: true,
-    [SortBy.Oldest]: false,
-  });
+  const [sortBy, setSortBy] = useState<Record<string, boolean>>({});
 
-  const [categories, setCategories] = useState<Record<Category, boolean>>({
-    [Category.NFT]: false,
-    [Category.GameFi]: false,
-    [Category.DeFi]: false,
-    [Category.DAO]: false,
-    [Category.SocialFi]: false,
-    [Category.Metaverse]: false,
-    [Category.Tools]: false,
-    [Category.Others]: false,
-    [Category.Ecosystem]: false,
-  });
+  const [categories, setCategories] = useState<Record<string, boolean>>({});
 
-  const [networks, setNetworks] = useState<Record<Network, boolean>>({
-    [Network.Polygon]: false,
-    [Network.Optimism]: false,
-    [Network.Arbitrum]: false,
-    [Network.Gnosis]: false,
-  });
+  const [networks, setNetworks] = useState<Record<string, boolean>>({});
 
-  const [networkDevelopment, setNetworkDevelopment] = useState<
-    Record<NetworkDevelopment, boolean>
-  >({
-    [NetworkDevelopment.Mumbai]: false,
-    [NetworkDevelopment.Polygon]: false,
-    [NetworkDevelopment.Goerli]: false,
-    [NetworkDevelopment.Gnosis]: false,
-  });
+  const { categories: categoryOptions } = useCategories();
+
+  const resetFilters = useCallback(() => {
+    setCategories(
+      categoryOptions.reduce((t: Record<string, boolean>, v: FilterOption) => {
+        t[v.value] = false;
+        return t;
+      }, {}),
+    );
+
+    setNetworks(
+      Object.keys(SUPPORTED_NETWORK_INFO).reduce(
+        (t: Record<string, boolean>, v: string) => {
+          t[v] = false;
+          return t;
+        },
+        {},
+      ),
+    );
+
+    setSortBy(
+      SortOptions.reduce((t: Record<string, boolean>, v: FilterOption) => {
+        t[v.value] = v.value === SortBy.NEWEST ? true : false;
+        return t;
+      }, {}),
+    );
+  }, [categoryOptions]);
+
+  useEffect(resetFilters, [resetFilters]);
 
   const filters: graphql.QuestChainFiltersInfo = useMemo(() => {
     const f: graphql.QuestChainFiltersInfo = {};
-    if (categories) {
-      // assign all the categories that are true to the filter
-      f.categories = Object.keys(categories).filter(
-        key => categories[key as Category],
-      );
-    }
 
-    if (sortBy) {
-      if (sortBy[SortBy.Newest]) {
-        f.orderBy = QuestChain_OrderBy.UpdatedAt;
-        f.orderDirection = OrderDirection.Desc;
-      } else if (sortBy[SortBy.Oldest]) {
-        f.orderBy = QuestChain_OrderBy.UpdatedAt;
-        f.orderDirection = OrderDirection.Asc;
-      }
-    }
+    const selectedCategories = Object.entries(categories)
+      .filter(([_, value]) => value)
+      .map(([key]) => key);
+
+    f.categories =
+      selectedCategories.length > 0 ? selectedCategories : undefined;
+
+    const selectedSort = Object.entries(sortBy)
+      .filter(([_, value]) => value)
+      .map(([key]) => key);
+
+    const sorter = getSorter(selectedSort[0] ?? '');
+
+    f.orderBy = sorter.orderBy;
+    f.orderDirection = sorter.orderDirection;
 
     f.onlyEnabled = true;
 
@@ -115,10 +135,13 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 
   const { fetching, results, error } = useFilteredQuestChains(
     filters,
-    (isDevelopment ? networkDevelopment : networks) as Record<
-      Network | NetworkDevelopment,
-      boolean
-    >,
+    networks,
+  );
+  const numFilters = useMemo(
+    () =>
+      [...Object.values(categories), ...Object.values(networks)].filter(v => v)
+        .length,
+    [categories, networks],
   );
 
   if (error) {
@@ -139,89 +162,60 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       >
         <HStack>
           <FilterDropdown
-            filter={categories as Filter}
+            filter={categories}
+            options={categoryOptions}
             setFilters={setCategories}
             label="Categories"
           />
           <FilterDropdown
-            filter={
-              isDevelopment
-                ? (networkDevelopment as Filter)
-                : (networks as Filter)
-            }
-            setFilters={isDevelopment ? setNetworkDevelopment : setNetworks}
+            filter={networks}
+            options={networkOptions}
+            setFilters={setNetworks}
             label="Networks"
           />
         </HStack>
-        <SortDropdown sortBy={sortBy} setSortBy={setSortBy} label="Sort by" />
-        {/* <Sort sortBy={sortBy} setSortBy={setSortBy} /> */}
+        <FilterDropdown
+          filter={sortBy}
+          options={SortOptions}
+          setFilters={setSortBy}
+          label="Sort by"
+          isMultiple={false}
+        />
       </Flex>
 
       <HStack mb={4}>
-        {Object.entries(categories)
-          .filter(([_, value]) => value)
-          .map(([key]) => (
+        {categoryOptions.map(opt =>
+          categories[opt.value] ? (
             <FilterButton
-              key={key}
-              label={key}
-              onClick={() => setCategories({ ...categories, [key]: false })}
-            />
-          ))}
-        {Object.entries(isDevelopment ? networkDevelopment : networks)
-          .filter(([_, value]) => value)
-          .map(([key]) => (
-            <FilterButton
-              key={key}
-              label={key}
+              key={opt.value}
+              label={opt.label}
               onClick={() =>
-                isDevelopment
-                  ? setNetworkDevelopment({
-                      ...networkDevelopment,
-                      [key]: false,
-                    })
-                  : setNetworks({ ...networks, [key]: false })
+                setCategories({ ...categories, [opt.value]: false })
               }
             />
-          ))}
-        {/* <Text>{Object.keys(lol)}</Text> */}
-        {/* if there is more than 1 filter active, display a button to clear all filters */}
-        {[
-          ...Object.values(categories),
-          ...Object.values(isDevelopment ? networkDevelopment : networks),
-        ].filter(v => v).length > 1 && (
-          <FilterButton
-            label="Clear all filters"
+          ) : null,
+        )}
+        {networkOptions.map(opt =>
+          networks[opt.value] ? (
+            <FilterButton
+              key={opt.value}
+              label={opt.label}
+              onClick={() => setNetworks({ ...networks, [opt.value]: false })}
+            />
+          ) : null,
+        )}
+        {numFilters > 1 && (
+          <Button
             bgColor="transparent"
-            onClick={() => {
-              setCategories({
-                [Category.NFT]: false,
-                [Category.GameFi]: false,
-                [Category.DeFi]: false,
-                [Category.DAO]: false,
-                [Category.SocialFi]: false,
-                [Category.Metaverse]: false,
-                [Category.Tools]: false,
-                [Category.Others]: false,
-                [Category.Ecosystem]: false,
-              });
-              if (!isDevelopment) {
-                setNetworks({
-                  [Network.Polygon]: false,
-                  [Network.Optimism]: false,
-                  [Network.Arbitrum]: false,
-                  [Network.Gnosis]: false,
-                });
-              }
-              if (isDevelopment) {
-                setNetworkDevelopment({
-                  [NetworkDevelopment.Mumbai]: false,
-                  [NetworkDevelopment.Polygon]: false,
-                  [NetworkDevelopment.Goerli]: false,
-                  [NetworkDevelopment.Gnosis]: false,
-                });
-              }
-            }}
-          />
+            borderRadius="full"
+            px={6}
+            borderColor="green.900"
+            borderWidth={1}
+            onClick={resetFilters}
+            fontSize="sm"
+          >
+            Clear all
+          </Button>
         )}
       </HStack>
 
@@ -232,8 +226,9 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           gap={5}
           templateColumns={{
             base: 'repeat(1, 100%)',
-            md: 'repeat(3, minmax(0, 1fr))',
-            lg: 'repeat(4, minmax(0, 1fr))',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'repeat(3, minmax(0, 1fr))',
+            '2xl': 'repeat(4, minmax(0, 1fr))',
           }}
           maxW="full"
         >
@@ -247,7 +242,7 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 description,
                 slug,
                 chainId,
-                quests,
+                numQuests,
                 imageUrl,
                 createdBy,
               }) => (
@@ -259,7 +254,7 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                     slug,
                     chainId,
                     createdBy: createdBy.id,
-                    quests: quests.filter(q => !q.paused).length,
+                    quests: numQuests,
                     imageUrl,
                     onClick: onClose,
                   }}
@@ -284,12 +279,13 @@ const FilterButton: React.FC<{
     px={6}
     borderColor="green.900"
     borderWidth={1}
-    gap={2}
     alignItems="center"
     onClick={onClick}
+    leftIcon={<CloseIcon boxSize={2} />}
+    fontSize="sm"
+    gap={2}
   >
-    <CloseIcon boxSize={2} w={3} />
-    <Text fontSize="sm">{label}</Text>
+    {label}
   </Button>
 );
 

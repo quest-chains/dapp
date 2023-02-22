@@ -122,9 +122,8 @@ export const QuestRejectedStatus: React.FC<{
     </Flex>
     {statusInfo.quest.name && (
       <UploadProof
-        questId={statusInfo.quest.questId}
-        name={statusInfo.quest.name}
         questChain={statusInfo.questChain}
+        quest={statusInfo.quest}
         refresh={refresh}
         profile
       />

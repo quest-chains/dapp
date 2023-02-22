@@ -1,31 +1,47 @@
 import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { Network, NetworkDevelopment } from '@/components/Explore/QuestChains';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
-import { CHAIN_URL_MAPPINGS } from '@/web3/networks';
+
+const { OrderDirection, QuestChain_OrderBy } = graphql;
+
+const getSortKey = (
+  orderBy: graphql.QuestChain_OrderBy = QuestChain_OrderBy.UpdatedAt,
+): keyof graphql.QuestChainDisplayFragment => {
+  switch (orderBy) {
+    case QuestChain_OrderBy.NumCompletedQuesters:
+      return 'numCompletedQuesters';
+    case QuestChain_OrderBy.QuestCount:
+      return 'numQuests';
+    case QuestChain_OrderBy.UpdatedAt:
+    default:
+      return 'updatedAt';
+  }
+};
 
 export const useFilteredQuestChains = (
   filters: graphql.QuestChainFiltersInfo,
-  networks: Record<Network | NetworkDevelopment, boolean>,
+  networks: Record<string, boolean> = {},
 ): {
   error: unknown;
   fetching: boolean;
-  results: graphql.QuestChainInfoFragment[];
+  results: graphql.QuestChainDisplayFragment[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainDisplayFragment[]>(
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;
     (async () => {
       try {
         setFetching(true);
-        let chains: graphql.QuestChainInfoFragment[] = [];
-        const n = Object.keys(networks)
-          .filter(key => networks[key as Network])
-          .map(n => CHAIN_URL_MAPPINGS[n.toLowerCase()]);
+        let chains: graphql.QuestChainDisplayFragment[] = [];
+        const n = Object.entries(networks)
+          .filter(([_, value]) => value)
+          .map(([key]) => key);
 
         if (n.length > 0) {
           const allResults = await Promise.all(
@@ -46,6 +62,14 @@ export const useFilteredQuestChains = (
             return t;
           }, []);
         }
+
+        const sortKey = getSortKey(filters.orderBy);
+        const sortValue =
+          filters.orderDirection === OrderDirection.Asc ? 1 : -1;
+
+        chains = chains.sort((a, b) =>
+          a[sortKey] > b[sortKey] ? sortValue : -1 * sortValue,
+        );
 
         if (!isMounted) return;
 

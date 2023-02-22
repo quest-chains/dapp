@@ -47,8 +47,8 @@ const makeId = () => {
 
 const fetchValidSlug = async (name: string, chainId: string) => {
   const slug = slugify(name);
-  const qcFromSlug = await graphql.getQuestChainsFromSlug(chainId, slug);
-  if (qcFromSlug.length === 0) {
+  const valid = await graphql.validateQuestChainSlug(chainId, slug);
+  if (valid) {
     return slug;
   } else {
     return `${slug}-${makeId()}`;

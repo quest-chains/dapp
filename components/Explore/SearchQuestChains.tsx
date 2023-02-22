@@ -53,6 +53,13 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         zIndex={1}
         w="calc(100% - 30px)"
       >
+        <Flex
+          position="absolute"
+          w="calc(100% - 20px)"
+          h="calc(100% - 24px)"
+          bg="gray.700"
+        />
+
         <InputLeftElement pointerEvents="none">
           {fetching ? (
             <Spinner size="sm" color="white" />
@@ -72,29 +79,30 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         />
       </InputGroup>
 
-      <VStack w="full" gap={4} flex={1} position="relative" top={20}>
-        {fetching && <LoadingState my={12} />}
-
-        <Grid
-          gap={5}
-          templateColumns={{
-            base: 'repeat(1, 100%)',
-            md: 'repeat(2,  minmax(0, 1fr))',
-          }}
-          maxW="full"
-          pr={3}
-        >
-          {!fetching &&
-            !error &&
-            results.length > 0 &&
-            results.map(
+      {fetching && (
+        <Flex w="100%" justify="center" align="center" py={12}>
+          <LoadingState mt={12} />
+        </Flex>
+      )}
+      {!fetching && !error && results.length > 0 && (
+        <VStack w="full" gap={4} flex={1} position="relative" top={20}>
+          <Grid
+            gap={5}
+            templateColumns={{
+              base: 'repeat(1, 100%)',
+              md: 'repeat(2,  minmax(0, 1fr))',
+            }}
+            maxW="full"
+            pr={3}
+          >
+            {results.map(
               ({
                 address,
                 name,
                 description,
                 slug,
                 chainId,
-                quests,
+                numQuests,
                 imageUrl,
                 createdBy,
               }) => (
@@ -106,7 +114,7 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                     slug,
                     chainId,
                     createdBy: createdBy.id,
-                    quests: quests.filter(q => !q.paused).length,
+                    quests: numQuests,
                     imageUrl,
                     onClick: onClose,
                   }}
@@ -114,8 +122,9 @@ const SearchQuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 />
               ),
             )}
-        </Grid>
-      </VStack>
+          </Grid>
+        </VStack>
+      )}
     </Flex>
   );
 };

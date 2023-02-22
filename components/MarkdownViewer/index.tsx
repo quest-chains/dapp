@@ -8,6 +8,7 @@ import {
   Link,
   Spacer,
   Table,
+  Text,
   Th,
 } from '@chakra-ui/react';
 import ChakraUIRenderer from 'chakra-ui-markdown-renderer';
@@ -61,7 +62,7 @@ const markdownTheme: Components = {
   // eslint-disable-next-line jsx-a11y/alt-text
   img: props => <Image w="100%" {...props} />,
   p: props => (
-    <p
+    <Text
       style={{
         fontSize: '16px',
         marginTop: '8px',
@@ -69,7 +70,7 @@ const markdownTheme: Components = {
       {...props}
     >
       {props.children}
-    </p>
+    </Text>
   ),
   code: props => {
     const { inline } = props;
