@@ -27,8 +27,19 @@ const featuredQuestChains = [
   {
     chainId: '0x89',
     address: '0xa5c36c62ead5d3551aaf7765ee68e6f0ea3b3e1c',
+  }, // testnet quest chains are only featured in `dev.questchains.xyz`
+  {
+    chainId: '0x5',
+    address: '0x674c8a0e864ccf8906c5e3644e462473918e9362',
   },
-];
+  {
+    chainId: '0x5',
+    address: '0xe610513b10a238d1f1e54a114f327473af9e08b8',
+  },
+].map(a => ({
+  chainId: a.chainId.toLowerCase(),
+  address: a.address.toLowerCase(),
+}));
 
 const networkAddresses = featuredQuestChains.reduce(
   (t: Record<string, string[]>, a: { address: string; chainId: string }) => {
@@ -65,26 +76,27 @@ export const useFeaturedQuestChains = (): {
             graphql.getQuestChainsFromAddresses(chainId, addresses),
           ),
         );
-        const chains = allResults.reduce((t, a) => {
-          // sort the array by the order of the featuredQuestChains
-          a.sort((a, b) => {
-            const aIndex = featuredQuestChains.findIndex(
-              f => f.address === a.address && f.chainId === a.chainId,
-            );
-            const bIndex = featuredQuestChains.findIndex(
-              f => f.address === b.address && f.chainId === b.chainId,
-            );
-            return aIndex - bIndex;
-          });
 
+        const chains = allResults.reduce((t, a) => {
           t.push(...a);
           return t;
         }, []);
 
+        // sort the array by the order of the featured quest chains
+        const sortedChains = chains.sort((a, b) => {
+          const aIndex = featuredQuestChains.findIndex(
+            f => f.address === a.address && f.chainId === a.chainId,
+          );
+          const bIndex = featuredQuestChains.findIndex(
+            f => f.address === b.address && f.chainId === b.chainId,
+          );
+          return aIndex - bIndex;
+        });
+
         if (!isMounted) return;
 
-        // MAX 6 FEATURED
-        setResults(chains.slice(0, 6));
+        // max 6 featured quest chains
+        setResults(sortedChains.slice(0, 6));
       } catch (err) {
         setError(err);
         setResults([]);
