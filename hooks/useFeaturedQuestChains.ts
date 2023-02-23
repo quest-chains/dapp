@@ -5,32 +5,28 @@ import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 const featuredQuestChains = [
   {
-    chainId: '0x5',
-    address: '0x674c8a0e864ccf8906c5e3644e462473918e9362',
-  },
-  {
-    chainId: '0x5',
-    address: '0xe610513b10a238d1f1e54a114f327473af9e08b8',
+    chainId: '0x89',
+    address: '0x9a2684fef5d043bf848999bbf66f0e66c3a4ce80',
   },
   {
     chainId: '0x89',
-    address: '0x0fe8c3464aa12eb43ec3f0322e4631479f16ddd6',
+    address: '0x1ed08e85b948566623cc23c3744e5abe656e9564',
   },
   {
     chainId: '0x89',
-    address: '0x95e95570182da4d7aa9059faa61dabc1be24d2d8',
+    address: '0x6a7f3c7c2c00d169dfdb2a462839a1741942cd78',
   },
   {
     chainId: '0x89',
-    address: '0xe62bda16bc819840e6369fd3b5db528929932b01',
+    address: '0xea512722cc047bfdbe90a1a2750491e89a818ca7',
   },
   {
     chainId: '0x89',
-    address: '0xe388d673dcb58b6216d869801710e498fe37f24c',
+    address: '0x5408dd1a97d69453d768b762ccf64a8098488b34',
   },
   {
     chainId: '0x89',
-    address: '0x7d026f18668db9be9835c4a406afa3d50169cb9e',
+    address: '0xa5c36c62ead5d3551aaf7765ee68e6f0ea3b3e1c',
   },
 ];
 
@@ -64,13 +60,23 @@ export const useFeaturedQuestChains = (): {
     (async () => {
       try {
         setFetching(true);
-
         const allResults = await Promise.all(
           Object.entries(networkAddresses).map(async ([chainId, addresses]) =>
             graphql.getQuestChainsFromAddresses(chainId, addresses),
           ),
         );
         const chains = allResults.reduce((t, a) => {
+          // sort the array by the order of the featuredQuestChains
+          a.sort((a, b) => {
+            const aIndex = featuredQuestChains.findIndex(
+              f => f.address === a.address && f.chainId === a.chainId,
+            );
+            const bIndex = featuredQuestChains.findIndex(
+              f => f.address === b.address && f.chainId === b.chainId,
+            );
+            return aIndex - bIndex;
+          });
+
           t.push(...a);
           return t;
         }, []);
