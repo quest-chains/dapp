@@ -26,11 +26,18 @@ import { contracts, graphql } from '@quest-chains/sdk';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { Categories } from '@/components/CreateChain/Categories';
 import NFTForm from '@/components/CreateChain/NFTForm';
 import { AwardIcon } from '@/components/icons/AwardIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
@@ -55,6 +62,7 @@ import { usePoHs } from '@/hooks/usePoH';
 import { useToggleQuestChainPauseStatus } from '@/hooks/useToggleQuestChainPauseStatus';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
+import { MongoCategory } from '@/lib/mongodb/types';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
@@ -143,9 +151,8 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
   } = useDisclosure();
 
   const [isEditingQuestChain, setEditingQuestChain] = useState(false);
-  const [hasMetadataChanged, setMetadataChanged] = useState(false);
-
   const [isEditingQuests, setEditingQuests] = useState(false);
+  const [hasMetadataChanged, setMetadataChanged] = useState(false);
 
   const [chainNameRef, setChainName] = useInputText(questChain?.name || '');
   const [chainDescRef, setChainDescription] = useInputText(
@@ -165,28 +172,48 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
     onClose: onEditNFTClose,
   } = useDisclosure();
 
+  const categoriesRef = useRef<MongoCategory[]>(
+    (questChain?.categories?.map(c => ({
+      value: c,
+      label: c.charAt(0).toUpperCase() + c.slice(1),
+    })) as MongoCategory[]) || [],
+  );
+  const setCategoriesRef = useCallback((categories: MongoCategory[]) => {
+    categoriesRef.current = categories;
+  }, []);
+
   const checkMetadataChanged = useCallback(() => {
     if (
       hasMetadataChanged &&
       chainNameRef.current === questChain.name &&
-      chainDescRef.current === questChain.description
+      chainDescRef.current === questChain.description &&
+      categoriesRef.current
+        .map(v => v.value)
+        .sort()
+        .join(',') === questChain?.categories?.sort().join(',')
     ) {
       setMetadataChanged(false);
     } else if (
       !hasMetadataChanged &&
       !(
         chainNameRef.current === questChain.name &&
-        chainDescRef.current === questChain.description
+        chainDescRef.current === questChain.description &&
+        categoriesRef.current
+          .map(v => v.value)
+          .sort()
+          .join(',') === questChain?.categories?.sort().join(',')
       )
     ) {
       setMetadataChanged(true);
     }
   }, [
-    hasMetadataChanged,
-    chainNameRef,
+    questChain?.categories,
     questChain.name,
     questChain.description,
+    categoriesRef,
+    chainNameRef,
     chainDescRef,
+    hasMetadataChanged,
   ]);
 
   useEffect(
@@ -289,7 +316,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
       name: chainNameRef.current,
       description: chainDescRef.current,
       slug: questChain?.slug || '',
-      categories: questChain?.categories || [],
+      categories: categoriesRef.current.map(c => c.value),
       image_url: removeCoverImage
         ? undefined
         : questChain.imageUrl ?? undefined,
@@ -757,6 +784,24 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   </>
                 )}
               </Flex>
+
+              {isEditingQuestChain && (
+                <Box mb={3}>
+                  <Categories
+                    setCategories={value => {
+                      setCategoriesRef(value);
+                      checkMetadataChanged();
+                    }}
+                    numberOfCategories={categoriesRef.current.length}
+                    defaultValue={
+                      (questChain?.categories?.map(c => ({
+                        value: c,
+                        label: c.charAt(0).toUpperCase() + c.slice(1),
+                      })) as MongoCategory[]) || []
+                    }
+                  />
+                </Box>
+              )}
 
               {/* quest chain Description */}
               {!isEditingQuestChain && questChain.description && (

@@ -12,11 +12,9 @@ import {
 import { graphql } from '@quest-chains/sdk';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import Select from 'react-select';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
-import { useCategories } from '@/hooks/useCategories';
 import { useDelay } from '@/hooks/useDelay';
 import { useDropImage } from '@/hooks/useDropFiles';
 import { useInputText } from '@/hooks/useInputText';
@@ -26,6 +24,7 @@ import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 import { UploadImageForm } from '../UploadImageForm';
+import { Categories } from './Categories';
 
 const slugify = (str: string) =>
   str
@@ -72,9 +71,6 @@ export const MetadataForm: React.FC<{
 
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
-
-  const { categories: allCategories, fetching: fetchingCategories } =
-    useCategories();
 
   const { isConnected, chainId } = useWallet();
 
@@ -201,47 +197,9 @@ export const MetadataForm: React.FC<{
           </FormControl>
           <FormControl w="full" isRequired={true}>
             <FormLabel htmlFor="category">Category</FormLabel>
-            <Select
-              onChange={v => setCategories(v as MongoCategory[])}
-              isMulti
-              styles={{
-                multiValue: b => ({
-                  ...b,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                }),
-                multiValueLabel: b => ({
-                  ...b,
-                  color: 'white',
-                }),
-                multiValueRemove: b => ({
-                  ...b,
-                  ':hover': { background: ' rgba(255, 255, 255, 0.1)' },
-                }),
-                control: (b, s) => ({
-                  ...b,
-                  color: 'white',
-                  background: '#0F172A',
-                  borderWidth: '1px',
-                  borderColor: s.isFocused ? 'transparent' : 'inherit',
-                  ':hover': {
-                    borderColor: 'rgba(255, 255, 255, 0.24)',
-                  },
-                  boxShadow: s.isFocused ? '0px 0px 0px 2px #ad90ff' : 'none',
-                }),
-                menu: b => ({
-                  ...b,
-                  background: '#0F172A',
-                  border: '1px solid rgba(255, 255, 255, 0.24)',
-                }),
-                option: (b, s) => ({
-                  ...b,
-                  background: s.isFocused
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : '#0F172A',
-                }),
-              }}
-              isLoading={fetchingCategories}
-              options={allCategories}
+            <Categories
+              setCategories={setCategories}
+              numberOfCategories={categories.length}
             />
           </FormControl>
 
