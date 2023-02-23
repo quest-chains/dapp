@@ -81,11 +81,15 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             borderWidth={1}
             borderColor="green.200"
             bgColor="rgba(158, 252, 229, 0.15)"
+            transition="border-color 0.15s, box-shadow 0.15s"
             _hover={{
-              bgColor: 'whiteAlpha.100',
+              background:
+                'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#4A0662',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
               borderColor: 'main',
+              boxShadow: '0px 0px 20px rgba(45, 248, 199, 0.32);',
             }}
-            transition="0.25s"
             px={5}
             py={2}
             borderRadius="full"
