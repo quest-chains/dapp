@@ -51,7 +51,7 @@ export const FilterDropdown: React.FC<{
         borderRadius={16}
         border="1px solid #475569"
         boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-        maxW="200px"
+        maxW="220px"
       >
         <PopoverBody py="11px" pl={4} pr={3}>
           <Flex direction="column">
@@ -62,9 +62,13 @@ export const FilterDropdown: React.FC<{
                 const trueKey = Object.keys(filter).find(
                   k => filter[k] === true,
                 );
-                if (trueKey) {
-                  changes = { [trueKey]: false };
+                if (trueKey && trueKey !== option.value) {
+                  changes = { [trueKey]: false, [option.value]: !checked };
                 }
+              } else {
+                changes = {
+                  [option.value]: !checked,
+                };
               }
 
               return (
@@ -81,13 +85,14 @@ export const FilterDropdown: React.FC<{
                         variant: 'circular',
                         fontSize: 'xs',
                       })}
-                  onChange={() =>
-                    setFilters({
-                      ...filter,
-                      ...changes,
-                      [option.value]: !checked,
-                    })
-                  }
+                  onChange={() => {
+                    if (Object.keys(changes).length > 0) {
+                      setFilters({
+                        ...filter,
+                        ...changes,
+                      });
+                    }
+                  }}
                   flexDirection="row-reverse"
                   justifyContent="space-between"
                   width="100%"

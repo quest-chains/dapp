@@ -174,13 +174,15 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             label="Networks"
           />
         </HStack>
-        <FilterDropdown
-          filter={sortBy}
-          options={SortOptions}
-          setFilters={setSortBy}
-          label="Sort by"
-          isMultiple={false}
-        />
+        <HStack>
+          <FilterDropdown
+            filter={sortBy}
+            options={SortOptions}
+            setFilters={setSortBy}
+            label="Sort by"
+            isMultiple={false}
+          />
+        </HStack>
       </Flex>
 
       <HStack mb={4}>
