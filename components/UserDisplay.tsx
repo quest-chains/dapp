@@ -14,7 +14,8 @@ export const UserDisplay: React.FC<{
   color?: string;
   size?: 'sm' | 'md' | 'lg' | 'xs';
   hasPoH?: boolean;
-}> = ({ address, color = 'white', size = 'md', hasPoH }) => {
+  noLink?: boolean;
+}> = ({ address, color = 'white', size = 'md', hasPoH, noLink }) => {
   const {
     address: walletAddress,
     ens: walletENS,
@@ -49,18 +50,30 @@ export const UserDisplay: React.FC<{
   if (!address) return null;
 
   const name = profile?.username ?? ens ?? address;
-  return (
+
+  const inner = (
+    <Button
+      variant="ghost"
+      size={size}
+      height={8}
+      px={2}
+      _hover={noLink ? {} : undefined}
+    >
+      <HStack position="relative" color={color}>
+        <UserAvatar address={address} profile={profile} size={avatarSize} />
+        <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
+          {isWalletUser ? 'YOURSELF' : displayName}
+        </Text>
+        {hasPoH && !noLink && <PoHBadge address={address} />}
+      </HStack>
+    </Button>
+  );
+  return noLink ? (
+    inner
+  ) : (
     <NextLink as={`/profile/${name}`} href="/profile/[name]" passHref>
       <Link _hover={{}} borderRadius="full">
-        <Button variant="ghost" size={size} height={8} px={2}>
-          <HStack position="relative" color={color}>
-            <UserAvatar address={address} profile={profile} size={avatarSize} />
-            <Text transition="opacity 0.25s" textAlign="left" fontWeight={700}>
-              {isWalletUser ? 'YOURSELF' : displayName}
-            </Text>
-            {hasPoH && <PoHBadge address={address} />}
-          </HStack>
-        </Button>
+        {inner}
       </Link>
     </NextLink>
   );
