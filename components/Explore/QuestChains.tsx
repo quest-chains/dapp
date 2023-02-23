@@ -1,7 +1,7 @@
 'use client';
 
 import { CloseIcon } from '@chakra-ui/icons';
-import { Button, Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
+import { Button, Flex, Grid, HStack, VStack } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import {
   OrderDirection,

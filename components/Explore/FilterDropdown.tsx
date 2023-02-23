@@ -48,12 +48,12 @@ export const FilterDropdown: React.FC<{
       </PopoverTrigger>
       <PopoverContent
         bgColor="#0F172A"
-        borderRadius="8px"
+        borderRadius={16}
         border="1px solid #475569"
         boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
         maxW="200px"
       >
-        <PopoverBody px={0}>
+        <PopoverBody py="11px" pl={4} pr={3}>
           <Flex direction="column">
             {options.map(option => {
               const checked = filter[option.value];
@@ -71,6 +71,7 @@ export const FilterDropdown: React.FC<{
                 <Checkbox
                   key={option.value}
                   isChecked={checked}
+                  borderRadius={4}
                   {...(isMultiple
                     ? {
                         iconColor: 'white',
@@ -91,8 +92,7 @@ export const FilterDropdown: React.FC<{
                   justifyContent="space-between"
                   width="100%"
                   py={2}
-                  pr={5}
-                  pl={3}
+                  pr={2}
                   _hover={{ bg: 'whiteAlpha.100' }}
                 >
                   {option.label}
