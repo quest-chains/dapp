@@ -110,7 +110,7 @@ export const QuestChainTile: React.FC<QuestChainTileProps> = ({
             flex={'1'}
           >
             <Flex ml={-2}>
-              <UserDisplay address={createdBy} size="xs" />
+              <UserDisplay address={createdBy} size="xs" noLink />
             </Flex>
 
             <Flex direction="column" gap={2}>
