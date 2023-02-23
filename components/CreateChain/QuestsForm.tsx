@@ -266,7 +266,7 @@ export const QuestsForm: React.FC<{
             isChecked={startAsDisabled}
             onChange={() => setStartAsDisabled(!startAsDisabled)}
           >
-            <Text fontSize={10}>Start quest chain as disabled</Text>
+            <Text fontSize="xs">Start quest chain as disabled</Text>
           </Checkbox>
         </Tooltip>
       </Flex>

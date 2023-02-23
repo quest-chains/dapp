@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import { SUPPORTED_NETWORKS } from '@/utils/constants';
 
 export const useQuestChainSearchForAllChains = (
-  search: string,
+  search: graphql.QuestChainFiltersInfo,
 ): {
   error: unknown;
   fetching: boolean;
-  results: graphql.QuestChainInfoFragment[];
+  results: graphql.QuestChainDisplayFragment[];
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainDisplayFragment[]>(
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -21,7 +23,7 @@ export const useQuestChainSearchForAllChains = (
         setFetching(true);
         const allResults = await Promise.all(
           SUPPORTED_NETWORKS.map(async chainId =>
-            graphql.getQuestChainsFromSearch(chainId, search),
+            graphql.getQuestChainsFromFilters(chainId, search),
           ),
         );
         if (!isMounted) return;

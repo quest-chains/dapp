@@ -6,14 +6,16 @@ import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { useWallet } from '@/web3';
 
 export const useLatestCreatedQuestChainsDataForAllChains = (): {
-  questChains: graphql.QuestChainInfoFragment[];
+  questChains: graphql.QuestChainDisplayFragment[];
   refresh: () => void;
   fetching: boolean;
   error: unknown;
 } => {
   const [error, setError] = useState<unknown>();
   const [fetching, setFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<graphql.QuestChainInfoFragment[]>([]);
+  const [results, setResults] = useState<graphql.QuestChainDisplayFragment[]>(
+    [],
+  );
 
   const { address } = useWallet();
   const [refreshCount, refresh] = useRefresh();

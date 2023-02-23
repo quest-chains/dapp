@@ -17,7 +17,7 @@ import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
 const {
   getQuestChainAddresses,
-  getQuestChainsFromSlug,
+  getQuestChainFromSlug,
   getStatusesForChain,
   getQuestChainInfo,
 } = graphql;
@@ -146,20 +146,15 @@ export const getStaticProps = async (
   if (address && network) {
     if (ethers.utils.isAddress(address)) {
       try {
-        questStatuses = address
-          ? await getStatusesForChain(network, address)
-          : [];
-        questChain = address ? await getQuestChainInfo(network, address) : null;
+        questStatuses = await getStatusesForChain(network, address);
+        questChain = await getQuestChainInfo(network, address);
       } catch (error) {
         // eslint-disable-next-line no-console
       }
     } else {
       try {
-        const questChainsFromSlug = address
-          ? await getQuestChainsFromSlug(network, address)
-          : null;
+        questChain = await getQuestChainFromSlug(network, address);
 
-        questChain = questChainsFromSlug ? questChainsFromSlug[0] : null;
         if (questChain) {
           questStatuses = await getStatusesForChain(
             network,

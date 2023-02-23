@@ -28,8 +28,8 @@ export const NetworkDisplay: React.FC<
       direction="row"
       align="center"
       letterSpacing={0}
-      {...props}
       color="white"
+      {...props}
     >
       <Image src={image} alt={label} boxSize="1.5rem" {...imageProps} />
       <TextComponent as="span" {...textProps}>

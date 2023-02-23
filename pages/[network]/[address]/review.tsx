@@ -1,7 +1,6 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Flex, Heading, Link as ChakraLink, Text } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
-import { getQuestChainsFromSlug } from '@quest-chains/sdk/dist/graphql';
 import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import NextLink from 'next/link';
@@ -18,8 +17,12 @@ import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatus
 import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
 import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS, useWallet } from '@/web3';
 
-const { getQuestChainAddresses, getQuestChainInfo, getStatusesForChain } =
-  graphql;
+const {
+  getQuestChainAddresses,
+  getQuestChainInfo,
+  getStatusesForChain,
+  getQuestChainFromSlug,
+} = graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -175,21 +178,15 @@ export const getStaticProps = async (
   if (address && network) {
     if (ethers.utils.isAddress(address)) {
       try {
-        questStatuses = address
-          ? await getStatusesForChain(network, address)
-          : [];
-        questChain = address ? await getQuestChainInfo(network, address) : null;
+        questStatuses = await getStatusesForChain(network, address);
+        questChain = await getQuestChainInfo(network, address);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
       }
     } else {
       try {
-        const questChainsFromSlug = address
-          ? await getQuestChainsFromSlug(network, address)
-          : null;
-
-        questChain = questChainsFromSlug ? questChainsFromSlug[0] : null;
+        questChain = await getQuestChainFromSlug(network, address);
         if (questChain) {
           questStatuses = await getStatusesForChain(
             network,
