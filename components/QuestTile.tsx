@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { PowerIcon } from '@/components/icons/PowerIcon';
@@ -116,6 +116,11 @@ export const QuestTile: React.FC<{
   );
 
   const { optional, skipReview, paused } = advSettings;
+
+  const quest = useMemo(
+    () => questChain?.quests.find(q => q.questId === questId),
+    [questId, questChain],
+  );
 
   return (
     <AccordionItem bg={bgColor} borderRadius={10} mb={3} border={0} w="100%">
@@ -229,10 +234,9 @@ export const QuestTile: React.FC<{
           </Flex>
           <AccordionPanel px={6}>
             <MarkdownViewer markdown={description} />
-            {questId && userStatus && questChain && refresh && !isMember && (
+            {quest && userStatus && questChain && refresh && !isMember && (
               <UploadProofButton
-                questId={questId}
-                name={name}
+                quest={quest}
                 questChain={questChain}
                 userStatus={userStatus}
                 refresh={refresh}

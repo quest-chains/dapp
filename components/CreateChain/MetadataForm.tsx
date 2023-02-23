@@ -10,19 +10,21 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { SubmitButton } from '@/components/SubmitButton';
+import { useDelay } from '@/hooks/useDelay';
 import { useDropImage } from '@/hooks/useDropFiles';
 import { useInputText } from '@/hooks/useInputText';
+import { MongoCategory } from '@/lib/mongodb/types';
 import { handleError } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
 import { isSupportedNetwork, useWallet } from '@/web3';
 
 import { UploadImageForm } from '../UploadImageForm';
+import { Categories } from './Categories';
 
 const slugify = (str: string) =>
   str
@@ -42,6 +44,16 @@ const makeId = () => {
   return result;
 };
 
+const fetchValidSlug = async (name: string, chainId: string) => {
+  const slug = slugify(name);
+  const valid = await graphql.validateQuestChainSlug(chainId, slug);
+  if (valid) {
+    return slug;
+  } else {
+    return `${slug}-${makeId()}`;
+  }
+};
+
 export const MetadataForm: React.FC<{
   onBack?: () => void;
   onSubmit: (
@@ -55,36 +67,31 @@ export const MetadataForm: React.FC<{
   const [nameRef, setName] = useInputText();
   const [descRef, setDescription] = useInputText();
   const [slug, setSlug] = useState('');
-  const { getQuestChainsFromSlug } = graphql;
+  const [categories, setCategories] = useState<MongoCategory[]>([]);
 
   const uploadImageProps = useDropImage();
   const { imageFile } = uploadImageProps;
 
   const { isConnected, chainId } = useWallet();
 
-  const [slugAvailable, setSlugAvailable] = useState(true);
-
   const isDisabled =
     !isConnected ||
     !isSupportedNetwork(chainId) ||
-    !slugAvailable ||
-    slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) === null ||
-    ethers.utils.isAddress(slug);
+    !categories.length ||
+    !slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const fetchSearchResults = async (slug: string) => {
-    if (chainId) {
-      const qcFromSlug = await getQuestChainsFromSlug(chainId, slug);
-      if (qcFromSlug.length === 0) {
-        setSlugAvailable(true);
-        setSlug(slug);
-      } else {
-        setSlugAvailable(false);
-        setSlug(`${slug}-${makeId()}`);
+  const updateValidSlug = useCallback(
+    (name: string) => {
+      if (chainId) {
+        fetchValidSlug(name, chainId).then(setSlug);
       }
-    }
-  };
+    },
+    [chainId],
+  );
+
+  const delayedUpdateValidSlug = useDelay(updateValidSlug);
 
   const exportMetadata = useCallback(async () => {
     let tid;
@@ -94,6 +101,7 @@ export const MetadataForm: React.FC<{
         name: nameRef.current,
         description: descRef.current,
         slug,
+        categories: categories.map(c => c.value),
       };
       let imageUrl;
       if (imageFile) {
@@ -118,6 +126,7 @@ export const MetadataForm: React.FC<{
       setName('');
       setDescription('');
       setSlug('');
+      setCategories([]);
     } catch (error) {
       if (tid) {
         toast.dismiss(tid);
@@ -130,11 +139,11 @@ export const MetadataForm: React.FC<{
     nameRef,
     descRef,
     slug,
+    categories,
     onSubmit,
     imageFile,
     setName,
     setDescription,
-    setSlug,
   ]);
 
   const [nameLength, setNameLength] = useState(nameRef.current.length);
@@ -180,10 +189,17 @@ export const MetadataForm: React.FC<{
               maxLength={90}
               onChange={e => {
                 setName(e.target.value);
-                fetchSearchResults(slugify(e.target.value));
                 setNameLength(e.target.value.length);
+                delayedUpdateValidSlug(e.target.value);
               }}
               placeholder="Quest chain name"
+            />
+          </FormControl>
+          <FormControl w="full" isRequired={true}>
+            <FormLabel htmlFor="category">Category</FormLabel>
+            <Categories
+              setCategories={setCategories}
+              numberOfCategories={categories.length}
             />
           </FormControl>
 

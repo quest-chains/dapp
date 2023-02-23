@@ -11,11 +11,11 @@ import {
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
+import SearchQuestChains from '@/components/Explore/SearchQuestChains';
 import { MenuLandingDesktop } from '@/components/Landing/MenuLandingDesktop';
 import { MenuLandingMobile } from '@/components/Landing/MenuLandingMobile';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
-import SearchQuestChains from '@/components/SearchQuestChains';
 
 import { DesktopMenu } from './DesktopMenu';
 import { MobileMenu } from './MobileMenu';
@@ -85,8 +85,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
           w="100%"
           pt="6rem"
           pb={8}
-          px={{ base: 4, sm: 8, lg: 0 }}
-          maxW="8xl"
+          px={{ base: 4, md: 4, lg: 12, xl: 32 }}
+          maxW={{ base: '100rem', '4xl': '125rem' }}
         >
           {children}
         </Flex>
@@ -110,7 +110,7 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
       >
         <ModalOverlay />
         <ModalContent maxW="44rem">
-          <ModalBody py={2} m={4}>
+          <ModalBody py={2} m={4} p={0}>
             <SearchQuestChains onClose={onSearchClose} />
           </ModalBody>
         </ModalContent>

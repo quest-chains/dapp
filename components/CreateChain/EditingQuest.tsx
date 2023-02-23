@@ -91,7 +91,7 @@ export const EditingQuest: React.FC<{
           bg="transparent"
           height={10}
           border="1px solid #9EFCE5"
-          color="#9EFCE5"
+          color="green.200"
           _hover={{
             bg: 'whiteAlpha.200',
           }}

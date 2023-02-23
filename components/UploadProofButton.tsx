@@ -8,28 +8,25 @@ import { UploadProof } from './UploadProof';
 type UploadProofButtonProps = {
   userStatus: UserStatusType;
   questChain: graphql.QuestChainInfoFragment;
-  name: string;
-  questId: string;
+  quest: graphql.QuestInfoFragment;
   refresh: () => void;
 };
 
 export const UploadProofButton: React.FC<UploadProofButtonProps> = ({
   userStatus,
-  questId,
-  name,
+  quest,
   questChain,
   refresh,
 }) => (
   <Flex mt={5}>
     {
       // TODO: Also display prev submissions and reviews here
-      !userStatus[questId]?.status ||
-      userStatus[questId]?.status === 'init' ||
-      userStatus[questId]?.status === 'fail' ? (
+      !userStatus[quest.questId]?.status ||
+      userStatus[quest.questId]?.status === 'init' ||
+      userStatus[quest.questId]?.status === 'fail' ? (
         <UploadProof
           // TODO: move the modal inside this outside so that we don't render a new Modal for each quest
-          questId={questId}
-          name={name}
+          quest={quest}
           questChain={questChain}
           refresh={refresh}
         />
@@ -37,14 +34,18 @@ export const UploadProofButton: React.FC<UploadProofButtonProps> = ({
         <Box>
           <Box
             color={
-              userStatus[questId]?.status === 'review' ? 'pending' : 'main'
+              userStatus[quest.questId]?.status === 'review'
+                ? 'pending'
+                : 'main'
             }
             border="1px solid"
             borderColor={
-              userStatus[questId]?.status === 'review' ? 'pending' : 'main'
+              userStatus[quest.questId]?.status === 'review'
+                ? 'pending'
+                : 'main'
             }
             bgColor={
-              userStatus[questId]?.status === 'review'
+              userStatus[quest.questId]?.status === 'review'
                 ? '#EFFF8F20'
                 : 'main.100'
             }
@@ -52,7 +53,7 @@ export const UploadProofButton: React.FC<UploadProofButtonProps> = ({
             borderRadius={6}
             fontSize="sm"
           >
-            {userStatus[questId]?.status === 'review'
+            {userStatus[quest.questId]?.status === 'review'
               ? 'Review Pending'
               : 'Accepted'}
           </Box>
