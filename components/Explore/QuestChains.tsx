@@ -1,7 +1,5 @@
-'use client';
-
 import { CloseIcon } from '@chakra-ui/icons';
-import { Button, Flex, Grid, HStack, VStack } from '@chakra-ui/react';
+import { Button, Flex, Grid, HStack, Text, VStack } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import {
   OrderDirection,
@@ -150,7 +148,14 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   }
 
   return (
-    <Flex alignItems="flex-start" gap={4} w="full" direction="column" mt={0}>
+    <Flex
+      alignItems="flex-start"
+      gap={4}
+      w="full"
+      direction="column"
+      mt={0}
+      flex={1}
+    >
       <Flex
         w="full"
         justifyContent="space-between"
@@ -174,18 +179,17 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             label="Networks"
           />
         </HStack>
-        <HStack>
-          <FilterDropdown
-            filter={sortBy}
-            options={SortOptions}
-            setFilters={setSortBy}
-            label="Sort by"
-            isMultiple={false}
-          />
-        </HStack>
+        <FilterDropdown
+          filter={sortBy}
+          options={SortOptions}
+          setFilters={setSortBy}
+          label="Sort by"
+          isMultiple={false}
+          placement="bottom-end"
+        />
       </Flex>
 
-      <HStack mb={4}>
+      <HStack mb={4} wrap="wrap">
         {categoryOptions.map(opt =>
           categories[opt.value] ? (
             <FilterButton
@@ -207,23 +211,32 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           ) : null,
         )}
         {numFilters > 1 && (
-          <Button
-            bgColor="transparent"
-            borderRadius="full"
-            px={6}
-            borderColor="green.900"
-            borderWidth={1}
+          <FilterButton
             onClick={resetFilters}
-            fontSize="sm"
-          >
-            Clear all
-          </Button>
+            label="Clear all"
+            showIcon={false}
+          />
         )}
       </HStack>
 
-      <VStack w="full" gap={4} flex={1}>
-        {fetching && <LoadingState my={12} />}
+      {(fetching || error || results.length === 0) && (
+        <VStack width="100%" justify="center" flex={1} className="test">
+          <>
+            {fetching && <LoadingState />}
+            {!fetching && error && (
+              <Text>Something went wrong. Please refresh and try again.</Text>
+            )}
 
+            {!fetching && !error && results.length === 0 && (
+              <Text>
+                No quest chains found for the given search criteria. Please
+                remove some filters and try again.
+              </Text>
+            )}
+          </>
+        </VStack>
+      )}
+      {!fetching && !error && results.length > 0 && (
         <Grid
           gap={5}
           templateColumns={{
@@ -232,40 +245,37 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             lg: 'repeat(3, minmax(0, 1fr))',
             '2xl': 'repeat(4, minmax(0, 1fr))',
           }}
-          maxW="full"
+          w="100%"
         >
-          {!fetching &&
-            !error &&
-            results.length > 0 &&
-            results.map(
-              ({
-                address,
-                name,
-                description,
-                slug,
-                chainId,
-                numQuests,
-                imageUrl,
-                createdBy,
-              }) => (
-                <QuestChainTile
-                  {...{
-                    address,
-                    name,
-                    description,
-                    slug,
-                    chainId,
-                    createdBy: createdBy.id,
-                    quests: numQuests,
-                    imageUrl,
-                    onClick: onClose,
-                  }}
-                  key={address}
-                />
-              ),
-            )}
+          {results.map(
+            ({
+              address,
+              name,
+              description,
+              slug,
+              chainId,
+              numQuests,
+              imageUrl,
+              createdBy,
+            }) => (
+              <QuestChainTile
+                {...{
+                  address,
+                  name,
+                  description,
+                  slug,
+                  chainId,
+                  createdBy: createdBy.id,
+                  quests: numQuests,
+                  imageUrl,
+                  onClick: onClose,
+                }}
+                key={address}
+              />
+            ),
+          )}
         </Grid>
-      </VStack>
+      )}
     </Flex>
   );
 };
@@ -273,21 +283,21 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
 const FilterButton: React.FC<{
   label: string;
   onClick: () => void;
+  showIcon?: boolean;
   bgColor?: string;
-}> = ({ label, onClick, bgColor = '#0F2E27' }) => (
+}> = ({ label, onClick, bgColor = '#0F2E27', showIcon = true }) => (
   <Button
     bgColor={bgColor}
     borderRadius="full"
-    px={6}
     borderColor="green.900"
     borderWidth={1}
     alignItems="center"
     onClick={onClick}
-    leftIcon={<CloseIcon boxSize={2} />}
-    fontSize="sm"
-    gap={2}
+    px={{ base: 4, md: 6 }}
+    size={{ base: 'sm', md: 'md' }}
+    leftIcon={showIcon ? <CloseIcon boxSize={2} /> : undefined}
   >
-    {label}
+    <Text fontSize={{ base: 'xs', md: 'sm' }}>{label} </Text>
   </Button>
 );
 
