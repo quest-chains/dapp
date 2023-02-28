@@ -148,7 +148,14 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   }
 
   return (
-    <Flex alignItems="flex-start" gap={4} w="full" direction="column" mt={0}>
+    <Flex
+      alignItems="flex-start"
+      gap={4}
+      w="full"
+      direction="column"
+      mt={0}
+      flex={1}
+    >
       <Flex
         w="full"
         justifyContent="space-between"
@@ -212,61 +219,63 @@ const QuestChains: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         )}
       </HStack>
 
-      <VStack w="100%" gap={4} flex={1}>
-        <>
-          {fetching && <LoadingState my={12} />}
-          {!fetching && error && (
-            <Text>Something went wrong. Please refresh and try again.</Text>
-          )}
+      {(fetching || error || results.length === 0) && (
+        <VStack width="100%" justify="center" flex={1} className="test">
+          <>
+            {fetching && <LoadingState />}
+            {!fetching && error && (
+              <Text>Something went wrong. Please refresh and try again.</Text>
+            )}
 
-          {!fetching && !error && results.length === 0 && (
-            <Text>
-              No quest chains found for the given search criteria. Please remove
-              some filters and try again.
-            </Text>
-          )}
-          {!fetching && !error && results.length > 0 && (
-            <Grid
-              gap={5}
-              templateColumns={{
-                base: 'repeat(1, 100%)',
-                md: 'repeat(2, minmax(0, 1fr))',
-                lg: 'repeat(3, minmax(0, 1fr))',
-                '2xl': 'repeat(4, minmax(0, 1fr))',
-              }}
-              w="100%"
-            >
-              {results.map(
-                ({
+            {!fetching && !error && results.length === 0 && (
+              <Text>
+                No quest chains found for the given search criteria. Please
+                remove some filters and try again.
+              </Text>
+            )}
+          </>
+        </VStack>
+      )}
+      {!fetching && !error && results.length > 0 && (
+        <Grid
+          gap={5}
+          templateColumns={{
+            base: 'repeat(1, 100%)',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'repeat(3, minmax(0, 1fr))',
+            '2xl': 'repeat(4, minmax(0, 1fr))',
+          }}
+          w="100%"
+        >
+          {results.map(
+            ({
+              address,
+              name,
+              description,
+              slug,
+              chainId,
+              numQuests,
+              imageUrl,
+              createdBy,
+            }) => (
+              <QuestChainTile
+                {...{
                   address,
                   name,
                   description,
                   slug,
                   chainId,
-                  numQuests,
+                  createdBy: createdBy.id,
+                  quests: numQuests,
                   imageUrl,
-                  createdBy,
-                }) => (
-                  <QuestChainTile
-                    {...{
-                      address,
-                      name,
-                      description,
-                      slug,
-                      chainId,
-                      createdBy: createdBy.id,
-                      quests: numQuests,
-                      imageUrl,
-                      onClick: onClose,
-                    }}
-                    key={address}
-                  />
-                ),
-              )}
-            </Grid>
+                  onClick: onClose,
+                }}
+                key={address}
+              />
+            ),
           )}
-        </>
-      </VStack>
+        </Grid>
+      )}
     </Flex>
   );
 };
