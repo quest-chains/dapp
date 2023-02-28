@@ -23,6 +23,7 @@ export const FilterDropdown: React.FC<{
   label: string;
   isMultiple?: boolean;
   placement?: PopoverProps['placement'];
+  showSelected?: boolean;
 }> = ({
   filter,
   options,
@@ -30,6 +31,7 @@ export const FilterDropdown: React.FC<{
   label,
   isMultiple = true,
   placement = 'bottom-start',
+  showSelected = false,
 }) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
 
@@ -69,7 +71,7 @@ export const FilterDropdown: React.FC<{
             size={{ base: 'md', md: 'lg' }}
           >
             <Text fontSize="sm">{isMultiple ? label : trueLabel ?? label}</Text>
-            {isMultiple && numSelected !== 0 && (
+            {isMultiple && numSelected !== 0 && showSelected && (
               <Flex
                 justify="center"
                 align="center"
