@@ -84,7 +84,7 @@ export const DesktopMenu: React.FC<{ onSearchOpen: () => void }> = ({
             transition="border-color 0.15s, box-shadow 0.15s"
             _hover={{
               background:
-                'linear-gradient(180deg, rgba(0, 0, 0, 0.6) 24.63%, rgba(0, 0, 0, 0.95) 70.9%),#4A0662',
+                'linear-gradient(180deg, rgba(0, 0, 0, 0.3) 24.63%, rgba(0, 0, 0, 0.5) 70.9%),rgba(158, 252, 229, 0.15)',
               backgroundPosition: 'center',
               backgroundSize: 'cover',
               borderColor: 'main',
