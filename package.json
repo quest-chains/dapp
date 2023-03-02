@@ -16,7 +16,7 @@
     "@chakra-ui/react": "^2.4.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@quest-chains/sdk": "0.2.7",
+    "@quest-chains/sdk": "0.2.8",
     "@react-three/drei": "9.26.1",
     "@react-three/fiber": "8.7.1",
     "@walletconnect/web3-provider": "^1.8.0",
