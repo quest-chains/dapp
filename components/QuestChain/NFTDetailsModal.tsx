@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Grid,
   Image,
@@ -9,8 +8,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text,
-  Tooltip,
 } from '@chakra-ui/react';
 import { graphql } from '@quest-chains/sdk';
 import { useCallback } from 'react';
@@ -19,6 +16,8 @@ import { toast } from 'react-hot-toast';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { formatAddress } from '@/web3';
+
+import { NFTDetail } from './NFTDetail';
 
 export const NFTDetailsModal: React.FC<{
   questChain: graphql.QuestChainInfoFragment;
@@ -52,6 +51,7 @@ export const NFTDetailsModal: React.FC<{
               gap={2}
               w="100%"
               alignItems="center"
+              pt={2}
             >
               <NFTDetail
                 label="Address"
@@ -71,46 +71,3 @@ export const NFTDetailsModal: React.FC<{
     </Modal>
   );
 };
-
-const NFTDetail: React.FC<{
-  label: string;
-  value: string;
-  tooltip?: string;
-  onCopy: () => void;
-}> = ({ label, value, tooltip, onCopy }) => (
-  <>
-    <Text fontWeight="bold" textAlign="right" fontSize="lg">
-      {label}
-    </Text>
-    <Flex
-      align="center"
-      justify="space-between"
-      bg="blackAlpha.400"
-      p={2}
-      borderRadius={6}
-    >
-      {tooltip ? (
-        <Tooltip label={tooltip} minW="370px" p={3}>
-          <Text fontWeight="bold" ml={2}>
-            {value}
-          </Text>
-        </Tooltip>
-      ) : (
-        <Text fontWeight="bold" ml={2}>
-          {value}
-        </Text>
-      )}
-      <Button
-        bgColor="green.400"
-        color="black"
-        borderRadius="6"
-        px="1.25rem"
-        size="sm"
-        _hover={{ bgColor: 'green.700' }}
-        onClick={onCopy}
-      >
-        Copy
-      </Button>
-    </Flex>
-  </>
-);

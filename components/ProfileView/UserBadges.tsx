@@ -15,7 +15,8 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
 
 import { MastodonShareButton } from '@/components/MastodonShareButton';
@@ -23,22 +24,19 @@ import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { TokenImageOrVideo } from '@/components/TokenImage/TokenImageOrVideo';
 import { useUserBadgesForAllChains } from '@/hooks/useUserBadgesForAllChains';
 import { QUESTCHAINS_URL } from '@/utils/constants';
+import { formatAddress } from '@/web3';
 
 import { TwitterIcon } from '../icons/TwitterIcon';
+import { NFTDetail } from '../QuestChain/NFTDetail';
 
 type QuestChainBadgeInfo = {
   chainId: string;
   name?: string | null | undefined;
   description?: string | null | undefined;
   chainAddress: string;
+  tokenAddress?: string | null | undefined;
+  tokenId?: string | null | undefined;
   imageUrl: string;
-};
-
-type NFT = {
-  imageUrl: string;
-  chainId: string;
-  name: string | null | undefined;
-  chainAddress: string;
 };
 
 export const UserBadges: React.FC<{
@@ -51,6 +49,10 @@ export const UserBadges: React.FC<{
     onOpen: onOpenSeeAll,
     onClose: onCloseSeeAll,
   } = useDisclosure();
+  const copyToClipboard = useCallback((value: string) => {
+    navigator.clipboard.writeText(value);
+    toast.success('Copied to clipboard');
+  }, []);
 
   const badges: QuestChainBadgeInfo[] = useMemo(
     () =>
@@ -68,7 +70,7 @@ export const UserBadges: React.FC<{
     [userBadges],
   );
 
-  const [selectedNFT, setSelectedNFT] = useState<NFT>({
+  const [selectedNFT, setSelectedNFT] = useState<QuestChainBadgeInfo>({
     imageUrl: '',
     chainId: '',
     name: '',
@@ -109,27 +111,20 @@ export const UserBadges: React.FC<{
               No badges found
             </Text>
           )}
-          {badges
-            ?.slice(0, 4)
-            .map(({ chainId, name, imageUrl, chainAddress }) => (
-              <VStack
-                key={address}
-                gap={3}
-                alignItems="center"
-                onClick={() => {
-                  onOpen();
-                  setSelectedNFT({
-                    imageUrl,
-                    chainId,
-                    name,
-                    chainAddress,
-                  });
-                }}
-                cursor="pointer"
-              >
-                <TokenImageOrVideo uri={imageUrl} w="16rem" height="16rem" />
-              </VStack>
-            ))}
+          {badges?.slice(0, 4).map(b => (
+            <VStack
+              key={address}
+              gap={3}
+              alignItems="center"
+              onClick={() => {
+                onOpen();
+                setSelectedNFT(b);
+              }}
+              cursor="pointer"
+            >
+              <TokenImageOrVideo uri={b.imageUrl} w="16rem" height="16rem" />
+            </VStack>
+          ))}
         </HStack>
       )}
 
@@ -196,6 +191,27 @@ export const UserBadges: React.FC<{
                 w="25rem"
                 height="25rem"
               />
+              <Grid
+                templateColumns="1fr 4fr"
+                gap={2}
+                w="100%"
+                alignItems="center"
+                pt={2}
+              >
+                <NFTDetail
+                  label="Address"
+                  value={formatAddress(selectedNFT?.tokenAddress ?? '')}
+                  tooltip={selectedNFT?.tokenAddress ?? ''}
+                  onCopy={() =>
+                    copyToClipboard(selectedNFT?.tokenAddress ?? '')
+                  }
+                />
+                <NFTDetail
+                  label="ID"
+                  value={selectedNFT?.tokenId ?? ''}
+                  onCopy={() => copyToClipboard(selectedNFT?.tokenId ?? '')}
+                />
+              </Grid>
             </VStack>
           </ModalBody>
         </ModalContent>
