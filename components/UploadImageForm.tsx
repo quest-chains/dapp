@@ -37,7 +37,7 @@ export const UploadImageForm = ({
   label?: string;
   labelColor?: string;
   formControlProps?: FormControlProps;
-  imageProps?: Omit<ImageProps, 'src'> & BoxProps;
+  imageProps?: Omit<ImageProps, 'src' | 'alt'> & BoxProps;
   isDisabled?: boolean;
   errorMessage?: string;
   helperText?: string;

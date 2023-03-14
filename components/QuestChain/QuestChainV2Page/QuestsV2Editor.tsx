@@ -1,7 +1,7 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Accordion, Box, Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { TransactionReceipt } from '@ethersproject/providers';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -23,7 +23,7 @@ import { uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-export const QuestsEditor: React.FC<{
+export const QuestsV2Editor: React.FC<{
   onExit: () => void;
   refresh: () => void;
   questChain: graphql.QuestChainInfoFragment;
@@ -97,7 +97,7 @@ export const QuestsEditor: React.FC<{
   const onEdit = useCallback(
     async (
       contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionReceipt]> => {
+    ): Promise<[string, TransactionReceipt]> => {
       let tid = toast.loading('Updating Quests, please wait...');
       const newQuests: {
         questId: number;
@@ -146,7 +146,7 @@ export const QuestsEditor: React.FC<{
   const onAdd = useCallback(
     async (
       contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionReceipt]> => {
+    ): Promise<[string, TransactionReceipt]> => {
       let tid = toast.loading('Adding Quests, please wait...');
       const newQuests: {
         questId: number;
@@ -181,7 +181,7 @@ export const QuestsEditor: React.FC<{
   const onConfigure = useCallback(
     async (
       contract: contracts.V2.QuestChain,
-    ): Promise<[string, providers.TransactionReceipt]> => {
+    ): Promise<[string, TransactionReceipt]> => {
       let tid = toast.loading('Configuring Quests, please wait...');
       const newQuests: {
         questId: number;
@@ -277,7 +277,7 @@ export const QuestsEditor: React.FC<{
 
     let tid = '';
     try {
-      let receipt: providers.TransactionReceipt | undefined;
+      let receipt: TransactionReceipt | undefined;
       const contract = getQuestChainContract(
         questChain.address,
         questChain.version,

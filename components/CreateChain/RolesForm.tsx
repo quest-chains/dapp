@@ -14,7 +14,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { ethers } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -285,12 +285,12 @@ const Roles: React.FC<{
           />
           <InputRightElement w="4.5rem">
             <Tooltip
-              isDisabled={ethers.utils.isAddress(newAddress)}
+              isDisabled={isAddress(newAddress)}
               label="Please input a valid address"
               shouldWrapChildren
             >
               <IconButton
-                isDisabled={!ethers.utils.isAddress(newAddress)}
+                isDisabled={!isAddress(newAddress)}
                 onClick={() => {
                   if (members.find(member => member.address === newAddress)) {
                     toast.error('Address has already been added');

@@ -1,7 +1,8 @@
 import { BoxProps, Image as ChakraImage } from '@chakra-ui/react';
-import NoImageAvailable from 'assets/no-image-available.svg';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ipfsUriToHttp } from 'utils/uriHelpers';
+
+import NoImageAvailable from '@/assets/no-image-available.svg';
+import { ipfsUriToHttp } from '@/utils/uriHelpers';
 
 import { ImageOrVideo } from './ImageOrVideo';
 

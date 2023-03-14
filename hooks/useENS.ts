@@ -1,12 +1,14 @@
-import { constants, utils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect, useState } from 'react';
 
 import { getEthersProvider } from '@/web3/providers';
 
+const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+
 export const fetchENSFromAddress = async (
   address: string | null | undefined,
 ): Promise<string | null> => {
-  if (!address || !utils.isAddress(address)) return null;
+  if (!address || !isAddress(address)) return null;
   const ethProvider = getEthersProvider('0x1');
   if (!ethProvider) return null;
 
@@ -54,7 +56,7 @@ export const fetchAddressFromENS = async (
   if (!ethProvider) return null;
 
   const addr = await ethProvider.resolveName(name);
-  return constants.AddressZero === addr ? null : addr;
+  return ADDRESS_ZERO === addr ? null : addr;
 };
 
 export const useAddressFromENS = (
@@ -97,7 +99,7 @@ export const fetchAvatarFromAddressOrENS = async (
   if (!ethProvider) return null;
 
   let ens: string | null = null;
-  if (utils.isAddress(name)) {
+  if (isAddress(name)) {
     ens = await ethProvider.lookupAddress(name);
   } else {
     ens = name;

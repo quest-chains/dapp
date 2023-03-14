@@ -72,8 +72,9 @@ import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
 import { NFTDetailsModal } from '../NFTDetailsModal';
+import { QuestsV1Editor } from '../QuestChainV1Page/QuestsV1Editor';
 import { RolesEditor } from '../RolesEditor';
-import { QuestsEditor } from './QuestsEditor';
+import { QuestsV2Editor } from './QuestsV2Editor';
 
 const { Status } = graphql;
 
@@ -1122,11 +1123,21 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                     </Flex>
 
                     {isEditingQuests ? (
-                      <QuestsEditor
-                        refresh={refresh}
-                        questChain={questChain}
-                        onExit={() => setEditingQuests(false)}
-                      />
+                      <>
+                        {questChain.version === '1' ? (
+                          <QuestsV1Editor
+                            refresh={refresh}
+                            questChain={questChain}
+                            onExit={() => setEditingQuests(false)}
+                          />
+                        ) : (
+                          <QuestsV2Editor
+                            refresh={refresh}
+                            questChain={questChain}
+                            onExit={() => setEditingQuests(false)}
+                          />
+                        )}
+                      </>
                     ) : (
                       <Accordion allowMultiple w="full" defaultIndex={[]}>
                         {questChain.quests

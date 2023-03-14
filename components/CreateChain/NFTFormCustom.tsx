@@ -83,7 +83,7 @@ const CustomNFTForm2D: React.FC<{
       <Flex flexDir="column" w={{ md: 'xl' }} alignSelf="center">
         <UploadImageForm
           {...uploadImageProps}
-          imageProps={{ height: '16rem' }}
+          imageProps={{ height: '256' }}
           formControlProps={{ mb: '4' }}
         />
         <FormControl isRequired>

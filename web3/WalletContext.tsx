@@ -1,6 +1,6 @@
+import { ExternalProvider, Web3Provider } from '@ethersproject/providers';
 import { graphql } from '@quest-chains/sdk';
 import { GlobalInfoFragment } from '@quest-chains/sdk/dist/graphql';
-import { providers } from 'ethers';
 import {
   createContext,
   useCallback,
@@ -26,7 +26,7 @@ import { CHAIN_ID, SUPPORTED_NETWORK_INFO } from './networks';
 import { WEB3_MODAL_OPTIONS } from './options';
 
 export type WalletContextType = {
-  provider: providers.Web3Provider | null | undefined;
+  provider: Web3Provider | null | undefined;
   chainId: string | null | undefined;
   address: string | null | undefined;
   ens: string | null | undefined;
@@ -58,7 +58,7 @@ export const WalletContext = createContext<WalletContextType>({
 });
 
 type WalletStateType = {
-  provider?: providers.Web3Provider | null;
+  provider?: Web3Provider | null;
   chainId?: string | null;
   address?: string | null;
   isMetaMask?: boolean;
@@ -113,8 +113,8 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   }, []);
 
   const setWalletProvider = useCallback(
-    async (prov: providers.ExternalProvider, onlyNetworkChange = false) => {
-      const ethersProvider = new providers.Web3Provider(prov);
+    async (prov: ExternalProvider, onlyNetworkChange = false) => {
+      const ethersProvider = new Web3Provider(prov);
       const network = (await ethersProvider.getNetwork()).chainId;
       const chainId = `0x${network.toString(16)}`;
 

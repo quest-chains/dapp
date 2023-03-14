@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 
 import clientPromise from '@/lib/mongodb/client';
 import { MongoUser } from '@/lib/mongodb/types';
@@ -13,7 +13,7 @@ export const fetchProfileFromName = async (
     };
 
   const query: { address?: string; username?: string } = {};
-  if (utils.isAddress(name)) {
+  if (isAddress(name)) {
     query.address = name.toLowerCase();
   } else if (name.length >= 3) {
     query.username = name;
