@@ -117,6 +117,6 @@ export const Footer: React.FC = () => (
         <IconLink key={l.href} {...l} />
       ))}
     </HStack>
-    <Text>2022 © Quest Chains.</Text>
+    <Text>2023 © Quest Chains.</Text>
   </VStack>
 );
