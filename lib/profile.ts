@@ -33,7 +33,7 @@ export const fetchProfileFromName = async (
 
     if (!user)
       return {
-        status: 404,
+        status: 204,
         user: null,
       };
 
