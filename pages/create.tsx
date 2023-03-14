@@ -11,9 +11,9 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
+import { randomBytes } from '@ethersproject/random';
 import { contracts } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
-import { utils } from 'ethers';
 import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -163,7 +163,7 @@ const Create: React.FC = () => {
         );
         const tx = await factoryContract.createAndUpgrade(
           info,
-          utils.randomBytes(32),
+          randomBytes(32),
         );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);

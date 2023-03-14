@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { hexValue } from '@ethersproject/bytes';
 
 import { SUPPORTED_NETWORK_INFO } from './networks';
 
@@ -24,7 +24,7 @@ export const switchChainOnMetaMask = async (
       method: 'wallet_switchEthereumChain',
       params: [
         {
-          chainId: utils.hexValue(chainId),
+          chainId: hexValue(chainId),
         },
       ],
     });
@@ -37,7 +37,7 @@ export const switchChainOnMetaMask = async (
           method: 'wallet_addEthereumChain',
           params: [
             {
-              chainId: utils.hexValue(chainId),
+              chainId: hexValue(chainId),
               chainName: name,
               nativeCurrency: {
                 name: symbol,

@@ -1,7 +1,7 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Accordion, Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { TransactionResponse } from '@ethersproject/providers';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { providers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -16,7 +16,7 @@ import { uploadMetadata } from '@/utils/metadata';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
-export const QuestsEditor: React.FC<{
+export const QuestsV1Editor: React.FC<{
   onExit: () => void;
   refresh: () => void;
   questChain: graphql.QuestChainInfoFragment;
@@ -69,7 +69,7 @@ export const QuestsEditor: React.FC<{
   const onAdd = useCallback(
     async (
       contract: contracts.V1.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
+    ): Promise<[string, TransactionResponse]> => {
       let tid = toast.loading('Uploading Quests, please wait...');
 
       const newQuestDetails = await Promise.all(
@@ -91,7 +91,7 @@ export const QuestsEditor: React.FC<{
   const onEdit = useCallback(
     async (
       contract: contracts.V1.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
+    ): Promise<[string, TransactionResponse]> => {
       let tid = toast.loading('Uploading Quests, please wait...');
       const newQuests: {
         questId: number;
@@ -131,7 +131,7 @@ export const QuestsEditor: React.FC<{
   const onPause = useCallback(
     async (
       contract: contracts.V1.QuestChain,
-    ): Promise<[string, providers.TransactionResponse]> => {
+    ): Promise<[string, TransactionResponse]> => {
       const tid = toast.loading(
         'Waiting for Confirmation - Confirm the transaction in your Wallet',
       );
@@ -205,7 +205,7 @@ export const QuestsEditor: React.FC<{
     setSaving(true);
 
     let tid = '';
-    let tx: providers.TransactionResponse | null;
+    let tx: TransactionResponse | null;
     try {
       const contract = getQuestChainContract(
         questChain.address,

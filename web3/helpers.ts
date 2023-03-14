@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { getAddress } from '@ethersproject/address';
 
 import {
   AVAILABLE_NETWORK_INFO,
@@ -13,7 +13,7 @@ export const formatAddress = (
 ): string => {
   if (ensName) return ensName;
   else if (address) {
-    address = utils.getAddress(address); // eslint-disable-line no-param-reassign
+    address = getAddress(address); // eslint-disable-line no-param-reassign
     return `${address.slice(0, chars)}...${address.slice(
       address.length - chars,
     )}`;

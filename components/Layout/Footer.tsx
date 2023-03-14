@@ -44,16 +44,16 @@ const TextLink = ({ label, href, external }: TextLinkType) =>
       {label}
     </ChakraLink>
   ) : (
-    <NextLink href={href} passHref>
-      <ChakraLink
-        color="main"
-        borderBottom="1px solid"
-        borderBottomColor="main"
-        _hover={{ borderBottomColor: 'white' }}
-      >
-        {label}
-      </ChakraLink>
-    </NextLink>
+    <ChakraLink
+      as={NextLink}
+      href={href}
+      color="main"
+      borderBottom="1px solid"
+      borderBottomColor="main"
+      _hover={{ borderBottomColor: 'white' }}
+    >
+      {label}
+    </ChakraLink>
   );
 
 type IconLinkType = {
@@ -83,11 +83,14 @@ const IconLink = ({ Icon, href, external }: IconLinkType) =>
       <Icon />
     </ChakraLink>
   ) : (
-    <NextLink href={href} passHref>
-      <ChakraLink color="white" _hover={{ color: 'main' }}>
-        <Icon />
-      </ChakraLink>
-    </NextLink>
+    <ChakraLink
+      as={NextLink}
+      href={href}
+      color="white"
+      _hover={{ color: 'main' }}
+    >
+      <Icon />
+    </ChakraLink>
   );
 
 export const Footer: React.FC = () => (
@@ -117,6 +120,6 @@ export const Footer: React.FC = () => (
         <IconLink key={l.href} {...l} />
       ))}
     </HStack>
-    <Text>2022 © Quest Chains.</Text>
+    <Text>2023 © Quest Chains.</Text>
   </VStack>
 );

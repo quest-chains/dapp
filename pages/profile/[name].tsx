@@ -14,7 +14,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { utils } from 'ethers';
+import { getAddress, isAddress } from '@ethersproject/address';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
@@ -55,7 +55,7 @@ const Profile: React.FC<Props> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { onCopy, hasCopied } = useClipboard(
-    utils.isAddress(profileAddress) ? utils.getAddress(profileAddress) : '',
+    isAddress(profileAddress) ? getAddress(profileAddress) : '',
   );
 
   if (isFallback || fetching || (!profile && !!inputProfile))
@@ -162,14 +162,14 @@ export const getStaticProps = async (
     fetchAddressFromENS(name),
     fetchENSFromAddress(name),
   ]);
-  const isENS = utils.isAddress(name) ? false : address ? true : false;
+  const isENS = isAddress(name) ? false : address ? true : false;
 
   const { user: profile } = await fetchProfileFromName(
     isENS && address ? address : name,
   );
 
   const profileAddress = (
-    utils.isAddress(name) ? name : profile?.address ?? address ?? ''
+    isAddress(name) ? name : profile?.address ?? address ?? ''
   ).toLowerCase();
 
   const profileENS = isENS ? name : ens ?? '';

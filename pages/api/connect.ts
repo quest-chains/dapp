@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { verifyToken } from '@/lib/auth';
@@ -13,7 +13,7 @@ export const connect = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const address = verifyToken(token);
 
-  if (!address || !utils.isAddress(address)) return res.status(401).end();
+  if (!address || !isAddress(address)) return res.status(401).end();
 
   const client = await clientPromise;
 

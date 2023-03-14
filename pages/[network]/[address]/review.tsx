@@ -1,7 +1,7 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Flex, Heading, Link as ChakraLink, Text } from '@chakra-ui/react';
+import { isAddress } from '@ethersproject/address';
 import { graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -176,7 +176,7 @@ export const getStaticProps = async (
   }
 
   if (address && network) {
-    if (ethers.utils.isAddress(address)) {
+    if (isAddress(address)) {
       try {
         questStatuses = await getStatusesForChain(network, address);
         questChain = await getQuestChainInfo(network, address);

@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { Db } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -28,8 +28,7 @@ export const authHandler =
 
       const address = verifyToken(token);
 
-      if (!address || !utils.isAddress(address))
-        throw new Error('invalid address');
+      if (!address || !isAddress(address)) throw new Error('invalid address');
 
       const user = (await client
         .collection('users')

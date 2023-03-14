@@ -10,8 +10,8 @@ import {
   Text,
   Tooltip,
 } from '@chakra-ui/react';
+import { isAddress } from '@ethersproject/address';
 import { contracts, graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -217,12 +217,12 @@ export const RolesEditor: React.FC<{
             />
             <InputRightAddon bg="none" border="none" p="0">
               <Tooltip
-                isDisabled={ethers.utils.isAddress(newAddress)}
+                isDisabled={isAddress(newAddress)}
                 label="Please input a valid address"
                 shouldWrapChildren
               >
                 <IconButton
-                  isDisabled={!ethers.utils.isAddress(newAddress)}
+                  isDisabled={!isAddress(newAddress)}
                   onClick={() => {
                     if (
                       Object.keys(members).find(member => member === newAddress)

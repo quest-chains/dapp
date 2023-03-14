@@ -1,4 +1,4 @@
-import { providers } from 'ethers';
+import { Web3Provider } from '@ethersproject/providers';
 
 import { createToken, verifyToken } from '@/lib/auth';
 import {
@@ -9,7 +9,7 @@ import {
 } from '@/utils/storageHelpers';
 
 const getExistingToken = async (
-  provider: providers.Web3Provider,
+  provider: Web3Provider,
 ): Promise<string | null> => {
   const tokenFromStorage = getFromStorage(STORAGE_KEYS.AUTH_TOKEN);
   if (!tokenFromStorage) return null;
@@ -32,7 +32,7 @@ const getExistingToken = async (
 };
 
 export const authenticateWallet = async (
-  provider: providers.Web3Provider,
+  provider: Web3Provider,
 ): Promise<string> => {
   const existingToken = await getExistingToken(provider);
   const token = existingToken ?? (await createToken(provider));
