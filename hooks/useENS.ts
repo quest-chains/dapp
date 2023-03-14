@@ -1,9 +1,8 @@
 import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect, useState } from 'react';
 
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { getEthersProvider } from '@/web3/providers';
-
-const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const fetchENSFromAddress = async (
   address: string | null | undefined,
@@ -56,7 +55,7 @@ export const fetchAddressFromENS = async (
   if (!ethProvider) return null;
 
   const addr = await ethProvider.resolveName(name);
-  return ADDRESS_ZERO === addr ? null : addr;
+  return ZERO_ADDRESS === addr ? null : addr;
 };
 
 export const useAddressFromENS = (

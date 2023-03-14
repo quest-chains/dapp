@@ -2,12 +2,11 @@ import { Box } from '@chakra-ui/react';
 
 import { useENSAvatar } from '@/hooks/useENS';
 import { MongoUser } from '@/lib/mongodb/types';
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { ipfsUriToHttp } from '@/utils/uriHelpers';
 import { useWallet } from '@/web3';
 
 import { Jazzicon } from './Jazzicon';
-
-const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const UserAvatar: React.FC<{
   address: string | null | undefined;
@@ -43,5 +42,5 @@ export const UserAvatar: React.FC<{
     );
 
   // fallback to jazzicon
-  return <Jazzicon address={address ?? ADDRESS_ZERO} size={size} />;
+  return <Jazzicon address={address ?? ZERO_ADDRESS} size={size} />;
 };
