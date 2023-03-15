@@ -1,3 +1,6 @@
+import { AVAILABLE_NETWORK_INFO } from '@/web3';
+
+import { QUESTCHAINS_URL } from './constants';
 import { getFromStorage, STORAGE_KEYS } from './storageHelpers';
 
 const IPFS_URL_ADDON = `ipfs/`;
@@ -109,3 +112,16 @@ export const checkIPFSGateway = (gatewayUrl: string): Promise<void> => {
     img.src = imgUrl.toString();
   });
 };
+
+export const getQuestChainURL = ({
+  chainId,
+  slug,
+  address,
+}: {
+  chainId: string;
+  slug?: string | null | undefined;
+  address: string;
+}) =>
+  `${QUESTCHAINS_URL}/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${
+    slug || address
+  }`;

@@ -14,7 +14,8 @@ import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPa
 import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { QUESTCHAINS_URL, SUPPORTED_NETWORKS } from '@/utils/constants';
+import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { getQuestChainURL } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS, useWallet } from '@/web3';
 
 const {
@@ -52,7 +53,7 @@ const Review: React.FC<Props> = ({
   }, [refreshStatuses, refreshQuests]);
   const fetching = fetchingStatuses || fetchingQuests;
 
-  const { isFallback, asPath } = useRouter();
+  const { isFallback } = useRouter();
   const { address, isConnecting } = useWallet();
 
   const isReviewer: boolean = useMemo(
@@ -91,7 +92,7 @@ const Review: React.FC<Props> = ({
           AVAILABLE_NETWORK_INFO[questChain.chainId].name
         }`}
         description={`Review submissions for this quest chain`}
-        url={QUESTCHAINS_URL + asPath}
+        url={getQuestChainURL(questChain)}
       />
       <Flex w="full">
         <NextLink
