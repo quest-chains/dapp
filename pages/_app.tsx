@@ -22,7 +22,7 @@ const ForceDarkMode: React.FC<PropsWithChildren> = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
-    hotjar.initialize(3277457, 6);
+    hotjar.initialize(3408137, 6);
   }, []);
 
   useEffect(() => {
