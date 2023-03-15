@@ -9,6 +9,8 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
+import { QUESTCHAINS_LANDING_URL } from '@/utils/constants';
+
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import { MediumIcon } from '../icons/MediumIcon';
@@ -21,7 +23,11 @@ type TextLinkType = {
 };
 
 const textLinks: TextLinkType[] = [
-  { label: 'What is Quest Chains?', href: '/', external: false },
+  {
+    label: 'What is Quest Chains?',
+    href: QUESTCHAINS_LANDING_URL,
+    external: true,
+  },
   { label: 'Explore quest chains', href: '/explore', external: false },
   {
     label: 'Documentation',
@@ -44,16 +50,16 @@ const TextLink = ({ label, href, external }: TextLinkType) =>
       {label}
     </ChakraLink>
   ) : (
-    <NextLink href={href} passHref>
-      <ChakraLink
-        color="main"
-        borderBottom="1px solid"
-        borderBottomColor="main"
-        _hover={{ borderBottomColor: 'white' }}
-      >
-        {label}
-      </ChakraLink>
-    </NextLink>
+    <ChakraLink
+      as={NextLink}
+      href={href}
+      color="main"
+      borderBottom="1px solid"
+      borderBottomColor="main"
+      _hover={{ borderBottomColor: 'white' }}
+    >
+      {label}
+    </ChakraLink>
   );
 
 type IconLinkType = {
@@ -83,11 +89,14 @@ const IconLink = ({ Icon, href, external }: IconLinkType) =>
       <Icon />
     </ChakraLink>
   ) : (
-    <NextLink href={href} passHref>
-      <ChakraLink color="white" _hover={{ color: 'main' }}>
-        <Icon />
-      </ChakraLink>
-    </NextLink>
+    <ChakraLink
+      as={NextLink}
+      href={href}
+      color="white"
+      _hover={{ color: 'main' }}
+    >
+      <Icon />
+    </ChakraLink>
   );
 
 export const Footer: React.FC = () => (
@@ -117,6 +126,6 @@ export const Footer: React.FC = () => (
         <IconLink key={l.href} {...l} />
       ))}
     </HStack>
-    <Text>2022 © Quest Chains.</Text>
+    <Text>2023 © Quest Chains.</Text>
   </VStack>
 );

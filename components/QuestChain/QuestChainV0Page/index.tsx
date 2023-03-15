@@ -27,7 +27,6 @@ import {
 import { contracts, graphql } from '@quest-chains/sdk';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { TwitterShareButton } from 'react-share';
@@ -53,11 +52,10 @@ import { UserDisplay } from '@/components/UserDisplay';
 import { useInputText } from '@/hooks/useInputText';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
-import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
-import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { getQuestChainURL, ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
@@ -333,11 +331,9 @@ export const QuestChainV0Page: React.FC<QuestChainV0PageProps> = ({
     [refresh, questChain, chainId, provider],
   );
 
-  const router = useRouter();
-
   const QCmessage =
     'Level up your Web3 skills by completing a quest chain and earning a soulbound NFT! #QuestChains #NFTs #Web3';
-  const QCURL = QUESTCHAINS_URL + router.asPath;
+  const QCURL = getQuestChainURL(questChain);
 
   return (
     <Page>

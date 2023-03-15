@@ -7,16 +7,6 @@
   overflow: hidden;
 }
 
-.background-root {
-  width: 100vw;
-  height: 100vh;
-  background-color: #111312;
-  background-size: cover;
-  position: fixed;
-  z-index: -10;
-  overflow: hidden;
-}
-
 $randomNumber: random(5);
 $particleSize: 20vmin;
 $animationDuration: 6s;

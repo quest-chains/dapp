@@ -11,9 +11,9 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
+import { randomBytes } from '@ethersproject/random';
 import { contracts } from '@quest-chains/sdk';
 import { QuestChainCommons } from '@quest-chains/sdk/dist/contracts/v1/contracts/QuestChainFactory';
-import { utils } from 'ethers';
 import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -40,7 +40,7 @@ import { awaitQuestChainAddress, waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadMetadata } from '@/utils/metadata';
 import { TrackEvent } from '@/utils/plausibleHelpers';
-import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { getQuestChainURL, ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, isSupportedNetwork, useWallet } from '@/web3';
 
 const Create: React.FC = () => {
@@ -163,7 +163,7 @@ const Create: React.FC = () => {
         );
         const tx = await factoryContract.createAndUpgrade(
           info,
-          utils.randomBytes(32),
+          randomBytes(32),
         );
         toast.dismiss(tid);
         tid = handleTxLoading(tx.hash, chainId);
@@ -243,11 +243,11 @@ const Create: React.FC = () => {
     ],
   );
 
-  const networkName = chainId
-    ? AVAILABLE_NETWORK_INFO[chainId].urlName
-    : chainId;
-
-  const QCURL = `${QUESTCHAINS_URL}/${networkName}/${slug || chainAddress}`;
+  const QCURL = getQuestChainURL({
+    chainId: chainId ?? '',
+    slug,
+    address: chainAddress,
+  });
   const QCmessage =
     'I just created a quest chain! Check it out and join the fun! #questchain #DAO #web3 #gamification';
 

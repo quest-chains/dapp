@@ -23,7 +23,7 @@ import { MastodonShareButton } from '@/components/MastodonShareButton';
 import { NetworkDisplay } from '@/components/NetworkDisplay';
 import { TokenImageOrVideo } from '@/components/TokenImage/TokenImageOrVideo';
 import { useUserBadgesForAllChains } from '@/hooks/useUserBadgesForAllChains';
-import { QUESTCHAINS_URL } from '@/utils/constants';
+import { getQuestChainURL } from '@/utils/uriHelpers';
 import { formatAddress } from '@/web3';
 
 import { TwitterIcon } from '../icons/TwitterIcon';
@@ -33,17 +33,17 @@ type QuestChainBadgeInfo = {
   chainId: string;
   name?: string | null | undefined;
   description?: string | null | undefined;
-  chainAddress: string;
-  tokenAddress?: string | null | undefined;
-  tokenId?: string | null | undefined;
-  imageUrl: string;
+  imageUrl?: string | null | undefined;
+  address: string;
+  slug: string | null | undefined;
+  tokenAddress: string | null | undefined;
+  tokenId: string | null | undefined;
 };
 
 export const UserBadges: React.FC<{
   address: string;
 }> = ({ address }) => {
   const { fetching, results: userBadges } = useUserBadgesForAllChains(address);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenSeeAll,
     onOpen: onOpenSeeAll,
@@ -61,8 +61,8 @@ export const UserBadges: React.FC<{
           a?.tokens.map(b => ({
             ...b,
             chainId: a.chainId,
-            chainAddress: b.questChain?.address ?? '',
-            imageUrl: b.imageUrl ?? '',
+            address: b.questChain?.address ?? '',
+            slug: b.questChain?.slug,
           })) ?? [];
         t.push(...badges);
         return t;
@@ -70,14 +70,11 @@ export const UserBadges: React.FC<{
     [userBadges],
   );
 
-  const [selectedNFT, setSelectedNFT] = useState<QuestChainBadgeInfo>({
-    imageUrl: '',
-    chainId: '',
-    name: '',
-    chainAddress: '',
-  });
+  const [selectedNFT, setSelectedNFT] = useState<QuestChainBadgeInfo | null>(
+    null,
+  );
 
-  const QCURL = `${QUESTCHAINS_URL}/${selectedNFT.chainId}/${selectedNFT.chainAddress}`;
+  const QCURL = selectedNFT ? getQuestChainURL(selectedNFT) : '';
   const QCmessage =
     'Level up your Web3 skills by completing a quest chain and earning a soulbound NFT! #QuestChains #NFTs #Web3';
 
@@ -113,16 +110,17 @@ export const UserBadges: React.FC<{
           )}
           {badges?.slice(0, 4).map(b => (
             <VStack
-              key={address}
+              key={b.tokenId}
               gap={3}
               alignItems="center"
-              onClick={() => {
-                onOpen();
-                setSelectedNFT(b);
-              }}
+              onClick={() => setSelectedNFT(b)}
               cursor="pointer"
             >
-              <TokenImageOrVideo uri={b.imageUrl} w="16rem" height="16rem" />
+              <TokenImageOrVideo
+                uri={b.imageUrl ?? ''}
+                w="16rem"
+                height="16rem"
+              />
             </VStack>
           ))}
         </HStack>
@@ -135,23 +133,19 @@ export const UserBadges: React.FC<{
           <ModalCloseButton />
           <ModalBody>
             <Grid templateColumns="repeat(4, 1fr)">
-              {badges.map(({ chainId, name, imageUrl, chainAddress }) => (
+              {badges.map(b => (
                 <VStack
-                  key={address}
+                  key={b.tokenId}
                   gap={3}
                   alignItems="center"
-                  onClick={() => {
-                    onOpen();
-                    setSelectedNFT({
-                      imageUrl,
-                      chainId,
-                      name,
-                      chainAddress,
-                    });
-                  }}
+                  onClick={() => setSelectedNFT(b)}
                   cursor="pointer"
                 >
-                  <TokenImageOrVideo uri={imageUrl} w="16rem" height="16rem" />
+                  <TokenImageOrVideo
+                    uri={b.imageUrl ?? ''}
+                    w="16rem"
+                    height="16rem"
+                  />
                 </VStack>
               ))}
             </Grid>
@@ -159,7 +153,7 @@ export const UserBadges: React.FC<{
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={!!selectedNFT} onClose={() => setSelectedNFT(null)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{selectedNFT?.name}</ModalHeader>
@@ -167,7 +161,7 @@ export const UserBadges: React.FC<{
           <ModalBody>
             <VStack mb={3}>
               <Flex w="full" gap={4} mb={2} justifyContent="space-between">
-                <NetworkDisplay chainId={selectedNFT?.chainId} asTag />
+                <NetworkDisplay chainId={selectedNFT?.chainId ?? ''} asTag />
                 <Flex gap={3}>
                   <TwitterShareButton
                     url={QCURL}
@@ -187,7 +181,7 @@ export const UserBadges: React.FC<{
                 </Flex>
               </Flex>
               <TokenImageOrVideo
-                uri={selectedNFT?.imageUrl}
+                uri={selectedNFT?.imageUrl ?? ''}
                 w="25rem"
                 height="25rem"
               />

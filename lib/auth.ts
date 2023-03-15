@@ -1,4 +1,5 @@
-import { providers, utils } from 'ethers';
+import { Web3Provider } from '@ethersproject/providers';
+import { verifyMessage } from '@ethersproject/wallet';
 import { Base64 } from 'js-base64';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,12 +12,12 @@ const verifySignature = (
   message: string,
   signature: string,
 ): boolean => {
-  const recoveredAddress = utils.verifyMessage(message, signature);
+  const recoveredAddress = verifyMessage(message, signature);
   return address.toLowerCase() === recoveredAddress.toLowerCase();
 };
 
 export const signMessage = async (
-  provider: providers.Web3Provider,
+  provider: Web3Provider,
   rawMessage: string,
 ): Promise<string> => {
   const ethereum = provider.provider;
@@ -43,9 +44,7 @@ type Claim = {
   tid: string;
 };
 
-export const createToken = async (
-  provider: providers.Web3Provider,
-): Promise<string> => {
+export const createToken = async (provider: Web3Provider): Promise<string> => {
   const address = await provider.getSigner().getAddress();
 
   const iat = new Date().getTime();

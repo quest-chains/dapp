@@ -8,12 +8,9 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
 import SearchQuestChains from '@/components/Explore/SearchQuestChains';
-import { MenuLandingDesktop } from '@/components/Landing/MenuLandingDesktop';
-import { MenuLandingMobile } from '@/components/Landing/MenuLandingMobile';
 import { Footer } from '@/components/Layout/Footer';
 import { Header } from '@/components/Layout/Header';
 
@@ -25,10 +22,8 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
 }) => {
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(o => !o);
-  const router = useRouter();
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 
-  const isLanding = router.pathname === '/';
   const {
     isOpen: isSearchOpen,
     onOpen: onSearchOpen,
@@ -64,45 +59,27 @@ export const AppLayout: React.FC<{ children: JSX.Element }> = ({
     >
       <Header>
         {isSmallScreen ? (
-          isLanding ? (
-            <MenuLandingMobile />
-          ) : (
-            <MobileMenu
-              isOpen={isOpen}
-              toggleOpen={toggleOpen}
-              onSearchOpen={onSearchOpen}
-            />
-          )
-        ) : isLanding ? (
-          <MenuLandingDesktop />
+          <MobileMenu
+            isOpen={isOpen}
+            toggleOpen={toggleOpen}
+            onSearchOpen={onSearchOpen}
+          />
         ) : (
           <DesktopMenu onSearchOpen={onSearchOpen} />
         )}
       </Header>
-      {!isLanding && (
-        <Flex
-          direction="column"
-          w="100%"
-          pt="6rem"
-          pb={8}
-          px={{ base: 4, md: 4, lg: 12, xl: 32 }}
-          maxW={{ base: '100rem', '4xl': '125rem' }}
-          flex={1}
-        >
-          {children}
-        </Flex>
-      )}
+      <Flex
+        direction="column"
+        w="100%"
+        pt="6rem"
+        pb={8}
+        px={{ base: 4, md: 4, lg: 12, xl: 32 }}
+        maxW={{ base: '100rem', '4xl': '125rem' }}
+        flex={1}
+      >
+        {children}
+      </Flex>
 
-      {isLanding && (
-        <Flex
-          direction="column"
-          w="100%"
-          transition="opacity 0.25s"
-          overflowX="hidden"
-        >
-          {children}
-        </Flex>
-      )}
       <Footer />
       <Modal
         isOpen={isSearchOpen}

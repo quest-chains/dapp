@@ -1,6 +1,6 @@
 import { Heading } from '@chakra-ui/react';
+import { isAddress } from '@ethersproject/address';
 import { graphql } from '@quest-chains/sdk';
-import { ethers } from 'ethers';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
@@ -8,7 +8,6 @@ import React, { useCallback } from 'react';
 import { Page } from '@/components/Layout/Page';
 import { LoadingState } from '@/components/LoadingState';
 import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
-import { QuestChainV1Page } from '@/components/QuestChain/QuestChainV1Page';
 import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
@@ -99,12 +98,6 @@ const QuestChainPage: React.FC<Props> = ({
     );
   }
 
-  if (questChain.version === '1') {
-    return (
-      <QuestChainV1Page {...{ questChain, questStatuses, fetching, refresh }} />
-    );
-  }
-
   return (
     <QuestChainV2Page {...{ questChain, questStatuses, fetching, refresh }} />
   );
@@ -144,7 +137,7 @@ export const getStaticProps = async (
   }
 
   if (address && network) {
-    if (ethers.utils.isAddress(address)) {
+    if (isAddress(address)) {
       try {
         questStatuses = await getStatusesForChain(network, address);
         questChain = await getQuestChainInfo(network, address);

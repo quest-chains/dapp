@@ -8,7 +8,8 @@ import {
   PopoverTrigger,
   Text,
 } from '@chakra-ui/react';
-import PoH from 'assets/PoH.png';
+
+import PoH from '@/assets/PoH.png';
 
 export const PoHBadge: React.FC<{
   address: string | undefined | null;

@@ -111,7 +111,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
 };
 
 export const CHAIN_URL_MAPPINGS: {
-  [chainId: string]: string;
+  [chainName: string]: string;
 } = {
   polygon: '0x89',
   gnosis: '0x64',

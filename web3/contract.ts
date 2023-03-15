@@ -1,5 +1,5 @@
+import { Signer } from '@ethersproject/abstract-signer';
 import { contracts } from '@quest-chains/sdk';
-import { Signer } from 'ethers';
 
 export const getQuestChainContract = (
   address: string,
