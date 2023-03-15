@@ -25,7 +25,6 @@ import {
 import { contracts, graphql } from '@quest-chains/sdk';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import React, {
   useCallback,
   useEffect,
@@ -63,11 +62,10 @@ import { useToggleQuestChainPauseStatus } from '@/hooks/useToggleQuestChainPause
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useUserStatus } from '@/hooks/useUserStatus';
 import { MongoCategory } from '@/lib/mongodb/types';
-import { QUESTCHAINS_URL } from '@/utils/constants';
 import { waitUntilBlock } from '@/utils/graphHelpers';
 import { handleError, handleTxLoading } from '@/utils/helpers';
 import { Metadata, uploadFiles, uploadMetadata } from '@/utils/metadata';
-import { ipfsUriToHttp } from '@/utils/uriHelpers';
+import { getQuestChainURL, ipfsUriToHttp } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, useWallet } from '@/web3';
 import { getQuestChainContract } from '@/web3/contract';
 
@@ -301,8 +299,6 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
 
   const [isSubmittingQuestChain, setSubmittingQuestChain] = useState(false);
 
-  const router = useRouter();
-
   const onSubmitQuestChain = useCallback(async () => {
     if (!chainId || !provider || questChain.chainId !== chainId) {
       toast.error(
@@ -379,7 +375,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
 
   const QCmessage =
     'Level up your Web3 skills by completing a quest chain and earning a soulbound NFT! #QuestChains #NFTs #Web3';
-  const QCURL = QUESTCHAINS_URL + router.asPath;
+  const QCURL = getQuestChainURL(questChain);
 
   const [isSavingNFT, setSavingNFT] = useState(false);
 
