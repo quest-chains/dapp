@@ -122,6 +122,6 @@ export const getQuestChainURL = ({
   slug?: string | null | undefined;
   address: string;
 }) =>
-  `${QUESTCHAINS_URL}/${AVAILABLE_NETWORK_INFO[chainId].urlName}/${
+  `${QUESTCHAINS_URL}/${AVAILABLE_NETWORK_INFO[chainId]?.urlName ?? chainId}/${
     slug || address
   }`;
