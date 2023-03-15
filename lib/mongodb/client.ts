@@ -1,19 +1,23 @@
 import { Db, MongoClient } from 'mongodb';
 
+import { EnvironmentError } from '@/utils/errors';
+
 if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+  throw new EnvironmentError('MONGODB_URI');
 }
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
 if (!process.env.MONGODB_DATABASE) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_DATABASE"');
+  throw new EnvironmentError('MONGODB_DATABASE');
 }
+
+const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
 
 declare const global: {
   _clientPromise: Promise<Db>;
 };
 
-const uri = process.env.MONGODB_URI;
-const database = process.env.MONGODB_DATABASE;
 const options = {};
 
 let clientPromise: Promise<Db>;
@@ -42,10 +46,10 @@ export const initIndexes = async (client: Db): Promise<Db> => {
 };
 
 const createClientPromise = async (): Promise<Db> => {
-  const client = new MongoClient(uri, options);
+  const client = new MongoClient(MONGODB_URI, options);
   return client
     .connect()
-    .then((client: MongoClient) => client.db(database))
+    .then((client: MongoClient) => client.db(MONGODB_DATABASE))
     .then(initIndexes);
 };
 
