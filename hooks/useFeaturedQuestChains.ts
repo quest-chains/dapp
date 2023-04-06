@@ -10,24 +10,25 @@ const featuredQuestChains = [
   },
   {
     chainId: '0x89',
+    address: '0x64baec377babbbb62419af890e459d0a26b11074',
+  },
+  {
+    chainId: '0x89',
+    address: '0x0bf17bedbd42f6cf89f4064d5d70da1e44f70f14',
+  },
+  {
+    chainId: '0x89',
+    address: '0x5d8c1d6eab5fd643ad60dce741310dae3807acfc',
+  },
+  {
+    chainId: '0x89',
     address: '0x1ed08e85b948566623cc23c3744e5abe656e9564',
   },
   {
     chainId: '0x89',
     address: '0x6a7f3c7c2c00d169dfdb2a462839a1741942cd78',
   },
-  {
-    chainId: '0x89',
-    address: '0xea512722cc047bfdbe90a1a2750491e89a818ca7',
-  },
-  {
-    chainId: '0x89',
-    address: '0x5408dd1a97d69453d768b762ccf64a8098488b34',
-  },
-  {
-    chainId: '0x89',
-    address: '0xa5c36c62ead5d3551aaf7765ee68e6f0ea3b3e1c',
-  }, // testnet quest chains are only featured in `dev.questchains.xyz`
+  // testnet quest chains are only featured in `dev.questchains.xyz`
   {
     chainId: '0x5',
     address: '0x674c8a0e864ccf8906c5e3644e462473918e9362',
