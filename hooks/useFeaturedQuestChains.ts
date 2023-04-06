@@ -6,7 +6,7 @@ import { SUPPORTED_NETWORKS } from '@/utils/constants';
 const featuredQuestChains = [
   {
     chainId: '0x89',
-    address: '0x9a2684fef5d043bf848999bbf66f0e66c3a4ce80',
+    address: '0x5d8c1d6eab5fd643ad60dce741310dae3807acfc',
   },
   {
     chainId: '0x89',
@@ -18,7 +18,7 @@ const featuredQuestChains = [
   },
   {
     chainId: '0x89',
-    address: '0x5d8c1d6eab5fd643ad60dce741310dae3807acfc',
+    address: '0x9a2684fef5d043bf848999bbf66f0e66c3a4ce80',
   },
   {
     chainId: '0x89',
