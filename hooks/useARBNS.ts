@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getEthersProvider } from '@/web3/providers';
 
 let sid: any;
-let avatar: string | null;
+let web3Name: any;
 const provider = getEthersProvider('0xa4b1');
 const chainId = 42161; //Arbitrum One chain id
 
@@ -16,6 +16,10 @@ const buildSID = async () => {
     provider,
     sidAddress,
   });
+};
+
+const buildWeb3Name = () => {
+  web3Name = createWeb3Name();
 };
 
 export const fetchARBNSFromAddress = async (
@@ -43,18 +47,18 @@ export const fetchAvatarFromAddressOrARBNS = async (
 ): Promise<string | null> => {
   if (!name) return null;
   if (!sid) await buildSID();
-  if (!avatar) {
-    const web3Name = createWeb3Name();
-    const record = await web3Name.getDomainRecord({
-      name,
-      key: 'avatar',
-    });
-    if (record) avatar = record;
+  if (!web3Name) buildWeb3Name();
+  let avatar: string | null;
+  const record = await web3Name.getDomainRecord({
+    name,
+    key: 'avatar',
+  });
+  if (record) {
+    avatar = record;
+  } else {
     // if the user did not set an avatar, get default from the metadata image
-    else {
-      const metadata = await web3Name.getMetadata({ name: 'treasuretag.arb' });
-      avatar = metadata.image;
-    }
+    const metadata = await web3Name.getMetadata({ name });
+    avatar = metadata?.image;
   }
   return avatar;
 };
