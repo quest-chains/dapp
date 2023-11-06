@@ -28,6 +28,7 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
+import { fetchARBNSFromAddress } from '@/hooks/useARBNS';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -158,10 +159,13 @@ export const getStaticProps = async (
 ) => {
   const name = context.params?.name ?? '';
 
+  const arbns = await fetchARBNSFromAddress(name);
+
   const [address, ens] = await Promise.all([
     fetchAddressFromENS(name),
     fetchENSFromAddress(name),
   ]);
+  // TODO: change name of variable isENS?
   const isENS = isAddress(name) ? false : address ? true : false;
 
   const { user: profile } = await fetchProfileFromName(
@@ -171,10 +175,11 @@ export const getStaticProps = async (
   const profileAddress = (
     isAddress(name) ? name : profile?.address ?? address ?? ''
   ).toLowerCase();
+  // TODO: change name of variable profileENS?
+  const profileENS = isENS ? name : (arbns || ens) ?? '';
 
-  const profileENS = isENS ? name : ens ?? '';
-
-  const displayName = profile?.username ?? (isENS ? name : ens ?? '');
+  const displayName =
+    profile?.username ?? (isENS ? name : (arbns || ens) ?? '');
 
   const pohRegistered = await fetchPoH(profileAddress);
 

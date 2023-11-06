@@ -2,6 +2,7 @@ import { Button, HStack, Link, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useMemo } from 'react';
 
+import { useARBNS } from '@/hooks/useARBNS';
 import { useENS } from '@/hooks/useENS';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { formatAddress, useWallet } from '@/web3';
@@ -18,11 +19,15 @@ export const UserDisplay: React.FC<{
 }> = ({ address, color = 'white', size = 'md', hasPoH, noLink }) => {
   const {
     address: walletAddress,
+    arbns: walletARBNS,
     ens: walletENS,
     user: walletProfile,
   } = useWallet();
 
   const isWalletUser = walletAddress?.toLowerCase() === address?.toLowerCase();
+
+  const { arbns } = useARBNS(isWalletUser ? '' : address);
+  const displayARBNS = isWalletUser ? walletARBNS : arbns;
 
   const { ens } = useENS(isWalletUser ? '' : address);
   const displayENS = isWalletUser ? walletENS : ens;
@@ -31,7 +36,8 @@ export const UserDisplay: React.FC<{
   const displayProfile = isWalletUser ? walletProfile : profile;
 
   const displayName =
-    displayProfile?.username ?? formatAddress(address, displayENS);
+    displayProfile?.username ??
+    formatAddress(address, displayARBNS || displayENS);
 
   const avatarSize = useMemo(() => {
     switch (size) {
