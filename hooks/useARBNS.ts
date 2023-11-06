@@ -49,6 +49,12 @@ export const fetchAvatarFromAddressOrARBNS = async (
   if (!sid) await buildSID();
   if (!web3Name) buildWeb3Name();
   let avatar: string | null;
+
+  // if name is an address, convert to name
+  if (name?.includes('0x')) name = await fetchARBNSFromAddress(name);
+  // check again if the address was indeed resolved
+  if (!name) return null;
+
   const record = await web3Name.getDomainRecord({
     name,
     key: 'avatar',
