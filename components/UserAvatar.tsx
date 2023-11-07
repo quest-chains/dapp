@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react';
 
+import { useARBNSAvatar } from '@/hooks/useARBNS';
 import { useENSAvatar } from '@/hooks/useENS';
 import { MongoUser } from '@/lib/mongodb/types';
 import { ZERO_ADDRESS } from '@/utils/constants';
@@ -14,6 +15,7 @@ export const UserAvatar: React.FC<{
   size: number;
 }> = ({ address, profile, size }) => {
   const {
+    arbAvatar: walletARBNSAvatar,
     ensAvatar: walletENSAvatar,
     address: walletAddress,
     user: walletProfile,
@@ -21,12 +23,16 @@ export const UserAvatar: React.FC<{
 
   const isWalletUser = walletAddress === address?.toLowerCase();
 
+  const { avatar: arbAvatar } = useARBNSAvatar(isWalletUser ? '' : address);
   const { avatar: ensAvatar } = useENSAvatar(isWalletUser ? '' : address);
 
   const displayProfile = isWalletUser ? walletProfile ?? profile : profile;
 
   const avatarUri =
-    displayProfile?.avatarUri ?? (isWalletUser ? walletENSAvatar : ensAvatar);
+    displayProfile?.avatarUri ??
+    (isWalletUser
+      ? walletARBNSAvatar || walletENSAvatar
+      : arbAvatar || ensAvatar);
 
   if (avatarUri)
     return (

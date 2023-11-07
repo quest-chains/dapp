@@ -12,6 +12,10 @@ import { toast } from 'react-hot-toast';
 import Web3Modal from 'web3modal';
 
 import {
+  fetchARBNSFromAddress,
+  fetchAvatarFromAddressOrARBNS,
+} from '@/hooks/useARBNS';
+import {
   fetchAvatarFromAddressOrENS,
   fetchENSFromAddress,
 } from '@/hooks/useENS';
@@ -29,6 +33,8 @@ export type WalletContextType = {
   provider: Web3Provider | null | undefined;
   chainId: string | null | undefined;
   address: string | null | undefined;
+  arbns: string | null | undefined;
+  arbAvatar: string | null | undefined;
   ens: string | null | undefined;
   ensAvatar: string | null | undefined;
   user: MongoUser | null | undefined;
@@ -45,6 +51,8 @@ export const WalletContext = createContext<WalletContextType>({
   provider: null,
   chainId: null,
   address: null,
+  arbns: null,
+  arbAvatar: null,
   ens: null,
   ensAvatar: null,
   user: null,
@@ -77,6 +85,14 @@ const connectUserWithMongo = async (): Promise<MongoUser | null> => {
   return (await res.json()) as MongoUser;
 };
 
+const fetchARBNSData = async (
+  address: string,
+): Promise<{ arbns: string | null; arbAvatar: string | null }> => {
+  const arbns = await fetchARBNSFromAddress(address);
+  const arbAvatar = await fetchAvatarFromAddressOrARBNS(arbns);
+  return { arbns, arbAvatar };
+};
+
 const fetchENSData = async (
   address: string,
 ): Promise<{ ens: string | null; ensAvatar: string | null }> => {
@@ -91,6 +107,11 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
   const [walletState, setWalletState] = useState<WalletStateType>({});
 
   const { provider, chainId, address, isMetaMask } = walletState;
+
+  const [{ arbns, arbAvatar }, setARBNS] = useState<{
+    arbns?: string | null;
+    arbAvatar?: string | null;
+  }>({});
 
   const [{ ens, ensAvatar }, setENS] = useState<{
     ens?: string | null;
@@ -122,6 +143,9 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
         setWalletState(old => ({ ...old, chainId }));
       } else {
         const signerAddress = await ethersProvider.getSigner().getAddress();
+
+        // setup arbns in background
+        fetchARBNSData(signerAddress).then(setARBNS);
 
         // setup ens in background
         fetchENSData(signerAddress).then(setENS);
@@ -222,6 +246,8 @@ export const WalletProvider: React.FC<{ children: JSX.Element }> = ({
       value={{
         provider,
         address,
+        arbns,
+        arbAvatar,
         ens,
         ensAvatar,
         user,
