@@ -33,7 +33,8 @@ import {
 import { UserAvatar } from '../UserAvatar';
 
 export const WalletDisplay: React.FC = () => {
-  const { address, chainId, isMetaMask, disconnect, user, ens } = useWallet();
+  const { address, chainId, isMetaMask, disconnect, user, arbns, ens } =
+    useWallet();
 
   const placement = useBreakpointValue({
     base: 'bottom',
@@ -62,7 +63,7 @@ export const WalletDisplay: React.FC = () => {
               <UserAvatar address={address} profile={user} size={32} />
               <Flex flexDir="column">
                 <Text fontWeight="bold" fontSize="normal">
-                  {user?.username ?? formatAddress(address, ens)}
+                  {user?.username ?? formatAddress(address, arbns || ens)}
                 </Text>
                 <Text fontSize="small">
                   {AVAILABLE_NETWORK_INFO[chainId].label}
