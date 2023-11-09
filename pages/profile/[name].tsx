@@ -18,6 +18,7 @@ import { getAddress, isAddress } from '@ethersproject/address';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { Page } from '@/components/Layout/Page';
 import { LoadingState } from '@/components/LoadingState';
 import { PoHBadge } from '@/components/PoHBadge';
@@ -28,7 +29,7 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
-import { fetchARBNSFromAddress } from '@/hooks/useARBNS';
+import { fetchAddressFromARBNS, fetchARBNSFromAddress } from '@/hooks/useARBNS';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -159,12 +160,14 @@ export const getStaticProps = async (
 ) => {
   const name = context.params?.name ?? '';
 
-  const arbns = await fetchARBNSFromAddress(name);
+  const addressFromARBNS = await fetchAddressFromARBNS(name);
+  const addressFromENS = await fetchAddressFromENS(name);
+  // get the right address to fetch both arb and ens domains
+  const address =
+    addressFromARBNS === ZERO_ADDRESS ? addressFromENS : addressFromARBNS;
+  const arbns = await fetchARBNSFromAddress(address);
+  const ens = await fetchENSFromAddress(address);
 
-  const [address, ens] = await Promise.all([
-    fetchAddressFromENS(name),
-    fetchENSFromAddress(name),
-  ]);
   // TODO: change name of variable isENS?
   const isENS = isAddress(name) ? false : address ? true : false;
 
@@ -178,8 +181,11 @@ export const getStaticProps = async (
   // TODO: change name of variable profileENS?
   const profileENS = isENS ? name : (arbns || ens) ?? '';
 
-  const displayName =
-    profile?.username ?? (isENS ? name : (arbns || ens) ?? '');
+  const displayName = profile?.username
+    ? profile?.username
+    : arbns
+    ? arbns
+    : ens;
 
   const pohRegistered = await fetchPoH(profileAddress);
 
