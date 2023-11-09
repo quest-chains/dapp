@@ -5,6 +5,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer({
   reactStrictMode: true,
+  transpilePackages: ['@web3-name-sdk/core'],
   async redirects() {
     return [
       {
