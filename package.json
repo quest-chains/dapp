@@ -20,7 +20,6 @@
     "@quest-chains/sdk": "0.2.9",
     "@react-three/drei": "9.26.1",
     "@react-three/fiber": "8.7.1",
-    "@siddomains/sidjs": "^0.1.29",
     "@walletconnect/web3-provider": "^1.8.0",
     "@web3-name-sdk/core": "^0.1.2",
     "chakra-ui-markdown-renderer": "^4.1.0",

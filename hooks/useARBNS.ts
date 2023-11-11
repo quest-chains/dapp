@@ -1,53 +1,38 @@
 import { isAddress } from '@ethersproject/address';
-import SID, { getSidAddress } from '@siddomains/sidjs';
 import { createWeb3Name } from '@web3-name-sdk/core';
 import { useCallback, useEffect, useState } from 'react';
-
-import { getEthersProvider } from '@/web3/providers';
-
-let sid: any;
-let web3Name: any;
-const provider = getEthersProvider('0xa4b1');
-const chainId = 42161; //Arbitrum One chain id
-
-const buildSID = async () => {
-  const sidAddress = getSidAddress(chainId);
-  sid = new SID({
-    provider,
-    sidAddress,
-  });
-};
-
-const buildWeb3Name = () => {
-  web3Name = createWeb3Name();
-};
 
 export const fetchARBNSFromAddress = async (
   address: string | null | undefined,
 ): Promise<string | null> => {
   if (!address || !isAddress(address)) return null;
-  if (!sid) await buildSID();
-  const { name: arbitrum1_name } = await sid.getName(address);
+  const web3Name = createWeb3Name();
+  if (!web3Name) return null;
+  const name = await web3Name.getDomainName({
+    address,
+    queryChainIdList: [42161],
+  });
 
-  return arbitrum1_name;
+  return name;
 };
 
 export const fetchAddressFromARBNS = async (
   name: string | null | undefined,
 ): Promise<string | null> => {
   if (!name) return null;
-  if (!sid) await buildSID();
-  const arbitrum1_address = await sid.name(name).getAddress('ARB1');
+  const web3Name = createWeb3Name();
+  if (!web3Name) return null;
+  const address = await web3Name.getAddress(name);
 
-  return arbitrum1_address;
+  return address;
 };
 
 export const fetchAvatarFromAddressOrARBNS = async (
   name: string | null | undefined,
 ): Promise<string | null> => {
   if (!name) return null;
-  if (!sid) await buildSID();
-  if (!web3Name) buildWeb3Name();
+  const web3Name = createWeb3Name();
+  if (!web3Name) return null;
   let avatar: string | null;
 
   // if name is an address, convert to name

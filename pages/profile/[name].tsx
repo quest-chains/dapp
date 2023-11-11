@@ -15,10 +15,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { getAddress, isAddress } from '@ethersproject/address';
+import { createWeb3Name } from '@web3-name-sdk/core';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
-import { ZERO_ADDRESS } from '@/utils/constants';
 import { Page } from '@/components/Layout/Page';
 import { LoadingState } from '@/components/LoadingState';
 import { PoHBadge } from '@/components/PoHBadge';
@@ -29,7 +29,7 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
-import { fetchAddressFromARBNS, fetchARBNSFromAddress } from '@/hooks/useARBNS';
+import { fetchARBNSFromAddress } from '@/hooks/useARBNS';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -46,7 +46,7 @@ const Profile: React.FC<Props> = ({
   profileAddress,
   profile: inputProfile,
 }) => {
-  const { fetching, profile } = useUserProfile(profileAddress);
+  const { fetching, profile } = useUserProfile(profileAddress ?? '');
 
   const { isFallback } = useRouter();
 
@@ -57,7 +57,7 @@ const Profile: React.FC<Props> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { onCopy, hasCopied } = useClipboard(
-    isAddress(profileAddress) ? getAddress(profileAddress) : '',
+    isAddress(profileAddress ?? '') ? getAddress(profileAddress ?? '') : '',
   );
 
   if (isFallback || fetching || (!profile && !!inputProfile))
@@ -159,40 +159,48 @@ export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
   const name = context.params?.name ?? '';
+  const web3Name = createWeb3Name();
 
-  const addressFromARBNS = await fetchAddressFromARBNS(name);
-  const addressFromENS = await fetchAddressFromENS(name);
-  // get the right address to fetch both arb and ens domains
-  const address =
-    addressFromARBNS === ZERO_ADDRESS ? addressFromENS : addressFromARBNS;
-  const arbns = await fetchARBNSFromAddress(address);
-  const ens = await fetchENSFromAddress(address);
+  let profile,
+    profileAddress,
+    arbs,
+    ens,
+    isENS = false;
 
-  // TODO: change name of variable isENS?
-  const isENS = isAddress(name) ? false : address ? true : false;
+  // First, determine if the name is an ENS name or an address
+  if (name.endsWith('.arb')) {
+    try {
+      profileAddress = await web3Name.getAddress(name);
+    } catch (error) {
+      console.error('Error resolving .arb domain name:', error);
+      // Handle the error appropriately
+    }
+  } else if (!isAddress(name)) {
+    profileAddress = await fetchAddressFromENS(name);
+    isENS = true;
+  } else if (isAddress(name)) {
+    profileAddress = name;
+  } else {
+    // Handle case where name is neither ENS name, .arb domain, nor address
+  }
 
-  const { user: profile } = await fetchProfileFromName(
-    isENS && address ? address : name,
-  );
+  // Fetch profile, ARBs, and ENS
+  if (profileAddress) {
+    profile = (await fetchProfileFromName(profileAddress))?.user;
+    arbs = await fetchARBNSFromAddress(profileAddress);
+    if (!isENS) {
+      ens = await fetchENSFromAddress(profileAddress);
+    }
+  }
 
-  const profileAddress = (
-    isAddress(name) ? name : profile?.address ?? address ?? ''
-  ).toLowerCase();
-  // TODO: change name of variable profileENS?
-  const profileENS = isENS ? name : (arbns || ens) ?? '';
-
-  const displayName = profile?.username
-    ? profile?.username
-    : arbns
-    ? arbns
-    : ens;
-
-  const pohRegistered = await fetchPoH(profileAddress);
+  const displayName =
+    profile?.username ?? arbs ?? ens ?? (isENS ? name : profileAddress);
+  const pohRegistered = await fetchPoH(profileAddress?.toLowerCase());
 
   const props = {
     name,
+    arbs,
     profileAddress,
-    profileENS,
     displayName,
     profile: profile ? { ...profile, _id: profile._id.toString() } : null,
     pohRegistered,
