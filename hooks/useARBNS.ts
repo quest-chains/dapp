@@ -16,7 +16,7 @@ export const fetchARBNSFromAddress = async (
   return name;
 };
 
-export const fetchAddressFromARBNS = async (
+export const fetchAddress = async (
   name: string | null | undefined,
 ): Promise<string | null> => {
   if (!name) return null;

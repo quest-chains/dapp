@@ -15,7 +15,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { createWeb3Name } from '@web3-name-sdk/core';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 
@@ -29,8 +28,8 @@ import { UserProgress } from '@/components/ProfileView/UserProgress';
 import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
-import { fetchARBNSFromAddress } from '@/hooks/useARBNS';
-import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
+import { fetchAddress, fetchARBNSFromAddress } from '@/hooks/useARBNS';
+import { fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { fetchProfileFromName, fetchProfileNames } from '@/lib/profile';
@@ -159,7 +158,6 @@ export const getStaticProps = async (
   context: GetStaticPropsContext<QueryParams>,
 ) => {
   const name = context.params?.name ?? '';
-  const web3Name = createWeb3Name();
 
   let profile,
     profileAddress,
@@ -169,14 +167,9 @@ export const getStaticProps = async (
 
   // First, determine if the name is an ENS name or an address
   if (name.endsWith('.arb')) {
-    try {
-      profileAddress = await web3Name.getAddress(name);
-    } catch (error) {
-      console.error('Error resolving .arb domain name:', error);
-      // Handle the error appropriately
-    }
-  } else if (!isAddress(name)) {
-    profileAddress = await fetchAddressFromENS(name);
+    profileAddress = await fetchAddress(name);
+  } else if (name.endsWith('.eth')) {
+    profileAddress = await fetchAddress(name);
     isENS = true;
   } else if (isAddress(name)) {
     profileAddress = name;
@@ -198,10 +191,10 @@ export const getStaticProps = async (
   const pohRegistered = await fetchPoH(profileAddress?.toLowerCase());
 
   const props = {
-    name,
-    arbs,
-    profileAddress,
-    displayName,
+    name: name ?? null,
+    arbs: arbs ?? null,
+    profileAddress: profileAddress?.toLowerCase() ?? null,
+    displayName: displayName ?? null,
     profile: profile ? { ...profile, _id: profile._id.toString() } : null,
     pohRegistered,
   };
