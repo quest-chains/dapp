@@ -29,7 +29,7 @@ import { UserRoles } from '@/components/ProfileView/UserRoles';
 import { HeadComponent } from '@/components/Seo';
 import { UserAvatar } from '@/components/UserAvatar';
 import { fetchAddress, fetchARBNSFromAddress } from '@/hooks/useARBNS';
-import { fetchENSFromAddress } from '@/hooks/useENS';
+import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { fetchProfileFromName, fetchProfileNames } from '@/lib/profile';
@@ -169,7 +169,7 @@ export const getStaticProps = async (
   if (name.endsWith('.arb')) {
     profileAddress = await fetchAddress(name);
   } else if (name.endsWith('.eth')) {
-    profileAddress = await fetchAddress(name);
+    profileAddress = await fetchAddressFromENS(name);
     isENS = true;
   } else if (isAddress(name)) {
     profileAddress = name;
