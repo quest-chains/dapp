@@ -1,9 +1,9 @@
 import { isAddress } from '@ethersproject/address';
 import { createWeb3Name } from '@web3-name-sdk/core';
 import { useCallback, useEffect, useState } from 'react';
-import { SUPPORTED_NETWORK_INFO } from '../web3/networks';
+import { AVAILABLE_NETWORK_INFO } from '../web3/networks';
 
-const arbitrumRPCUrl = SUPPORTED_NETWORK_INFO['arbitrum']?.rpc;
+const arbitrumRPCUrl = AVAILABLE_NETWORK_INFO['0xa4b1']?.rpc;
 
 export const fetchARBNSFromAddress = async (
   address: string | null | undefined,
