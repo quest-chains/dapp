@@ -2377,10 +2377,10 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
-"@web3-name-sdk/core@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@web3-name-sdk/core/-/core-0.1.2.tgz#0bb1535516792faf1cc6ab93ca8202c18e194abe"
-  integrity sha512-wpd9WXwVAb6nfOj/R3xntKJDfsR1mzz+SjATdZ3w7ZuCC1QcPw6QjYGPgmmEdqIFdlWlrrjWEPUrjBpks9mmWQ==
+"@web3-name-sdk/core@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@web3-name-sdk/core/-/core-0.1.4.tgz#34dde34fed589cc12c3ad57a52bd7ab8ab6f3b8e"
+  integrity sha512-Qxhd+AzszYyizqBIqrpPwGg9wAacrAw2gnYVVBKxrvau9O+RioAet8tgeN3B/A0zL2RguM4B9NHTGx0sqZyxYQ==
   dependencies:
     "@adraffy/ens-normalize" "^1.10.0"
     "@ensdomains/ens-validation" "^0.1.0"

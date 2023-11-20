@@ -1,6 +1,9 @@
 import { isAddress } from '@ethersproject/address';
 import { createWeb3Name } from '@web3-name-sdk/core';
 import { useCallback, useEffect, useState } from 'react';
+import { SUPPORTED_NETWORK_INFO } from '../web3/networks';
+
+const arbitrumRPCUrl = SUPPORTED_NETWORK_INFO['arbitrum']?.rpc;
 
 export const fetchARBNSFromAddress = async (
   address: string | null | undefined,
@@ -11,6 +14,7 @@ export const fetchARBNSFromAddress = async (
   const name = await web3Name.getDomainName({
     address,
     queryChainIdList: [42161],
+    rpcUrl: arbitrumRPCUrl,
   });
 
   return name;
@@ -22,7 +26,9 @@ export const fetchAddress = async (
   if (!name) return null;
   const web3Name = createWeb3Name();
   if (!web3Name) return null;
-  const address = await web3Name.getAddress(name);
+  const address = await web3Name.getAddress(name, {
+    rpcUrl: arbitrumRPCUrl,
+  });
 
   return address;
 };
@@ -43,12 +49,16 @@ export const fetchAvatarFromAddressOrARBNS = async (
   const record = await web3Name.getDomainRecord({
     name,
     key: 'avatar',
+    rpcUrl: arbitrumRPCUrl,
   });
   if (record) {
     avatar = record;
   } else {
     // if the user did not set an avatar, get default from the metadata image
-    const metadata = await web3Name.getMetadata({ name });
+    const metadata = await web3Name.getMetadata({
+      name,
+      rpcUrl: arbitrumRPCUrl,
+    });
     avatar = metadata?.image;
   }
   return avatar;

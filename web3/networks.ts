@@ -94,7 +94,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     symbol: 'ETH',
     explorer: 'https://arbiscan.io',
     explorerLabel: 'ArbiScan',
-    rpc: 'https://arb1.arbitrum.io/rpc',
+    rpc: 'https://arbitrum.llamarpc.com/',
     image: ArbitrumImage.src,
   },
   '0x66eed': {

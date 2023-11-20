@@ -21,7 +21,7 @@
     "@react-three/drei": "9.26.1",
     "@react-three/fiber": "8.7.1",
     "@walletconnect/web3-provider": "^1.8.0",
-    "@web3-name-sdk/core": "^0.1.2",
+    "@web3-name-sdk/core": "^0.1.4",
     "chakra-ui-markdown-renderer": "^4.1.0",
     "color": "^4.2.3",
     "ethers": "5.7.2",
