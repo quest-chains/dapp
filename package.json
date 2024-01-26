@@ -17,7 +17,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@next/bundle-analyzer": "^13.2.4",
-    "@quest-chains/sdk": "0.2.9",
+    "@quest-chains/sdk": "0.2.10",
     "@react-three/drei": "9.26.1",
     "@react-three/fiber": "8.7.1",
     "@walletconnect/web3-provider": "^1.8.0",
