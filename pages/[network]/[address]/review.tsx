@@ -16,14 +16,9 @@ import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
 import { getQuestChainURL } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS, useWallet } from '@/web3';
-import { SUPPORTED_NETWORKS } from '@/web3/networks';
 
-const {
-  getQuestChainAddresses,
-  getQuestChainInfo,
-  getStatusesForChain,
-  getQuestChainFromSlug,
-} = graphql;
+const { getQuestChainInfo, getStatusesForChain, getQuestChainFromSlug } =
+  graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -148,17 +143,17 @@ type QueryParams = { address: string; network: string };
 export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
-  await Promise.all(
-    SUPPORTED_NETWORKS.map(async chainId => {
-      const addresses = await getQuestChainAddresses(chainId, 1000);
-
-      paths.push(
-        ...addresses.map(address => ({
-          params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
-        })),
-      );
-    }),
-  );
+  // await Promise.all(
+  //   SUPPORTED_NETWORKS.map(async chainId => {
+  //     const addresses = await getQuestChainAddresses(chainId, 1000);
+  //
+  //     paths.push(
+  //       ...addresses.map(address => ({
+  //         params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
+  //       })),
+  //     );
+  //   }),
+  // );
 
   return { paths, fallback: true };
 }
