@@ -14,9 +14,9 @@ import { QuestChainV1ReviewPage } from '@/components/Review/QuestChainV1ReviewPa
 import { HeadComponent } from '@/components/Seo';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { getQuestChainURL } from '@/utils/uriHelpers';
 import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS, useWallet } from '@/web3';
+import { SUPPORTED_NETWORKS } from '@/web3/networks';
 
 const {
   getQuestChainAddresses,

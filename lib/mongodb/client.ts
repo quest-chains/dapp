@@ -8,11 +8,9 @@ if (!process.env.MONGODB_URI) {
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!process.env.MONGODB_DATABASE) {
-  throw new EnvironmentError('MONGODB_DATABASE');
-}
+const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
 
-const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
+const MONGODB_DATABASE = IS_PRODUCTION ? 'quest-chains' : 'quest-chains-dev';
 
 declare const global: {
   _clientPromise: Promise<Db>;

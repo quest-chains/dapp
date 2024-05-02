@@ -1,7 +1,7 @@
 import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
+import { SUPPORTED_NETWORKS } from '@/web3/networks';
 
 const { OrderDirection, QuestChain_OrderBy } = graphql;
 

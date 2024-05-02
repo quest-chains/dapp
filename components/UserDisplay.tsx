@@ -1,4 +1,4 @@
-import { Button, HStack, Link, Text } from '@chakra-ui/react';
+import { Button, HStack, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useMemo } from 'react';
 
@@ -57,6 +57,7 @@ export const UserDisplay: React.FC<{
       size={size}
       height={8}
       px={2}
+      borderRadius="full"
       _hover={noLink ? {} : undefined}
     >
       <HStack position="relative" color={color}>
@@ -71,10 +72,8 @@ export const UserDisplay: React.FC<{
   return noLink ? (
     inner
   ) : (
-    <NextLink as={`/profile/${name}`} href="/profile/[name]" passHref>
-      <Link _hover={{}} borderRadius="full">
-        {inner}
-      </Link>
+    <NextLink as={`/profile/${name}`} href="/profile/[name]">
+      {inner}
     </NextLink>
   );
 };

@@ -12,7 +12,6 @@ import {
   IconButton,
   Image,
   Input,
-  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -1054,18 +1053,15 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                         href={`/${
                           AVAILABLE_NETWORK_INFO[questChain.chainId].urlName
                         }/[address]/review`}
-                        passHref
                       >
-                        <ChakraLink display="block" _hover={{}}>
-                          <SubmitButton
-                            fontSize={14}
-                            fontWeight="bold"
-                            height={10}
-                            px={6}
-                          >
-                            Review Submissions
-                          </SubmitButton>
-                        </ChakraLink>
+                        <SubmitButton
+                          fontSize={14}
+                          fontWeight="bold"
+                          height={10}
+                          px={6}
+                        >
+                          Review Submissions
+                        </SubmitButton>
                       </NextLink>
                     </Flex>
                   )}
