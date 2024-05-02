@@ -2,8 +2,8 @@ import { graphql } from '@quest-chains/sdk';
 import { useEffect, useState } from 'react';
 
 import { useRefresh } from '@/hooks/useRefresh';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
 import { useWallet } from '@/web3';
+import { SUPPORTED_NETWORKS } from '@/web3/networks';
 
 export const useLatestCreatedQuestChainsDataForAllChains = (): {
   questChains: graphql.QuestChainDisplayFragment[];

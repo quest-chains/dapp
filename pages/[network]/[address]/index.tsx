@@ -3,7 +3,7 @@ import { isAddress } from '@ethersproject/address';
 import { graphql } from '@quest-chains/sdk';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { Page } from '@/components/Layout/Page';
 import { LoadingState } from '@/components/LoadingState';
@@ -11,8 +11,11 @@ import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
 import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import { SUPPORTED_NETWORKS } from '@/utils/constants';
-import { AVAILABLE_NETWORK_INFO, CHAIN_URL_MAPPINGS } from '@/web3/networks';
+import {
+  AVAILABLE_NETWORK_INFO,
+  CHAIN_URL_MAPPINGS,
+  SUPPORTED_NETWORKS,
+} from '@/web3/networks';
 
 const {
   getQuestChainAddresses,

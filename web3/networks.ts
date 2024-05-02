@@ -1,4 +1,5 @@
-import { INFURA_ID, SUPPORTED_NETWORKS } from '../utils/constants';
+import { graphql } from '@quest-chains/sdk';
+
 import ArbitrumImage from './images/arbitrum.svg';
 import EthereumImage from './images/ethereum.svg';
 import GnosisImage from './images/gnosis.svg';
@@ -16,6 +17,7 @@ export type NetworkInfo = {
     explorerLabel: string;
     rpc: string;
     image: string;
+    testnet: boolean;
   };
 };
 
@@ -28,8 +30,9 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     symbol: 'ETH',
     explorer: 'https://etherscan.com',
     explorerLabel: 'EtherScan',
-    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    rpc: `https://1rpc.io/eth`,
     image: EthereumImage.src,
+    testnet: false,
   },
   '0x89': {
     chainId: '0x89',
@@ -41,6 +44,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'PolygonScan',
     rpc: `https://polygon-rpc.com`,
     image: PolygonImage.src,
+    testnet: false,
   },
   '0x64': {
     chainId: '0x64',
@@ -52,6 +56,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'GnosisScan',
     rpc: 'https://rpc.gnosischain.com/',
     image: GnosisImage.src,
+    testnet: false,
   },
   '0xa': {
     chainId: '0xa',
@@ -63,28 +68,19 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'EtherScan',
     rpc: 'https://mainnet.optimism.io',
     image: OptimismImage.src,
+    testnet: false,
   },
-  '0x5': {
-    chainId: '0x5',
-    name: 'Görli Testnet',
-    label: 'Görli',
-    urlName: 'goerli',
+  '0xaa36a7': {
+    chainId: '0xaa36a7',
+    name: 'Sepolia Testnet',
+    label: 'Sepolia',
+    urlName: 'sepolia',
     symbol: 'ETH',
-    explorer: 'https://goerli.etherscan.io',
+    explorer: 'https://sepolia.etherscan.io',
     explorerLabel: 'EtherScan',
-    rpc: `https://goerli.infura.io/v3/${INFURA_ID}`,
+    rpc: `https://1rpc.io/sepolia`,
     image: EthereumImage.src,
-  },
-  '0x13881': {
-    chainId: '0x13881',
-    name: 'Mumbai Testnet',
-    label: 'Mumbai',
-    urlName: 'mumbai',
-    symbol: 'MATIC',
-    explorer: 'https://mumbai.polygonscan.com',
-    explorerLabel: 'PolygonScan',
-    rpc: 'https://rpc-mumbai.maticvigil.com',
-    image: PolygonImage.src,
+    testnet: true,
   },
   '0xa4b1': {
     chainId: '0xa4b1',
@@ -96,17 +92,7 @@ export const AVAILABLE_NETWORK_INFO: NetworkInfo = {
     explorerLabel: 'ArbiScan',
     rpc: 'https://arb1.arbitrum.io/rpc',
     image: ArbitrumImage.src,
-  },
-  '0x66eed': {
-    chainId: '0x66eed',
-    name: 'Arbitrum Goerli',
-    label: 'Arbitrum Goerli',
-    urlName: 'arbitrum-goerli',
-    symbol: 'ETH',
-    explorer: 'https://goerli.arbiscan.io',
-    explorerLabel: 'ArbiScan',
-    rpc: 'https://goerli-rollup.arbitrum.io/rpc',
-    image: ArbitrumImage.src,
+    testnet: false,
   },
 };
 
@@ -115,12 +101,10 @@ export const CHAIN_URL_MAPPINGS: {
 } = {
   polygon: '0x89',
   gnosis: '0x64',
-  goerli: '0x5',
   optimism: '0xa',
   arbitrum: '0xa4b1',
-  ['arbitrum-goerli']: '0x66eed',
-  mumbai: '0x13881',
   mainnet: '0x1',
+  sepolia: '0xaa36a7',
 };
 
 const getNetworkInfo = (networks: string[] | undefined): NetworkInfo => {
@@ -132,8 +116,20 @@ const getNetworkInfo = (networks: string[] | undefined): NetworkInfo => {
       return t;
     }, {});
   }
-  return AVAILABLE_NETWORK_INFO;
+  return {};
 };
+
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_PRODUCTION !== 'true';
+
+export const SUPPORTED_NETWORKS = graphql.SUPPORTED_NETWORKS.filter(
+  n =>
+    AVAILABLE_NETWORK_INFO[n] &&
+    AVAILABLE_NETWORK_INFO[n].testnet === IS_TESTNET,
+);
+
+if (SUPPORTED_NETWORKS.length === 0) {
+  throw new Error('No supported networks found');
+}
 
 export const SUPPORTED_NETWORK_INFO = getNetworkInfo(SUPPORTED_NETWORKS);
 
