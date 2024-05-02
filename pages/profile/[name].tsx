@@ -31,7 +31,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { fetchAddressFromENS, fetchENSFromAddress } from '@/hooks/useENS';
 import { fetchPoH } from '@/hooks/usePoH';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { fetchProfileFromName, fetchProfileNames } from '@/lib/profile';
+import { fetchProfileFromName } from '@/lib/profile';
 import { QUESTCHAINS_URL } from '@/utils/constants';
 import { formatAddress, getAddressUrl, useWallet } from '@/web3';
 
@@ -141,7 +141,8 @@ const Profile: React.FC<Props> = ({
 type QueryParams = { name: string };
 
 export async function getStaticPaths() {
-  const names = await fetchProfileNames();
+  // const names = await fetchProfileNames();
+  const names: string[] = [];
   const paths: { params: QueryParams }[] = names.map(name => ({
     params: {
       name,
