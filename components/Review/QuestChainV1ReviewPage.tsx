@@ -303,6 +303,12 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
     }
   }, [refresh, chainId, questChain, provider, reviewed]);
 
+  useEffect(() => {
+    if (awaitingReview.length === 0) {
+      setTabIndex(3); // all submissions
+    }
+  }, [awaitingReview]);
+
   return (
     <VStack w="100%" spacing={8}>
       <Flex w="100%" justifyContent="space-between">
@@ -343,7 +349,12 @@ export const QuestChainV1ReviewPage: React.FC<Props> = ({
         {fetching ? (
           <LoadingState my={6} />
         ) : (
-          <Tabs w="full" p={0} onChange={index => setTabIndex(index)}>
+          <Tabs
+            w="full"
+            p={0}
+            index={tabIndex}
+            onChange={index => setTabIndex(index)}
+          >
             <ReviewTabsList
               awaitingReviewLength={awaitingReview.length}
               reviewedLength={reviewed.length}

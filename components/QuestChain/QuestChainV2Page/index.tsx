@@ -1034,7 +1034,7 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                   !isEditingMembers &&
                   !isTogglingPauseStatus &&
                   !isEditingNFT &&
-                  numSubmissionsToReview > 0 && (
+                  questStatuses.length > 0 && (
                     <Flex
                       w="full"
                       bgColor="rgba(29, 78, 216, 0.3)"
@@ -1044,7 +1044,14 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                     >
                       <Flex justifyContent="center" alignItems="center">
                         <InfoIcon boxSize={'1.25rem'} mr={2} color="#3B82F6" />
-                        {numSubmissionsToReview} submissions are awaiting review
+                        {numSubmissionsToReview > 0 ? (
+                          <>
+                            {numSubmissionsToReview} submissions are awaiting
+                            review
+                          </>
+                        ) : (
+                          <>All submissions have been reviewed</>
+                        )}
                       </Flex>
                       <NextLink
                         as={`/${
@@ -1060,7 +1067,11 @@ export const QuestChainV2Page: React.FC<QuestChainV2PageProps> = ({
                           height={10}
                           px={6}
                         >
-                          Review Submissions
+                          {numSubmissionsToReview > 0 ? (
+                            <>Review Submissions</>
+                          ) : (
+                            <>View Submissions</>
+                          )}
                         </SubmitButton>
                       </NextLink>
                     </Flex>
