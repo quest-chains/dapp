@@ -28,7 +28,7 @@ export const useFilteredQuestChains = (
   results: graphql.QuestChainDisplayFragment[];
 } => {
   const [error, setError] = useState<unknown>();
-  const [fetching, setFetching] = useState<boolean>(false);
+  const [fetching, setFetching] = useState<boolean>(true);
   const [results, setResults] = useState<graphql.QuestChainDisplayFragment[]>(
     [],
   );

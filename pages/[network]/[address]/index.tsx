@@ -11,18 +11,10 @@ import { QuestChainV0Page } from '@/components/QuestChain/QuestChainV0Page';
 import { QuestChainV2Page } from '@/components/QuestChain/QuestChainV2Page';
 import { useLatestQuestChainData } from '@/hooks/useLatestQuestChainData';
 import { useLatestQuestStatusesForChainData } from '@/hooks/useLatestQuestStatusesForChainData';
-import {
-  AVAILABLE_NETWORK_INFO,
-  CHAIN_URL_MAPPINGS,
-  SUPPORTED_NETWORKS,
-} from '@/web3/networks';
+import { CHAIN_URL_MAPPINGS } from '@/web3/networks';
 
-const {
-  getQuestChainAddresses,
-  getQuestChainFromSlug,
-  getStatusesForChain,
-  getQuestChainInfo,
-} = graphql;
+const { getQuestChainFromSlug, getStatusesForChain, getQuestChainInfo } =
+  graphql;
 
 type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -111,17 +103,17 @@ type QueryParams = { address: string; network: string };
 export async function getStaticPaths() {
   const paths: { params: QueryParams }[] = [];
 
-  await Promise.all(
-    SUPPORTED_NETWORKS.map(async chainId => {
-      const addresses = await getQuestChainAddresses(chainId, 1000);
-
-      paths.push(
-        ...addresses.map(address => ({
-          params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
-        })),
-      );
-    }),
-  );
+  // await Promise.all(
+  //   SUPPORTED_NETWORKS.map(async chainId => {
+  //     const addresses = await getQuestChainAddresses(chainId, 1000);
+  //
+  //     paths.push(
+  //       ...addresses.map(address => ({
+  //         params: { address, network: AVAILABLE_NETWORK_INFO[chainId].urlName },
+  //       })),
+  //     );
+  //   }),
+  // );
 
   return { paths, fallback: true };
 }
